@@ -35,7 +35,7 @@
 #include "arm64_internal.h"
 #include "gic.h"
 
-#ifdef CONFIG_ARMV7A_HAVE_GICv2
+#ifdef CONFIG_ARM64_HAVE_GICv2
 
 /****************************************************************************
  * Public Functions
@@ -618,4 +618,4 @@ int arm_gic_irq_trigger(int irq, bool edge)
   return -EINVAL;
 }
 
-#endif /* CONFIG_ARMV7A_HAVE_GICv2 */
+#endif /* CONFIG_ARM64_HAVE_GICv2 */
