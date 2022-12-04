@@ -32,14 +32,14 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define PIO_REG_PORTB         0
-#define PIO_REG_PORTC         1
-#define PIO_REG_PORTD         2
-#define PIO_REG_PORTE         3
-#define PIO_REG_PORTF         4
-#define PIO_REG_PORTG         5
-#define PIO_REG_PORTH         6
-#define PIO_REG_PORTL         7
+#define PIO_REG_PORTB         1
+#define PIO_REG_PORTC         2
+#define PIO_REG_PORTD         3
+#define PIO_REG_PORTE         4
+#define PIO_REG_PORTF         5
+#define PIO_REG_PORTG         6
+#define PIO_REG_PORTH         7
+#define PIO_REG_PORTL         8
 
 #define PIO_REG_CFG_INPUT     0
 #define PIO_REG_CFG_OUTPUT    1

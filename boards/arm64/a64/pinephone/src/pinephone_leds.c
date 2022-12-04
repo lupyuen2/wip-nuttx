@@ -109,6 +109,7 @@ uint32_t board_userled_initialize(void)
 
 void board_userled(int led, bool ledon)
 {
+  _info("led=0x%x, ledon=0x%x\n", led, ledon);////
   switch (led)
     {
     case BOARD_LED1:

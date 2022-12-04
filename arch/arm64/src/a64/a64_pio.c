@@ -64,7 +64,10 @@
 
 static inline int a1x_pio_port(pio_pinset_t cfgset)
 {
-  return ((cfgset & PIO_PORT_MASK) >> PIO_PORT_SHIFT);
+  //// TODO: Handle PL
+  int port = (cfgset & PIO_PORT_MASK) >> PIO_PORT_SHIFT;
+  DEBUGASSERT(port >= 1 && port <= 7);  /* PB to PH */
+  return port;
 }
 
 /****************************************************************************
@@ -201,6 +204,7 @@ void a1x_pio_irqinitialize(void)
 
 int a1x_pio_config(pio_pinset_t cfgset)
 {
+  //// TODO: Handle PL
   unsigned int port = a1x_pio_port(cfgset);
   unsigned int pin  = a1x_pio_pin(cfgset);
   unsigned int shift;
@@ -212,6 +216,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
   uintptr_t dataddr;
   uint32_t regval;
   irqstate_t flags;
+  _info("port=0x%x, pin=0x%x\n", port, pin);////
 
   /* Disable interrupts to prohibit re-entrance. */
 
@@ -253,6 +258,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
   regval &= ~(7 << shift);
   regval |= (value << shift);
   putreg32(regval, cfgaddr);
+  _info("val=0x%x, cfgaddr=0x%x\n", regval, cfgaddr);////
 
   /* Do not modify the INT MASK unless this pin is configured
    * as an external PIO interrupt.
@@ -266,6 +272,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
       regval &= ~(7 << shift);
       regval |= (value << shift);
       putreg32(regval, intaddr);
+      _info("val=0x%x, intaddr=0x%x\n", regval, intaddr);////
     }
 
   /* Set the pull-up/down and drive strength */
@@ -294,6 +301,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
   regval &= ~(3 << shift);
   regval |= (value << shift);
   putreg32(regval, puaddr);
+  _info("val=0x%x, puaddr=0x%x\n", regval, puaddr);////
 
   value = (cfgset & PIO_DRIVE_MASK) >> PIO_DRIVE_SHIFT;
 
@@ -301,6 +309,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
   regval &= ~(3 << shift);
   regval |= (value << shift);
   putreg32(regval, drvaddr);
+  _info("val=0x%x, drvaddr=0x%x\n", regval, drvaddr);////
 
   /* Set the output value (will have no effect on inputs) */
 
@@ -317,6 +326,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
     }
 
   putreg32(regval, dataddr);
+  _info("val=0x%x, dataddr=0x%x\n", regval, dataddr);////
 
   leave_critical_section(flags);
   return OK;
@@ -332,6 +342,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
 
 void a1x_pio_write(pio_pinset_t pinset, bool value)
 {
+  //// TODO: Handle PL
   unsigned int port = a1x_pio_port(pinset);
   unsigned int pin  = a1x_pio_pin(pinset);
   irqstate_t flags;
@@ -358,6 +369,7 @@ void a1x_pio_write(pio_pinset_t pinset, bool value)
 
   putreg32(regval, regaddr);
   leave_critical_section(flags);
+  _info("val=0x%x, addr=0x%x\n", regval, regaddr);////
 }
 
 /****************************************************************************
@@ -370,6 +382,7 @@ void a1x_pio_write(pio_pinset_t pinset, bool value)
 
 bool a1x_pio_read(pio_pinset_t pinset)
 {
+  //// TODO: Handle PL
   unsigned int port = a1x_pio_port(pinset);
   unsigned int pin  = a1x_pio_pin(pinset);
   uintptr_t regaddr;
