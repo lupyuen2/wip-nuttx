@@ -31,12 +31,12 @@
 
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
-#include <arch/board/board.h>
+////#include <arch/board/board.h>
 
-#include "arm_internal.h"
+#include "arm64_internal.h"
 #include "chip.h"
 #include "a64_pio.h"
-#include "hardware/a1x_pio.h"
+////#include "hardware/a64_pio.h"
 
 /****************************************************************************
  * Pre-processor Definitions
