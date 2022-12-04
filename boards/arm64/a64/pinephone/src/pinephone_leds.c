@@ -50,61 +50,22 @@
 void pinephone_led_initialize(void)
 {
   a1x_pio_config(PIO_LED1);
+  a1x_pio_config(PIO_LED2);
   a1x_pio_config(PIO_LED3);
-  a1x_pio_config(PIO_LED4);
 }
 
 /****************************************************************************
  * Name: board_autoled_on
  *
  * Description:
- *   Select the "logical" ON state:
- *
- *   SYMBOL            Value Meaning                    LED state
- *                                                    LED1 LED3 LED4
- *   ----------------- ----- -----------------------  ---- ---- ------------
- *   LED_STARTED         0   NuttX has been started   ON   OFF  OFF
- *   LED_HEAPALLOCATE    1   Heap has been allocated  OFF  ON   OFF
- *   LED_IRQSENABLED     2   Interrupts enabled       ON   ON   OFF
- *   LED_STACKCREATED    2   Idle stack created       ON   ON   OFF
- *   LED_INIRQ           3   In an interrupt          N/C  N/C  Soft glow
- *   LED_SIGNAL          3   In a signal handler      N/C  N/C  Soft glow
- *   LED_ASSERTION       3   An assertion failed      N/C  N/C  Soft glow
- *   LED_PANIC           3   The system has crashed   N/C  N/C  2Hz Flashing
- *   LED_IDLE           ---  MCU is is sleep mode         Not used
- *
- *   LED1 is illuminated by driving the output pins to a high value
- *   LED3 and LED 4 are illuminated by taking the output to ground.
+ *   Select the "logical" ON state.
  *
  ****************************************************************************/
 
 #ifdef CONFIG_ARCH_LEDS
 void board_autoled_on(int led)
 {
-  switch (led)
-    {
-    case 0:
-      a1x_pio_write(PIO_LED1, true);
-      a1x_pio_write(PIO_LED3, true);
-      a1x_pio_write(PIO_LED4, true);
-      break;
-
-    case 1:
-      a1x_pio_write(PIO_LED1, false);
-      a1x_pio_write(PIO_LED3, false);
-      a1x_pio_write(PIO_LED4, true);
-      break;
-
-    case 2:
-      a1x_pio_write(PIO_LED1, false);
-      a1x_pio_write(PIO_LED3, true);
-      a1x_pio_write(PIO_LED4, true);
-      break;
-
-    case 3:
-      a1x_pio_write(PIO_LED4, false);
-      break;
-    }
+  //// TODO
 }
 #endif
 
@@ -112,40 +73,14 @@ void board_autoled_on(int led)
  * Name: board_autoled_off
  *
  * Description:
- *   Select the "logical" OFF state:
- *
- *   SYMBOL            Value Meaning                    LED state
- *                                                    LED1 LED3 LED4
- *   ----------------- ----- -----------------------  ---- ---- ------------
- *   LED_STARTED         0   NuttX has been started   ON   OFF  OFF
- *   LED_HEAPALLOCATE    1   Heap has been allocated  OFF  ON   OFF
- *   LED_IRQSENABLED     2   Interrupts enabled       ON   ON   OFF
- *   LED_STACKCREATED    2   Idle stack created       ON   ON   OFF
- *   LED_INIRQ           3   In an interrupt          N/C  N/C  Soft glow
- *   LED_SIGNAL          3   In a signal handler      N/C  N/C  Soft glow
- *   LED_ASSERTION       3   An assertion failed      N/C  N/C  Soft glow
- *   LED_PANIC           3   The system has crashed   N/C  N/C  2Hz Flashing
- *   LED_IDLE           ---  MCU is is sleep mode         Not used
- *
- *   LED1 is illuminated by driving the output pins to a high value
- *   LED3 and LED 4 are illuminated by taking the output to ground.
+ *   Select the "logical" OFF state.
  *
  ****************************************************************************/
 
 #ifdef CONFIG_ARCH_LEDS
 void board_autoled_off(int led)
 {
-  switch (led)
-    {
-    case 0:
-    case 1:
-    case 2:
-      break;
-
-    case 3:
-      a1x_pio_write(PIO_LED4, true);
-      break;
-    }
+  //// TODO
 }
 #endif
 
@@ -180,23 +115,19 @@ void board_userled(int led, bool ledon)
       a1x_pio_write(PIO_LED1, ledon);
       break;
 
-    case BOARD_LED3:
-      a1x_pio_write(PIO_LED3, !ledon);
+    case BOARD_LED2:
+      a1x_pio_write(PIO_LED2, ledon);
       break;
 
-#ifndef CONFIG_ARCH_LEDS
-    case BOARD_LED4:
-      a1x_pio_write(PIO_LED4, !ledon);
+    case BOARD_LED3:
+      a1x_pio_write(PIO_LED3, ledon);
       break;
-#endif
     }
 }
 
 void board_userled_all(uint32_t ledset)
 {
   board_userled(BOARD_LED1, (ledset & BOARD_LED1) != 0);
+  board_userled(BOARD_LED2, (ledset & BOARD_LED2) != 0);
   board_userled(BOARD_LED3, (ledset & BOARD_LED3) != 0);
-#ifndef CONFIG_ARCH_LEDS
-  board_userled(BOARD_LED4, (ledset & BOARD_LED4) != 0);
-#endif
 }

@@ -37,31 +37,23 @@
 
 /* LEDs *********************************************************************/
 
-/* The pcDuino v1 has four green LEDs; three can be controlled from software.
- * Two are tied to ground and, hence, illuminated by driving the output pins
- * to a high value:
- *
- *  1. LED1 SPI0_CLK  SPI0_CLK/UART5_RX/EINT23/PI11
- *  2. LED5 IPSOUT    From the PMU (not controllable by software)
- */
+/* Red LED on PD18 */
 
 #define PIO_LED1 (PIO_OUTPUT | PIO_PULL_NONE | \
                   PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_CLEAR | PIO_PORT_PIOB | PIO_PIN11)  //// TODO
+                  PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN18)
 
-/* And two are pull high and, hence, illuminated by grounding the output:
- *
- *   3. LED3 RX_LED    LCD1_D16/ATAD12/KP_IN6/SMC_DET/EINT16/CSI1_D16/PH16
- *   4. LED4 TX_LED    LCD1_D15/ATAD11/KP_IN5/SMC_VPPPP/EINT15/CSI1_D15/PH15
- */
+/* Green LED on PD19 */
+
+#define PIO_LED2 (PIO_OUTPUT | PIO_PULL_NONE | \
+                  PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
+                  PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN19)
+
+/* Blue LED on PD20 */
 
 #define PIO_LED3 (PIO_OUTPUT | PIO_PULL_NONE | \
                   PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_SET | PIO_PORT_PIOH | PIO_PIN16)  //// TODO
-
-#define PIO_LED4 (PIO_OUTPUT | PIO_PULL_NONE | \
-                  PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_SET | PIO_PORT_PIOH | PIO_PIN15)  //// TODO
+                  PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN20)
 
 #ifndef __ASSEMBLY__
 
