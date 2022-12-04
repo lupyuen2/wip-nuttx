@@ -49,9 +49,7 @@
 
 void pinephone_led_initialize(void)
 {
-  a1x_pio_config(PIO_LED1);
-  a1x_pio_config(PIO_LED2);
-  a1x_pio_config(PIO_LED3);
+  //// TODO
 }
 
 /****************************************************************************
@@ -102,7 +100,16 @@ void board_autoled_off(int led)
 
 uint32_t board_userled_initialize(void)
 {
-  /* Initialization already performed in a64_led_initialize */
+  int ret;
+
+  ret = a1x_pio_config(PIO_LED1);
+  DEBUGASSERT(ret == OK);
+
+  ret = a1x_pio_config(PIO_LED2);
+  DEBUGASSERT(ret == OK);
+
+  ret = a1x_pio_config(PIO_LED3);
+  DEBUGASSERT(ret == OK);
 
   return BOARD_NLEDS;
 }
