@@ -348,6 +348,7 @@ void a1x_pio_write(pio_pinset_t pinset, bool value)
   irqstate_t flags;
   uintptr_t regaddr;
   uint32_t regval;
+  _info("port=0x%x, pin=0x%x\n", port, pin);////
 
   /* Disable interrupts to prohibit re-entrance. */
 
