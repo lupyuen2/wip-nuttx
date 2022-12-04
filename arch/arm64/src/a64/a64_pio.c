@@ -36,7 +36,7 @@
 #include "arm64_internal.h"
 #include "chip.h"
 #include "a64_pio.h"
-////#include "hardware/a64_pio.h"
+#include "hardware/a64_pio.h"
 
 /****************************************************************************
  * Pre-processor Definitions

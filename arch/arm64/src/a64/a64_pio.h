@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_ARM_SRC_A1X_A1X_PIO_H
-#define __ARCH_ARM_SRC_A1X_A1X_PIO_H
+#ifndef __ARCH_ARM64_SRC_A64_A64_PIO_H
+#define __ARCH_ARM64_SRC_A64_A64_PIO_H
 
 /****************************************************************************
  * Included Files
@@ -30,7 +30,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-////#include "hardware/a64_pio.h"
+#include "hardware/a64_pio.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -309,4 +309,4 @@ void a1x_pio_irqdisable(int irq);
 #endif
 
 #endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_A1X_A1X_PIO_H */
+#endif /* __ARCH_ARM64_SRC_A64_A64_PIO_H */
