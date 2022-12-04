@@ -32,16 +32,14 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define PIO_REG_PORTA         0
-#define PIO_REG_PORTB         1
-#define PIO_REG_PORTC         2
-#define PIO_REG_PORTD         3
-#define PIO_REG_PORTE         4
-#define PIO_REG_PORTF         5
-#define PIO_REG_PORTG         6
-#define PIO_REG_PORTH         7
-#define PIO_REG_PORTI         8
-#define PIO_REG_PORTS         9
+#define PIO_REG_PORTB         0
+#define PIO_REG_PORTC         1
+#define PIO_REG_PORTD         2
+#define PIO_REG_PORTE         3
+#define PIO_REG_PORTF         4
+#define PIO_REG_PORTG         5
+#define PIO_REG_PORTH         6
+#define PIO_REG_PORTL         7
 
 #define PIO_REG_CFG_INPUT     0
 #define PIO_REG_CFG_OUTPUT    1
@@ -195,13 +193,5 @@
 #define PIO_INT_DEB_CLKPRESC_SHIFT (4)       /* Bit 4-6: Debounce Clock Pre-scale */
 #define PIO_INT_DEB_CLKPRESC_MASK  (7 << PIO_INT_DEB_CLKPRESC_SHIFT)
 #  define PIO_INT_DEB_CLKPRESC(n)  ((uint32_t)(n) << PIO_INT_DEB_CLKPRESC_SHIFT)
-
-/* SDRAM Pad Multi-Driving Register */
-
-/* REVISIT: Missing register bit definitions */
-
-/* SDRAM Pad Pull Register */
-
-/* REVISIT: Missing register bit definitions */
 
 #endif /* __ARCH_ARM64_SRC_A64_HARDWARE_A64_PIO_H */
