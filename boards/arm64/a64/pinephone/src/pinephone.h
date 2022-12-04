@@ -81,5 +81,17 @@
 int pinephone_bringup(void);
 #endif
 
+/****************************************************************************
+ * Name: pinephone_led_initialize
+ *
+ * Description:
+ *   Configure LEDs.  LEDs are left in the OFF state.
+ *
+ ****************************************************************************/
+
+#ifdef CONFIG_ARCH_LEDS
+void pinephone_led_initialize(void);
+#endif
+
 #endif /* __ASSEMBLY__ */
 #endif /* __BOARDS_ARM64_A64_PINEPHONE_SRC_PINEPHONE_H */

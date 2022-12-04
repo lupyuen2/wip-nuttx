@@ -40,14 +40,14 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Name: a1x_led_initialize
+ * Name: pinephone_led_initialize
  *
  * Description:
  *   Configure LEDs.  LEDs are left in the OFF state.
  *
  ****************************************************************************/
 
-void a1x_led_initialize(void)
+void pinephone_led_initialize(void)
 {
   a1x_pio_config(PIO_LED1);
   a1x_pio_config(PIO_LED3);
@@ -167,7 +167,7 @@ void board_autoled_off(int led)
 
 uint32_t board_userled_initialize(void)
 {
-  /* Initialization already performed in a1x_led_initialize */
+  /* Initialization already performed in a64_led_initialize */
 
   return BOARD_NLEDS;
 }
