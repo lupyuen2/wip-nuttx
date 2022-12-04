@@ -61,15 +61,15 @@
 
 /* Register offsets *********************************************************/
 
-#define A1X_PIO_CFG0_OFFSET(n)    (0x0000 + (n)*0x24) /* Port Configure Register 0, n=0-9 */
-#define A1X_PIO_CFG1_OFFSET(n)    (0x0004 + (n)*0x24) /* Port Configure Register 1, n=0-9 */
-#define A1X_PIO_CFG2_OFFSET(n)    (0x0008 + (n)*0x24) /* Port Configure Register 2, n=0-9 */
-#define A1X_PIO_CFG3_OFFSET(n)    (0x000c + (n)*0x24) /* Port Configure Register 3, n=0-9 */
-#define A1X_PIO_DAT_OFFSET(n)     (0x0010 + (n)*0x24) /* Port Data Register, n=0-9 */
-#define A1X_PIO_DRV0_OFFSET(n)    (0x0014 + (n)*0x24) /* Port Multi-Driving Register 0, n=0-9 */
-#define A1X_PIO_DRV1_OFFSET(n)    (0x0018 + (n)*0x24) /* Port Multi-Driving Register 1, n=0-9 */
-#define A1X_PIO_PUL0_OFFSET(n)    (0x001c + (n)*0x24) /* Port Pull Register 0, n=0-9 */
-#define A1X_PIO_PUL1_OFFSET(n)    (0x0020 + (n)*0x24) /* Port Pull Register 1, n=0-9 */
+#define A1X_PIO_CFG0_OFFSET(n)    (0x0000 + (n)*0x24) /* Port Configure Register 0, n=1-7 */
+#define A1X_PIO_CFG1_OFFSET(n)    (0x0004 + (n)*0x24) /* Port Configure Register 1, n=1-7 */
+#define A1X_PIO_CFG2_OFFSET(n)    (0x0008 + (n)*0x24) /* Port Configure Register 2, n=1-7 */
+#define A1X_PIO_CFG3_OFFSET(n)    (0x000c + (n)*0x24) /* Port Configure Register 3, n=1-7 */
+#define A1X_PIO_DAT_OFFSET(n)     (0x0010 + (n)*0x24) /* Port Data Register, n=1-7 */
+#define A1X_PIO_DRV0_OFFSET(n)    (0x0014 + (n)*0x24) /* Port Multi-Driving Register 0, n=1-7 */
+#define A1X_PIO_DRV1_OFFSET(n)    (0x0018 + (n)*0x24) /* Port Multi-Driving Register 1, n=1-7 */
+#define A1X_PIO_PUL0_OFFSET(n)    (0x001c + (n)*0x24) /* Port Pull Register 0, n=1-7 */
+#define A1X_PIO_PUL1_OFFSET(n)    (0x0020 + (n)*0x24) /* Port Pull Register 1, n=1-7 */
 #define A1X_PIO_INT_CFG0_OFFSET   0x0200              /* PIO Interrupt Configure Register 0 */
 #define A1X_PIO_INT_CFG1_OFFSET   0x0204              /* PIO Interrupt Configure Register 1 */
 #define A1X_PIO_INT_CFG2_OFFSET   0x0208              /* PIO Interrupt Configure Register 2 */
@@ -127,29 +127,29 @@
 #define PIO_CFG3_MASK(n))         (7 << PIO_CFG3_SHIFT(n))
 #  define PIO_CFG3(m,v)           ((uint32_t)(v) << PIO_CFG3_SHIFT(n))
 
-/* Port n Data Register, n=0-9 */
+/* Port n Data Register, n=1-7 */
 
 #define PIO_DAT(n)                 (1 << (n)) /* PA data, n=0-31 */
 
-/* Port n Multi-Driving Register 0, n=0-9 */
+/* Port n Multi-Driving Register 0, n=1-7 */
 
 #define PIO_DRV0_SHIFT(n)          ((n) << 1) /* PA DRV0, n=0-15 */
 #define PIO_DRV0_MASK(n)           (3 << PIO_DRV0_SHIFT(n))
 #  define PIO_DRV0(n,v)            ((uint32_t)(v) << PIO_DRV0_SHIFT(n))
 
-/* Port n Multi-Driving Register 1, n=0-9 */
+/* Port n Multi-Driving Register 1, n=1-7 */
 
 #define PIO_DRV1_SHIFT(n)          (((n) - 16) << 1) /* PA DRV1, n=16-31 */
 #define PIO_DRV1_MASK(n)           (3 << PIO_DRV1_SHIFT(n))
 #  define PIO_DRV1(n,v)            ((uint32_t)(v) << PIO_DRV1_SHIFT(n))
 
-/* Port n Pull Register 0, n=0-9 */
+/* Port n Pull Register 0, n=1-7 */
 
 #define PIO_PUL0_SHIFT(n)          ((n) << 1) /* PA PUL0, n=0-15 */
 #define PIO_PUL0_MASK(n)           (3 << PIO_PUL0_SHIFT(n))
 #  define PIO_PUL0(n,v)            ((uint32_t)(v) << PIO_PUL0_SHIFT(n))
 
-/* Port n Pull Register 1, n=0-9 */
+/* Port n Pull Register 1, n=1-7 */
 
 #define PIO_PUL1_SHIFT(n)          (((n) - 16) << 1) /* PA PUL1, n=16-31 */
 #define PIO_PUL1_MASK(n)           (3 << PIO_PUL1_SHIFT(n))
