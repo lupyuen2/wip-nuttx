@@ -146,7 +146,6 @@
 
 #define PIO_PORT_SHIFT            (5)         /* Bit 5-8:  Port number */
 #define PIO_PORT_MASK             (15 << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOA           (PIO_REG_PORTA << PIO_PORT_SHIFT)
 #  define PIO_PORT_PIOB           (PIO_REG_PORTB << PIO_PORT_SHIFT)
 #  define PIO_PORT_PIOC           (PIO_REG_PORTC << PIO_PORT_SHIFT)
 #  define PIO_PORT_PIOD           (PIO_REG_PORTD << PIO_PORT_SHIFT)
@@ -154,7 +153,7 @@
 #  define PIO_PORT_PIOF           (PIO_REG_PORTF << PIO_PORT_SHIFT)
 #  define PIO_PORT_PIOG           (PIO_REG_PORTG << PIO_PORT_SHIFT)
 #  define PIO_PORT_PIOH           (PIO_REG_PORTH << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOI           (PIO_REG_PORTI << PIO_PORT_SHIFT)
+#  define PIO_PORT_PIOL           (PIO_REG_PORTL << PIO_PORT_SHIFT)
 
 /* This identifies the bit in the port:
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/a64/pinephone/src/pinephone.h
+ * boards/arm64/a64/pinephone/include/board.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,24 +18,28 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_ARM64_A64_PINEPHONE_SRC_PINEPHONE_H
-#define __BOARDS_ARM64_A64_PINEPHONE_SRC_PINEPHONE_H
+#ifndef __BOARDS_ARM64_A64_PINEPHONE_INCLUDE_BOARD_H
+#define __BOARDS_ARM64_A64_PINEPHONE_INCLUDE_BOARD_H
 
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
 #include <nuttx/config.h>
-#include <stdint.h>
-#include "a64_pio.h"
+
+////#include "hardware/a64_piocfg.h"
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Configuration ************************************************************/
+/* Clocking *****************************************************************/
 
-/* LEDs *********************************************************************/
+/* Since NuttX is booted from a loader on the A10, clocking should already
+ * be setup when NuttX starts.
+ */
+
+/* LED definitions **********************************************************/
 
 /* The pcDuino v1 has four green LEDs; three can be controlled from software.
  * Two are tied to ground and, hence, illuminated by driving the output pins
@@ -43,43 +47,24 @@
  *
  *  1. LED1 SPI0_CLK  SPI0_CLK/UART5_RX/EINT23/PI11
  *  2. LED5 IPSOUT    From the PMU (not controllable by software)
- */
-
-#define PIO_LED1 (PIO_OUTPUT | PIO_PULL_NONE | \
-                  PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_CLEAR | PIO_PORT_PIOB | PIO_PIN11)  //// TODO
-
-/* And two are pull high and, hence, illuminated by grounding the output:
+ *
+ * And two are pull high and, hence, illuminated by grounding the output:
  *
  *   3. LED3 RX_LED    LCD1_D16/ATAD12/KP_IN6/SMC_DET/EINT16/CSI1_D16/PH16
  *   4. LED4 TX_LED    LCD1_D15/ATAD11/KP_IN5/SMC_VPPPP/EINT15/CSI1_D15/PH15
  */
 
-#define PIO_LED3 (PIO_OUTPUT | PIO_PULL_NONE | \
-                  PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_SET | PIO_PORT_PIOH | PIO_PIN16)  //// TODO
+/* LED index values for use with board_userled() */
 
-#define PIO_LED4 (PIO_OUTPUT | PIO_PULL_NONE | \
-                  PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_SET | PIO_PORT_PIOH | PIO_PIN15)  //// TODO
+#define BOARD_LED1        0
+#define BOARD_LED3        1
+#define BOARD_LED4        2
+#define BOARD_NLEDS       3
 
-#ifndef __ASSEMBLY__
+/* LED bits for use with board_userled_all() */
 
-/****************************************************************************
- * Public Functions Definitions
- ****************************************************************************/
+#define BOARD_LED1_BIT    (1 << BOARD_LED1)
+#define BOARD_LED3_BIT    (1 << BOARD_LED3)
+#define BOARD_LED4_BIT    (1 << BOARD_LED4)
 
-/****************************************************************************
- * Name: pinephone_bringup
- *
- * Description:
- *   Bring up board features
- *
- ****************************************************************************/
-
-#if defined(CONFIG_BOARDCTL) || defined(CONFIG_BOARD_LATE_INITIALIZE)
-int pinephone_bringup(void);
-#endif
-
-#endif /* __ASSEMBLY__ */
-#endif /* __BOARDS_ARM64_A64_PINEPHONE_SRC_PINEPHONE_H */
+#endif /* __BOARDS_ARM64_A64_PINEPHONE_INCLUDE_BOARD_H */
