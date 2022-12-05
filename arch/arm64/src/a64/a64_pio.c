@@ -67,7 +67,7 @@ static inline int a1x_pio_port(pio_pinset_t cfgset)
   //// TODO: Handle PL
   int port = (cfgset & PIO_PORT_MASK) >> PIO_PORT_SHIFT;
 
-  DEBUGASSERT(port >= 1 && port <= 7);  /* PB to PH */
+  DEBUGASSERT(port >= PIO_REG_PORTB && port <= PIO_REG_PORTL);
   return port;
 }
 
@@ -75,7 +75,7 @@ static inline int a1x_pio_port(pio_pinset_t cfgset)
  * Name: a1x_pio_pin
  *
  * Description:
- *   Return the pin bit position
+ *   Return the pin number
  *
  ****************************************************************************/
 

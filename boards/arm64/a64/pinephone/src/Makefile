@@ -20,10 +20,18 @@
 
 include $(TOPDIR)/Make.defs
 
-CSRCS = pinephone_boardinit.c pinephone_bringup.c pinephone_leds.c
+CSRCS = pinephone_boardinit.c pinephone_bringup.c
 
 ifeq ($(CONFIG_BOARDCTL),y)
 CSRCS += pinephone_appinit.c
+endif
+
+ifeq ($(CONFIG_ARCH_LEDS),y)
+CSRCS += pinephone_autoleds.c
+endif
+
+ifeq ($(CONFIG_USERLED),y)
+CSRCS += pinephone_userleds.c
 endif
 
 include $(TOPDIR)/boards/Board.mk

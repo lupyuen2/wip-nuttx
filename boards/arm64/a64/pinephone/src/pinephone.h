@@ -39,21 +39,21 @@
 
 /* Red LED on PD18 */
 
-#define PIO_LED1 (PIO_OUTPUT | PIO_PULL_NONE | \
-                  PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN18)
+#define LED1 (PIO_OUTPUT | PIO_PULL_NONE | \
+              PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
+              PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN18)
 
 /* Green LED on PD19 */
 
-#define PIO_LED2 (PIO_OUTPUT | PIO_PULL_NONE | \
-                  PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN19)
+#define LED2 (PIO_OUTPUT | PIO_PULL_NONE | \
+              PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
+              PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN19)
 
 /* Blue LED on PD20 */
 
-#define PIO_LED3 (PIO_OUTPUT | PIO_PULL_NONE | \
-                  PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-                  PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN20)
+#define LED3 (PIO_OUTPUT | PIO_PULL_NONE | \
+              PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
+              PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN20)
 
 #ifndef __ASSEMBLY__
 

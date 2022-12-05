@@ -79,7 +79,7 @@ void a64_board_initialize(void)
 #ifdef CONFIG_ARCH_LEDS
   /* Configure on-board LEDs if LED support has been selected. */
 
-  pinephone_led_initialize();
+  board_autoled_initialize();
 #endif
 }
 

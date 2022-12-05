@@ -33,25 +33,42 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Clocking *****************************************************************/
-
-/* Since NuttX is booted from a loader on the A10, clocking should already
- * be setup when NuttX starts.
- */
-
 /* LED definitions **********************************************************/
 
 /* LED index values for use with board_userled() */
 
-#define BOARD_LED1        0  /* Red LED */
-#define BOARD_LED2        1  /* Green LED */
-#define BOARD_LED3        2  /* Blue LED */
-#define BOARD_NLEDS       3
+typedef enum
+{
+    BOARD_LED1 = 0,  /* Red LED */
+    BOARD_LED2 = 1,  /* Green LED */
+    BOARD_LED3 = 2,  /* Blue LED */
+    BOARD_LEDS       /* Number of LEDs */
+} led_typedef_enum;
 
 /* LED bits for use with board_userled_all() */
 
 #define BOARD_LED1_BIT    (1 << BOARD_LED1)
 #define BOARD_LED2_BIT    (1 << BOARD_LED2)
 #define BOARD_LED3_BIT    (1 << BOARD_LED3)
+
+/* If CONFIG_ARCH_LEDS is defined, the usage by the board port is defined in
+ * include/board.h and src/pinephone_autoleds.c. The LEDs are used to encode
+ * OS-related events as follows:
+ *
+ *
+ *   SYMBOL                     Meaning                      LED state
+ *                                                        LED1  LED2  LED3
+ *   ----------------------  --------------------------  ------ ------ ---
+ */
+
+#define LED_STARTED        0 /* NuttX has been started   OFF    OFF   OFF  */
+#define LED_HEAPALLOCATE   1 /* Heap has been allocated  ON     OFF   OFF  */
+#define LED_IRQSENABLED    2 /* Interrupts enabled       OFF    ON    OFF  */
+#define LED_STACKCREATED   3 /* Idle stack created       OFF    OFF   ON   */
+#define LED_INIRQ          4 /* In an interrupt          ON     ON    OFF  */
+#define LED_SIGNAL         5 /* In a signal handler      ON     OFF   ON   */
+#define LED_ASSERTION      6 /* An assertion failed      OFF    ON    ON   */
+#define LED_PANIC          7 /* The system has crashed   FLASH  ON    ON   */
+#define LED_IDLE           8 /* MCU is is sleep mode     OFF    FLASH OFF  */
 
 #endif /* __BOARDS_ARM64_A64_PINEPHONE_INCLUDE_BOARD_H */
