@@ -36,7 +36,7 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Bit-encoded input to a1x_pio_config() ************************************/
+/* Bit-encoded input to a64_pio_config() ************************************/
 
 /* 32-bit Encoding:
  *
@@ -230,7 +230,7 @@ extern "C"
  ****************************************************************************/
 
 /****************************************************************************
- * Name: a1x_pio_irqinitialize
+ * Name: a64_pio_irqinitialize
  *
  * Description:
  *   Initialize logic to support a second level of interrupt decoding for
@@ -238,68 +238,68 @@ extern "C"
  *
  ****************************************************************************/
 
-#ifdef CONFIG_A1X_PIO_IRQ
-void a1x_pio_irqinitialize(void);
+#ifdef CONFIG_A64_PIO_IRQ
+void a64_pio_irqinitialize(void);
 #else
-#  define a1x_pio_irqinitialize()
+#  define a64_pio_irqinitialize()
 #endif
 
 /****************************************************************************
- * Name: a1x_pio_config
+ * Name: a64_pio_config
  *
  * Description:
  *   Configure a PIO pin based on bit-encoded description of the pin.
  *
  ****************************************************************************/
 
-int a1x_pio_config(pio_pinset_t cfgset);
+int a64_pio_config(pio_pinset_t cfgset);
 
 /****************************************************************************
- * Name: a1x_pio_write
+ * Name: a64_pio_write
  *
  * Description:
  *   Write one or zero to the selected PIO pin
  *
  ****************************************************************************/
 
-void a1x_pio_write(pio_pinset_t pinset, bool value);
+void a64_pio_write(pio_pinset_t pinset, bool value);
 
 /****************************************************************************
- * Name: a1x_pio_read
+ * Name: a64_pio_read
  *
  * Description:
  *   Read one or zero from the selected PIO pin
  *
  ****************************************************************************/
 
-bool a1x_pio_read(pio_pinset_t pinset);
+bool a64_pio_read(pio_pinset_t pinset);
 
 /****************************************************************************
- * Name: a1x_pio_irqenable
+ * Name: a64_pio_irqenable
  *
  * Description:
  *   Enable the interrupt for specified PIO IRQ
  *
  ****************************************************************************/
 
-#ifdef CONFIG_A1X_PIO_IRQ
-void a1x_pio_irqenable(int irq);
+#ifdef CONFIG_A64_PIO_IRQ
+void a64_pio_irqenable(int irq);
 #else
-#  define a1x_pio_irqenable(irq)
+#  define a64_pio_irqenable(irq)
 #endif
 
 /****************************************************************************
- * Name: a1x_pio_irqdisable
+ * Name: a64_pio_irqdisable
  *
  * Description:
  *   Disable the interrupt for specified PIO IRQ
  *
  ****************************************************************************/
 
-#ifdef CONFIG_A1X_PIO_IRQ
-void a1x_pio_irqdisable(int irq);
+#ifdef CONFIG_A64_PIO_IRQ
+void a64_pio_irqdisable(int irq);
 #else
-#  define a1x_pio_irqdisable(irq)
+#  define a64_pio_irqdisable(irq)
 #endif
 
 #undef EXTERN

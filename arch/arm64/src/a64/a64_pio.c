@@ -54,14 +54,14 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Name: a1x_pio_pin
+ * Name: a64_pio_pin
  *
  * Description:
  *   Return the port number
  *
  ****************************************************************************/
 
-static inline int a1x_pio_port(pio_pinset_t cfgset)
+static inline int a64_pio_port(pio_pinset_t cfgset)
 {
   //// TODO: Handle PL
   int port = (cfgset & PIO_PORT_MASK) >> PIO_PORT_SHIFT;
@@ -71,14 +71,14 @@ static inline int a1x_pio_port(pio_pinset_t cfgset)
 }
 
 /****************************************************************************
- * Name: a1x_pio_pin
+ * Name: a64_pio_pin
  *
  * Description:
  *   Return the pin number
  *
  ****************************************************************************/
 
-static inline int a1x_pio_pin(pio_pinset_t cfgset)
+static inline int a64_pio_pin(pio_pinset_t cfgset)
 {
   int pin = (cfgset & PIO_PIN_MASK) >> PIO_PIN_SHIFT;
 
@@ -87,7 +87,7 @@ static inline int a1x_pio_pin(pio_pinset_t cfgset)
 }
 
 /****************************************************************************
- * Name: a1x_pio_interrupt
+ * Name: a64_pio_interrupt
  *
  * Description:
  *   Initialize logic to support a second level of interrupt decoding for
@@ -95,9 +95,9 @@ static inline int a1x_pio_pin(pio_pinset_t cfgset)
  *
  ****************************************************************************/
 
-#ifdef CONFIG_A1X_PIO_IRQ
-//// TODO: Handle CONFIG_A1X_PIO_IRQ
-static int a1x_pio_interrupt(int irq, void *context, void *arg)
+#ifdef CONFIG_A64_PIO_IRQ
+//// TODO: Handle CONFIG_A64_PIO_IRQ
+static int a64_pio_interrupt(int irq, void *context, void *arg)
 {
   uint32_t status;
   uint32_t mask;
@@ -105,13 +105,13 @@ static int a1x_pio_interrupt(int irq, void *context, void *arg)
 
   /* Read the set of pending GPIO interrupts */
 
-  status  = getreg32(A1X_PIO_INT_STA);
-  mask    = getreg32(A1X_PIO_INT_CTL);
+  status  = getreg32(A64_PIO_INT_STA);
+  mask    = getreg32(A64_PIO_INT_CTL);
   pending = status & mask;
 
   /* Re-dispatch all pending GPIO interrupts */
 
-  for (irq = A1X_PIO_EINT0; pending != 0 && irq <= A1X_PIO_EINT31; irq++)
+  for (irq = A64_PIO_EINT0; pending != 0 && irq <= A64_PIO_EINT31; irq++)
     {
       /* Check for pending interrupts in any of the lower 16-bits */
 
@@ -170,7 +170,7 @@ static int a1x_pio_interrupt(int irq, void *context, void *arg)
  ****************************************************************************/
 
 /****************************************************************************
- * Name: a1x_pio_irqinitialize
+ * Name: a64_pio_irqinitialize
  *
  * Description:
  *   Initialize logic to support a second level of interrupt decoding for
@@ -178,39 +178,39 @@ static int a1x_pio_interrupt(int irq, void *context, void *arg)
  *
  ****************************************************************************/
 
-#ifdef CONFIG_A1X_PIO_IRQ
-void a1x_pio_irqinitialize(void)
+#ifdef CONFIG_A64_PIO_IRQ
+void a64_pio_irqinitialize(void)
 {
   /* Disable all external PIO interrupts */
 
-  putreg32(0, A1X_PIO_INT_CTL);
+  putreg32(0, A64_PIO_INT_CTL);
 
   /* Attach the PIO interrupt handler */
 
-  if (irq_attach(A1X_IRQ_PIO, a1x_pio_interrupt, NULL) < 0)
+  if (irq_attach(A64_IRQ_PIO, a64_pio_interrupt, NULL) < 0)
     {
       return;
     }
 
   /* And enable the PIO interrupt */
 
-  up_enable_irq(A1X_IRQ_PIO);
+  up_enable_irq(A64_IRQ_PIO);
 }
 #endif
 
 /****************************************************************************
- * Name: a1x_pio_config
+ * Name: a64_pio_config
  *
  * Description:
  *   Configure a PIO pin based on bit-encoded description of the pin.
  *
  ****************************************************************************/
 
-int a1x_pio_config(pio_pinset_t cfgset)
+int a64_pio_config(pio_pinset_t cfgset)
 {
   //// TODO: Handle PL
-  unsigned int port = a1x_pio_port(cfgset);
-  unsigned int pin  = a1x_pio_pin(cfgset);
+  unsigned int port = a64_pio_port(cfgset);
+  unsigned int pin  = a64_pio_pin(cfgset);
   unsigned int shift;
   unsigned int value;
   uintptr_t cfgaddr;
@@ -232,38 +232,38 @@ int a1x_pio_config(pio_pinset_t cfgset)
     {
       case 0: /* PIO 0-7 */
         cfgaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_CFG0 :
-                  A1X_PIO_CFG0(port);
+                  A64_RPIO_CFG0 :
+                  A64_PIO_CFG0(port);
         intaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_INT_CFG0 :
-                  A1X_PIO_INT_CFG0;
+                  A64_RPIO_INT_CFG0 :
+                  A64_PIO_INT_CFG0;
         break;
 
       case 1: /* PIO 8-15 */
         cfgaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_CFG1 :
-                  A1X_PIO_CFG1(port);
+                  A64_RPIO_CFG1 :
+                  A64_PIO_CFG1(port);
         intaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_INT_CFG1 :
-                  A1X_PIO_INT_CFG1;
+                  A64_RPIO_INT_CFG1 :
+                  A64_PIO_INT_CFG1;
         break;
 
       case 2: /* PIO 16-23 */
         cfgaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_CFG2 :
-                  A1X_PIO_CFG2(port);
+                  A64_RPIO_CFG2 :
+                  A64_PIO_CFG2(port);
         intaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_INT_CFG2 :
-                  A1X_PIO_INT_CFG2;
+                  A64_RPIO_INT_CFG2 :
+                  A64_PIO_INT_CFG2;
         break;
 
       case 3: /* PIO 24-31 */
         cfgaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_CFG3 :
-                  A1X_PIO_CFG3(port);
+                  A64_RPIO_CFG3 :
+                  A64_PIO_CFG3(port);
         intaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_INT_CFG3 :
-                  A1X_PIO_INT_CFG3;
+                  A64_RPIO_INT_CFG3 :
+                  A64_PIO_INT_CFG3;
         break;
 
       default:
@@ -301,20 +301,20 @@ int a1x_pio_config(pio_pinset_t cfgset)
     {
       case 0: /* PIO 0-15 */
         puaddr  = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_PUL0 :
-                  A1X_PIO_PUL0(port);
+                  A64_RPIO_PUL0 :
+                  A64_PIO_PUL0(port);
         drvaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_DRV0 :
-                  A1X_PIO_DRV0(port);
+                  A64_RPIO_DRV0 :
+                  A64_PIO_DRV0(port);
         break;
 
       case 1: /* PIO 16-31 */
         puaddr  = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_PUL1 :
-                  A1X_PIO_PUL1(port);
+                  A64_RPIO_PUL1 :
+                  A64_PIO_PUL1(port);
         drvaddr = (port == PIO_REG_PORTL) ?
-                  A1X_RPIO_DRV1 :
-                  A1X_PIO_DRV1(port);
+                  A64_RPIO_DRV1 :
+                  A64_PIO_DRV1(port);
         break;
 
       default:
@@ -341,7 +341,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
 
   /* Set the output value (will have no effect on inputs) */
 
-  dataddr = A1X_PIO_DAT(port);
+  dataddr = A64_PIO_DAT(port);
   regval = getreg32(dataddr);
 
   if ((cfgset & PIO_OUTPUT_SET) != 0)
@@ -361,18 +361,18 @@ int a1x_pio_config(pio_pinset_t cfgset)
 }
 
 /****************************************************************************
- * Name: a1x_piowrite
+ * Name: a64_piowrite
  *
  * Description:
  *   Write one or zero to the selected PIO pin
  *
  ****************************************************************************/
 
-void a1x_pio_write(pio_pinset_t pinset, bool value)
+void a64_pio_write(pio_pinset_t pinset, bool value)
 {
   //// TODO: Handle PL
-  unsigned int port = a1x_pio_port(pinset);
-  unsigned int pin  = a1x_pio_pin(pinset);
+  unsigned int port = a64_pio_port(pinset);
+  unsigned int pin  = a64_pio_pin(pinset);
   irqstate_t flags;
   uintptr_t regaddr;
   uint32_t regval;
@@ -385,8 +385,8 @@ void a1x_pio_write(pio_pinset_t pinset, bool value)
   /* Set the output value (will have no effect on inputs */
 
   regaddr = (port == PIO_REG_PORTL) ?
-            A1X_RPIO_DAT :
-            A1X_PIO_DAT(port);
+            A64_RPIO_DAT :
+            A64_PIO_DAT(port);
   regval  = getreg32(regaddr);
 
   if (value)
@@ -404,57 +404,57 @@ void a1x_pio_write(pio_pinset_t pinset, bool value)
 }
 
 /****************************************************************************
- * Name: a1x_pio_read
+ * Name: a64_pio_read
  *
  * Description:
  *   Read one or zero from the selected PIO pin
  *
  ****************************************************************************/
 
-bool a1x_pio_read(pio_pinset_t pinset)
+bool a64_pio_read(pio_pinset_t pinset)
 {
   //// TODO: Handle PL
-  unsigned int port = a1x_pio_port(pinset);
-  unsigned int pin  = a1x_pio_pin(pinset);
+  unsigned int port = a64_pio_port(pinset);
+  unsigned int pin  = a64_pio_pin(pinset);
   uintptr_t regaddr;
   uint32_t regval;
 
   /* Get the input value */
 
   regaddr = (port == PIO_REG_PORTL) ?
-            A1X_RPIO_DAT :
-            A1X_PIO_DAT(port);
+            A64_RPIO_DAT :
+            A64_PIO_DAT(port);
   regval  = getreg32(regaddr);
   return ((regval & PIO_DAT(pin)) != 0);
 }
 
 /****************************************************************************
- * Name: a1x_pio_irqenable
+ * Name: a64_pio_irqenable
  *
  * Description:
  *   Enable the interrupt for specified PIO IRQ
  *
  ****************************************************************************/
 
-#ifdef CONFIG_A1X_PIO_IRQ
-void a1x_pio_irqenable(int irq)
+#ifdef CONFIG_A64_PIO_IRQ
+void a64_pio_irqenable(int irq)
 {
   irqstate_t flags;
   uint32_t regval;
   int pin;
 
-  if (irq >= A1X_PIO_EINT0 && irq <= A1X_PIO_EINT31)
+  if (irq >= A64_PIO_EINT0 && irq <= A64_PIO_EINT31)
     {
       /* Convert the IRQ number to a bit position */
 
-      pin = irq - A1X_PIO_EINT0;
+      pin = irq - A64_PIO_EINT0;
 
       /* Un-mask the interrupt be setting the corresponding bit in the
        * PIO INT CTL register.
        */
 
       flags   = enter_critical_section();
-      regval  = getreg32(A1X_PIO_INT_CTL);
+      regval  = getreg32(A64_PIO_INT_CTL);
       regval |= PIO_INT_CTL(pin);
       leave_critical_section(flags);
     }
@@ -462,32 +462,32 @@ void a1x_pio_irqenable(int irq)
 #endif
 
 /****************************************************************************
- * Name: a1x_pio_irqdisable
+ * Name: a64_pio_irqdisable
  *
  * Description:
  *   Disable the interrupt for specified PIO IRQ
  *
  ****************************************************************************/
-#ifdef CONFIG_A1X_PIO_IRQ
+#ifdef CONFIG_A64_PIO_IRQ
 
-void a1x_pio_irqdisable(int irq)
+void a64_pio_irqdisable(int irq)
 {
   irqstate_t flags;
   uint32_t regval;
   int pin;
 
-  if (irq >= A1X_PIO_EINT0 && irq <= A1X_PIO_EINT31)
+  if (irq >= A64_PIO_EINT0 && irq <= A64_PIO_EINT31)
     {
       /* Convert the IRQ number to a bit position */
 
-      pin = irq - A1X_PIO_EINT0;
+      pin = irq - A64_PIO_EINT0;
 
       /* Mask the interrupt be clearning the corresponding bit in the
        * PIO INT CTL register.
        */
 
       flags   = enter_critical_section();
-      regval  = getreg32(A1X_PIO_INT_CTL);
+      regval  = getreg32(A64_PIO_INT_CTL);
       regval &= ~PIO_INT_CTL(pin);
       leave_critical_section(flags);
     }

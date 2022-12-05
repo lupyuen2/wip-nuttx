@@ -91,20 +91,20 @@ uint32_t board_userled_initialize(void)
               PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
               PIO_OUTPUT_SET | PIO_PORT_PIOL | PIO_PIN10)
   _info("*** PH10 Config\n");
-  a1x_pio_config(PH10);
+  a64_pio_config(PH10);
   _info("*** PH10 Set\n");
-  a1x_pio_write(PH10, true);
+  a64_pio_write(PH10, true);
   _info("*** PL10 Config\n");
-  a1x_pio_config(PL10);
+  a64_pio_config(PL10);
   _info("*** PL10 Set\n");
-  a1x_pio_write(PL10, true);
+  a64_pio_write(PL10, true);
   ////
 
   /* Configure the LED GPIO for output. */
 
   for (i = 0; i < ARRAYSIZE(g_led_map); i++)
     {
-      ret = a1x_pio_config(g_led_map[i]);
+      ret = a64_pio_config(g_led_map[i]);
       DEBUGASSERT(ret == OK);
     }
 
@@ -125,7 +125,7 @@ void board_userled(int led, bool ledon)
 {
   if ((unsigned)led < ARRAYSIZE(g_led_map))
     {
-      a1x_pio_write(g_led_map[led], ledon);
+      a64_pio_write(g_led_map[led], ledon);
     }
 }
 
@@ -150,7 +150,7 @@ void board_userled_all(uint32_t ledset)
   for (i = 0; i < ARRAYSIZE(g_led_map); i++)
     {
       _info("led=0x%x, ledon=0x%x\n", i, (ledset & g_led_setmap[i]) != 0);////
-      a1x_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
+      a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
     }
 }
 

@@ -67,7 +67,7 @@ static bool g_initialized;
 static void pinephone_led_on(led_typedef_enum led_num)
 {
   _info("autoled=0x%x\n", led_num);////
-  a1x_pio_write(g_led_map[led_num], true);
+  a64_pio_write(g_led_map[led_num], true);
 }
 
 /* Turn off selected led */
@@ -75,7 +75,7 @@ static void pinephone_led_on(led_typedef_enum led_num)
 static void pinephone_led_off(led_typedef_enum led_num)
 {
   _info("autoled=0x%x\n", led_num);////
-  a1x_pio_write(g_led_map[led_num], false);
+  a64_pio_write(g_led_map[led_num], false);
 }
 
 /****************************************************************************
@@ -95,7 +95,7 @@ void board_autoled_initialize(void)
 
   for (i = 0; i < ARRAYSIZE(g_led_map); i++)
     {
-      ret = a1x_pio_config(g_led_map[i]);
+      ret = a64_pio_config(g_led_map[i]);
       DEBUGASSERT(ret == OK);
     }
 }
