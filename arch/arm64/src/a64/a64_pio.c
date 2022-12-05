@@ -256,13 +256,13 @@ int a1x_pio_config(pio_pinset_t cfgset)
     }
 
   value = (cfgset & PIO_MODE_MASK) >> PIO_MODE_SHIFT;
-  shift = (port & 7) << 4;
+  shift = (pin & 7) << 2;
 
   regval = getreg32(cfgaddr);
   regval &= ~(7 << shift);
   regval |= (value << shift);
   putreg32(regval, cfgaddr);
-  _info("val=0x%x, cfgaddr=0x%x\n", regval, cfgaddr);////
+  _info("val=0x%x, cfgaddr=0x%x, value=0x%x, shift=0x%x\n", regval, cfgaddr, value, shift);////
 
   /* Do not modify the INT MASK unless this pin is configured
    * as an external PIO interrupt.
@@ -299,7 +299,7 @@ int a1x_pio_config(pio_pinset_t cfgset)
     }
 
   value = (cfgset & PIO_PULL_MASK) >> PIO_PULL_SHIFT;
-  shift = (port & 15) << 2;
+  shift = (pin & 15) << 1;
 
   regval = getreg32(puaddr);
   regval &= ~(3 << shift);
@@ -352,7 +352,7 @@ void a1x_pio_write(pio_pinset_t pinset, bool value)
   irqstate_t flags;
   uintptr_t regaddr;
   uint32_t regval;
-  _info("port=0x%x, pin=0x%x\n", port, pin);////
+  _info("port=0x%x, pin=0x%x, val=0x%x\n", port, pin, value);////
 
   /* Disable interrupts to prohibit re-entrance. */
 
@@ -374,7 +374,7 @@ void a1x_pio_write(pio_pinset_t pinset, bool value)
 
   putreg32(regval, regaddr);
   leave_critical_section(flags);
-  _info("val=0x%x, addr=0x%x\n", regval, regaddr);////
+  _info("val=0x%x, addr=0x%x, dat=0x%x\n", regval, regaddr, PIO_DAT(pin));////
 }
 
 /****************************************************************************

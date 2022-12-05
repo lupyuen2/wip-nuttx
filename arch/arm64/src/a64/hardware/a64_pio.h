@@ -127,7 +127,7 @@
 #define PIO_CFG3_MASK(n))         (7 << PIO_CFG3_SHIFT(n))
 #  define PIO_CFG3(m,v)           ((uint32_t)(v) << PIO_CFG3_SHIFT(n))
 
-/* Port n Data Register, n=1-7 */
+/* Port n Data Register, n=0-31 */
 
 #define PIO_DAT(n)                 (1 << (n)) /* PA data, n=0-31 */
 
