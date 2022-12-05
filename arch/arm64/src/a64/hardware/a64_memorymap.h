@@ -31,17 +31,10 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* A1X offsets from the peripheral section base address */
+/* Peripheral Base Addresses */
 
-#define A1X_PIO_OFFSET       0x00020800 /* PIO             0x01c2:0800-0x01c2:0bff 1K */
-
-/* A64 Memory Map */
-
-#define A1X_PERIPH_VSECTION  0x01c00000 /* Peripherals     0x01c0:0000-0x01c4:ffff */
-
-/* Peripheral virtual base addresses */
-
-#define A1X_PIO_VADDR        (A1X_PERIPH_VSECTION+A1X_PIO_OFFSET)
+#define A1X_PIO_ADDR        0x01c20800 /* PIO             0x01c2:0800-0x01c2:0bff 1K */
+#define A1X_RPIO_ADDR       0x01f02c00 /* R_PIO           0x01f0:2c00-0x01f0:2fff 1K */
 
 /****************************************************************************
  * Public Types
