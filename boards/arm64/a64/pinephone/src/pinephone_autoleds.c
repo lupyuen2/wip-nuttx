@@ -106,6 +106,7 @@ void board_autoled_initialize(void)
 
 void board_autoled_on(int led)
 {
+  _info("led=0x%x\n", led);////
   switch (led)
     {
     default:
@@ -155,6 +156,7 @@ void board_autoled_on(int led)
 
 void board_autoled_off(int led)
 {
+  _info("led=0x%x\n", led);////
   switch (led)
     {
     default:
