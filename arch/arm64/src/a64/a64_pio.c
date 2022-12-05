@@ -31,7 +31,6 @@
 
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
-////#include <arch/board/board.h>
 
 #include "arm64_internal.h"
 #include "chip.h"
