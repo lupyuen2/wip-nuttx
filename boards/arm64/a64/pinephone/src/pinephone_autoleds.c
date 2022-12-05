@@ -109,44 +109,44 @@ void board_autoled_on(int led)
   _info("led=0x%x\n", led);////
   switch (led)
     {
-    default:
-      break;
+      case LED_HEAPALLOCATE:
+        pinephone_led_on(BOARD_LED1);
+        break;
 
-    case LED_HEAPALLOCATE:
-      pinephone_led_on(BOARD_LED1);
-      break;
+      case LED_IRQSENABLED:
+        pinephone_led_on(BOARD_LED2);
+        break;
 
-    case LED_IRQSENABLED:
-      pinephone_led_on(BOARD_LED2);
-      break;
+      case LED_STACKCREATED:
+        pinephone_led_on(BOARD_LED3);
+        g_initialized = true;
+        break;
 
-    case LED_STACKCREATED:
-      pinephone_led_on(BOARD_LED3);
-      g_initialized = true;
-      break;
+      case LED_INIRQ:
+        pinephone_led_on(BOARD_LED1);
+        pinephone_led_on(BOARD_LED2);
+        break;
 
-    case LED_INIRQ:
-      pinephone_led_on(BOARD_LED1);
-      pinephone_led_on(BOARD_LED2);
-      break;
+      case LED_SIGNAL:
+        pinephone_led_on(BOARD_LED1);
+        pinephone_led_on(BOARD_LED3);
+        break;
 
-    case LED_SIGNAL:
-      pinephone_led_on(BOARD_LED1);
-      pinephone_led_on(BOARD_LED3);
-      break;
+      case LED_ASSERTION:
+        pinephone_led_on(BOARD_LED2);
+        pinephone_led_on(BOARD_LED3);
+        break;
 
-    case LED_ASSERTION:
-      pinephone_led_on(BOARD_LED2);
-      pinephone_led_on(BOARD_LED3);
-      break;
+      case LED_PANIC:
+        pinephone_led_on(BOARD_LED1);
+        break;
 
-    case LED_PANIC:
-      pinephone_led_on(BOARD_LED1);
-      break;
+      case LED_IDLE:
+        pinephone_led_on(BOARD_LED2);
+        break;
 
-    case LED_IDLE : /* IDLE */
-      pinephone_led_on(BOARD_LED2);
-    break;
+      default:
+        break;
     }
 }
 
@@ -159,31 +159,31 @@ void board_autoled_off(int led)
   _info("led=0x%x\n", led);////
   switch (led)
     {
-    default:
-      break;
+      case LED_SIGNAL:
+        pinephone_led_off(BOARD_LED1);
+        pinephone_led_off(BOARD_LED3);
+        break;
 
-    case LED_SIGNAL:
-      pinephone_led_off(BOARD_LED1);
-      pinephone_led_off(BOARD_LED3);
-      break;
+      case LED_INIRQ:
+        pinephone_led_off(BOARD_LED1);
+        pinephone_led_off(BOARD_LED2);
+        break;
 
-    case LED_INIRQ:
-      pinephone_led_off(BOARD_LED1);
-      pinephone_led_off(BOARD_LED2);
-      break;
+      case LED_ASSERTION:
+        pinephone_led_off(BOARD_LED2);
+        pinephone_led_off(BOARD_LED3);
+        break;
 
-    case LED_ASSERTION:
-      pinephone_led_off(BOARD_LED2);
-      pinephone_led_off(BOARD_LED3);
-      break;
+      case LED_PANIC:
+        pinephone_led_off(BOARD_LED1);
+        break;
 
-    case LED_PANIC:
-      pinephone_led_off(BOARD_LED1);
-      break;
+      case LED_IDLE:
+        pinephone_led_off(BOARD_LED2);
+        break;
 
-    case LED_IDLE : /* IDLE */
-      pinephone_led_off(BOARD_LED2);
-    break;
+      default:
+        break;
     }
 }
 
