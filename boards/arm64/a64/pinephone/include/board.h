@@ -53,7 +53,6 @@ typedef enum
  * include/board.h and src/pinephone_autoleds.c. The LEDs are used to encode
  * OS-related events as follows:
  *
- *
  *   SYMBOL                     Meaning                      LED state
  *                                                        LED1  LED2  LED3
  *   ----------------------  --------------------------  ------ ------ ---
