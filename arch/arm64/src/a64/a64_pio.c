@@ -63,7 +63,6 @@
 
 static inline int a64_pio_port(pio_pinset_t cfgset)
 {
-  //// TODO: Handle PL
   int port = (cfgset & PIO_PORT_MASK) >> PIO_PORT_SHIFT;
 
   DEBUGASSERT(port >= PIO_REG_PORTB && port <= PIO_REG_PORTL);
@@ -208,7 +207,6 @@ void a64_pio_irqinitialize(void)
 
 int a64_pio_config(pio_pinset_t cfgset)
 {
-  //// TODO: Handle PL
   unsigned int port = a64_pio_port(cfgset);
   unsigned int pin  = a64_pio_pin(cfgset);
   unsigned int shift;
@@ -370,7 +368,6 @@ int a64_pio_config(pio_pinset_t cfgset)
 
 void a64_pio_write(pio_pinset_t pinset, bool value)
 {
-  //// TODO: Handle PL
   unsigned int port = a64_pio_port(pinset);
   unsigned int pin  = a64_pio_pin(pinset);
   irqstate_t flags;
@@ -413,7 +410,6 @@ void a64_pio_write(pio_pinset_t pinset, bool value)
 
 bool a64_pio_read(pio_pinset_t pinset)
 {
-  //// TODO: Handle PL
   unsigned int port = a64_pio_port(pinset);
   unsigned int pin  = a64_pio_pin(pinset);
   uintptr_t regaddr;
