@@ -97,6 +97,7 @@ static inline int a1x_pio_pin(pio_pinset_t cfgset)
  ****************************************************************************/
 
 #ifdef CONFIG_A1X_PIO_IRQ
+//// TODO: Handle CONFIG_A1X_PIO_IRQ
 static int a1x_pio_interrupt(int irq, void *context, void *arg)
 {
   uint32_t status;
@@ -231,23 +232,39 @@ int a1x_pio_config(pio_pinset_t cfgset)
   switch (pin >> 3)
     {
       case 0: /* PIO 0-7 */
-        cfgaddr = A1X_PIO_CFG0(port);
-        intaddr = A1X_PIO_INT_CFG0;
+        cfgaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_CFG0 :
+                  A1X_PIO_CFG0(port);
+        intaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_INT_CFG0 :
+                  A1X_PIO_INT_CFG0;
         break;
 
       case 1: /* PIO 8-15 */
-        cfgaddr = A1X_PIO_CFG1(port);
-        intaddr = A1X_PIO_INT_CFG1;
+        cfgaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_CFG1 :
+                  A1X_PIO_CFG1(port);
+        intaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_INT_CFG1 :
+                  A1X_PIO_INT_CFG1;
         break;
 
       case 2: /* PIO 16-23 */
-        cfgaddr = A1X_PIO_CFG2(port);
-        intaddr = A1X_PIO_INT_CFG2;
+        cfgaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_CFG2 :
+                  A1X_PIO_CFG2(port);
+        intaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_INT_CFG2 :
+                  A1X_PIO_INT_CFG2;
         break;
 
       case 3: /* PIO 24-31 */
-        cfgaddr = A1X_PIO_CFG3(port);
-        intaddr = A1X_PIO_INT_CFG3;
+        cfgaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_CFG3 :
+                  A1X_PIO_CFG3(port);
+        intaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_INT_CFG3 :
+                  A1X_PIO_INT_CFG3;
         break;
 
       default:
@@ -284,13 +301,21 @@ int a1x_pio_config(pio_pinset_t cfgset)
   switch (pin >> 4)
     {
       case 0: /* PIO 0-15 */
-        puaddr  = A1X_PIO_PUL0(port);
-        drvaddr = A1X_PIO_DRV0(port);
+        puaddr  = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_PUL0 :
+                  A1X_PIO_PUL0(port);
+        drvaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_DRV0 :
+                  A1X_PIO_DRV0(port);
         break;
 
       case 1: /* PIO 16-31 */
-        puaddr  = A1X_PIO_PUL1(port);
-        drvaddr = A1X_PIO_DRV1(port);
+        puaddr  = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_PUL1 :
+                  A1X_PIO_PUL1(port);
+        drvaddr = (port == PIO_REG_PORTL) ?
+                  A1X_RPIO_DRV1 :
+                  A1X_PIO_DRV1(port);
         break;
 
       default:
@@ -360,7 +385,9 @@ void a1x_pio_write(pio_pinset_t pinset, bool value)
 
   /* Set the output value (will have no effect on inputs */
 
-  regaddr = A1X_PIO_DAT(port);
+  regaddr = (port == PIO_REG_PORTL) ?
+            A1X_RPIO_DAT :
+            A1X_PIO_DAT(port);
   regval  = getreg32(regaddr);
 
   if (value)
@@ -395,7 +422,9 @@ bool a1x_pio_read(pio_pinset_t pinset)
 
   /* Get the input value */
 
-  regaddr = A1X_PIO_DAT(port);
+  regaddr = (port == PIO_REG_PORTL) ?
+            A1X_RPIO_DAT :
+            A1X_PIO_DAT(port);
   regval  = getreg32(regaddr);
   return ((regval & PIO_DAT(pin)) != 0);
 }
