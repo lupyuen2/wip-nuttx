@@ -37,13 +37,13 @@
 
 /* LEDs *********************************************************************/
 
-/* Red LED on PD18 */
+/* Green LED on PD18 */
 
 #define LED1 (PIO_OUTPUT | PIO_PULL_NONE | \
               PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
               PIO_OUTPUT_SET | PIO_PORT_PIOD | PIO_PIN18)
 
-/* Green LED on PD19 */
+/* Red LED on PD19 */
 
 #define LED2 (PIO_OUTPUT | PIO_PULL_NONE | \
               PIO_DRIVE_MEDLOW | PIO_INT_NONE | \

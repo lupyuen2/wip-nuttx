@@ -27,8 +27,6 @@
 
 #include <nuttx/config.h>
 
-////#include "hardware/a64_piocfg.h"
-
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -39,8 +37,8 @@
 
 typedef enum
 {
-    BOARD_LED1 = 0,  /* Red LED */
-    BOARD_LED2 = 1,  /* Green LED */
+    BOARD_LED1 = 0,  /* Green LED */
+    BOARD_LED2 = 1,  /* Red LED */
     BOARD_LED3 = 2,  /* Blue LED */
     BOARD_LEDS       /* Number of LEDs */
 } led_typedef_enum;
