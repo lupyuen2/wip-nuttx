@@ -236,15 +236,27 @@ extern "C"
  * Description:
  *   Configure a PIO pin based on bit-encoded description of the pin.
  *
+ * Input Parameters:
+ *   cfgset - Bit-encoded description of a pin
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 int a64_pio_config(pio_pinset_t cfgset);
 
 /****************************************************************************
- * Name: a64_pio_write
+ * Name: a64_piowrite
  *
  * Description:
- *   Write one or zero to the selected PIO pin
+ *   Write one or zero to the selected PIO pin.
+ *
+ * Input Parameters:
+ *   pinset - PIO pin
+ *
+ * Returned Value:
+ *   None
  *
  ****************************************************************************/
 
@@ -255,6 +267,12 @@ void a64_pio_write(pio_pinset_t pinset, bool value);
  *
  * Description:
  *   Read one or zero from the selected PIO pin
+ *
+ * Input Parameters:
+ *   pinset - PIO pin
+ *
+ * Returned Value:
+ *   Input value of PIO pin
  *
  ****************************************************************************/
 

@@ -45,7 +45,13 @@
  * Name: a64_pio_pin
  *
  * Description:
- *   Return the port number
+ *   Return the Port Number for the bit-encoded description of the pin.
+ *
+ * Input Parameters:
+ *   cfgset - Bit-encoded description of a pin
+ *
+ * Returned Value:
+ *   Port Number (PIO_REG_PORTB to PIO_REG_PORTL)
  *
  ****************************************************************************/
 
@@ -61,7 +67,13 @@ static inline int a64_pio_port(pio_pinset_t cfgset)
  * Name: a64_pio_pin
  *
  * Description:
- *   Return the pin number
+ *   Return the Pin Number for the bit-encoded description of the pin.
+ *
+ * Input Parameters:
+ *   cfgset - Bit-encoded description of a pin
+ *
+ * Returned Value:
+ *   Pin Number (0 to 24)
  *
  ****************************************************************************/
 
@@ -83,6 +95,12 @@ static inline int a64_pio_pin(pio_pinset_t cfgset)
  * Description:
  *   Configure a PIO pin based on bit-encoded description of the pin.
  *
+ * Input Parameters:
+ *   cfgset - Bit-encoded description of a pin
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 int a64_pio_config(pio_pinset_t cfgset)
@@ -98,7 +116,6 @@ int a64_pio_config(pio_pinset_t cfgset)
   uintptr_t dataddr;
   uint32_t regval;
   irqstate_t flags;
-  _info("port=0x%x, pin=0x%x\n", port, pin);////
 
   /* Disable interrupts to prohibit re-entrance. */
 
@@ -156,7 +173,6 @@ int a64_pio_config(pio_pinset_t cfgset)
   regval &= ~(7 << shift);
   regval |= (value << shift);
   putreg32(regval, cfgaddr);
-  _info("val=0x%x, cfgaddr=0x%x, value=0x%x, shift=0x%x\n", regval, cfgaddr, value, shift);////
 
   /* Do not modify the INT MASK unless this pin is configured
    * as an external PIO interrupt.
@@ -170,7 +186,6 @@ int a64_pio_config(pio_pinset_t cfgset)
       regval &= ~(7 << shift);
       regval |= (value << shift);
       putreg32(regval, intaddr);
-      _info("val=0x%x, intaddr=0x%x\n", regval, intaddr);////
     }
 
   /* Set the pull-up/down and drive strength */
@@ -207,7 +222,6 @@ int a64_pio_config(pio_pinset_t cfgset)
   regval &= ~(3 << shift);
   regval |= (value << shift);
   putreg32(regval, puaddr);
-  _info("val=0x%x, puaddr=0x%x\n", regval, puaddr);////
 
   value = (cfgset & PIO_DRIVE_MASK) >> PIO_DRIVE_SHIFT;
 
@@ -215,7 +229,6 @@ int a64_pio_config(pio_pinset_t cfgset)
   regval &= ~(3 << shift);
   regval |= (value << shift);
   putreg32(regval, drvaddr);
-  _info("val=0x%x, drvaddr=0x%x\n", regval, drvaddr);////
 
   /* Set the output value (will have no effect on inputs) */
 
@@ -234,7 +247,6 @@ int a64_pio_config(pio_pinset_t cfgset)
     }
 
   putreg32(regval, dataddr);
-  _info("val=0x%x, dataddr=0x%x\n", regval, dataddr);////
 
   leave_critical_section(flags);
   return OK;
@@ -244,7 +256,13 @@ int a64_pio_config(pio_pinset_t cfgset)
  * Name: a64_piowrite
  *
  * Description:
- *   Write one or zero to the selected PIO pin
+ *   Write one or zero to the selected PIO pin.
+ *
+ * Input Parameters:
+ *   pinset - PIO pin
+ *
+ * Returned Value:
+ *   None
  *
  ****************************************************************************/
 
@@ -255,7 +273,6 @@ void a64_pio_write(pio_pinset_t pinset, bool value)
   irqstate_t flags;
   uintptr_t regaddr;
   uint32_t regval;
-  _info("port=0x%x, pin=0x%x, val=0x%x\n", port, pin, value);////
 
   /* Disable interrupts to prohibit re-entrance. */
 
@@ -279,7 +296,6 @@ void a64_pio_write(pio_pinset_t pinset, bool value)
 
   putreg32(regval, regaddr);
   leave_critical_section(flags);
-  _info("val=0x%x, addr=0x%x, dat=0x%x\n", regval, regaddr, PIO_DAT(pin));////
 }
 
 /****************************************************************************
@@ -287,6 +303,12 @@ void a64_pio_write(pio_pinset_t pinset, bool value)
  *
  * Description:
  *   Read one or zero from the selected PIO pin
+ *
+ * Input Parameters:
+ *   pinset - PIO pin
+ *
+ * Returned Value:
+ *   Input value of PIO pin
  *
  ****************************************************************************/
 
