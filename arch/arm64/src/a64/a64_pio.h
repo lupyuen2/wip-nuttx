@@ -56,24 +56,25 @@
 
 #define PIO_MODE_SHIFT            (21)        /* Bits 21-23: PIO mode */
 #define PIO_MODE_MASK             (7 << PIO_MODE_SHIFT)
-#  define PIO_PERIPH0             (PIO_REG_CFG_INPUT << PIO_MODE_SHIFT)
-#  define PIO_PERIPH1             (PIO_REG_CFG_OUTPUT << PIO_MODE_SHIFT)
-#  define PIO_PERIPH2             (2 << PIO_MODE_SHIFT)
-#  define PIO_PERIPH3             (3 << PIO_MODE_SHIFT)
-#  define PIO_PERIPH4             (4 << PIO_MODE_SHIFT)
-#  define PIO_PERIPH5             (5 << PIO_MODE_SHIFT)
-#  define PIO_PERIPH6             (6 << PIO_MODE_SHIFT)
-#  define PIO_PERIPH7             (7 << PIO_MODE_SHIFT)
+#define PIO_PERIPH0               (PIO_REG_CFG_INPUT << PIO_MODE_SHIFT)
+#define PIO_PERIPH1               (PIO_REG_CFG_OUTPUT << PIO_MODE_SHIFT)
+#define PIO_PERIPH2               (2 << PIO_MODE_SHIFT)
+#define PIO_PERIPH3               (3 << PIO_MODE_SHIFT)
+#define PIO_PERIPH4               (4 << PIO_MODE_SHIFT)
+#define PIO_PERIPH5               (5 << PIO_MODE_SHIFT)
+#define PIO_PERIPH6               (6 << PIO_MODE_SHIFT)
+#define PIO_PERIPH7               (7 << PIO_MODE_SHIFT)
 
-#  define PIO_INPUT               PIO_PERIPH0 /* Input */
-#  define PIO_OUTPUT              PIO_PERIPH1 /* Output */
+#define PIO_INPUT                 PIO_PERIPH0 /* Input */
+#define PIO_OUTPUT                PIO_PERIPH1 /* Output */
+#define PIO_PWM                   PIO_PERIPH2 /* PWM for PL10 */
 
 /* Bit 20 also specifies an external interrupt which must go with ID=6 */
 
 #define PIO_EINT_BIT              (1 << 20)   /* Bit 20: External PIO interrupt */
 #define PIO_EINT_SHIFT            (20)        /* Bits 20-23: Extended PIO mode */
 #define PIO_EINT_MASK             (15 << PIO_EINT_SHIFT)
-#  define PIO_EINT                (PIO_EINT_BIT | PIO_PERIPH6)
+#define PIO_EINT                  (PIO_EINT_BIT | PIO_PERIPH6)
 
 /* These bits set the pull-up/down configuration of the pin:
  *
@@ -85,9 +86,9 @@
 
 #define PIO_PULL_SHIFT            (18)        /* Bits 18-19: PIO configuration bits */
 #define PIO_PULL_MASK             (3 << PIO_PULL_SHIFT)
-#  define PIO_PULL_NONE           (PIO_REG_PULL_NONE  << PIO_PULL_SHIFT)
-#  define PIO_PULL_PULLUP         (PIO_REG_PULL_UP  << PIO_PULL_SHIFT)
-#  define PIO_PULL_PULLDOWN       (PIO_REG_PULL_DOWN  << PIO_PULL_SHIFT)
+#define PIO_PULL_NONE             (PIO_REG_PULL_NONE  << PIO_PULL_SHIFT)
+#define PIO_PULL_PULLUP           (PIO_REG_PULL_UP  << PIO_PULL_SHIFT)
+#define PIO_PULL_PULLDOWN         (PIO_REG_PULL_DOWN  << PIO_PULL_SHIFT)
 
 /* Drive (outputs only):
  *
@@ -99,11 +100,11 @@
 
 #define PIO_DRIVE_SHIFT           (16)        /* Bits 16-17: Drive strength */
 #define PIO_DRIVE_MASK            (3 << PIO_DRIVE_SHIFT)
-#  define PIO_DRIVE_NONE          (0 << PIO_DRIVE_SHIFT)
-#  define PIO_DRIVE_LOW           (PIO_REG_DRV_LEVEL0 << PIO_DRIVE_SHIFT)
-#  define PIO_DRIVE_MEDLOW        (PIO_REG_DRV_LEVEL1 << PIO_DRIVE_SHIFT)
-#  define PIO_DRIVE_MEDHIGH       (PIO_REG_DRV_LEVEL2 << PIO_DRIVE_SHIFT)
-#  define PIO_DRIVE_HIGH          (PIO_REG_DRV_LEVEL3 << PIO_DRIVE_SHIFT)
+#define PIO_DRIVE_NONE            (0 << PIO_DRIVE_SHIFT)
+#define PIO_DRIVE_LOW             (PIO_REG_DRV_LEVEL0 << PIO_DRIVE_SHIFT)
+#define PIO_DRIVE_MEDLOW          (PIO_REG_DRV_LEVEL1 << PIO_DRIVE_SHIFT)
+#define PIO_DRIVE_MEDHIGH         (PIO_REG_DRV_LEVEL2 << PIO_DRIVE_SHIFT)
+#define PIO_DRIVE_HIGH            (PIO_REG_DRV_LEVEL3 << PIO_DRIVE_SHIFT)
 
 /* Interrupt modes (inputs only):
  *
@@ -115,12 +116,12 @@
 
 #define PIO_INT_SHIFT             (13)        /* Bits 13-15: PIO interrupt bits */
 #define PIO_INT_MASK              (7 << PIO_INT_SHIFT)
-#  define PIO_INT_NONE            (0 << PIO_INT_SHIFT)
-#  define PIO_INT_RISING          (PIO_REG_INT_POSEDGE << PIO_INT_SHIFT)
-#  define PIO_INT_FALLING         (PIO_REG_INT_NEGEDGE << PIO_INT_SHIFT)
-#  define PIO_INT_HIGHLEVEL       (PIO_REG_INT_HILEVEL << PIO_INT_SHIFT)
-#  define PIO_INT_LOWLEVEL        (PIO_REG_INT_LOWLEVEL << PIO_INT_SHIFT)
-#  define PIO_INT_BOTHEDGES       (PIO_REG_INT_BOTHEDGES << PIO_INT_SHIFT)
+#define PIO_INT_NONE              (0 << PIO_INT_SHIFT)
+#define PIO_INT_RISING            (PIO_REG_INT_POSEDGE << PIO_INT_SHIFT)
+#define PIO_INT_FALLING           (PIO_REG_INT_NEGEDGE << PIO_INT_SHIFT)
+#define PIO_INT_HIGHLEVEL         (PIO_REG_INT_HILEVEL << PIO_INT_SHIFT)
+#define PIO_INT_LOWLEVEL          (PIO_REG_INT_LOWLEVEL << PIO_INT_SHIFT)
+#define PIO_INT_BOTHEDGES         (PIO_REG_INT_BOTHEDGES << PIO_INT_SHIFT)
 
 /* If the pin is an PIO output, then this identifies the initial
  * output value:
@@ -146,14 +147,14 @@
 
 #define PIO_PORT_SHIFT            (5)         /* Bit 5-8:  Port number */
 #define PIO_PORT_MASK             (15 << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOB           (PIO_REG_PORTB << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOC           (PIO_REG_PORTC << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOD           (PIO_REG_PORTD << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOE           (PIO_REG_PORTE << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOF           (PIO_REG_PORTF << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOG           (PIO_REG_PORTG << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOH           (PIO_REG_PORTH << PIO_PORT_SHIFT)
-#  define PIO_PORT_PIOL           (PIO_REG_PORTL << PIO_PORT_SHIFT)
+#define PIO_PORT_PIOB             (PIO_REG_PORTB << PIO_PORT_SHIFT)
+#define PIO_PORT_PIOC             (PIO_REG_PORTC << PIO_PORT_SHIFT)
+#define PIO_PORT_PIOD             (PIO_REG_PORTD << PIO_PORT_SHIFT)
+#define PIO_PORT_PIOE             (PIO_REG_PORTE << PIO_PORT_SHIFT)
+#define PIO_PORT_PIOF             (PIO_REG_PORTF << PIO_PORT_SHIFT)
+#define PIO_PORT_PIOG             (PIO_REG_PORTG << PIO_PORT_SHIFT)
+#define PIO_PORT_PIOH             (PIO_REG_PORTH << PIO_PORT_SHIFT)
+#define PIO_PORT_PIOL             (PIO_REG_PORTL << PIO_PORT_SHIFT)
 
 /* This identifies the bit in the port:
  *
@@ -230,21 +231,6 @@ extern "C"
  ****************************************************************************/
 
 /****************************************************************************
- * Name: a64_pio_irqinitialize
- *
- * Description:
- *   Initialize logic to support a second level of interrupt decoding for
- *   PIO pins.
- *
- ****************************************************************************/
-
-#ifdef CONFIG_A64_PIO_IRQ
-void a64_pio_irqinitialize(void);
-#else
-#  define a64_pio_irqinitialize()
-#endif
-
-/****************************************************************************
  * Name: a64_pio_config
  *
  * Description:
@@ -273,34 +259,6 @@ void a64_pio_write(pio_pinset_t pinset, bool value);
  ****************************************************************************/
 
 bool a64_pio_read(pio_pinset_t pinset);
-
-/****************************************************************************
- * Name: a64_pio_irqenable
- *
- * Description:
- *   Enable the interrupt for specified PIO IRQ
- *
- ****************************************************************************/
-
-#ifdef CONFIG_A64_PIO_IRQ
-void a64_pio_irqenable(int irq);
-#else
-#  define a64_pio_irqenable(irq)
-#endif
-
-/****************************************************************************
- * Name: a64_pio_irqdisable
- *
- * Description:
- *   Disable the interrupt for specified PIO IRQ
- *
- ****************************************************************************/
-
-#ifdef CONFIG_A64_PIO_IRQ
-void a64_pio_irqdisable(int irq);
-#else
-#  define a64_pio_irqdisable(irq)
-#endif
 
 #undef EXTERN
 #if defined(__cplusplus)

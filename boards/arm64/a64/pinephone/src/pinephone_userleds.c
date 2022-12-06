@@ -87,7 +87,7 @@ uint32_t board_userled_initialize(void)
   #define PH10 (PIO_OUTPUT | PIO_PULL_NONE | \
               PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
               PIO_OUTPUT_SET | PIO_PORT_PIOH | PIO_PIN10)
-  #define PL10 (PIO_OUTPUT | PIO_PULL_NONE | \
+  #define PL10 (PIO_PWM | PIO_PULL_NONE | \
               PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
               PIO_OUTPUT_SET | PIO_PORT_PIOL | PIO_PIN10)
   _info("*** PH10 Config\n");

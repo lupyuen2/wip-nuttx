@@ -219,7 +219,9 @@ int a64_pio_config(pio_pinset_t cfgset)
 
   /* Set the output value (will have no effect on inputs) */
 
-  dataddr = A64_PIO_DAT(port);
+  dataddr = (port == PIO_REG_PORTL) ?
+            A64_RPIO_DAT :
+            A64_PIO_DAT(port);
   regval = getreg32(dataddr);
 
   if ((cfgset & PIO_OUTPUT_SET) != 0)
