@@ -68,13 +68,30 @@ static const uint32_t g_led_setmap[BOARD_LEDS] =
  ****************************************************************************/
 
 /****************************************************************************
- * Name: board_userled_initialize
+ * Name:  board_userled_initialize
  *
  * Description:
+ *   This function may called from application-specific logic during its
+ *   to perform board-specific initialization of LED resources.  This
+ *   includes such things as, for example, configure GPIO pins to drive the
+ *   LEDs and also putting the LEDs in their correct initial state.
+ *
  *   If CONFIG_ARCH_LEDS is defined, then NuttX will control the on-board
- *   LEDs.  If CONFIG_ARCH_LEDS is not defined, then the
- *   board_userled_initialize() is available to initialize the LED from user
- *   application logic.
+ *   LEDs.  If CONFIG_ARCH_LEDS is not defined, then this interfaces may be
+ *   available to control the LEDs directly from user board logic or
+ *   indirectly user applications (via the common LED character driver).
+ *
+ *   Most boards have only a few LEDs and in those cases all LEDs may be
+ *   used by the NuttX LED logic exclusively and may not be available for
+ *   use by user logic if CONFIG_ARCH_LEDS=y.
+ *
+ *   NOTE: The LED number is returned.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   Number of LEDs on board
  *
  ****************************************************************************/
 
@@ -82,23 +99,6 @@ uint32_t board_userled_initialize(void)
 {
   int i;
   int ret;
-
-  ////
-  #define PH10 (PIO_OUTPUT | PIO_PULL_NONE | \
-              PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-              PIO_OUTPUT_SET | PIO_PORT_PIOH | PIO_PIN10)
-  #define PL10 (PIO_PWM | PIO_PULL_NONE | \
-              PIO_DRIVE_MEDLOW | PIO_INT_NONE | \
-              PIO_OUTPUT_SET | PIO_PORT_PIOL | PIO_PIN10)
-  _info("*** PH10 Config\n");
-  a64_pio_config(PH10);
-  _info("*** PH10 Set\n");
-  a64_pio_write(PH10, true);
-  _info("*** PL10 Config\n");
-  a64_pio_config(PL10);
-  _info("*** PL10 Set\n");
-  a64_pio_write(PL10, true);
-  ////
 
   /* Configure the LED GPIO for output. */
 
@@ -112,12 +112,31 @@ uint32_t board_userled_initialize(void)
 }
 
 /****************************************************************************
- * Name: board_userled
+ * Name:  board_userled
  *
  * Description:
+ *   This interface may be used by application specific logic to set the
+ *   state of a single LED.  Definitions for the led identification are
+ *   provided in the board-specific board.h header file that may be included
+ *   like:
+ *
+ *     #included <arch/board/board.h>
+ *
  *   If CONFIG_ARCH_LEDS is defined, then NuttX will control the on-board
- *  LEDs.  If CONFIG_ARCH_LEDS is not defined, then the board_userled() is
- *  available to control the LED from user application logic.
+ *   LEDs.  If CONFIG_ARCH_LEDS is not defined, then this interfaces may be
+ *   available to control the LEDs directly from user board logic or
+ *   indirectly user applications (via the common LED character driver).
+ *
+ *   Most boards have only a few LEDs and in those cases all LEDs may be
+ *   used by the NuttX LED logic exclusively and may not be available for
+ *   use by user logic if CONFIG_ARCH_LEDS=y.
+ *
+ * Input Parameters:
+ *   led   - LED number
+ *   ledon - True if LED should be turned on; False to turn off
+ *
+ * Returned Value:
+ *   None
  *
  ****************************************************************************/
 
@@ -130,14 +149,30 @@ void board_userled(int led, bool ledon)
 }
 
 /****************************************************************************
- * Name: board_userled_all
+ * Name:  board_userled_all
  *
  * Description:
- *  If CONFIG_ARCH_LEDS is defined, then NuttX will control the on-board
- *  LEDs.  If CONFIG_ARCH_LEDS is not defined, then the board_userled_all()
- *  is available to control the LED from user application logic.
- *  NOTE:  since there is only a single LED on-board, this is function
- *  is not very useful.
+ *   This interface may be used by application specific logic to set the
+ *   state of all board LED.  Definitions for the led set member
+ *   identification is provided in the board-specific board.h header file
+ *   that may be includedlike:
+ *
+ *     #included <arch/board/board.h>
+ *
+ *   If CONFIG_ARCH_LEDS is defined, then NuttX will control the on-board
+ *   LEDs.  If CONFIG_ARCH_LEDS is not defined, then this interfaces may be
+ *   available to control the LEDs directly from user board logic or
+ *   indirectly user applications (via the common LED character driver).
+ *
+ *   Most boards have only a few LEDs and in those cases all LEDs may be
+ *   used by the NuttX LED logic exclusively and may not be available for
+ *   use by user logic if CONFIG_ARCH_LEDS=y.
+ *
+ * Input Parameters:
+ *   ledset - Bitset of LEDs to be turned on and off
+ *
+ * Returned Value:
+ *   None
  *
  ****************************************************************************/
 
@@ -149,7 +184,6 @@ void board_userled_all(uint32_t ledset)
 
   for (i = 0; i < ARRAYSIZE(g_led_map); i++)
     {
-      _info("led=0x%x, ledon=0x%x\n", i, (ledset & g_led_setmap[i]) != 0);////
       a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
     }
 }
