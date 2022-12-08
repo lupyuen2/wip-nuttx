@@ -48,7 +48,7 @@ static uint16_t crc16ccitt_tab[256] =
 };
 
 /************************************************************************************************
- * Public Functions
+ * Private Functions
  ************************************************************************************************/
 
 /************************************************************************************************
@@ -59,7 +59,7 @@ static uint16_t crc16ccitt_tab[256] =
  *
  ************************************************************************************************/
 
-uint16_t crc16ccitt(FAR const uint8_t *src, size_t len, uint16_t crc16val)
+static uint16_t crc16ccitt(FAR const uint8_t *src, size_t len, uint16_t crc16val)
 {
   size_t i;
   uint16_t v = crc16val;
@@ -72,6 +72,21 @@ uint16_t crc16ccitt(FAR const uint8_t *src, size_t len, uint16_t crc16val)
 
   return v;
 }
+
+/// Compute 16-bit Cyclic Redundancy Check (CRC).
+/// See "12.3.6.13: Packet Footer", Page 210 of BL808 Reference Manual:
+/// https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
+static uint16_t compute_crc(FAR const uint8_t *data, size_t len)
+{
+  // Use CRC-16-CCITT (x^16 + x^12 + x^5 + 1)
+  uint16_t crc = crc16ccitt(data, len, 0xffff);
+
+  // debug("computeCrc: len={}, crc=0x{x}", .{ data.len, crc });
+  // dump_buffer(&data[0], data.len);
+  return crc;
+}
+
+void *TODO_REMOVE_THIS[] = {compute_crc}; ////
 
 ///////////////////////////////////////////////////////////////////////////////
 //  MIPI DSI Long and Short Packets
@@ -245,21 +260,5 @@ fn computeEcc(
         | (@intCast(u8, ecc[5]) << 5)
         | (@intCast(u8, ecc[6]) << 6)
         | (@intCast(u8, ecc[7]) << 7);
-}
-#endif  // TODO
-
-#ifdef TODO
-/// Compute 16-bit Cyclic Redundancy Check (CRC).
-/// See "12.3.6.13: Packet Footer", Page 210 of BL808 Reference Manual:
-/// https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
-fn computeCrc(
-    data: []const u8
-) u16 {
-    // Use CRC-16-CCITT (x^16 + x^12 + x^5 + 1)
-    const crc = crc16ccitt(data, 0xffff);
-
-    // debug("computeCrc: len={}, crc=0x{x}", .{ data.len, crc });
-    // dump_buffer(&data[0], data.len);
-    return crc;
 }
 #endif  // TODO
