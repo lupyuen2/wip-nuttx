@@ -153,7 +153,7 @@ size_t mipi_dsi_long_packet(
   size_t txlen          // Buffer Length
 )
 {
-  _info("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, txlen); ////
+  _info("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen); ////
   // Data Identifier (DI) (1 byte):
   // - Virtual Channel Identifier (Bits 6 to 7)
   // - Data Type (Bits 0 to 5)
@@ -220,7 +220,7 @@ size_t mipi_dsi_short_packet(
   size_t txlen          // Buffer Length
 )
 {
-  _info("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, txlen); ////
+  _info("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen); ////
   DEBUGASSERT(txlen == 1 || txlen == 2);
 
   // From BL808 Reference Manual (Page 201): https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
