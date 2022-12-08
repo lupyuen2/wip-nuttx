@@ -32,6 +32,9 @@
 #include <assert.h>
 #include <debug.h>
 
+#include <nuttx/arch.h>
+#include "arm64_arch.h"
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -57,6 +60,43 @@
 /************************************************************************************************
  * Private Functions
  ************************************************************************************************/
+
+/// Disable DSI Processing. See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
+static void a64_disable_dsi_processing(void)
+{
+    // Set Instru_En to 0
+    modreg32(0, Instru_En, DSI_BASIC_CTL0_REG);  // TODO: DMB
+}
+
+/// Enable DSI Processing. See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
+static void a64_enable_dsi_processing(void)
+{
+  // Set Instru_En to 1
+  modreg32(Instru_En, Instru_En, DSI_BASIC_CTL0_REG);  // TODO: DMB
+}
+
+/// Wait for transmit to complete. Returns 0 if completed, -1 if timeout.
+/// See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
+static int waitForTransmit(void)
+{
+  // Wait up to 5,000 microseconds
+  int i;
+  for (i = 0; i < 5000; i++)  // TODO
+  {
+    // To check whether the transmission is complete, we poll on Instru_En
+    if ((getreg32(DSI_BASIC_CTL0_REG) & Instru_En) == 0)
+    {
+      // If Instru_En is 0, then transmission is complete
+      return 0;
+    }
+    // Sleep 1 microsecond
+    up_udelay(1);  // TODO
+  }
+  _err("timeout");
+  return -1;
+}
+
+void *TODO_REMOVE_THIS[] = {waitForTransmit,a64_enable_dsi_processing, a64_disable_dsi_processing};  //// TODO
 
 #ifdef TODO
 /// Write the DCS Command to MIPI DSI
@@ -198,42 +238,5 @@ pub export fn a64_mipi_dsi_write(
 
     // Return number of written bytes
     return @intCast(isize, len);
-}
-#endif  // TODO
-
-#ifdef TODO
-/// Wait for transmit to complete. Returns 0 if completed, -1 if timeout.
-/// See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
-fn waitForTransmit() isize {
-    // Wait up to 5,000 microseconds
-    var i: usize = 0;
-    while (i < 5_000) : (i += 1) {
-        // To check whether the transmission is complete, we poll on Instru_En
-        if ((getreg32(DSI_BASIC_CTL0_REG) & Instru_En) == 0) {
-            // If Instru_En is 0, then transmission is complete
-            return 0;
-        }
-        // Sleep 1 microsecond
-        _ = c.usleep(1);
-    }
-    // Return Timeout
-    std.log.err("waitForTransmit: timeout", .{});
-    return -1;
-}
-#endif  // TODO
-
-#ifdef TODO
-/// Disable DSI Processing. See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
-fn disableDsiProcessing() void {
-    // Set Instru_En to 0
-    modreg32(0, Instru_En, DSI_BASIC_CTL0_REG);  // TODO: DMB
-}
-#endif  // TODO
-
-#ifdef TODO
-/// Enable DSI Processing. See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
-fn enableDsiProcessing() void {
-    // Set Instru_En to 1
-    modreg32(Instru_En, Instru_En, DSI_BASIC_CTL0_REG);  // TODO: DMB
 }
 #endif  // TODO
