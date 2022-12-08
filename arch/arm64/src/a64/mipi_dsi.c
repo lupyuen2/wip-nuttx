@@ -220,7 +220,7 @@ size_t mipi_dsi_short_packet(
   size_t txlen          // Buffer Length
 )
 {
-  _info("channel=%d, cmd=0x%x, txlen=%d", channel, cmd, txlen); ////
+  _info("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, txlen); ////
   DEBUGASSERT(txlen == 1 || txlen == 2);
 
   // From BL808 Reference Manual (Page 201): https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
@@ -245,7 +245,7 @@ size_t mipi_dsi_short_packet(
   // Data (2 bytes), fill with 0 if Second Byte is missing
   const uint8_t data[2] =
   {
-    txbuf[0],                   // First Byte
+    txbuf[0],                     // First Byte
     (txlen == 2) ? txbuf[1] : 0,  // Second Byte
   };
 
@@ -269,7 +269,129 @@ size_t mipi_dsi_short_packet(
   return len;
 }
 
+/// MIPI DSI Processor-to-Peripheral transaction types:
+/// DCS Long Write. See https://lupyuen.github.io/articles/dsi#display-command-set-for-mipi-dsi
+#define MIPI_DSI_DCS_LONG_WRITE 0x39
+
+/// DCS Short Write (Without Parameter)
+#define MIPI_DSI_DCS_SHORT_WRITE 0x05
+
+/// DCS Short Write (With Parameter)
+#define MIPI_DSI_DCS_SHORT_WRITE_PARAM 0x15
+
+//// TODO: Remove. Dump the buffer
+void dump_buffer(const uint8_t *data, size_t len)
+{
+  int printf(const char *format, ...);
+	for (int i = 0; i < len; i++) {
+		printf("%02x ", data[i]);
+		if ((i + 1) % 8 == 0) { printf("\n"); }
+	}
+	printf("\n");
+}
+
 void mipi_dsi_test(void)  //// TODO: Remove
 {
+    // Allocate Packet Buffer
+    uint8_t pkt_buf[128];
+    memset(pkt_buf, 0, sizeof(pkt_buf));
 
+    // Test Compose Short Packet (Without Parameter)
+    _info("Testing Compose Short Packet (Without Parameter)...\n");
+    const uint8_t short_pkt[1] = {
+        0x11,
+    };
+    const size_t short_pkt_result = mipi_dsi_short_packet(
+        pkt_buf,  //  Packet Buffer
+        sizeof(pkt_buf),  // Packet Buffer Size
+        0,         //  Virtual Channel
+        MIPI_DSI_DCS_SHORT_WRITE, // DCS Command
+        short_pkt,    // Transmit Buffer
+        sizeof(short_pkt)  // Buffer Length
+    );
+    _info("Result:\n");
+    dump_buffer(pkt_buf, short_pkt_result);
+
+    const uint8_t expected_short_pkt[] = { 
+      0x05, 0x11, 0x00, 0x36 
+    };
+    DEBUGASSERT(short_pkt_result == sizeof(expected_short_pkt));
+    DEBUGASSERT(memcmp(pkt_buf, expected_short_pkt, sizeof(expected_short_pkt)) == 0);
+
+    // Write to MIPI DSI
+    // _ = nuttx_mipi_dsi_dcs_write(
+    //     null,  //  Device
+    //     0,     //  Virtual Channel
+    //     MIPI_DSI_DCS_SHORT_WRITE, // DCS Command
+    //     &short_pkt,    // Transmit Buffer
+    //     short_pkt.len  // Buffer Length
+    // );
+
+    // Test Compose Short Packet (With Parameter)
+    _info("Testing Compose Short Packet (With Parameter)...\n");
+    const uint8_t short_pkt_param[2] = {
+        0xbc, 0x4e,
+    };
+    const size_t short_pkt_param_result = mipi_dsi_short_packet(
+        pkt_buf,  //  Packet Buffer
+        sizeof(pkt_buf),  // Packet Buffer Size
+        0,         //  Virtual Channel
+        MIPI_DSI_DCS_SHORT_WRITE_PARAM, // DCS Command
+        short_pkt_param,    // Transmit Buffer
+        sizeof(short_pkt_param)  // Buffer Length
+    );
+    _info("Result:\n");
+    dump_buffer(pkt_buf, short_pkt_param_result);
+
+    const uint8_t expected_short_pkt_param[] = { 
+        0x15, 0xbc, 0x4e, 0x35 
+    };
+    DEBUGASSERT(short_pkt_param_result == sizeof(expected_short_pkt_param));
+    DEBUGASSERT(memcmp(pkt_buf, expected_short_pkt_param, sizeof(expected_short_pkt_param)) == 0);
+
+    // Write to MIPI DSI
+    // _ = nuttx_mipi_dsi_dcs_write(
+    //     null,  //  Device
+    //     0,     //  Virtual Channel
+    //     MIPI_DSI_DCS_SHORT_WRITE_PARAM, // DCS Command
+    //     &short_pkt_param,    // Transmit Buffer
+    //     short_pkt_param.len  // Buffer Length
+    // );
+
+    // Test Compose Long Packet
+    _info("Testing Compose Long Packet...\n");
+    const uint8_t long_pkt[] = {
+        0xe9, 0x82, 0x10, 0x06, 0x05, 0xa2, 0x0a, 0xa5,
+        0x12, 0x31, 0x23, 0x37, 0x83, 0x04, 0xbc, 0x27,
+        0x38, 0x0c, 0x00, 0x03, 0x00, 0x00, 0x00, 0x0c,
+        0x00, 0x03, 0x00, 0x00, 0x00, 0x75, 0x75, 0x31,
+        0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x13, 0x88,
+        0x64, 0x64, 0x20, 0x88, 0x88, 0x88, 0x88, 0x88,
+        0x88, 0x02, 0x88, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    };
+    const size_t long_pkt_result = mipi_dsi_long_packet(
+        pkt_buf,  //  Packet Buffer
+        sizeof(pkt_buf),  // Packet Buffer Size
+        0,         //  Virtual Channel
+        MIPI_DSI_DCS_LONG_WRITE, // DCS Command
+        long_pkt,    // Transmit Buffer
+        sizeof(long_pkt)  // Buffer Length
+    );
+    _info("Result:\n");
+    dump_buffer(pkt_buf, long_pkt_result);
+
+    const uint8_t expected_long_pkt[] = {
+        0x39, 0x40, 0x00, 0x25, 0xe9, 0x82, 0x10, 0x06,
+        0x05, 0xa2, 0x0a, 0xa5, 0x12, 0x31, 0x23, 0x37,
+        0x83, 0x04, 0xbc, 0x27, 0x38, 0x0c, 0x00, 0x03,
+        0x00, 0x00, 0x00, 0x0c, 0x00, 0x03, 0x00, 0x00,
+        0x00, 0x75, 0x75, 0x31, 0x88, 0x88, 0x88, 0x88,
+        0x88, 0x88, 0x13, 0x88, 0x64, 0x64, 0x20, 0x88,
+        0x88, 0x88, 0x88, 0x88, 0x88, 0x02, 0x88, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x65, 0x03,
+    };
+    DEBUGASSERT(long_pkt_result == sizeof(expected_long_pkt));
+    DEBUGASSERT(memcmp(pkt_buf, expected_long_pkt, sizeof(expected_long_pkt)) == 0);
 }
