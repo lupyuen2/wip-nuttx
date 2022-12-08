@@ -89,10 +89,58 @@ static uint16_t compute_crc(FAR const uint8_t *data, size_t len)
   return crc;
 }
 
-void *TODO_REMOVE_THIS[] = {compute_crc}; ////
+/// Compute the Error Correction Code (ECC) (1 byte):
+/// Allow single-bit errors to be corrected and 2-bit errors to be detected in the Packet Header
+/// See "12.3.6.12: Error Correction Code", Page 208 of BL808 Reference Manual:
+/// https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
+static uint8_t compute_ecc(
+  FAR const uint8_t *di_wc,  // Data Identifier + Word Count (3 bytes)
+  size_t len  // Must be 3
+) {
+  DEBUGASSERT(len == 3);
 
-///////////////////////////////////////////////////////////////////////////////
-//  MIPI DSI Long and Short Packets
+  // Combine DI and WC into a 24-bit word
+  uint32_t di_wc_word = 
+      di_wc[0] 
+      | (di_wc[1] << 8)
+      | (di_wc[2] << 16);
+
+  // Extract the 24 bits from the word
+  bool d[24];
+  memset(d, 0, sizeof(d));
+  int i;
+  for (i = 0; i < 24; i++)
+  {
+    d[i] = di_wc_word & 1;
+    di_wc_word >>= 1;
+  }
+
+  // Compute the ECC bits
+  bool ecc[8];
+  memset(ecc, 0, sizeof(ecc));
+  ecc[7] = 0;
+  ecc[6] = 0;
+  ecc[5] = d[10] ^ d[11] ^ d[12] ^ d[13] ^ d[14] ^ d[15] ^ d[16] ^ d[17] ^ d[18] ^ d[19] ^ d[21] ^ d[22] ^ d[23];
+  ecc[4] = d[4]  ^ d[5]  ^ d[6]  ^ d[7]  ^ d[8]  ^ d[9]  ^ d[16] ^ d[17] ^ d[18] ^ d[19] ^ d[20] ^ d[22] ^ d[23];
+  ecc[3] = d[1]  ^ d[2]  ^ d[3]  ^ d[7]  ^ d[8]  ^ d[9]  ^ d[13] ^ d[14] ^ d[15] ^ d[19] ^ d[20] ^ d[21] ^ d[23];
+  ecc[2] = d[0]  ^ d[2]  ^ d[3]  ^ d[5]  ^ d[6]  ^ d[9]  ^ d[11] ^ d[12] ^ d[15] ^ d[18] ^ d[20] ^ d[21] ^ d[22];
+  ecc[1] = d[0]  ^ d[1]  ^ d[3]  ^ d[4]  ^ d[6]  ^ d[8]  ^ d[10] ^ d[12] ^ d[14] ^ d[17] ^ d[20] ^ d[21] ^ d[22] ^ d[23];
+  ecc[0] = d[0]  ^ d[1]  ^ d[2]  ^ d[4]  ^ d[5]  ^ d[7]  ^ d[10] ^ d[11] ^ d[13] ^ d[16] ^ d[20] ^ d[21] ^ d[22] ^ d[23];
+
+  // Merge the ECC bits
+  return ecc[0]
+      | (ecc[1] << 1)
+      | (ecc[2] << 2)
+      | (ecc[3] << 3)
+      | (ecc[4] << 4)
+      | (ecc[5] << 5)
+      | (ecc[6] << 6)
+      | (ecc[7] << 7);
+}
+
+/************************************************************************************************
+ * Public Functions
+ ************************************************************************************************/
 
 // Compose MIPI DSI Long Packet. See https://lupyuen.github.io/articles/dsi#long-packet-for-mipi-dsi
 size_t composeLongPacket(
@@ -216,50 +264,5 @@ fn composeShortPacket(
     // Return the packet
     const result = pkt[0..pktlen];
     return result;
-}
-#endif  // TODO
-
-#ifdef TODO
-/// Compute the Error Correction Code (ECC) (1 byte):
-/// Allow single-bit errors to be corrected and 2-bit errors to be detected in the Packet Header
-/// See "12.3.6.12: Error Correction Code", Page 208 of BL808 Reference Manual:
-/// https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
-fn computeEcc(
-    di_wc: [3]u8  // Data Identifier + Word Count (3 bytes)
-) u8 {
-    // Combine DI and WC into a 24-bit word
-    var di_wc_word: u32 = 
-        di_wc[0] 
-        | (@intCast(u32, di_wc[1]) << 8)
-        | (@intCast(u32, di_wc[2]) << 16);
-
-    // Extract the 24 bits from the word
-    var d = std.mem.zeroes([24]u1);
-    var i: usize = 0;
-    while (i < 24) : (i += 1) {
-        d[i] = @intCast(u1, di_wc_word & 1);
-        di_wc_word >>= 1;
-    }
-
-    // Compute the ECC bits
-    var ecc = std.mem.zeroes([8]u1);
-    ecc[7] = 0;
-    ecc[6] = 0;
-    ecc[5] = d[10] ^ d[11] ^ d[12] ^ d[13] ^ d[14] ^ d[15] ^ d[16] ^ d[17] ^ d[18] ^ d[19] ^ d[21] ^ d[22] ^ d[23];
-    ecc[4] = d[4]  ^ d[5]  ^ d[6]  ^ d[7]  ^ d[8]  ^ d[9]  ^ d[16] ^ d[17] ^ d[18] ^ d[19] ^ d[20] ^ d[22] ^ d[23];
-    ecc[3] = d[1]  ^ d[2]  ^ d[3]  ^ d[7]  ^ d[8]  ^ d[9]  ^ d[13] ^ d[14] ^ d[15] ^ d[19] ^ d[20] ^ d[21] ^ d[23];
-    ecc[2] = d[0]  ^ d[2]  ^ d[3]  ^ d[5]  ^ d[6]  ^ d[9]  ^ d[11] ^ d[12] ^ d[15] ^ d[18] ^ d[20] ^ d[21] ^ d[22];
-    ecc[1] = d[0]  ^ d[1]  ^ d[3]  ^ d[4]  ^ d[6]  ^ d[8]  ^ d[10] ^ d[12] ^ d[14] ^ d[17] ^ d[20] ^ d[21] ^ d[22] ^ d[23];
-    ecc[0] = d[0]  ^ d[1]  ^ d[2]  ^ d[4]  ^ d[5]  ^ d[7]  ^ d[10] ^ d[11] ^ d[13] ^ d[16] ^ d[20] ^ d[21] ^ d[22] ^ d[23];
-
-    // Merge the ECC bits
-    return @intCast(u8, ecc[0])
-        | (@intCast(u8, ecc[1]) << 1)
-        | (@intCast(u8, ecc[2]) << 2)
-        | (@intCast(u8, ecc[3]) << 3)
-        | (@intCast(u8, ecc[4]) << 4)
-        | (@intCast(u8, ecc[5]) << 5)
-        | (@intCast(u8, ecc[6]) << 6)
-        | (@intCast(u8, ecc[7]) << 7);
 }
 #endif  // TODO
