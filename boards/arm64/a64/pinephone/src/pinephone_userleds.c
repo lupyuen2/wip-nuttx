@@ -188,8 +188,22 @@ void board_userled_all(uint32_t ledset)
     }
 
   //// TODO: Remove this test code
+  int a64_mipi_dsi_enable(void);
+  int a64_mipi_dphy_enable(void);
   int pinephone_panel_init(void);
-  if (ledset == 0) { pinephone_panel_init(); }
+  int a64_mipi_dsi_start(void);
+  switch (ledset)
+    {
+      // Enable MIPI DSI Block
+      case 3: a64_mipi_dsi_enable(); break;
+      // Enable MIPI Display Physical Layer
+      case 4: a64_mipi_dphy_enable(); break;
+      // Init LCD Panel
+      case 6: pinephone_panel_init(); break;
+      // Start MIPI DSI HSC and HSD
+      case 7: a64_mipi_dsi_start(); break;
+      default: break;
+    }
 }
 
 #endif /* CONFIG_USERLED */
