@@ -31,6 +31,7 @@
 #include <string.h>
 #include <assert.h>
 #include <debug.h>
+#include "mipi_dsi.h"
 
 /************************************************************************************************
  * Private Data
@@ -123,9 +124,9 @@ static uint8_t compute_ecc(
 ) {
   DEBUGASSERT(len == 3);
   if (len != 3)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   // Combine DI and WC into a 24-bit word
   uint32_t di_wc_word = 
@@ -138,10 +139,10 @@ static uint8_t compute_ecc(
   memset(d, 0, sizeof(d));
   int i;
   for (i = 0; i < 24; i++)
-  {
-    d[i] = di_wc_word & 1;
-    di_wc_word >>= 1;
-  }
+    {
+      d[i] = di_wc_word & 1;
+      di_wc_word >>= 1;
+    }
 
   // Compute the ECC bits
   bool ecc[8];
@@ -172,8 +173,8 @@ static uint8_t compute_ecc(
 
 // Compose MIPI DSI Long Packet. See https://lupyuen.github.io/articles/dsi#long-packet-for-mipi-dsi
 // Return the number of bytes in the composed packet.
-// Returns 0 if pktlen too short
-size_t mipi_dsi_long_packet(
+// Returns -1 if pktlen too short
+ssize_t mipi_dsi_long_packet(
   FAR uint8_t *pktbuf,    // Buffer for the Returned Long Packet
   size_t pktlen,    // Buffer Size for the Returned Long Packet
   uint8_t channel,  // Virtual Channel ID
@@ -231,9 +232,9 @@ size_t mipi_dsi_long_packet(
   const size_t len = sizeof(header) + txlen + sizeof(footer);
   DEBUGASSERT(len <= pktlen);  // Increase `pkt` size
   if (len > pktlen)
-  {
-    return 0;
-  }
+    {
+      return -1;
+    }
   memcpy(pktbuf, header, sizeof(header)); // 4 bytes
   memcpy(pktbuf + sizeof(header), txbuf, txlen);  // txlen bytes
   memcpy(pktbuf + sizeof(header) + txlen, footer, sizeof(footer));  // 2 bytes
@@ -244,8 +245,8 @@ size_t mipi_dsi_long_packet(
 
 // Compose MIPI DSI Short Packet. See https://lupyuen.github.io/articles/dsi#appendix-short-packet-for-mipi-dsi
 // Return the number of bytes in the composed packet.
-// Returns 0 if pktlen too short
-size_t mipi_dsi_short_packet(
+// Returns -1 if pktlen too short
+ssize_t mipi_dsi_short_packet(
   FAR uint8_t *pktbuf,    // Buffer for the Returned Short Packet
   size_t pktlen,    // Buffer Size for the Returned Short Packet
   uint8_t channel,  // Virtual Channel ID
@@ -278,10 +279,10 @@ size_t mipi_dsi_short_packet(
 
   // Data (2 bytes), fill with 0 if Second Byte is missing
   const uint8_t data[2] =
-  {
-    txbuf[0],                     // First Byte
-    (txlen == 2) ? txbuf[1] : 0,  // Second Byte
-  };
+    {
+      txbuf[0],                     // First Byte
+      (txlen == 2) ? txbuf[1] : 0,  // Second Byte
+    };
 
   // Data Identifier + Data (3 bytes): For computing Error Correction Code (ECC)
   const uint8_t di_data[3] = { di, data[0], data[1] };
@@ -298,24 +299,14 @@ size_t mipi_dsi_short_packet(
   const size_t len = sizeof(header);
   DEBUGASSERT(len <= pktlen);  // Increase `pkt` size
   if (len > pktlen)
-  {
-    return 0;
-  }
+    {
+      return -1;
+    }
   memcpy(pktbuf, header, sizeof(header)); // 4 bytes
 
   // Return the packet length
   return len;
 }
-
-/// MIPI DSI Processor-to-Peripheral transaction types:
-/// DCS Long Write. See https://lupyuen.github.io/articles/dsi#display-command-set-for-mipi-dsi
-#define MIPI_DSI_DCS_LONG_WRITE 0x39
-
-/// DCS Short Write (Without Parameter)
-#define MIPI_DSI_DCS_SHORT_WRITE 0x05
-
-/// DCS Short Write (With Parameter)
-#define MIPI_DSI_DCS_SHORT_WRITE_PARAM 0x15
 
 //// TODO: Remove. Dump the buffer
 void dump_buffer(const uint8_t *data, size_t len)
@@ -339,7 +330,7 @@ void mipi_dsi_test(void)  //// TODO: Remove
     const uint8_t short_pkt[1] = {
         0x11,
     };
-    const size_t short_pkt_result = mipi_dsi_short_packet(
+    const ssize_t short_pkt_result = mipi_dsi_short_packet(
         pkt_buf,  //  Packet Buffer
         sizeof(pkt_buf),  // Packet Buffer Size
         0,         //  Virtual Channel
@@ -370,7 +361,7 @@ void mipi_dsi_test(void)  //// TODO: Remove
     const uint8_t short_pkt_param[2] = {
         0xbc, 0x4e,
     };
-    const size_t short_pkt_param_result = mipi_dsi_short_packet(
+    const ssize_t short_pkt_param_result = mipi_dsi_short_packet(
         pkt_buf,  //  Packet Buffer
         sizeof(pkt_buf),  // Packet Buffer Size
         0,         //  Virtual Channel
@@ -408,7 +399,7 @@ void mipi_dsi_test(void)  //// TODO: Remove
         0x88, 0x02, 0x88, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     };
-    const size_t long_pkt_result = mipi_dsi_long_packet(
+    const ssize_t long_pkt_result = mipi_dsi_long_packet(
         pkt_buf,  //  Packet Buffer
         sizeof(pkt_buf),  // Packet Buffer Size
         0,         //  Virtual Channel
