@@ -2,8 +2,11 @@
  * Included Files
  ************************************************************************************************/
 
-#include <sys/types.h>
+#include <nuttx/config.h>
 #include <stdint.h>
+#include <string.h>
+#include <assert.h>
+#include <debug.h>
 
 /************************************************************************************************
  * Private Data
@@ -55,7 +58,7 @@ static uint16_t crc16ccitt_tab[256] =
  * Name: crc16ccitt
  *
  * Description:
- *   Return a 16-bit CRC-CCITT of the contents of the  buffer.
+ *   Return a 16-bit CRC-CCITT of the contents of the buffer.
  *
  ************************************************************************************************/
 
@@ -91,73 +94,71 @@ void *TODO_REMOVE_THIS[] = {compute_crc}; ////
 ///////////////////////////////////////////////////////////////////////////////
 //  MIPI DSI Long and Short Packets
 
-#ifdef TODO
 // Compose MIPI DSI Long Packet. See https://lupyuen.github.io/articles/dsi#long-packet-for-mipi-dsi
-fn composeLongPacket(
-    pkt: []u8,    // Buffer for the Returned Long Packet
-    channel: u8,  // Virtual Channel ID
-    cmd: u8,      // DCS Command
-    buf: [*c]const u8,  // Transmit Buffer
-    len: usize          // Buffer Length
-) []const u8 {          // Returns the Long Packet
-    debug("composeLongPacket: channel={}, cmd=0x{x}, len={}", .{ channel, cmd, len });
-    // Data Identifier (DI) (1 byte):
-    // - Virtual Channel Identifier (Bits 6 to 7)
-    // - Data Type (Bits 0 to 5)
-    // (Virtual Channel should be 0, I think)
-    assert(channel < 4);
-    assert(cmd < (1 << 6));
-    const vc: u8 = channel;
-    const dt: u8 = cmd;
-    const di: u8 = (vc << 6) | dt;
+size_t composeLongPacket(
+  FAR uint8_t *pktbuf,    // Buffer for the Returned Long Packet
+  size_t pktlen,    // Buffer for the Returned Long Packet
+  uint8_t channel,  // Virtual Channel ID
+  uint8_t cmd,      // DCS Command
+  FAR const uint8_t *txbuf,  // Transmit Buffer
+  size_t txlen          // Buffer Length
+)
+{
+  _info("composeLongPacket: channel=&d, cmd=0x%x, txlen=%d\n", channel, cmd, txlen); ////
+  // Data Identifier (DI) (1 byte):
+  // - Virtual Channel Identifier (Bits 6 to 7)
+  // - Data Type (Bits 0 to 5)
+  // (Virtual Channel should be 0, I think)
+  DEBUGASSERT(channel < 4);
+  DEBUGASSERT(cmd < (1 << 6));
+  const uint8_t vc = channel;
+  const uint8_t dt = cmd;
+  const uint8_t di = (vc << 6) | dt;
 
-    // Word Count (WC) (2 bytes)：
-    // - Number of bytes in the Packet Payload
-    const wc: u16 = @intCast(u16, len);
-    const wcl: u8 = @intCast(u8, wc & 0xff);
-    const wch: u8 = @intCast(u8, wc >> 8);
+  // Word Count (WC) (2 bytes)：
+  // - Number of bytes in the Packet Payload
+  const uint16_t wc = txlen;
+  const uint8_t wcl = wc & 0xff;
+  const uint8_t wch = wc >> 8;
 
-    // Data Identifier + Word Count (3 bytes): For computing Error Correction Code (ECC)
-    const di_wc = [3]u8 { di, wcl, wch };
+  // Data Identifier + Word Count (3 bytes): For computing Error Correction Code (ECC)
+  const uint8_t di_wc[3] = { di, wcl, wch };
 
-    // Compute Error Correction Code (ECC) for Data Identifier + Word Count
-    const ecc: u8 = computeEcc(di_wc);
+  // Compute Error Correction Code (ECC) for Data Identifier + Word Count
+  const uint8_t ecc = compute_ecc(di_wc, sizeof(di_wc));
 
-    // Packet Header (4 bytes):
-    // - Data Identifier + Word Count + Error Correction Code
-    const header = [4]u8 { di_wc[0], di_wc[1], di_wc[2], ecc };
+  // Packet Header (4 bytes):
+  // - Data Identifier + Word Count + Error Correction Code
+  const uint8_t header[4] = { di_wc[0], di_wc[1], di_wc[2], ecc };
 
-    // Packet Payload:
-    // - Data (0 to 65,541 bytes):
-    // Number of data bytes should match the Word Count (WC)
-    assert(len <= 65_541);
-    const payload = buf[0..len];
+  // Packet Payload:
+  // - Data (0 to 65,541 bytes):
+  // Number of data bytes should match the Word Count (WC)
+  DEBUGASSERT(txlen <= 65541);
 
-    // Checksum (CS) (2 bytes):
-    // - 16-bit Cyclic Redundancy Check (CRC) of the Payload (not the entire packet)
-    const cs: u16 = computeCrc(payload);
-    const csl: u8 = @intCast(u8, cs & 0xff);
-    const csh: u8 = @intCast(u8, cs >> 8);
+  // Checksum (CS) (2 bytes):
+  // - 16-bit Cyclic Redundancy Check (CRC) of the Payload (not the entire packet)
+  const uint16_t cs = compute_crc(txbuf, txlen);
+  const uint8_t csl = cs & 0xff;
+  const uint8_t csh = cs >> 8;
 
-    // Packet Footer (2 bytes)
-    // - Checksum (CS)
-    const footer = [2]u8 { csl, csh };
+  // Packet Footer (2 bytes)
+  // - Checksum (CS)
+  const uint8_t footer[2] = { csl, csh };
 
-    // Packet:
-    // - Packet Header (4 bytes)
-    // - Payload (`len` bytes)
-    // - Packet Footer (2 bytes)
-    const pktlen = header.len + len + footer.len;
-    assert(pktlen <= pkt.len);  // Increase `pkt` size
-    std.mem.copy(u8, pkt[0..header.len], &header); // 4 bytes
-    std.mem.copy(u8, pkt[header.len..], payload);  // `len` bytes
-    std.mem.copy(u8, pkt[(header.len + len)..], &footer);  // 2 bytes
+  // Packet:
+  // - Packet Header (4 bytes)
+  // - Payload (`len` bytes)
+  // - Packet Footer (2 bytes)
+  const size_t len = sizeof(header) + txlen + sizeof(footer);
+  DEBUGASSERT(len <= pktlen);  // Increase `pkt` size
+  memcpy(pktbuf, header, sizeof(header)); // 4 bytes
+  memcpy(pktbuf + sizeof(header), txbuf, txlen);  // txlen bytes
+  memcpy(pktbuf + sizeof(header) + txlen, footer, sizeof(footer));  // 2 bytes
 
-    // Return the packet
-    const result = pkt[0..pktlen];
-    return result;
+  // Return the packet length
+  return len;
 }
-#endif  // TODO
 
 #ifdef TODO
 // Compose MIPI DSI Short Packet. See https://lupyuen.github.io/articles/dsi#appendix-short-packet-for-mipi-dsi
@@ -169,7 +170,7 @@ fn composeShortPacket(
     len: usize          // Buffer Length
 ) []const u8 {          // Returns the Short Packet
     debug("composeShortPacket: channel={}, cmd=0x{x}, len={}", .{ channel, cmd, len });
-    assert(len == 1 or len == 2);
+    DEBUGASSERT(len == 1 or len == 2);
 
     // From BL808 Reference Manual (Page 201): https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
     //   A Short Packet consists of 8-bit data identification (DI),
@@ -184,8 +185,8 @@ fn composeShortPacket(
     // - Virtual Channel Identifier (Bits 6 to 7)
     // - Data Type (Bits 0 to 5)
     // (Virtual Channel should be 0, I think)
-    assert(channel < 4);
-    assert(cmd < (1 << 6));
+    DEBUGASSERT(channel < 4);
+    DEBUGASSERT(cmd < (1 << 6));
     const vc: u8 = channel;
     const dt: u8 = cmd;
     const di: u8 = (vc << 6) | dt;
@@ -209,7 +210,7 @@ fn composeShortPacket(
     // Packet:
     // - Packet Header (4 bytes)
     const pktlen = header.len;
-    assert(pktlen <= pkt.len);  // Increase `pkt` size
+    DEBUGASSERT(pktlen <= pkt.len);  // Increase `pkt` size
     std.mem.copy(u8, pkt[0..header.len], &header); // 4 bytes
 
     // Return the packet
