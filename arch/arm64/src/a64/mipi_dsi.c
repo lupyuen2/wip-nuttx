@@ -143,16 +143,17 @@ static uint8_t compute_ecc(
  ************************************************************************************************/
 
 // Compose MIPI DSI Long Packet. See https://lupyuen.github.io/articles/dsi#long-packet-for-mipi-dsi
-size_t composeLongPacket(
+// Return the number of bytes in the composed packet.
+size_t mipi_dsi_long_packet(
   FAR uint8_t *pktbuf,    // Buffer for the Returned Long Packet
-  size_t pktlen,    // Buffer for the Returned Long Packet
+  size_t pktlen,    // Buffer Size for the Returned Long Packet
   uint8_t channel,  // Virtual Channel ID
   uint8_t cmd,      // DCS Command
   FAR const uint8_t *txbuf,  // Transmit Buffer
   size_t txlen          // Buffer Length
 )
 {
-  _info("composeLongPacket: channel=&d, cmd=0x%x, txlen=%d\n", channel, cmd, txlen); ////
+  _info("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, txlen); ////
   // Data Identifier (DI) (1 byte):
   // - Virtual Channel Identifier (Bits 6 to 7)
   // - Data Type (Bits 0 to 5)
@@ -208,61 +209,67 @@ size_t composeLongPacket(
   return len;
 }
 
-#ifdef TODO
 // Compose MIPI DSI Short Packet. See https://lupyuen.github.io/articles/dsi#appendix-short-packet-for-mipi-dsi
-fn composeShortPacket(
-    pkt: []u8,    // Buffer for the Returned Short Packet
-    channel: u8,  // Virtual Channel ID
-    cmd: u8,      // DCS Command
-    buf: [*c]const u8,  // Transmit Buffer
-    len: usize          // Buffer Length
-) []const u8 {          // Returns the Short Packet
-    debug("composeShortPacket: channel={}, cmd=0x{x}, len={}", .{ channel, cmd, len });
-    DEBUGASSERT(len == 1 or len == 2);
+// Return the number of bytes in the composed packet.
+size_t mipi_dsi_short_packet(
+  FAR uint8_t *pktbuf,    // Buffer for the Returned Short Packet
+  size_t pktlen,    // Buffer Size for the Returned Short Packet
+  uint8_t channel,  // Virtual Channel ID
+  uint8_t cmd,      // DCS Command
+  FAR const uint8_t *txbuf,  // Transmit Buffer
+  size_t txlen          // Buffer Length
+)
+{
+  _info("channel=%d, cmd=0x%x, txlen=%d", channel, cmd, txlen); ////
+  DEBUGASSERT(txlen == 1 || txlen == 2);
 
-    // From BL808 Reference Manual (Page 201): https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
-    //   A Short Packet consists of 8-bit data identification (DI),
-    //   two bytes of commands or data, and 8-bit ECC.
-    //   The length of a short packet is 4 bytes including ECC.
-    // Thus a MIPI DSI Short Packet (compared with Long Packet)...
-    // - Doesn't have Packet Payload and Packet Footer (CRC)
-    // - Instead of Word Count (WC), the Packet Header now has 2 bytes of data
-    // Everything else is the same.
+  // From BL808 Reference Manual (Page 201): https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
+  //   A Short Packet consists of 8-bit data identification (DI),
+  //   two bytes of commands or data, and 8-bit ECC.
+  //   The length of a short packet is 4 bytes including ECC.
+  // Thus a MIPI DSI Short Packet (compared with Long Packet)...
+  // - Doesn't have Packet Payload and Packet Footer (CRC)
+  // - Instead of Word Count (WC), the Packet Header now has 2 bytes of data
+  // Everything else is the same.
 
-    // Data Identifier (DI) (1 byte):
-    // - Virtual Channel Identifier (Bits 6 to 7)
-    // - Data Type (Bits 0 to 5)
-    // (Virtual Channel should be 0, I think)
-    DEBUGASSERT(channel < 4);
-    DEBUGASSERT(cmd < (1 << 6));
-    const vc: u8 = channel;
-    const dt: u8 = cmd;
-    const di: u8 = (vc << 6) | dt;
+  // Data Identifier (DI) (1 byte):
+  // - Virtual Channel Identifier (Bits 6 to 7)
+  // - Data Type (Bits 0 to 5)
+  // (Virtual Channel should be 0, I think)
+  DEBUGASSERT(channel < 4);
+  DEBUGASSERT(cmd < (1 << 6));
+  const uint8_t vc = channel;
+  const uint8_t dt = cmd;
+  const uint8_t di = (vc << 6) | dt;
 
-    // Data (2 bytes), fill with 0 if Second Byte is missing
-    const data = [2]u8 {
-        buf[0],                       // First Byte
-        if (len == 2) buf[1] else 0,  // Second Byte
-    };
+  // Data (2 bytes), fill with 0 if Second Byte is missing
+  const uint8_t data[2] =
+  {
+    txbuf[0],                   // First Byte
+    (txlen == 2) ? txbuf[1] : 0,  // Second Byte
+  };
 
-    // Data Identifier + Data (3 bytes): For computing Error Correction Code (ECC)
-    const di_data = [3]u8 { di, data[0], data[1] };
+  // Data Identifier + Data (3 bytes): For computing Error Correction Code (ECC)
+  const uint8_t di_data[3] = { di, data[0], data[1] };
 
-    // Compute Error Correction Code (ECC) for Data Identifier + Word Count
-    const ecc: u8 = computeEcc(di_data);
+  // Compute Error Correction Code (ECC) for Data Identifier + Word Count
+  const uint8_t ecc = compute_ecc(di_data, sizeof(di_data));
 
-    // Packet Header (4 bytes):
-    // - Data Identifier + Data + Error Correction Code
-    const header = [4]u8 { di_data[0], di_data[1], di_data[2], ecc };
+  // Packet Header (4 bytes):
+  // - Data Identifier + Data + Error Correction Code
+  const uint8_t header[4] = { di_data[0], di_data[1], di_data[2], ecc };
 
-    // Packet:
-    // - Packet Header (4 bytes)
-    const pktlen = header.len;
-    DEBUGASSERT(pktlen <= pkt.len);  // Increase `pkt` size
-    std.mem.copy(u8, pkt[0..header.len], &header); // 4 bytes
+  // Packet:
+  // - Packet Header (4 bytes)
+  const size_t len = sizeof(header);
+  DEBUGASSERT(len <= pktlen);  // Increase `pkt` size
+  memcpy(pktbuf, header, sizeof(header)); // 4 bytes
 
-    // Return the packet
-    const result = pkt[0..pktlen];
-    return result;
+  // Return the packet length
+  return len;
 }
-#endif  // TODO
+
+void mipi_dsi_test(void)  //// TODO: Remove
+{
+
+}
