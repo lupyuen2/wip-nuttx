@@ -98,6 +98,10 @@ static uint8_t compute_ecc(
   size_t len  // Must be 3
 ) {
   DEBUGASSERT(len == 3);
+  if (len != 3)
+  {
+    return 0;
+  }
 
   // Combine DI and WC into a 24-bit word
   uint32_t di_wc_word = 
@@ -144,6 +148,7 @@ static uint8_t compute_ecc(
 
 // Compose MIPI DSI Long Packet. See https://lupyuen.github.io/articles/dsi#long-packet-for-mipi-dsi
 // Return the number of bytes in the composed packet.
+// Returns 0 if pktlen too short
 size_t mipi_dsi_long_packet(
   FAR uint8_t *pktbuf,    // Buffer for the Returned Long Packet
   size_t pktlen,    // Buffer Size for the Returned Long Packet
@@ -201,6 +206,10 @@ size_t mipi_dsi_long_packet(
   // - Packet Footer (2 bytes)
   const size_t len = sizeof(header) + txlen + sizeof(footer);
   DEBUGASSERT(len <= pktlen);  // Increase `pkt` size
+  if (len > pktlen)
+  {
+    return 0;
+  }
   memcpy(pktbuf, header, sizeof(header)); // 4 bytes
   memcpy(pktbuf + sizeof(header), txbuf, txlen);  // txlen bytes
   memcpy(pktbuf + sizeof(header) + txlen, footer, sizeof(footer));  // 2 bytes
@@ -211,6 +220,7 @@ size_t mipi_dsi_long_packet(
 
 // Compose MIPI DSI Short Packet. See https://lupyuen.github.io/articles/dsi#appendix-short-packet-for-mipi-dsi
 // Return the number of bytes in the composed packet.
+// Returns 0 if pktlen too short
 size_t mipi_dsi_short_packet(
   FAR uint8_t *pktbuf,    // Buffer for the Returned Short Packet
   size_t pktlen,    // Buffer Size for the Returned Short Packet
@@ -263,6 +273,10 @@ size_t mipi_dsi_short_packet(
   // - Packet Header (4 bytes)
   const size_t len = sizeof(header);
   DEBUGASSERT(len <= pktlen);  // Increase `pkt` size
+  if (len > pktlen)
+  {
+    return 0;
+  }
   memcpy(pktbuf, header, sizeof(header)); // 4 bytes
 
   // Return the packet length
