@@ -186,6 +186,10 @@ void board_userled_all(uint32_t ledset)
     {
       a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
     }
+
+  //// TODO: Remove this test code
+  int pinephone_panel_init(void);
+  if (ledset == 0) { pinephone_panel_init(); }
 }
 
 #endif /* CONFIG_USERLED */
