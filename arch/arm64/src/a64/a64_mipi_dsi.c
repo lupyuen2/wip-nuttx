@@ -35,6 +35,7 @@
 #include <nuttx/arch.h>
 #include "arm64_arch.h"
 #include "mipi_dsi.h"
+#include "a64_mipi_dsi.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -94,7 +95,7 @@ static int a64_wait_dsi_transmit(void)
       up_udelay(1);  // TODO
     }
   _err("timeout");
-  return -1;
+  return -1;  // TODO
 }
 
 /************************************************************************************************
@@ -106,7 +107,7 @@ static int a64_wait_dsi_transmit(void)
 ssize_t a64_mipi_dsi_write(
     uint8_t channel,  // Virtual Channel ID
     uint8_t cmd,      // DCS Command
-    FAR uint8_t *txbuf,  // Transmit Buffer
+    FAR const uint8_t *txbuf,  // Transmit Buffer
     size_t txlen          // Buffer Length
 )
 {  
