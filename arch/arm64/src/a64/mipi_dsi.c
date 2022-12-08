@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  MIPI DSI Long and Short Packets
 
+#ifdef TODO
 // Compose MIPI DSI Long Packet. See https://lupyuen.github.io/articles/dsi#long-packet-for-mipi-dsi
 fn composeLongPacket(
     pkt: []u8,    // Buffer for the Returned Long Packet
@@ -66,7 +67,9 @@ fn composeLongPacket(
     const result = pkt[0..pktlen];
     return result;
 }
+#endif  // TODO
 
+#ifdef TODO
 // Compose MIPI DSI Short Packet. See https://lupyuen.github.io/articles/dsi#appendix-short-packet-for-mipi-dsi
 fn composeShortPacket(
     pkt: []u8,    // Buffer for the Returned Short Packet
@@ -123,7 +126,9 @@ fn composeShortPacket(
     const result = pkt[0..pktlen];
     return result;
 }
+#endif  // TODO
 
+#ifdef TODO
 /// Compute the Error Correction Code (ECC) (1 byte):
 /// Allow single-bit errors to be corrected and 2-bit errors to be detected in the Packet Header
 /// See "12.3.6.12: Error Correction Code", Page 208 of BL808 Reference Manual:
@@ -166,7 +171,9 @@ fn computeEcc(
         | (@intCast(u8, ecc[6]) << 6)
         | (@intCast(u8, ecc[7]) << 7);
 }
+#endif  // TODO
 
+#ifdef TODO
 /// Compute 16-bit Cyclic Redundancy Check (CRC).
 /// See "12.3.6.13: Packet Footer", Page 210 of BL808 Reference Manual:
 /// https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
@@ -180,7 +187,9 @@ fn computeCrc(
     // dump_buffer(&data[0], data.len);
     return crc;
 }
+#endif  // TODO
 
+#ifdef TODO
 /// Return a 16-bit CRC-CCITT of the contents of the `src` buffer.
 /// Based on https://github.com/lupyuen/incubator-nuttx/blob/pinephone/libs/libc/misc/lib_crc16.c
 fn crc16ccitt(src: []const u8, crc16val: u16) u16 {
@@ -228,3 +237,4 @@ const crc16ccitt_tab = [256]u16 {
     0xf78f, 0xe606, 0xd49d, 0xc514, 0xb1ab, 0xa022, 0x92b9, 0x8330,
     0x7bc7, 0x6a4e, 0x58d5, 0x495c, 0x3de3, 0x2c6a, 0x1ef1, 0x0f78,
 };
+#endif  // TODO
