@@ -6,10 +6,16 @@
 if ARCH_CHIP_A64
 
 menu "Allwinner A64 Peripheral Selection"
+
+config A64_MIPI_DSI
+	bool "MIPI DSI"
+	default n
+
 config A64_UART
 	bool "UART"
 	default n
 	select UART1_SERIALDRIVER
+
 endmenu # Allwinner A64 Peripheral Selection
 
 endif # ARCH_CHIP_A64
