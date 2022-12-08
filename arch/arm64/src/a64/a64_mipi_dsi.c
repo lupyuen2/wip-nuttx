@@ -167,7 +167,7 @@ ssize_t a64_mipi_dsi_write(
   DEBUGASSERT(pktlen > 0);
 
   // Dump the packet
-  _info("packet: len=%d\n", pktlen); // TODO
+  _info("packet: pktlen=%d\n", (int) pktlen); // TODO
   void dump_buffer(const uint8_t *data, size_t len); ////
   dump_buffer(pkt, pktlen);
 
