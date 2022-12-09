@@ -45,33 +45,33 @@
 
 /* A64 CCU Registers and Bit Definitions */
 
-  const uint64_t MIPI_DSI_CLK_REG = A64_CCU_ADDR + 0x168;
-  const uint32_t DSI_DPHY_GATING = 1    << 15;
-  const uint32_t DSI_DPHY_SRC_SEL = 0b10 << 8;
-  const uint32_t DPHY_CLK_DIV_M  = 3    << 0;
+#define MIPI_DSI_CLK_REG (A64_CCU_ADDR + 0x168)
+#define DPHY_CLK_DIV_M(n)   (n << 0)
+#define DSI_DPHY_SRC_SEL(n) (n << 8)
+#define DSI_DPHY_GATING     (1 << 15)
 
-/* A64 MIPI D-PHY Registers */
+/* A64 MIPI D-PHY Registers (Undocumented) */
 
-  const uint64_t DPHY_TX_CTL_REG = A64_DPHY_ADDR + 0x04;
-  const uint64_t DPHY_TX_TIME0_REG = A64_DPHY_ADDR + 0x10;
-  const uint64_t DPHY_TX_TIME1_REG = A64_DPHY_ADDR + 0x14;
-  const uint64_t DPHY_TX_TIME2_REG = A64_DPHY_ADDR + 0x18;
-  const uint64_t DPHY_TX_TIME3_REG = A64_DPHY_ADDR + 0x1c;
-  const uint64_t DPHY_TX_TIME4_REG = A64_DPHY_ADDR + 0x20;
-  const uint64_t DPHY_GCTL_REG = A64_DPHY_ADDR + 0x00;
-  const uint64_t DPHY_ANA0_REG = A64_DPHY_ADDR + 0x4c;
-  const uint64_t DPHY_ANA1_REG = A64_DPHY_ADDR + 0x50;
-  const uint64_t DPHY_ANA4_REG = A64_DPHY_ADDR + 0x5c;
-  const uint64_t DPHY_ANA2_REG = A64_DPHY_ADDR + 0x54;
-  const uint64_t DPHY_ANA3_REG = A64_DPHY_ADDR + 0x58;
+#define DPHY_TX_CTL_REG   (A64_DPHY_ADDR + 0x04)
+#define DPHY_TX_TIME0_REG (A64_DPHY_ADDR + 0x10)
+#define DPHY_TX_TIME1_REG (A64_DPHY_ADDR + 0x14)
+#define DPHY_TX_TIME2_REG (A64_DPHY_ADDR + 0x18)
+#define DPHY_TX_TIME3_REG (A64_DPHY_ADDR + 0x1c)
+#define DPHY_TX_TIME4_REG (A64_DPHY_ADDR + 0x20)
+#define DPHY_GCTL_REG (A64_DPHY_ADDR + 0x00)
+#define DPHY_ANA0_REG (A64_DPHY_ADDR + 0x4c)
+#define DPHY_ANA1_REG (A64_DPHY_ADDR + 0x50)
+#define DPHY_ANA4_REG (A64_DPHY_ADDR + 0x5c)
+#define DPHY_ANA2_REG (A64_DPHY_ADDR + 0x54)
+#define DPHY_ANA3_REG (A64_DPHY_ADDR + 0x58)
 
-/* A64 MIPI D-PHY Values */
+/* A64 MIPI D-PHY Values (Undocumented) */
 
-  const uint32_t ANA1_VTTMode = 0x80000000;
-  const uint32_t ANA2_EnableCKCPU = 0x10;
-  const uint32_t ANA2_EnableP2SCPU = 0xf000000;
-  const uint32_t ANA3_EnableVTTC = 0xf8000000;
-  const uint32_t ANA3_EnableDIV = 0x4000000;
+#define ANA1_VTTMode      0x80000000
+#define ANA2_EnableCKCPU  0x10
+#define ANA2_EnableP2SCPU 0xf000000
+#define ANA3_EnableVTTC   0xf8000000
+#define ANA3_EnableDIV    0x4000000
 
 /************************************************************************************************
  * Public Functions
@@ -90,8 +90,8 @@ int a64_mipi_dphy_enable(void)
   DEBUGASSERT(MIPI_DSI_CLK_REG == 0x1c20168);
 
   const uint32_t MIPI_DSI_CLK = DSI_DPHY_GATING
-      | DSI_DPHY_SRC_SEL
-      | DPHY_CLK_DIV_M;
+      | DSI_DPHY_SRC_SEL(0b10)
+      | DPHY_CLK_DIV_M(3);
   DEBUGASSERT(MIPI_DSI_CLK == 0x8203);
   putreg32(MIPI_DSI_CLK, MIPI_DSI_CLK_REG);  // TODO: DMB
 
