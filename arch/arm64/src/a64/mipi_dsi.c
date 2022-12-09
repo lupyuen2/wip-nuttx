@@ -187,7 +187,7 @@ ssize_t mipi_dsi_long_packet(
   size_t txlen          // Buffer Length
 )
 {
-  ginfo("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen);
+  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
   DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
 
   // Data Identifier (DI) (1 byte):
@@ -261,7 +261,7 @@ ssize_t mipi_dsi_short_packet(
   size_t txlen          // Buffer Length
 )
 {
-  ginfo("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen);
+  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
   DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
   DEBUGASSERT(txlen == 1 || txlen == 2);
 

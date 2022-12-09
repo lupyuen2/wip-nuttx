@@ -263,7 +263,7 @@ ssize_t a64_mipi_dsi_write(
 {  
   int ret;
   ssize_t pktlen = -1;
-  ginfo("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen); // TODO
+  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen); // TODO
   DEBUGASSERT(txbuf != NULL);
   if (cmd == MIPI_DSI_DCS_SHORT_WRITE)       
     { 
@@ -309,7 +309,7 @@ ssize_t a64_mipi_dsi_write(
   DEBUGASSERT(pktlen > 0);
 
   // Dump the packet
-  ginfo("pktlen=%d\n", (int) pktlen);
+  ginfo("pktlen=%ld\n", pktlen);
   ginfodumpbuffer("pkt", pkt, pktlen);
 
   // Set the following bits to 1 in DSI_CMD_CTL_REG (DSI Low Power Control Register) at Offset 0x200:
