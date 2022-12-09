@@ -58,7 +58,7 @@ int a64_mipi_dphy_enable(void)
   // Set DSI_DPHY_GATING (Bit 15) to 1 (DSI DPHY Clock is On)
   // Set DSI_DPHY_SRC_SEL (Bits 8 to 9) to 0b10 (DSI DPHY Clock Source is PLL_PERIPH0(1X))
   // Set DPHY_CLK_DIV_M (Bits 0 to 3) to 3 (DSI DPHY Clock divide ratio - 1)
-  _info("Set DSI Clock to 150 MHz\n");
+  ginfo("Set DSI Clock to 150 MHz\n");
   const uint64_t MIPI_DSI_CLK_REG = CCU_BASE_ADDRESS + 0x168;
   DEBUGASSERT(MIPI_DSI_CLK_REG == 0x1c20168);
 
@@ -74,7 +74,7 @@ int a64_mipi_dphy_enable(void)
   // Power on DPHY Tx (Undocumented)
   // DPHY_TX_CTL_REG: DPHY Offset 0x04
   // Set to 0x1000 0000
-  _info("Power on DPHY Tx\n");
+  ginfo("Power on DPHY Tx\n");
   const uint64_t DPHY_TX_CTL_REG = DPHY_BASE_ADDRESS + 0x04;
   DEBUGASSERT(DPHY_TX_CTL_REG == 0x1ca1004);
   putreg32(0x10000000, DPHY_TX_CTL_REG);  // TODO: DMB
@@ -112,7 +112,7 @@ int a64_mipi_dphy_enable(void)
   // Enable DPHY (Undocumented)
   // DPHY_GCTL_REG: DPHY Offset 0x00 (Enable DPHY)
   // Set to 0x31
-  _info("Enable DPHY\n");
+  ginfo("Enable DPHY\n");
   const uint64_t DPHY_GCTL_REG = DPHY_BASE_ADDRESS + 0x00;
   DEBUGASSERT(DPHY_GCTL_REG == 0x1ca1000);
   putreg32(0x31, DPHY_GCTL_REG);  // TODO: DMB
@@ -147,7 +147,7 @@ int a64_mipi_dphy_enable(void)
   // Enable LDOR, LDOC, LDOD (Undocumented)
   // DPHY_ANA3_REG: DPHY Offset 0x58 (Enable LDOR, LDOC, LDOD)
   // Set to 0x304 0000
-  _info("Enable LDOR, LDOC, LDOD\n");
+  ginfo("Enable LDOR, LDOC, LDOD\n");
   const uint64_t DPHY_ANA3_REG = DPHY_BASE_ADDRESS + 0x58;
   DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
   putreg32(0x3040000, DPHY_ANA3_REG);  // TODO: DMB
