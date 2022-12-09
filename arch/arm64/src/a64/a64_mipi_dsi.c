@@ -345,7 +345,7 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
   ssize_t pktlen = -1;
   uint8_t pkt[MIPI_DSI_MAX_PACKET_SIZE];
 
-  /* Length should be 1 for Short Write, 2 for Short Write With Param*/
+  /* Length should be 1 for Short Write, 2 for Short Write With Param */
 
   ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
   DEBUGASSERT(txbuf != NULL);
