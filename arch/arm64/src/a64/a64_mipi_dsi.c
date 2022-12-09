@@ -641,7 +641,7 @@ int a64_mipi_dsi_enable(void)
   DEBUGASSERT(dsi_sync_vse == 0x14000011);
   putreg32(dsi_sync_vse, DSI_SYNC_VSE_REG);  // TODO: DMB
 
-  // Set Basic Size (Undocumented)
+  // Set Basic Size
   ginfo("Set Basic Size\n");
 
   // DSI Line Number Register 0 (A31 Page 847)
