@@ -61,7 +61,7 @@
 
 // DSI_CTL_REG: DSI Offset 0x0 (A31 Page 843)
 #define DSI_CTL_REG (A64_DSI_ADDR + 0x0)
-#define DSI_En (1 << 0)
+#define DSI_EN (1 << 0)
 
 // DSI_TRANS_START_REG: DSI Offset 0x60 (Undocumented)
 #define DSI_TRANS_START_REG (A64_DSI_ADDR + 0x60)
@@ -403,8 +403,8 @@ int a64_mipi_dsi_enable(void)
   ginfo("Enable DSI Block\n");
   DEBUGASSERT(DSI_CTL_REG == 0x1ca0000);
 
-  DEBUGASSERT(DSI_En == 1);
-  putreg32(DSI_En, DSI_CTL_REG);  // TODO: DMB
+  DEBUGASSERT(DSI_EN == 1);
+  putreg32(DSI_EN, DSI_CTL_REG);  // TODO: DMB
 
   // DSI_BASIC_CTL0_REG: DSI Offset 0x10 (A31 Page 845)
   // Set CRC_En (Bit 17) to 1 (Enable CRC)
