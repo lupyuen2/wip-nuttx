@@ -25,9 +25,9 @@
  * https://github.com/lupyuen/pinephone-nuttx/releases/download/doc/Allwinner_A64_User_Manual_V1.1.pdf
  */
 
-/************************************************************************************************
+/****************************************************************************
  * Included Files
- ************************************************************************************************/
+ ****************************************************************************/
 
 #include <nuttx/config.h>
 #include <stdint.h>
@@ -73,25 +73,28 @@
 #define ANA3_EnableVTTC   0xf8000000
 #define ANA3_EnableDIV    0x4000000
 
-/************************************************************************************************
+/****************************************************************************
  * Public Functions
- ************************************************************************************************/
+ ****************************************************************************/
 
 /// Enable MIPI Display Physical Layer (DPHY).
 /// Based on https://lupyuen.github.io/articles/dsi#appendix-enable-mipi-display-physical-layer-dphy
 int a64_mipi_dphy_enable(void)
 {
-  // Set DSI Clock to 150 MHz (600 MHz / 4)
+
+  /* Set DSI Clock to 150 MHz (600 MHz / 4) *************************************************/
+
+  ginfo("Set DSI Clock to 150 MHz\n");
+
   // MIPI_DSI_CLK_REG: CCU Offset 0x168 (A64 Page 122)
   // Set DSI_DPHY_GATING (Bit 15) to 1 (DSI DPHY Clock is On)
   // Set DSI_DPHY_SRC_SEL (Bits 8 to 9) to 0b10 (DSI DPHY Clock Source is PLL_PERIPH0(1X))
   // Set DPHY_CLK_DIV_M (Bits 0 to 3) to 3 (DSI DPHY Clock divide ratio - 1)
-  ginfo("Set DSI Clock to 150 MHz\n");
   DEBUGASSERT(MIPI_DSI_CLK_REG == 0x1c20168);
 
-  const uint32_t MIPI_DSI_CLK = DSI_DPHY_GATING
-      | DSI_DPHY_SRC_SEL(0b10)
-      | DPHY_CLK_DIV_M(3);
+  const uint32_t MIPI_DSI_CLK = DSI_DPHY_GATING | 
+                                DSI_DPHY_SRC_SEL(0b10) | 
+                                DPHY_CLK_DIV_M(3);
   DEBUGASSERT(MIPI_DSI_CLK == 0x8203);
   putreg32(MIPI_DSI_CLK, MIPI_DSI_CLK_REG);  // TODO: DMB
 
