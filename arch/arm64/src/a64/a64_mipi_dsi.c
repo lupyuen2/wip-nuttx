@@ -57,120 +57,120 @@
 /// DSI Instruction Loop Number
 #define DSI_INST_LOOP_NUM_REG(n) (A64_DSI_ADDR + (0x044 + n * 0x10))
 
-  const uint64_t DSI_CMD_CTL_REG = A64_DSI_ADDR + 0x200;
-  const uint32_t RX_Overflow = 1 << 26;
-  const uint32_t RX_Flag     = 1 << 25;
-  const uint32_t TX_Flag     = 1 << 9;
+const uint64_t DSI_CMD_CTL_REG = A64_DSI_ADDR + 0x200;
+const uint32_t RX_Overflow = 1 << 26;
+const uint32_t RX_Flag     = 1 << 25;
+const uint32_t TX_Flag     = 1 << 9;
 
-  const uint64_t DSI_CMD_TX_REG = A64_DSI_ADDR + 0x300;
+const uint64_t DSI_CMD_TX_REG = A64_DSI_ADDR + 0x300;
 
-  const uint64_t DSI_INST_JUMP_SEL_REG = A64_DSI_ADDR + 0x48;
-  const uint32_t DSI_INST_ID_LPDT = 4;
-  const uint32_t DSI_INST_ID_LP11 = 0;
-  const uint32_t DSI_INST_ID_END  = 15;
+const uint64_t DSI_INST_JUMP_SEL_REG = A64_DSI_ADDR + 0x48;
+const uint32_t DSI_INST_ID_LPDT = 4;
+const uint32_t DSI_INST_ID_LP11 = 0;
+const uint32_t DSI_INST_ID_END  = 15;
 
-  const uint64_t BUS_CLK_GATING_REG0 = A64_CCU_ADDR + 0x60;
-  const uint32_t MIPIDSI_GATING = 1 << 1;
+const uint64_t BUS_CLK_GATING_REG0 = A64_CCU_ADDR + 0x60;
+const uint32_t MIPIDSI_GATING = 1 << 1;
 
-  const uint64_t BUS_SOFT_RST_REG0 = A64_CCU_ADDR + 0x2C0;
-  const uint32_t MIPI_DSI_RST = 1 << 1;
+const uint64_t BUS_SOFT_RST_REG0 = A64_CCU_ADDR + 0x2C0;
+const uint32_t MIPI_DSI_RST = 1 << 1;
 
-  const uint64_t DSI_CTL_REG = A64_DSI_ADDR + 0x0;
-  const uint32_t DSI_En = 1 << 0;
+const uint64_t DSI_CTL_REG = A64_DSI_ADDR + 0x0;
+const uint32_t DSI_En = 1 << 0;
 
-  const uint64_t DSI_TRANS_START_REG = A64_DSI_ADDR + 0x60;
+const uint64_t DSI_TRANS_START_REG = A64_DSI_ADDR + 0x60;
 
-  const uint64_t DSI_TRANS_ZERO_REG = A64_DSI_ADDR + 0x78;
+const uint64_t DSI_TRANS_ZERO_REG = A64_DSI_ADDR + 0x78;
 
-  const uint64_t DSI_DEBUG_DATA_REG = A64_DSI_ADDR + 0x2f8;
+const uint64_t DSI_DEBUG_DATA_REG = A64_DSI_ADDR + 0x2f8;
 
-  const uint64_t DSI_BASIC_CTL1_REG = A64_DSI_ADDR + 0x14;
-  const uint32_t Video_Start_Delay = 1468 << 4;
-  const uint32_t Video_Precision_Mode_Align  = 1    << 2;
-  const uint32_t Video_Frame_Start  = 1    << 1;
-  const uint32_t DSI_Mode  = 1    << 0;
+const uint64_t DSI_BASIC_CTL1_REG = A64_DSI_ADDR + 0x14;
+#define Video_Start_Delay(n) (n << 4)
+const uint32_t Video_Precision_Mode_Align  = 1    << 2;
+const uint32_t Video_Frame_Start  = 1    << 1;
+const uint32_t DSI_Mode  = 1    << 0;
 
-  const uint64_t DSI_TCON_DRQ_REG = A64_DSI_ADDR + 0x7c;
+const uint64_t DSI_TCON_DRQ_REG = A64_DSI_ADDR + 0x7c;
 
-  const uint64_t DSI_INST_LOOP_SEL_REG = A64_DSI_ADDR + 0x40;
+const uint64_t DSI_INST_LOOP_SEL_REG = A64_DSI_ADDR + 0x40;
 
-  const uint64_t DSI_PIXEL_PH_REG = A64_DSI_ADDR + 0x90;
+const uint64_t DSI_PIXEL_PH_REG = A64_DSI_ADDR + 0x90;
 
-  const uint64_t DSI_PIXEL_PF0_REG = A64_DSI_ADDR + 0x98;
-  const uint32_t CRC_Force = 0xffff;
+const uint64_t DSI_PIXEL_PF0_REG = A64_DSI_ADDR + 0x98;
+const uint32_t CRC_Force = 0xffff;
 
-  const uint64_t DSI_PIXEL_PF1_REG = A64_DSI_ADDR + 0x9c;
-  const uint32_t CRC_Init_LineN = 0xffff << 16;
-  const uint32_t CRC_Init_Line0 = 0xffff << 0;
+const uint64_t DSI_PIXEL_PF1_REG = A64_DSI_ADDR + 0x9c;
+const uint32_t CRC_Init_LineN = 0xffff << 16;
+const uint32_t CRC_Init_Line0 = 0xffff << 0;
 
-  const uint64_t DSI_PIXEL_CTL0_REG = A64_DSI_ADDR + 0x80;
-  const uint32_t PD_Plug_Dis = 1 << 16;
-  const uint32_t Pixel_Endian  = 0 << 4;
-  const uint32_t Pixel_Format  = 8 << 0;
+const uint64_t DSI_PIXEL_CTL0_REG = A64_DSI_ADDR + 0x80;
+const uint32_t PD_Plug_Dis = 1 << 16;
+const uint32_t Pixel_Endian  = 0 << 4;
+const uint32_t Pixel_Format  = 8 << 0;
 
-  const uint64_t DSI_BASIC_CTL_REG = A64_DSI_ADDR + 0x0c;
+const uint64_t DSI_BASIC_CTL_REG = A64_DSI_ADDR + 0x0c;
 
-  const uint64_t DSI_SYNC_HSS_REG = A64_DSI_ADDR + 0xb0;
+const uint64_t DSI_SYNC_HSS_REG = A64_DSI_ADDR + 0xb0;
 
-  const uint64_t DSI_SYNC_HSE_REG = A64_DSI_ADDR + 0xb4;
+const uint64_t DSI_SYNC_HSE_REG = A64_DSI_ADDR + 0xb4;
 
-  const uint64_t DSI_SYNC_VSS_REG = A64_DSI_ADDR + 0xb8;
+const uint64_t DSI_SYNC_VSS_REG = A64_DSI_ADDR + 0xb8;
 
-  const uint64_t DSI_SYNC_VSE_REG = A64_DSI_ADDR + 0xbc;
+const uint64_t DSI_SYNC_VSE_REG = A64_DSI_ADDR + 0xbc;
 
-  const uint64_t DSI_BASIC_SIZE0_REG = A64_DSI_ADDR + 0x18;
-  const uint32_t Video_VBP = 17 << 16;
-  const uint32_t Video_VSA = 10 << 0;
+const uint64_t DSI_BASIC_SIZE0_REG = A64_DSI_ADDR + 0x18;
+const uint32_t Video_VBP = 17 << 16;
+const uint32_t Video_VSA = 10 << 0;
 
-  const uint64_t DSI_BASIC_SIZE1_REG = A64_DSI_ADDR + 0x1c;
-  const uint32_t Video_VT = 1485 << 16;
-  const uint32_t Video_VACT = 1440 << 0;
+const uint64_t DSI_BASIC_SIZE1_REG = A64_DSI_ADDR + 0x1c;
+const uint32_t Video_VT = 1485 << 16;
+const uint32_t Video_VACT = 1440 << 0;
 
-  const uint64_t DSI_BLK_HSA0_REG = A64_DSI_ADDR + 0xc0;
+const uint64_t DSI_BLK_HSA0_REG = A64_DSI_ADDR + 0xc0;
 
-  const uint64_t DSI_BLK_HSA1_REG = A64_DSI_ADDR + 0xc4;
-  const uint32_t HSA_PF = 0x50b4 << 16;
-  const uint32_t HSA_PD  = 0      << 0;
+const uint64_t DSI_BLK_HSA1_REG = A64_DSI_ADDR + 0xc4;
+const uint32_t HSA_PF = 0x50b4 << 16;
+const uint32_t HSA_PD  = 0      << 0;
 
-  const uint64_t DSI_BLK_HBP0_REG = A64_DSI_ADDR + 0xc8;
+const uint64_t DSI_BLK_HBP0_REG = A64_DSI_ADDR + 0xc8;
 
-  const uint64_t DSI_BLK_HBP1_REG = A64_DSI_ADDR + 0xcc;
-  const uint32_t HBP_PF = 0x757a << 16;
-  const uint32_t HBP_PD  = 0      << 0;
+const uint64_t DSI_BLK_HBP1_REG = A64_DSI_ADDR + 0xcc;
+const uint32_t HBP_PF = 0x757a << 16;
+const uint32_t HBP_PD  = 0      << 0;
 
-  const uint64_t DSI_BLK_HFP0_REG = A64_DSI_ADDR + 0xd0;
+const uint64_t DSI_BLK_HFP0_REG = A64_DSI_ADDR + 0xd0;
 
-  const uint64_t DSI_BLK_HFP1_REG = A64_DSI_ADDR + 0xd4;
-  const uint32_t HFP_PF = 0x50b4 << 16;
-  const uint32_t HFP_PD  = 0      << 0;
+const uint64_t DSI_BLK_HFP1_REG = A64_DSI_ADDR + 0xd4;
+const uint32_t HFP_PF = 0x50b4 << 16;
+const uint32_t HFP_PD  = 0      << 0;
 
-  const uint64_t DSI_BLK_HBLK0_REG = A64_DSI_ADDR + 0xe0;
+const uint64_t DSI_BLK_HBLK0_REG = A64_DSI_ADDR + 0xe0;
 
-  const uint64_t DSI_BLK_HBLK1_REG = A64_DSI_ADDR + 0xe4;
-  const uint32_t HBLK_PF = 0x72bd << 16;
-  const uint32_t HBLK_PD  = 0      << 0;
+const uint64_t DSI_BLK_HBLK1_REG = A64_DSI_ADDR + 0xe4;
+const uint32_t HBLK_PF = 0x72bd << 16;
+const uint32_t HBLK_PD  = 0      << 0;
 
-  const uint64_t DSI_BLK_VBLK0_REG = A64_DSI_ADDR + 0xe8;
+const uint64_t DSI_BLK_VBLK0_REG = A64_DSI_ADDR + 0xe8;
 
-  const uint64_t DSI_BLK_VBLK1_REG = A64_DSI_ADDR + 0xec;
-  const uint32_t VBLK_PF = 0xffff << 16;
-  const uint32_t VBLK_PD  = 0      << 0;
+const uint64_t DSI_BLK_VBLK1_REG = A64_DSI_ADDR + 0xec;
+const uint32_t VBLK_PF = 0xffff << 16;
+const uint32_t VBLK_PD  = 0      << 0;
 
-  const uint32_t DSI_INST_ID_TBA = 1;
+const uint32_t DSI_INST_ID_TBA = 1;
 
-  const uint32_t DSI_INST_ID_HSC = 2;
+const uint32_t DSI_INST_ID_HSC = 2;
 
-  const uint32_t DSI_INST_ID_HSD = 3;
+const uint32_t DSI_INST_ID_HSD = 3;
 
-  const uint32_t DSI_INST_ID_HSCEXIT = 5;
+const uint32_t DSI_INST_ID_HSCEXIT = 5;
 
-  const uint32_t DSI_INST_ID_NOP = 6;
+const uint32_t DSI_INST_ID_NOP = 6;
 
-  const uint32_t DSI_INST_ID_DLY = 7;
+const uint32_t DSI_INST_ID_DLY = 7;
 
-  const uint32_t DSI_INST_JUMP_CFG = 0;
+const uint32_t DSI_INST_JUMP_CFG = 0;
 
-  const uint32_t DSI_INST_FUNC_LANE_CEN = 1 << 4;
+const uint32_t DSI_INST_FUNC_LANE_CEN = 1 << 4;
 
 /************************************************************************************************
  * Private Data
@@ -466,7 +466,7 @@ int a64_mipi_dsi_enable(void)
   ginfo("Set Video Start Delay\n");
   DEBUGASSERT(DSI_BASIC_CTL1_REG == 0x1ca0014);
 
-  const uint32_t DSI_BASIC_CTL1 = Video_Start_Delay
+  const uint32_t DSI_BASIC_CTL1 = Video_Start_Delay(1468)
       | Video_Precision_Mode_Align
       | Video_Frame_Start
       | DSI_Mode;
