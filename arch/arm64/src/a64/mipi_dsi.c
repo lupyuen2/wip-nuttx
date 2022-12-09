@@ -311,16 +311,40 @@ ssize_t mipi_dsi_short_packet(
 ///////////////////////////////////////////////////////////////////////////////
 // TODO: Remove this test code
 
-//// TODO: Remove. Dump the buffer
 void dump_buffer(const uint8_t *data, size_t len)
 {
-  int printf(const char *format, ...);
+  char buf[8 * 3];
+  memset(buf, ' ', sizeof(buf));
+  buf[sizeof(buf) - 1] = 0;
+
 	for (int i = 0; i < len; i++) {
-		printf("%02x ", data[i]);
-		if ((i + 1) % 8 == 0) { printf("\n"); }
+    const int mod = i % 8;
+    const int d1 = data[i] >> 4;
+    const int d2 = data[i] & 0b1111;
+    buf[mod * 3] = (d1 < 10) ? ('0' + d1) : ('a' + d1 - 10);
+    buf[mod * 3 + 1] = (d2 < 10) ? ('0' + d2) : ('a' + d2 - 10);
+
+		if ((i + 1) % 8 == 0 || i == len - 1) {
+      _info("%s\n", buf);
+      if (i == len - 1) { break; }
+
+      memset(buf, ' ', sizeof(buf));
+      buf[sizeof(buf) - 1] = 0;
+    }
 	}
-	printf("\n");
 }
+
+/*
+39 40 00 25 e9 82 10 06 
+05 a2 0a a5 12 31 23 37 
+83 04 bc 27 38 0c 00 03 
+00 00 00 0c 00 03 00 00 
+00 75 75 31 88 88 88 88 
+88 88 13 88 64 64 20 88 
+88 88 88 88 88 02 88 00 
+00 00 00 00 00 00 00 00 
+00 00 00 00 65 03 
+*/
 
 void mipi_dsi_test(void)  //// TODO: Remove
 {
