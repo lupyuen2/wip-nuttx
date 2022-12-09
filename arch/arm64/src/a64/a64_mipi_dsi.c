@@ -41,75 +41,77 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+/* A64 MIPI DSI Registers and Bit Definitions */
+
 // DSI_BASIC_CTL0_REG: DSI Offset 0x10 (A31 Page 845)
 /// (DSI Configuration Register 0) at Offset 0x10
 /// INSTRU_EN is Bit 0 of DSI_BASIC_CTL0_REG 
 #define DSI_BASIC_CTL0_REG (A64_DSI_ADDR + 0x10)
 #define INSTRU_EN (1 << 0)
-const uint32_t CRC_En = 1 << 17;
-const uint32_t ECC_En = 1 << 16;
+#define CRC_En (1 << 17)
+#define ECC_En (1 << 16)
 
 // BUS_CLK_GATING_REG0: CCU Offset 0x60 (A64 Page 100)
-const uint64_t BUS_CLK_GATING_REG0 = A64_CCU_ADDR + 0x60;
-const uint32_t MIPIDSI_GATING = 1 << 1;
+#define BUS_CLK_GATING_REG0 (A64_CCU_ADDR + 0x60)
+#define MIPIDSI_GATING (1 << 1)
 
 // BUS_SOFT_RST_REG0: CCU Offset 0x2C0 (A64 Page 138)
-const uint64_t BUS_SOFT_RST_REG0 = A64_CCU_ADDR + 0x2C0;
-const uint32_t MIPI_DSI_RST = 1 << 1;
+#define BUS_SOFT_RST_REG0 (A64_CCU_ADDR + 0x2C0)
+#define MIPI_DSI_RST (1 << 1)
 
 // DSI_CTL_REG: DSI Offset 0x0 (A31 Page 843)
-const uint64_t DSI_CTL_REG = A64_DSI_ADDR + 0x0;
-const uint32_t DSI_En = 1 << 0;
+#define DSI_CTL_REG (A64_DSI_ADDR + 0x0)
+#define DSI_En (1 << 0)
 
 // DSI_TRANS_START_REG: DSI Offset 0x60 (Undocumented)
-const uint64_t DSI_TRANS_START_REG = A64_DSI_ADDR + 0x60;
+#define DSI_TRANS_START_REG (A64_DSI_ADDR + 0x60)
 
 // DSI_TRANS_ZERO_REG: DSI Offset 0x78 (Undocumented)
-const uint64_t DSI_TRANS_ZERO_REG = A64_DSI_ADDR + 0x78;
+#define DSI_TRANS_ZERO_REG (A64_DSI_ADDR + 0x78)
 
 // DSI_DEBUG_DATA_REG: DSI Offset 0x2f8 (Undocumented)
-const uint64_t DSI_DEBUG_DATA_REG = A64_DSI_ADDR + 0x2f8;
+#define DSI_DEBUG_DATA_REG (A64_DSI_ADDR + 0x2f8)
 
 // DSI_BASIC_CTL1_REG: DSI Offset 0x14 (A31 Page 846)
-const uint64_t DSI_BASIC_CTL1_REG = A64_DSI_ADDR + 0x14;
+#define DSI_BASIC_CTL1_REG (A64_DSI_ADDR + 0x14)
 #define Video_Start_Delay(n) (n << 4)
-const uint32_t Video_Precision_Mode_Align  = 1    << 2;
-const uint32_t Video_Frame_Start  = 1    << 1;
-const uint32_t DSI_Mode  = 1    << 0;
+#define Video_Precision_Mode_Align  (1    << 2)
+#define Video_Frame_Start  (1    << 1)
+#define DSI_Mode  (1    << 0)
 
 // DSI_TCON_DRQ_REG: DSI Offset 0x7c (Undocumented)
-const uint64_t DSI_TCON_DRQ_REG = A64_DSI_ADDR + 0x7c;
+#define DSI_TCON_DRQ_REG (A64_DSI_ADDR + 0x7c)
 
 // DSI_INST_LOOP_SEL_REG: DSI Offset 0x40 (Undocumented)
-const uint64_t DSI_INST_LOOP_SEL_REG = A64_DSI_ADDR + 0x40;
+#define DSI_INST_LOOP_SEL_REG (A64_DSI_ADDR + 0x40)
 
 // DSI_PIXEL_PH_REG: DSI Offset 0x90 (A31 Page 848)
-const uint64_t DSI_PIXEL_PH_REG = A64_DSI_ADDR + 0x90;
+#define DSI_PIXEL_PH_REG (A64_DSI_ADDR + 0x90)
 #define PIXEL_ECC(n) (n   << 24)
 #define PIXEL_WC(n) (n << 8)
 #define PIXEL_VC(n) (n << 6)
 #define PIXEL_DT(n) (n << 0)
 
 // DSI_PIXEL_PF0_REG: DSI Offset 0x98 (A31 Page 849)
-const uint64_t DSI_PIXEL_PF0_REG = A64_DSI_ADDR + 0x98;
-const uint32_t CRC_Force = 0xffff;
+#define DSI_PIXEL_PF0_REG (A64_DSI_ADDR + 0x98)
+#define CRC_Force 0xffff
 
 // DSI_PIXEL_PF1_REG: DSI Offset 0x9c (A31 Page 849)
-const uint64_t DSI_PIXEL_PF1_REG = A64_DSI_ADDR + 0x9c;
+#define DSI_PIXEL_PF1_REG (A64_DSI_ADDR + 0x9c)
 #define CRC_Init_LineN(n) (n << 16)
 #define CRC_Init_Line0(n) (n << 0)
 
 // DSI_PIXEL_CTL0_REG: DSI Offset 0x80 (A31 Page 847)
-const uint64_t DSI_PIXEL_CTL0_REG = A64_DSI_ADDR + 0x80;
-const uint32_t PD_Plug_Dis = 1 << 16;
-const uint32_t Pixel_Endian  = 0 << 4;
+#define DSI_PIXEL_CTL0_REG (A64_DSI_ADDR + 0x80)
+#define PD_Plug_Dis (1 << 16)
+#define Pixel_Endian  (0 << 4)
 #define Pixel_Format(n) (n << 0)
 
 // DSI_BASIC_CTL_REG: DSI Offset 0x0c (Undocumented)
-const uint64_t DSI_BASIC_CTL_REG = A64_DSI_ADDR + 0x0c;
+#define DSI_BASIC_CTL_REG (A64_DSI_ADDR + 0x0c)
 
 // DSI_SYNC_HSS_REG: DSI Offset 0xb0 (A31 Page 850)
-const uint64_t DSI_SYNC_HSS_REG = A64_DSI_ADDR + 0xb0;
+#define DSI_SYNC_HSS_REG (A64_DSI_ADDR + 0xb0)
 #define SYNC_ECC(n) (n << 24)
 #define SYNC_D1(n) (n    << 16)
 #define SYNC_D0(n) (n   << 8)
@@ -117,99 +119,95 @@ const uint64_t DSI_SYNC_HSS_REG = A64_DSI_ADDR + 0xb0;
 #define SYNC_DT(n) (n << 0)
 
 // DSI_SYNC_HSE_REG: DSI Offset 0xb4 (A31 Page 850)
-const uint64_t DSI_SYNC_HSE_REG = A64_DSI_ADDR + 0xb4;
+#define DSI_SYNC_HSE_REG (A64_DSI_ADDR + 0xb4)
 
 // DSI_SYNC_VSS_REG: DSI Offset 0xb8 (A31 Page 851)
-const uint64_t DSI_SYNC_VSS_REG = A64_DSI_ADDR + 0xb8;
+#define DSI_SYNC_VSS_REG (A64_DSI_ADDR + 0xb8)
 
 // DSI_SYNC_VSE_REG: DSI Offset 0xbc (A31 Page 851)
-const uint64_t DSI_SYNC_VSE_REG = A64_DSI_ADDR + 0xbc;
+#define DSI_SYNC_VSE_REG (A64_DSI_ADDR + 0xbc)
 
 // DSI_BASIC_SIZE0_REG: DSI Offset 0x18 (Undocumented)
-const uint64_t DSI_BASIC_SIZE0_REG = A64_DSI_ADDR + 0x18;
+#define DSI_BASIC_SIZE0_REG (A64_DSI_ADDR + 0x18)
 #define Video_VBP(n) (n << 16)
 #define Video_VSA(n) (n << 0)
 
 // DSI_BASIC_SIZE1_REG: DSI Offset 0x1c (Undocumented)
-const uint64_t DSI_BASIC_SIZE1_REG = A64_DSI_ADDR + 0x1c;
+#define DSI_BASIC_SIZE1_REG (A64_DSI_ADDR + 0x1c)
 #define Video_VT(n) (n << 16)
 #define Video_VACT(n) (n << 0)
 
 // DSI_BLK_HSA0_REG: DSI Offset 0xc0 (A31 Page 852)
-const uint64_t DSI_BLK_HSA0_REG = A64_DSI_ADDR + 0xc0;
+#define DSI_BLK_HSA0_REG (A64_DSI_ADDR + 0xc0)
 
 // DSI_BLK_HSA1_REG: DSI Offset 0xc4 (A31 Page 852)
-const uint64_t DSI_BLK_HSA1_REG = A64_DSI_ADDR + 0xc4;
+#define DSI_BLK_HSA1_REG (A64_DSI_ADDR + 0xc4)
 #define HSA_PF(n) (n << 16)
 #define HSA_PD(n) (n      << 0)
 
 // DSI_BLK_HBP0_REG: DSI Offset 0xc8 (A31 Page 852)
-const uint64_t DSI_BLK_HBP0_REG = A64_DSI_ADDR + 0xc8;
+#define DSI_BLK_HBP0_REG (A64_DSI_ADDR + 0xc8)
 
 // DSI_BLK_HBP1_REG: DSI Offset 0xcc (A31 Page 852)
-const uint64_t DSI_BLK_HBP1_REG = A64_DSI_ADDR + 0xcc;
+#define DSI_BLK_HBP1_REG (A64_DSI_ADDR + 0xcc)
 #define HBP_PF(n) (n << 16)
 #define HBP_PD(n) (n      << 0)
 
 // DSI_BLK_HFP0_REG: DSI Offset 0xd0 (A31 Page 852)
-const uint64_t DSI_BLK_HFP0_REG = A64_DSI_ADDR + 0xd0;
+#define DSI_BLK_HFP0_REG (A64_DSI_ADDR + 0xd0)
 
 // DSI_BLK_HFP1_REG: DSI Offset 0xd4 (A31 Page 853)
-const uint64_t DSI_BLK_HFP1_REG = A64_DSI_ADDR + 0xd4;
+#define DSI_BLK_HFP1_REG (A64_DSI_ADDR + 0xd4)
 #define HFP_PF(n) (n << 16)
 #define HFP_PD(n) (n      << 0)
 
 // DSI_BLK_HBLK0_REG: DSI Offset 0xe0 (A31 Page 853)
-const uint64_t DSI_BLK_HBLK0_REG = A64_DSI_ADDR + 0xe0;
+#define DSI_BLK_HBLK0_REG (A64_DSI_ADDR + 0xe0)
 
 // DSI_BLK_HBLK1_REG: DSI Offset 0xe4 (A31 Page 853)
-const uint64_t DSI_BLK_HBLK1_REG = A64_DSI_ADDR + 0xe4;
+#define DSI_BLK_HBLK1_REG (A64_DSI_ADDR + 0xe4)
 #define HBLK_PF(n) (n << 16)
 #define HBLK_PD(n) (n      << 0)
 
 // DSI_BLK_VBLK0_REG: DSI Offset 0xe8 (A31 Page 854)
-const uint64_t DSI_BLK_VBLK0_REG = A64_DSI_ADDR + 0xe8;
+#define DSI_BLK_VBLK0_REG (A64_DSI_ADDR + 0xe8)
 
 // DSI_BLK_VBLK1_REG: DSI Offset 0xec (A31 Page 854)
-const uint64_t DSI_BLK_VBLK1_REG = A64_DSI_ADDR + 0xec;
+#define DSI_BLK_VBLK1_REG (A64_DSI_ADDR + 0xec)
 #define VBLK_PF(n) (n << 16)
 #define VBLK_PD(n) (n      << 0)
 
 /// DSI Instruction Functions (Undocumented)
 #define DSI_INST_FUNC_REG(n) (A64_DSI_ADDR + 0x020 + n * 0x04)
-const uint32_t DSI_INST_FUNC_LANE_CEN = 1 << 4;
+#define DSI_INST_FUNC_LANE_CEN (1 << 4)
 
 /// DSI Instruction Jump Configuration (Undocumented)
 #define DSI_INST_JUMP_CFG_REG(n) (A64_DSI_ADDR + 0x04c + n * 0x04)
-const uint32_t DSI_INST_JUMP_CFG = 0;
+#define DSI_INST_JUMP_CFG 0
 
 /// DSI Instruction Loop Number (Undocumented)
 #define DSI_INST_LOOP_NUM_REG(n) (A64_DSI_ADDR + 0x044 + n * 0x10)
 
 // DSI_INST_JUMP_SEL_REG: DSI Offset 0x48 (Undocumented)
-const uint64_t DSI_INST_JUMP_SEL_REG = A64_DSI_ADDR + 0x48;
-const uint32_t DSI_INST_ID_LP11 = 0;
-const uint32_t DSI_INST_ID_TBA = 1;
-const uint32_t DSI_INST_ID_HSC = 2;
-const uint32_t DSI_INST_ID_HSD = 3;
-const uint32_t DSI_INST_ID_LPDT = 4;
-const uint32_t DSI_INST_ID_HSCEXIT = 5;
-const uint32_t DSI_INST_ID_NOP = 6;
-const uint32_t DSI_INST_ID_DLY = 7;
-const uint32_t DSI_INST_ID_END  = 15;
+#define DSI_INST_JUMP_SEL_REG (A64_DSI_ADDR + 0x48)
+#define DSI_INST_ID_LP11 0
+#define DSI_INST_ID_TBA 1
+#define DSI_INST_ID_HSC 2
+#define DSI_INST_ID_HSD 3
+#define DSI_INST_ID_LPDT 4
+#define DSI_INST_ID_HSCEXIT 5
+#define DSI_INST_ID_NOP 6
+#define DSI_INST_ID_DLY 7
+#define DSI_INST_ID_END  15
 
 // DSI_CMD_CTL_REG (DSI Low Power Control Register) at Offset 0x200
-const uint64_t DSI_CMD_CTL_REG = A64_DSI_ADDR + 0x200;
-const uint32_t RX_Overflow = 1 << 26;
-const uint32_t RX_Flag     = 1 << 25;
-const uint32_t TX_Flag     = 1 << 9;
+#define DSI_CMD_CTL_REG (A64_DSI_ADDR + 0x200)
+#define RX_Overflow (1 << 26)
+#define RX_Flag     (1 << 25)
+#define TX_Flag     (1 << 9)
 
 // (DSI Low Power Transmit Package Register) at Offset 0x300 to 0x3FC
-const uint64_t DSI_CMD_TX_REG = A64_DSI_ADDR + 0x300;
-
-/************************************************************************************************
- * Private Data
- ************************************************************************************************/
+#define DSI_CMD_TX_REG (A64_DSI_ADDR + 0x300)
 
 /************************************************************************************************
  * Private Functions
