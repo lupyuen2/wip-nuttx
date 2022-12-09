@@ -271,37 +271,44 @@ static void a64_enable_dsi_processing(void)
 }
 
 /****************************************************************************
- * Name: aaaa
+ * Name: a64_wait_dsi_transmit
  *
  * Description:
- *   aaaa
+ *   Wait for DSI Transmission to complete.
  *
  * Input Parameters:
  *   None
  *
  * Returned Value:
- *   OK is always returned at present.
+ *   OK if completed, ERROR if timeout.
  *
  ****************************************************************************/
 
-/// Wait for transmit to complete. Returns OK if completed, ERROR if timeout.
-/// See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
 static int a64_wait_dsi_transmit(void)
 {
-  // Wait up to 5 milliseconds
   int i;
+
+  /* Wait up to 5 milliseconds */
+
   for (i = 0; i < 5; i++)
     {
-      // To check whether the transmission is complete, we poll on INSTRU_EN (Bit 0)
+      /* To check whether the transmission is complete,
+       * we poll on INSTRU_EN (Bit 0)
+       */
+
       if ((getreg32(DSI_BASIC_CTL0_REG) & INSTRU_EN) == 0)
         {
-          // If INSTRU_EN is 0, then transmission is complete
+          /* If INSTRU_EN is 0, then transmission is complete */
+
           return 0;
         }
-      // Sleep 1 millisecond
+
+      /* Sleep 1 millisecond and try again */
+
       up_mdelay(1);
     }
-  _err("timeout");
+
+  gerr("timeout");
   return ERROR;
 }
 
