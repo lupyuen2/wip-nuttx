@@ -33,17 +33,11 @@
 
 /* Peripheral Base Addresses */
 
+#define A64_CCU_ADDR        0x01c20000 /* CCU             0x01c2:0000-0x01c2:03ff 1K */
 #define A64_PIO_ADDR        0x01c20800 /* PIO             0x01c2:0800-0x01c2:0bff 1K */
+#define A64_DSI_ADDR        0x01ca0000 /* MIPI DSI        0x01ca:0000-0x01ca:0fff 4K */
+#define A64_DPHY_ADDR       0x01ca1000 /* MIPI DSI-PHY    0x01ca:1000-0x01ca:1fff 4K */
 #define A64_RPIO_ADDR       0x01f02c00 /* R_PIO           0x01f0:2c00-0x01f0:2fff 1K */
-
-/// Base Address of Allwinner A64 CCU Controller
-#define CCU_BASE_ADDRESS 0x01c20000
-
-/// Base Address of Allwinner A64 MIPI DSI Controller
-#define DSI_BASE_ADDRESS 0x01ca0000
-
-/// Base Address of Allwinner A64 MIPI DPHY Controller
-#define DPHY_BASE_ADDRESS 0x01ca1000
 
 /****************************************************************************
  * Public Types
