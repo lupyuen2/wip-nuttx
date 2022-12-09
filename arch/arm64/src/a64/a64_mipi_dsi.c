@@ -19,7 +19,12 @@
  ****************************************************************************/
 
 /* Reference:
- *   ???
+ *
+ * "Understanding PinePhone's Display (MIPI DSI)"
+ * https://lupyuen.github.io/articles/dsi
+ * 
+ * "NuttX RTOS for PinePhone: Display Driver in Zig"
+ * https://lupyuen.github.io/articles/dsi2
  *
  * "A31 Page" refers to Allwinner A31 User Manual
  * https://lupyuen.github.io/images/A31_User_Manual_v1.3_20150510.pdf

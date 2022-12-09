@@ -32,8 +32,20 @@
  * Public Function Prototypes
  ****************************************************************************/
 
-/// Enable MIPI Display Physical Layer (DPHY).
-/// Based on https://lupyuen.github.io/articles/dsi#appendix-enable-mipi-display-physical-layer-dphy
+/****************************************************************************
+ * Name: a64_mipi_dphy_enable
+ *
+ * Description:
+ *   Enable MIPI Display Physical Layer (D-PHY).
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   OK is always returned at present.
+ *
+ ****************************************************************************/
+
 int a64_mipi_dphy_enable(void);
 
 #endif /* __ARCH_ARM64_SRC_A64_A64_MIPI_DPHY_H */

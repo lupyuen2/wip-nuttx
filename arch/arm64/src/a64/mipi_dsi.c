@@ -19,7 +19,12 @@
  ****************************************************************************/
 
 /* Reference:
- *   ???
+ *
+ * "Understanding PinePhone's Display (MIPI DSI)"
+ * https://lupyuen.github.io/articles/dsi
+ * 
+ * "NuttX RTOS for PinePhone: Display Driver in Zig"
+ * https://lupyuen.github.io/articles/dsi2
  */
 
 /****************************************************************************

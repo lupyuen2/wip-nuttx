@@ -19,7 +19,12 @@
  ****************************************************************************/
 
 /* Reference:
- *   ???
+ *
+ * "Understanding PinePhone's Display (MIPI DSI)"
+ * https://lupyuen.github.io/articles/dsi
+ *
+ * "NuttX RTOS for PinePhone: Display Driver in Zig"
+ * https://lupyuen.github.io/articles/dsi2
  *
  * "A64 Page" refers to Allwinner A64 User Manual
  * https://lupyuen.github.io/images/Allwinner_A64_User_Manual_V1.1.pdf
@@ -68,11 +73,11 @@
 
 /* A64 MIPI D-PHY Values (Undocumented) */
 
-#define ANA1_VTTMode      0x80000000
-#define ANA2_EnableCKCPU  0x10
-#define ANA2_EnableP2SCPU 0xf000000
-#define ANA3_EnableVTTC   0xf8000000
-#define ANA3_EnableDIV    0x4000000
+#define ANA1_VTTMODE      0x80000000
+#define ANA2_ENABLECKCPU  0x10
+#define ANA2_ENABLEP2SCPU 0xf000000
+#define ANA3_ENABLEVTTC   0xf8000000
+#define ANA3_ENABLEDIV    0x4000000
 
 /****************************************************************************
  * Public Functions
@@ -169,31 +174,31 @@ int a64_mipi_dphy_enable(void)
   up_mdelay(1);
 
   DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
-  modreg32(ANA3_EnableVTTC, ANA3_EnableVTTC, DPHY_ANA3_REG);
+  modreg32(ANA3_ENABLEVTTC, ANA3_ENABLEVTTC, DPHY_ANA3_REG);
 
   /* Wait at least 1 microsecond */
 
   up_mdelay(1);
 
   DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
-  modreg32(ANA3_EnableDIV, ANA3_EnableDIV, DPHY_ANA3_REG);
+  modreg32(ANA3_ENABLEDIV, ANA3_ENABLEDIV, DPHY_ANA3_REG);
 
   /* Wait at least 1 microsecond */
 
   up_mdelay(1);
 
   DEBUGASSERT(DPHY_ANA2_REG == 0x1ca1054);
-  modreg32(ANA2_EnableCKCPU, ANA2_EnableCKCPU, DPHY_ANA2_REG);
+  modreg32(ANA2_ENABLECKCPU, ANA2_ENABLECKCPU, DPHY_ANA2_REG);
 
   /* Wait at least 1 microsecond */
 
   up_mdelay(1);
 
   DEBUGASSERT(DPHY_ANA1_REG == 0x1ca1050);
-  modreg32(ANA1_VTTMode, ANA1_VTTMode, DPHY_ANA1_REG);
+  modreg32(ANA1_VTTMODE, ANA1_VTTMODE, DPHY_ANA1_REG);
 
   DEBUGASSERT(DPHY_ANA2_REG == 0x1ca1054);
-  modreg32(ANA2_EnableP2SCPU, ANA2_EnableP2SCPU, DPHY_ANA2_REG);
+  modreg32(ANA2_ENABLEP2SCPU, ANA2_ENABLEP2SCPU, DPHY_ANA2_REG);
 
   return OK;
 }
