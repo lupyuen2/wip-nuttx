@@ -45,7 +45,7 @@
 
 /* A64 CCU Registers and Bit Definitions */
 
-#define MIPI_DSI_CLK_REG (A64_CCU_ADDR + 0x168)
+#define MIPI_DSI_CLK_REG    (A64_CCU_ADDR + 0x168)
 #define DPHY_CLK_DIV_M(n)   (n << 0)
 #define DSI_DPHY_SRC_SEL(n) (n << 8)
 #define DSI_DPHY_GATING     (1 << 15)
@@ -58,12 +58,12 @@
 #define DPHY_TX_TIME2_REG (A64_DPHY_ADDR + 0x18)
 #define DPHY_TX_TIME3_REG (A64_DPHY_ADDR + 0x1c)
 #define DPHY_TX_TIME4_REG (A64_DPHY_ADDR + 0x20)
-#define DPHY_GCTL_REG (A64_DPHY_ADDR + 0x00)
-#define DPHY_ANA0_REG (A64_DPHY_ADDR + 0x4c)
-#define DPHY_ANA1_REG (A64_DPHY_ADDR + 0x50)
-#define DPHY_ANA4_REG (A64_DPHY_ADDR + 0x5c)
-#define DPHY_ANA2_REG (A64_DPHY_ADDR + 0x54)
-#define DPHY_ANA3_REG (A64_DPHY_ADDR + 0x58)
+#define DPHY_GCTL_REG     (A64_DPHY_ADDR + 0x00)
+#define DPHY_ANA0_REG     (A64_DPHY_ADDR + 0x4c)
+#define DPHY_ANA1_REG     (A64_DPHY_ADDR + 0x50)
+#define DPHY_ANA4_REG     (A64_DPHY_ADDR + 0x5c)
+#define DPHY_ANA2_REG     (A64_DPHY_ADDR + 0x54)
+#define DPHY_ANA3_REG     (A64_DPHY_ADDR + 0x58)
 
 /* A64 MIPI D-PHY Values (Undocumented) */
 
@@ -82,7 +82,7 @@
 int a64_mipi_dphy_enable(void)
 {
 
-  /* Set DSI Clock to 150 MHz (600 MHz / 4) *************************************************/
+  /* Set DSI Clock to 150 MHz (600 MHz / 4) *********************************/
 
   ginfo("Set DSI Clock to 150 MHz\n");
 
@@ -99,9 +99,10 @@ int a64_mipi_dphy_enable(void)
   putreg32(MIPI_DSI_CLK, MIPI_DSI_CLK_REG);  // TODO: DMB
 
   // Power on DPHY Tx (Undocumented)
+  ginfo("Power on DPHY Tx\n");
+
   // DPHY_TX_CTL_REG: DPHY Offset 0x04
   // Set to 0x1000 0000
-  ginfo("Power on DPHY Tx\n");
   DEBUGASSERT(DPHY_TX_CTL_REG == 0x1ca1004);
   putreg32(0x10000000, DPHY_TX_CTL_REG);  // TODO: DMB
 
@@ -131,9 +132,10 @@ int a64_mipi_dphy_enable(void)
   putreg32(0x303, DPHY_TX_TIME4_REG);  // TODO: DMB
 
   // Enable DPHY (Undocumented)
+  ginfo("Enable DPHY\n");
+
   // DPHY_GCTL_REG: DPHY Offset 0x00 (Enable DPHY)
   // Set to 0x31
-  ginfo("Enable DPHY\n");
   DEBUGASSERT(DPHY_GCTL_REG == 0x1ca1000);
   putreg32(0x31, DPHY_GCTL_REG);  // TODO: DMB
 
@@ -161,9 +163,10 @@ int a64_mipi_dphy_enable(void)
   up_mdelay(1);  // 5 microseconds are sufficient
 
   // Enable LDOR, LDOC, LDOD (Undocumented)
+  ginfo("Enable LDOR, LDOC, LDOD\n");
+
   // DPHY_ANA3_REG: DPHY Offset 0x58 (Enable LDOR, LDOC, LDOD)
   // Set to 0x304 0000
-  ginfo("Enable LDOR, LDOC, LDOD\n");
   DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
   putreg32(0x3040000, DPHY_ANA3_REG);  // TODO: DMB
 

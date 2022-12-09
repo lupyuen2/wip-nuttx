@@ -390,7 +390,7 @@ ssize_t a64_mipi_dsi_write(
 /// Based on https://lupyuen.github.io/articles/dsi#appendix-enable-mipi-dsi-block
 int a64_mipi_dsi_enable(void)
 {
-  /* Enable MIPI DSI Bus *************************************************/
+  /* Enable MIPI DSI Bus ****************************************************/
 
   ginfo("Enable MIPI DSI Bus\n");
 
