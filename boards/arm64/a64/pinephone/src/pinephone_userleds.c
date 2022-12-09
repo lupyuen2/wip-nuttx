@@ -186,24 +186,8 @@ void board_userled_all(uint32_t ledset)
     {
       a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
     }
-
-  //// TODO: Remove this test code
-  int a64_mipi_dsi_enable(void);
-  int a64_mipi_dphy_enable(void);
-  int pinephone_panel_init(void);
-  int a64_mipi_dsi_start(void);
-  switch (ledset)
-    {
-      // Enable MIPI DSI Block
-      case 3: _info("a64_mipi_dsi_enable\n"); a64_mipi_dsi_enable(); break;
-      // Enable MIPI Display Physical Layer
-      case 4: _info("a64_mipi_dphy_enable\n"); a64_mipi_dphy_enable(); break;
-      // Init LCD Panel
-      case 6: _info("pinephone_panel_init\n"); pinephone_panel_init(); break;
-      // Start MIPI DSI HSC and HSD
-      case 7: _info("a64_mipi_dsi_start\n"); a64_mipi_dsi_start(); break;
-      default: break;
-    }
+//// TODO: Remove this test code    
+#include "../../pinephone-nuttx/test/test_pinephone_userleds.c" //// TODO
 }
 
 #endif /* CONFIG_USERLED */
