@@ -52,6 +52,9 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+/* Maximum Size of DSI Packets */
+#define MIPI_DSI_MAX_PACKET_SIZE 128
+
 /* A64 CCU Registers and Bit Definitions ************************************/
 
 /* Bus Clock Gating Register 0 (A64 Page 100) */
@@ -280,7 +283,7 @@ static void a64_enable_dsi_processing(void)
  *   None
  *
  * Returned Value:
- *   OK if completed, ERROR if timeout.
+ *   Zero (OK) on success; ERROR if timeout.
  *
  ****************************************************************************/
 
@@ -317,45 +320,53 @@ static int a64_wait_dsi_transmit(void)
  ****************************************************************************/
 
 /****************************************************************************
- * Name: aaaa
+ * Name: a64_mipi_dsi_write
  *
  * Description:
- *   aaaa
+ *   Write to MIPI DSI.
  *
  * Input Parameters:
- *   None
+ *   channel - Virtual Channel ID
+ *   cmd     - DCS Command
+ *   txbuf   - Transmit Buffer
+ *   txlen   - Length of Transmit Buffer
  *
  * Returned Value:
- *   OK is always returned at present.
+ *   Number of bytes written; a negated errno value is returned on any failure.
  *
  ****************************************************************************/
 
-/// Write to MIPI DSI. See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
-/// On Success: Return number of written bytes. On Error: Return negative error code
-ssize_t a64_mipi_dsi_write(
-    uint8_t channel,  // Virtual Channel ID
-    uint8_t cmd,      // DCS Command
-    FAR const uint8_t *txbuf,  // Transmit Buffer
-    size_t txlen          // Buffer Length
-)
+ssize_t a64_mipi_dsi_write(uint8_t channel,
+                           uint8_t cmd,
+                           FAR const uint8_t *txbuf,
+                           size_t txlen)
 {
   int ret;
   ssize_t pktlen = -1;
-  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen); // TODO
+  uint8_t pkt[MIPI_DSI_MAX_PACKET_SIZE];
+
+  /* Length should be 1 for Short Write, 2 for Short Write With Param*/
+
+  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
   DEBUGASSERT(txbuf != NULL);
   if (cmd == MIPI_DSI_DCS_SHORT_WRITE)
     {
       DEBUGASSERT(txlen == 1);
-      if (txlen != 1) { return ERROR; }
+      if (txlen != 1) 
+        {
+          return ERROR; 
+        }
     }
-  if (cmd == MIPI_DSI_DCS_SHORT_WRITE_PARAM)
+  else if (cmd == MIPI_DSI_DCS_SHORT_WRITE_PARAM)
     {
       DEBUGASSERT(txlen == 2);
-      if (txlen != 2) { return ERROR; }
+      if (txlen != 2)
+        {
+          return ERROR; 
+        }
     }
 
   // Allocate Packet Buffer
-  uint8_t pkt[128];  // TODO
   memset(pkt, 0, sizeof(pkt));
 
   // Compose Short or Long Packet depending on DCS Command
