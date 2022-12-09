@@ -22,7 +22,7 @@
  *
  * "Understanding PinePhone's Display (MIPI DSI)"
  * https://lupyuen.github.io/articles/dsi
- * 
+ *
  * "NuttX RTOS for PinePhone: Display Driver in Zig"
  * https://lupyuen.github.io/articles/dsi2
  */
@@ -138,8 +138,8 @@ static uint8_t compute_ecc(
     }
 
   // Combine DI and WC into a 24-bit word
-  uint32_t di_wc_word = 
-      di_wc[0] 
+  uint32_t di_wc_word =
+      di_wc[0]
       | (di_wc[1] << 8)
       | (di_wc[2] << 16);
 

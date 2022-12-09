@@ -48,7 +48,7 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* A64 CCU Registers and Bit Definitions */
+/* A64 CCU Registers and Bit Definitions ************************************/
 
 /* MIPI_DSI Clock Register */
 #define MIPI_DSI_CLK_REG    (A64_CCU_ADDR + 0x168)
@@ -56,7 +56,7 @@
 #define DSI_DPHY_SRC_SEL(n) (n << 8)
 #define DSI_DPHY_GATING     (1 << 15)
 
-/* A64 MIPI D-PHY Registers (Undocumented) */
+/* A64 MIPI D-PHY Registers (Undocumented) **********************************/
 
 #define DPHY_TX_CTL_REG   (A64_DPHY_ADDR + 0x04)
 #define DPHY_TX_TIME0_REG (A64_DPHY_ADDR + 0x10)
