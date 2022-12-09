@@ -45,8 +45,8 @@
 /// (DSI Configuration Register 0) at Offset 0x10
 #define DSI_BASIC_CTL0_REG (A64_DSI_ADDR + 0x10)
 #define INSTRU_EN (1 << 0)
-  const uint32_t CRC_En = 1 << 17;
-  const uint32_t ECC_En = 1 << 16;
+const uint32_t CRC_En = 1 << 17;
+const uint32_t ECC_En = 1 << 16;
 
 const uint64_t BUS_CLK_GATING_REG0 = A64_CCU_ADDR + 0x60;
 const uint32_t MIPIDSI_GATING = 1 << 1;
