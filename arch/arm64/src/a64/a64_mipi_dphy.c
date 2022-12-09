@@ -142,7 +142,7 @@ int a64_mipi_dphy_enable(void)
   putreg32(0x2, DPHY_ANA2_REG);  // TODO: DMB
 
   // Wait 5 microseconds
-  up_udelay(5);
+  up_mdelay(1);  // 5 microseconds is sufficient
 
   // Enable LDOR, LDOC, LDOD (Undocumented)
   // DPHY_ANA3_REG: DPHY Offset 0x58 (Enable LDOR, LDOC, LDOD)
@@ -153,7 +153,7 @@ int a64_mipi_dphy_enable(void)
   putreg32(0x3040000, DPHY_ANA3_REG);  // TODO: DMB
 
   // Wait 1 microsecond
-  up_udelay(1);
+  up_mdelay(1);  // 1 microsecond is sufficient
 
   // DPHY_ANA3_REG: DPHY Offset 0x58 (Enable VTTC, VTTD)
   // Set bits 0xf800 0000
@@ -162,7 +162,7 @@ int a64_mipi_dphy_enable(void)
   modreg32(EnableVTTC, EnableVTTC, DPHY_ANA3_REG);  // TODO: DMB
 
   // Wait 1 microsecond
-  up_udelay(1);
+  up_mdelay(1);  // 1 microsecond is sufficient
 
   // DPHY_ANA3_REG: DPHY Offset 0x58 (Enable DIV)
   // Set bits 0x400 0000
@@ -171,16 +171,15 @@ int a64_mipi_dphy_enable(void)
   modreg32(EnableDIV, EnableDIV, DPHY_ANA3_REG);  // TODO: DMB
 
   // Wait 1 microsecond
-  up_udelay(1);
+  up_mdelay(1);  // 1 microsecond is sufficient
 
   // DPHY_ANA2_REG: DPHY Offset 0x54 (Enable CK_CPU)
   DEBUGASSERT(DPHY_ANA2_REG == 0x1ca1054);
   const uint32_t EnableCKCPU = 0x10;
   modreg32(EnableCKCPU, EnableCKCPU, DPHY_ANA2_REG);  // TODO: DMB
 
-  // Set bits 0x10
   // Wait 1 microsecond
-  up_udelay(1);
+  up_mdelay(1);  // 1 microsecond is sufficient
 
   // DPHY_ANA1_REG: DPHY Offset 0x50 (VTT Mode)
   // Set bits 0x8000 0000

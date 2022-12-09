@@ -186,8 +186,6 @@ void board_userled_all(uint32_t ledset)
     {
       a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
     }
-//// TODO: Remove this test code    
-#include "../../pinephone-nuttx/test/test_pinephone_userleds.c" //// TODO
 }
 
 #endif /* CONFIG_USERLED */

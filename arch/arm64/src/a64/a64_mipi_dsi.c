@@ -90,9 +90,9 @@ static void a64_enable_dsi_processing(void)
 /// See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
 static int a64_wait_dsi_transmit(void)
 {
-  // Wait up to 5,000 microseconds
+  // Wait up to 5 milliseconds
   int i;
-  for (i = 0; i < 5000; i++)  // TODO
+  for (i = 0; i < 5; i++)
     {
       // To check whether the transmission is complete, we poll on Instru_En
       if ((getreg32(DSI_BASIC_CTL0_REG) & Instru_En) == 0)
@@ -100,8 +100,8 @@ static int a64_wait_dsi_transmit(void)
           // If Instru_En is 0, then transmission is complete
           return 0;
         }
-      // Sleep 1 microsecond
-      up_udelay(1);  // TODO
+      // Sleep 1 millisecond
+      up_mdelay(1);
     }
   _err("timeout");
   return -1;  // TODO
@@ -747,8 +747,8 @@ int a64_mipi_dsi_start(void)
   DEBUGASSERT(DSI_INST_FUNC_LANE_CEN == 0x10);
   modreg32(0x0, DSI_INST_FUNC_LANE_CEN, DSI_INST_FUNC_REG(0) );  // TODO: DMB
 
-  // Wait 1,000 microseconds
-  up_udelay(1000);
+  // Wait 1 millisecond
+  up_mdelay(1);
 
   // Start HSD (Undocumented)
   // DSI_INST_JUMP_SEL_REG: DSI Offset 0x48
@@ -766,77 +766,6 @@ int a64_mipi_dsi_start(void)
   modreg32(Instru_En, Instru_En, DSI_BASIC_CTL0_REG);  // TODO: DMB
 
   return OK;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// TODO: Move to nuttx/arch/arm64/src/common/arm64_udelay.c
-// Based on nuttx/arch/arm/src/common/arm_udelay.c
-
-#define CONFIG_BOARD_LOOPSPER100USEC ((CONFIG_BOARD_LOOPSPERMSEC+5)/10)
-#define CONFIG_BOARD_LOOPSPER10USEC  ((CONFIG_BOARD_LOOPSPERMSEC+50)/100)
-#define CONFIG_BOARD_LOOPSPERUSEC    ((CONFIG_BOARD_LOOPSPERMSEC+500)/1000)
-
-/****************************************************************************
- * Name: up_udelay
- *
- * Description:
- *   Delay inline for the requested number of microseconds.  NOTE:  Because
- *   of all of the setup, several microseconds will be lost before the actual
- *   timing loop begins.  Thus, the delay will always be a few microseconds
- *   longer than requested.
- *
- *   *** NOT multi-tasking friendly ***
- *
- * ASSUMPTIONS:
- *   The setting CONFIG_BOARD_LOOPSPERMSEC has been calibrated
- *
- ****************************************************************************/
-
-void up_udelay(useconds_t microseconds)
-{
-  volatile int i;
-
-  /* We'll do this a little at a time because we expect that the
-   * CONFIG_BOARD_LOOPSPERUSEC is very inaccurate during to truncation in
-   * the divisions of its calculation.  We'll use the largest values that
-   * we can in order to prevent significant error buildup in the loops.
-   */
-
-  while (microseconds > 1000)
-    {
-      for (i = 0; i < CONFIG_BOARD_LOOPSPERMSEC; i++)
-        {
-        }
-
-      microseconds -= 1000;
-    }
-
-  while (microseconds > 100)
-    {
-      for (i = 0; i < CONFIG_BOARD_LOOPSPER100USEC; i++)
-        {
-        }
-
-      microseconds -= 100;
-    }
-
-  while (microseconds > 10)
-    {
-      for (i = 0; i < CONFIG_BOARD_LOOPSPER10USEC; i++)
-        {
-        }
-
-      microseconds -= 10;
-    }
-
-  while (microseconds > 0)
-    {
-      for (i = 0; i < CONFIG_BOARD_LOOPSPERUSEC; i++)
-        {
-        }
-
-      microseconds--;
-    }
 }
 
 //// TODO: Remove this test code
