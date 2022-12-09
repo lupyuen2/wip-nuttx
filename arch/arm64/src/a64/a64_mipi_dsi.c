@@ -49,59 +49,57 @@
 
 /* A64 CCU Registers and Bit Definitions */
 
-// BUS_CLK_GATING_REG0: CCU Offset 0x60 (A64 Page 100)
+// Bus Clock Gating Register 0 (A64 Page 100)
 #define BUS_CLK_GATING_REG0 (A64_CCU_ADDR + 0x60)
 #define MIPIDSI_GATING      (1 << 1)
 
-// BUS_SOFT_RST_REG0: CCU Offset 0x2C0 (A64 Page 138)
+// Bus Software Reset Register 0 (A64 Page 138)
 #define BUS_SOFT_RST_REG0   (A64_CCU_ADDR + 0x2C0)
 #define MIPI_DSI_RST        (1 << 1)
 
 /* A64 MIPI DSI Registers and Bit Definitions */
 
-// DSI_CTL_REG: DSI Offset 0x0 (A31 Page 843)
+// DSI Control Register (A31 Page 843)
 #define DSI_CTL_REG (A64_DSI_ADDR + 0x0)
 #define DSI_EN      (1 << 0)
 
 // DSI_BASIC_CTL_REG: DSI Offset 0x0c (Undocumented)
 #define DSI_BASIC_CTL_REG (A64_DSI_ADDR + 0x0c)
 
-// DSI_BASIC_CTL0_REG: DSI Offset 0x10 (A31 Page 845)
-/// (DSI Configuration Register 0) at Offset 0x10
-/// INSTRU_EN is Bit 0 of DSI_BASIC_CTL0_REG 
+// DSI Configuration Register 0 (A31 Page 845)
 #define DSI_BASIC_CTL0_REG (A64_DSI_ADDR + 0x10)
 #define INSTRU_EN          (1 << 0)
 #define ECC_En             (1 << 16)
 #define CRC_En             (1 << 17)
 
-// DSI_BASIC_CTL1_REG: DSI Offset 0x14 (A31 Page 846)
+// DSI Configuration Register 1 (A31 Page 846)
 #define DSI_BASIC_CTL1_REG (A64_DSI_ADDR + 0x14)
 #define DSI_MODE                   (1 << 0)
 #define VIDEO_FRAME_START          (1 << 1)
 #define VIDEO_PRECISION_MODE_ALIGN (1 << 2)
 #define VIDEO_START_DELAY(n)       (n << 4)
 
-// DSI_BASIC_SIZE0_REG: DSI Offset 0x18 (Undocumented)
+// DSI Line Number Register 0 (A31 Page 847)
 #define DSI_BASIC_SIZE0_REG (A64_DSI_ADDR + 0x18)
 #define VIDEO_VSA(n)        (n << 0)
 #define VIDEO_VBP(n)        (n << 16)
 
-// DSI_BASIC_SIZE1_REG: DSI Offset 0x1c (Undocumented)
+// DSI Line Number Register 1 (A31 Page 847)
 #define DSI_BASIC_SIZE1_REG (A64_DSI_ADDR + 0x1c)
 #define VIDEO_VACT(n)       (n << 0)
 #define VIDEO_VT(n)         (n << 16)
 
-/// DSI Instruction Functions: DSI Offset 0x20 (Undocumented)
+// DSI Instruction Function Register (Undocumented)
 #define DSI_INST_FUNC_REG(n)   (A64_DSI_ADDR + 0x020 + n * 0x04)
 #define DSI_INST_FUNC_LANE_CEN (1 << 4)
 
-// DSI_INST_LOOP_SEL_REG: DSI Offset 0x40 (Undocumented)
+// DSI Instruction Loop Select Register (Undocumented)
 #define DSI_INST_LOOP_SEL_REG  (A64_DSI_ADDR + 0x40)
 
-/// DSI Instruction Loop Number: DSI Offset 0x44 (Undocumented)
+// DSI Instruction Loop Number Register (Undocumented)
 #define DSI_INST_LOOP_NUM_REG(n) (A64_DSI_ADDR + 0x44 + n * 0x10)
 
-// DSI_INST_JUMP_SEL_REG: DSI Offset 0x48 (Undocumented)
+// DSI Instruction Jump Select Register (Undocumented)
 #define DSI_INST_JUMP_SEL_REG (A64_DSI_ADDR + 0x48)
 #define DSI_INST_ID_LP11      0
 #define DSI_INST_ID_TBA       1
@@ -113,42 +111,42 @@
 #define DSI_INST_ID_DLY       7
 #define DSI_INST_ID_END       15
 
-/// DSI Instruction Jump Configuration: DSI Offset 0x4c (Undocumented)
+// DSI Instruction Jump Configuration Register (Undocumented)
 #define DSI_INST_JUMP_CFG_REG(n) (A64_DSI_ADDR + 0x4c + n * 0x04)
 #define DSI_INST_JUMP_CFG        0
 
-// DSI_TRANS_START_REG: DSI Offset 0x60 (Undocumented)
+// DSI Transfer Start Register (Undocumented)
 #define DSI_TRANS_START_REG (A64_DSI_ADDR + 0x60)
 
-// DSI_TRANS_ZERO_REG: DSI Offset 0x78 (Undocumented)
+// DSI Transfer Zero Register (Undocumented)
 #define DSI_TRANS_ZERO_REG  (A64_DSI_ADDR + 0x78)
 
-// DSI_TCON_DRQ_REG: DSI Offset 0x7c (Undocumented)
+// DSI Timing Controller DRQ Register (Undocumented)
 #define DSI_TCON_DRQ_REG    (A64_DSI_ADDR + 0x7c)
 
-// DSI_PIXEL_CTL0_REG: DSI Offset 0x80 (A31 Page 847)
+// DSI Pixel Format Register 0 (A31 Page 847)
 #define DSI_PIXEL_CTL0_REG (A64_DSI_ADDR + 0x80)
 #define PIXEL_FORMAT(n) (n << 0)
 #define PIXEL_ENDIAN    (0 << 4)
 #define PD_PLUG_DIS     (1 << 16)
 
-// DSI_PIXEL_PH_REG: DSI Offset 0x90 (A31 Page 848)
+// DSI Pixel Package Register 0 (A31 Page 848)
 #define DSI_PIXEL_PH_REG (A64_DSI_ADDR + 0x90)
 #define PIXEL_DT(n)      (n << 0)
 #define PIXEL_VC(n)      (n << 6)
 #define PIXEL_WC(n)      (n << 8)
 #define PIXEL_ECC(n)     (n << 24)
 
-// DSI_PIXEL_PF0_REG: DSI Offset 0x98 (A31 Page 849)
+// DSI Pixel Package Register 2 (A31 Page 849)
 #define DSI_PIXEL_PF0_REG (A64_DSI_ADDR + 0x98)
 #define CRC_FORCE         0xffff
 
-// DSI_PIXEL_PF1_REG: DSI Offset 0x9c (A31 Page 849)
+// DSI Pixel Package Register 3 (A31 Page 849)
 #define DSI_PIXEL_PF1_REG (A64_DSI_ADDR + 0x9c)
 #define CRC_INIT_LINE0(n) (n << 0)
 #define CRC_INIT_LINEN(n) (n << 16)
 
-// DSI_SYNC_HSS_REG: DSI Offset 0xb0 (A31 Page 850)
+// DSI Sync Package Register 0 (A31 Page 850)
 #define DSI_SYNC_HSS_REG (A64_DSI_ADDR + 0xb0)
 #define SYNC_ECC(n)      (n << 24)
 #define SYNC_D1(n)       (n << 16)
@@ -156,65 +154,65 @@
 #define SYNC_VC(n)       (n << 6)
 #define SYNC_DT(n)       (n << 0)
 
-// DSI_SYNC_HSE_REG: DSI Offset 0xb4 (A31 Page 850)
+// DSI Sync Package Register 1 (A31 Page 850)
 #define DSI_SYNC_HSE_REG (A64_DSI_ADDR + 0xb4)
 
-// DSI_SYNC_VSS_REG: DSI Offset 0xb8 (A31 Page 851)
+// DSI Sync Package Register 2 (A31 Page 851)
 #define DSI_SYNC_VSS_REG (A64_DSI_ADDR + 0xb8)
 
-// DSI_SYNC_VSE_REG: DSI Offset 0xbc (A31 Page 851)
+// DSI Sync Package Register 3 (A31 Page 851)
 #define DSI_SYNC_VSE_REG (A64_DSI_ADDR + 0xbc)
 
-// DSI_BLK_HSA0_REG: DSI Offset 0xc0 (A31 Page 852)
+// DSI Blank Package Register 0 (A31 Page 852)
 #define DSI_BLK_HSA0_REG (A64_DSI_ADDR + 0xc0)
 
-// DSI_BLK_HSA1_REG: DSI Offset 0xc4 (A31 Page 852)
+// DSI Blank Package Register 1 (A31 Page 852)
 #define DSI_BLK_HSA1_REG (A64_DSI_ADDR + 0xc4)
 #define HSA_PD(n)        (n << 0)
 #define HSA_PF(n)        (n << 16)
 
-// DSI_BLK_HBP0_REG: DSI Offset 0xc8 (A31 Page 852)
+// DSI Blank Package Register 2 (A31 Page 852)
 #define DSI_BLK_HBP0_REG (A64_DSI_ADDR + 0xc8)
 
-// DSI_BLK_HBP1_REG: DSI Offset 0xcc (A31 Page 852)
+// DSI Blank Package Register 3 (A31 Page 852)
 #define DSI_BLK_HBP1_REG (A64_DSI_ADDR + 0xcc)
 #define HBP_PD(n)        (n << 0)
 #define HBP_PF(n)        (n << 16)
 
-// DSI_BLK_HFP0_REG: DSI Offset 0xd0 (A31 Page 852)
+// DSI Blank Package Register 4 (A31 Page 852)
 #define DSI_BLK_HFP0_REG (A64_DSI_ADDR + 0xd0)
 
-// DSI_BLK_HFP1_REG: DSI Offset 0xd4 (A31 Page 853)
+// DSI Blank Package Register 5 (A31 Page 853)
 #define DSI_BLK_HFP1_REG (A64_DSI_ADDR + 0xd4)
 #define HFP_PD(n)        (n << 0)
 #define HFP_PF(n)        (n << 16)
 
-// DSI_BLK_HBLK0_REG: DSI Offset 0xe0 (A31 Page 853)
+// DSI Blank Package Register 6 (A31 Page 853)
 #define DSI_BLK_HBLK0_REG (A64_DSI_ADDR + 0xe0)
 
-// DSI_BLK_HBLK1_REG: DSI Offset 0xe4 (A31 Page 853)
+// DSI Blank Package Register 7 (A31 Page 853)
 #define DSI_BLK_HBLK1_REG (A64_DSI_ADDR + 0xe4)
 #define HBLK_PD(n)        (n << 0)
 #define HBLK_PF(n)        (n << 16)
 
-// DSI_BLK_VBLK0_REG: DSI Offset 0xe8 (A31 Page 854)
+// DSI Blank Package Register 8 (A31 Page 854)
 #define DSI_BLK_VBLK0_REG (A64_DSI_ADDR + 0xe8)
 
-// DSI_BLK_VBLK1_REG: DSI Offset 0xec (A31 Page 854)
+// DSI Blank Package Register 9 (A31 Page 854)
 #define DSI_BLK_VBLK1_REG (A64_DSI_ADDR + 0xec)
 #define VBLK_PD(n)        (n << 0)
 #define VBLK_PF(n)        (n << 16)
 
-// DSI_CMD_CTL_REG (DSI Low Power Control Register) at Offset 0x200
+// DSI Low Power Control Register (A31 Page 854)
 #define DSI_CMD_CTL_REG (A64_DSI_ADDR + 0x200)
 #define TX_FLAG         (1 << 9)
 #define RX_FLAG         (1 << 25)
 #define RX_OVERFLOW     (1 << 26)
 
-// DSI_DEBUG_DATA_REG: DSI Offset 0x2f8 (Undocumented)
+// DSI Debug Data Register (Undocumented)
 #define DSI_DEBUG_DATA_REG (A64_DSI_ADDR + 0x2f8)
 
-// (DSI Low Power Transmit Package Register) at Offset 0x300 to 0x3FC
+// DSI Low Power Transmit Package Register (A31 Page 856)
 #define DSI_CMD_TX_REG     (A64_DSI_ADDR + 0x300)
 
 /************************************************************************************************
@@ -393,14 +391,14 @@ int a64_mipi_dsi_enable(void)
 
   ginfo("Enable MIPI DSI Bus\n");
 
-  // BUS_CLK_GATING_REG0: CCU Offset 0x60 (A64 Page 100)
+  // Bus Clock Gating Register 0 (A64 Page 100)
   // Set MIPIDSI_GATING (Bit 1) to 1 (Pass Gating Clock for MIPI DSI)
   DEBUGASSERT(BUS_CLK_GATING_REG0 == 0x1c20060);
 
   DEBUGASSERT(MIPIDSI_GATING == 2);
   modreg32(MIPIDSI_GATING, MIPIDSI_GATING, BUS_CLK_GATING_REG0);  // TODO: DMB
 
-  // BUS_SOFT_RST_REG0: CCU Offset 0x2C0 (A64 Page 138)
+  // Bus Software Reset Register 0 (A64 Page 138)
   // Set MIPI_DSI_RST (Bit 1) to 1 (Deassert MIPI DSI Reset)
   DEBUGASSERT(BUS_SOFT_RST_REG0 == 0x1c202c0);
 
