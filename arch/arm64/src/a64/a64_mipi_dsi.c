@@ -48,13 +48,13 @@
   const uint32_t CRC_En = 1 << 17;
   const uint32_t ECC_En = 1 << 16;
 
-/// DSI_INST_FUNC_REG(n) is (0x020 + (n) * 0x04)
+/// DSI Instruction Functions
 #define DSI_INST_FUNC_REG(n) (A64_DSI_ADDR + (0x020 + n * 0x04))
 
-/// DSI_INST_JUMP_CFG_REG(n) is (0x04c + (n) * 0x04)
+/// DSI Instruction Jump Configuration
 #define DSI_INST_JUMP_CFG_REG(n) (A64_DSI_ADDR + (0x04c + n * 0x04))
 
-/// DSI_INST_LOOP_NUM_REG(n) is (0x044 + (n) * 0x10)
+/// DSI Instruction Loop Number
 #define DSI_INST_LOOP_NUM_REG(n) (A64_DSI_ADDR + (0x044 + n * 0x10))
 
   const uint64_t DSI_CMD_CTL_REG = A64_DSI_ADDR + 0x200;
