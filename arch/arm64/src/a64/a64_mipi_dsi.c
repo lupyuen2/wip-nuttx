@@ -48,27 +48,6 @@
   const uint32_t CRC_En = 1 << 17;
   const uint32_t ECC_En = 1 << 16;
 
-/// DSI Instruction Functions
-#define DSI_INST_FUNC_REG(n) (A64_DSI_ADDR + (0x020 + n * 0x04))
-
-/// DSI Instruction Jump Configuration
-#define DSI_INST_JUMP_CFG_REG(n) (A64_DSI_ADDR + (0x04c + n * 0x04))
-
-/// DSI Instruction Loop Number
-#define DSI_INST_LOOP_NUM_REG(n) (A64_DSI_ADDR + (0x044 + n * 0x10))
-
-const uint64_t DSI_CMD_CTL_REG = A64_DSI_ADDR + 0x200;
-const uint32_t RX_Overflow = 1 << 26;
-const uint32_t RX_Flag     = 1 << 25;
-const uint32_t TX_Flag     = 1 << 9;
-
-const uint64_t DSI_CMD_TX_REG = A64_DSI_ADDR + 0x300;
-
-const uint64_t DSI_INST_JUMP_SEL_REG = A64_DSI_ADDR + 0x48;
-const uint32_t DSI_INST_ID_LPDT = 4;
-const uint32_t DSI_INST_ID_LP11 = 0;
-const uint32_t DSI_INST_ID_END  = 15;
-
 const uint64_t BUS_CLK_GATING_REG0 = A64_CCU_ADDR + 0x60;
 const uint32_t MIPIDSI_GATING = 1 << 1;
 
@@ -100,13 +79,13 @@ const uint64_t DSI_PIXEL_PF0_REG = A64_DSI_ADDR + 0x98;
 const uint32_t CRC_Force = 0xffff;
 
 const uint64_t DSI_PIXEL_PF1_REG = A64_DSI_ADDR + 0x9c;
-const uint32_t CRC_Init_LineN = 0xffff << 16;
-const uint32_t CRC_Init_Line0 = 0xffff << 0;
+#define CRC_Init_LineN(n) (n << 16)
+#define CRC_Init_Line0(n) (n << 0)
 
 const uint64_t DSI_PIXEL_CTL0_REG = A64_DSI_ADDR + 0x80;
 const uint32_t PD_Plug_Dis = 1 << 16;
 const uint32_t Pixel_Endian  = 0 << 4;
-const uint32_t Pixel_Format  = 8 << 0;
+#define Pixel_Format(n) (n << 0)
 
 const uint64_t DSI_BASIC_CTL_REG = A64_DSI_ADDR + 0x0c;
 
@@ -156,20 +135,34 @@ const uint64_t DSI_BLK_VBLK1_REG = A64_DSI_ADDR + 0xec;
 #define VBLK_PF(n) (n << 16)
 #define VBLK_PD(n) (n      << 0)
 
+/// DSI Instruction Functions
+#define DSI_INST_FUNC_REG(n) (A64_DSI_ADDR + 0x020 + n * 0x04)
+
+/// DSI Instruction Jump Configuration
+#define DSI_INST_JUMP_CFG_REG(n) (A64_DSI_ADDR + 0x04c + n * 0x04)
+
+/// DSI Instruction Loop Number
+#define DSI_INST_LOOP_NUM_REG(n) (A64_DSI_ADDR + 0x044 + n * 0x10)
+
+const uint64_t DSI_CMD_CTL_REG = A64_DSI_ADDR + 0x200;
+const uint32_t RX_Overflow = 1 << 26;
+const uint32_t RX_Flag     = 1 << 25;
+const uint32_t TX_Flag     = 1 << 9;
+
+const uint64_t DSI_CMD_TX_REG = A64_DSI_ADDR + 0x300;
+
+const uint64_t DSI_INST_JUMP_SEL_REG = A64_DSI_ADDR + 0x48;
+const uint32_t DSI_INST_ID_LP11 = 0;
 const uint32_t DSI_INST_ID_TBA = 1;
-
 const uint32_t DSI_INST_ID_HSC = 2;
-
 const uint32_t DSI_INST_ID_HSD = 3;
-
+const uint32_t DSI_INST_ID_LPDT = 4;
 const uint32_t DSI_INST_ID_HSCEXIT = 5;
-
 const uint32_t DSI_INST_ID_NOP = 6;
-
 const uint32_t DSI_INST_ID_DLY = 7;
+const uint32_t DSI_INST_ID_END  = 15;
 
 const uint32_t DSI_INST_JUMP_CFG = 0;
-
 const uint32_t DSI_INST_FUNC_LANE_CEN = 1 << 4;
 
 /************************************************************************************************
@@ -528,8 +521,8 @@ int a64_mipi_dsi_enable(void)
   // Set CRC_Init_Line0 (Bits 0 to 15) to 0xffff (CRC initial to this value in 1st transmition every frame)
   DEBUGASSERT(DSI_PIXEL_PF1_REG == 0x1ca009c);
 
-  const uint32_t DSI_PIXEL_PF1 = CRC_Init_LineN
-      | CRC_Init_Line0;
+  const uint32_t DSI_PIXEL_PF1 = CRC_Init_LineN(0xffff)
+      | CRC_Init_Line0(0xffff);
   DEBUGASSERT(DSI_PIXEL_PF1 == 0xffffffff);
   putreg32(DSI_PIXEL_PF1, DSI_PIXEL_PF1_REG);  // TODO: DMB
 
@@ -541,7 +534,7 @@ int a64_mipi_dsi_enable(void)
 
   const uint32_t DSI_PIXEL_CTL0 = PD_Plug_Dis
       | Pixel_Endian
-      | Pixel_Format;
+      | Pixel_Format(8);
   DEBUGASSERT(DSI_PIXEL_CTL0 == 0x10008);
   putreg32(DSI_PIXEL_CTL0, DSI_PIXEL_CTL0_REG);  // TODO: DMB
 
