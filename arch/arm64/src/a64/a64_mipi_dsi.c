@@ -20,6 +20,12 @@
 
 /* Reference:
  *   ???
+ * 
+ * "A31 Page" refers to Allwinner A31 User Manual
+ * https://github.com/lupyuen/pinephone-nuttx/releases/download/doc/A31_User_Manual_v1.3_20150510.pdf
+ * 
+ * "A64 Page" refers to Allwinner A64 User Manual
+ * https://github.com/lupyuen/pinephone-nuttx/releases/download/doc/Allwinner_A64_User_Manual_V1.1.pdf
  */
 
 /************************************************************************************************
