@@ -74,10 +74,10 @@
 
 // DSI_BASIC_CTL1_REG: DSI Offset 0x14 (A31 Page 846)
 #define DSI_BASIC_CTL1_REG (A64_DSI_ADDR + 0x14)
-#define Video_Start_Delay(n) (n << 4)
-#define Video_Precision_Mode_Align  (1    << 2)
-#define Video_Frame_Start  (1    << 1)
-#define DSI_Mode  (1    << 0)
+#define VIDEO_START_DELAY(n) (n << 4)
+#define VIDEO_PRECISION_MODE_ALIGN  (1    << 2)
+#define VIDEO_FRAME_START  (1    << 1)
+#define DSI_MODE  (1    << 0)
 
 // DSI_TCON_DRQ_REG: DSI Offset 0x7c (Undocumented)
 #define DSI_TCON_DRQ_REG (A64_DSI_ADDR + 0x7c)
@@ -94,18 +94,18 @@
 
 // DSI_PIXEL_PF0_REG: DSI Offset 0x98 (A31 Page 849)
 #define DSI_PIXEL_PF0_REG (A64_DSI_ADDR + 0x98)
-#define CRC_Force 0xffff
+#define CRC_FORCE 0xffff
 
 // DSI_PIXEL_PF1_REG: DSI Offset 0x9c (A31 Page 849)
 #define DSI_PIXEL_PF1_REG (A64_DSI_ADDR + 0x9c)
-#define CRC_Init_LineN(n) (n << 16)
-#define CRC_Init_Line0(n) (n << 0)
+#define CRC_INIT_LINEN(n) (n << 16)
+#define CRC_INIT_LINE0(n) (n << 0)
 
 // DSI_PIXEL_CTL0_REG: DSI Offset 0x80 (A31 Page 847)
 #define DSI_PIXEL_CTL0_REG (A64_DSI_ADDR + 0x80)
-#define PD_Plug_Dis (1 << 16)
-#define Pixel_Endian  (0 << 4)
-#define Pixel_Format(n) (n << 0)
+#define PD_PLUG_DIS (1 << 16)
+#define PIXEL_ENDIAN  (0 << 4)
+#define PIXEL_FORMAT(n) (n << 0)
 
 // DSI_BASIC_CTL_REG: DSI Offset 0x0c (Undocumented)
 #define DSI_BASIC_CTL_REG (A64_DSI_ADDR + 0x0c)
@@ -129,13 +129,13 @@
 
 // DSI_BASIC_SIZE0_REG: DSI Offset 0x18 (Undocumented)
 #define DSI_BASIC_SIZE0_REG (A64_DSI_ADDR + 0x18)
-#define Video_VBP(n) (n << 16)
-#define Video_VSA(n) (n << 0)
+#define VIDEO_VBP(n) (n << 16)
+#define VIDEO_VSA(n) (n << 0)
 
 // DSI_BASIC_SIZE1_REG: DSI Offset 0x1c (Undocumented)
 #define DSI_BASIC_SIZE1_REG (A64_DSI_ADDR + 0x1c)
-#define Video_VT(n) (n << 16)
-#define Video_VACT(n) (n << 0)
+#define VIDEO_VT(n) (n << 16)
+#define VIDEO_VACT(n) (n << 0)
 
 // DSI_BLK_HSA0_REG: DSI Offset 0xc0 (A31 Page 852)
 #define DSI_BLK_HSA0_REG (A64_DSI_ADDR + 0xc0)
@@ -202,9 +202,9 @@
 
 // DSI_CMD_CTL_REG (DSI Low Power Control Register) at Offset 0x200
 #define DSI_CMD_CTL_REG (A64_DSI_ADDR + 0x200)
-#define RX_Overflow (1 << 26)
-#define RX_Flag     (1 << 25)
-#define TX_Flag     (1 << 9)
+#define RX_OVERFLOW (1 << 26)
+#define RX_FLAG     (1 << 25)
+#define TX_FLAG     (1 << 9)
 
 // (DSI Low Power Transmit Package Register) at Offset 0x300 to 0x3FC
 #define DSI_CMD_TX_REG (A64_DSI_ADDR + 0x300)
@@ -318,7 +318,7 @@ ssize_t a64_mipi_dsi_write(
   // TX_Flag (Bit 9): Clear flag for "Transmit has started"
   // All other bits must be set to 0.
   putreg32(
-      RX_Overflow | RX_Flag | TX_Flag,
+      RX_OVERFLOW | RX_FLAG | TX_FLAG,
       DSI_CMD_CTL_REG
   );
 
@@ -499,10 +499,10 @@ int a64_mipi_dsi_enable(void)
   ginfo("Set Video Start Delay\n");
   DEBUGASSERT(DSI_BASIC_CTL1_REG == 0x1ca0014);
 
-  const uint32_t DSI_BASIC_CTL1 = Video_Start_Delay(1468)
-      | Video_Precision_Mode_Align
-      | Video_Frame_Start
-      | DSI_Mode;
+  const uint32_t DSI_BASIC_CTL1 = VIDEO_START_DELAY(1468)
+      | VIDEO_PRECISION_MODE_ALIGN
+      | VIDEO_FRAME_START
+      | DSI_MODE;
   DEBUGASSERT(DSI_BASIC_CTL1 == 0x5bc7);
   putreg32(DSI_BASIC_CTL1, DSI_BASIC_CTL1_REG);  // TODO: DMB
 
@@ -548,15 +548,15 @@ int a64_mipi_dsi_enable(void)
   // DSI_PIXEL_PF0_REG: DSI Offset 0x98 (A31 Page 849)
   // Set CRC_Force (Bits 0 to 15) to 0xffff (Force CRC to this value)
   DEBUGASSERT(DSI_PIXEL_PF0_REG == 0x1ca0098);
-  putreg32(CRC_Force, DSI_PIXEL_PF0_REG);  // TODO: DMB
+  putreg32(CRC_FORCE, DSI_PIXEL_PF0_REG);  // TODO: DMB
 
   // DSI_PIXEL_PF1_REG: DSI Offset 0x9c (A31 Page 849)
   // Set CRC_Init_LineN (Bits 16 to 31) to 0xffff (CRC initial to this value in transmitions except 1st one)
   // Set CRC_Init_Line0 (Bits 0 to 15) to 0xffff (CRC initial to this value in 1st transmition every frame)
   DEBUGASSERT(DSI_PIXEL_PF1_REG == 0x1ca009c);
 
-  const uint32_t DSI_PIXEL_PF1 = CRC_Init_LineN(0xffff)
-      | CRC_Init_Line0(0xffff);
+  const uint32_t DSI_PIXEL_PF1 = CRC_INIT_LINEN(0XFFFF)
+      | CRC_INIT_LINE0(0XFFFF);
   DEBUGASSERT(DSI_PIXEL_PF1 == 0xffffffff);
   putreg32(DSI_PIXEL_PF1, DSI_PIXEL_PF1_REG);  // TODO: DMB
 
@@ -566,9 +566,9 @@ int a64_mipi_dsi_enable(void)
   // Set Pixel_Format (Bits 0 to 3) to 8 (24-bit RGB888)
   DEBUGASSERT(DSI_PIXEL_CTL0_REG == 0x1ca0080);
 
-  const uint32_t DSI_PIXEL_CTL0 = PD_Plug_Dis
-      | Pixel_Endian
-      | Pixel_Format(8);
+  const uint32_t DSI_PIXEL_CTL0 = PD_PLUG_DIS
+      | PIXEL_ENDIAN
+      | PIXEL_FORMAT(8);
   DEBUGASSERT(DSI_PIXEL_CTL0 == 0x10008);
   putreg32(DSI_PIXEL_CTL0, DSI_PIXEL_CTL0_REG);  // TODO: DMB
 
@@ -646,8 +646,8 @@ int a64_mipi_dsi_enable(void)
   ginfo("Set Basic Size\n");
   DEBUGASSERT(DSI_BASIC_SIZE0_REG == 0x1ca0018);
 
-  const uint32_t DSI_BASIC_SIZE0 = Video_VBP(17)
-      | Video_VSA(10);
+  const uint32_t DSI_BASIC_SIZE0 = VIDEO_VBP(17)
+      | VIDEO_VSA(10);
   DEBUGASSERT(DSI_BASIC_SIZE0 == 0x11000a);
   putreg32(DSI_BASIC_SIZE0, DSI_BASIC_SIZE0_REG);  // TODO: DMB
 
@@ -656,8 +656,8 @@ int a64_mipi_dsi_enable(void)
   // Set Video_VACT (Bits 0 to 11) to 1440
   DEBUGASSERT(DSI_BASIC_SIZE1_REG == 0x1ca001c);
 
-  const uint32_t DSI_BASIC_SIZE1 = Video_VT(1485)
-      | Video_VACT(1440);
+  const uint32_t DSI_BASIC_SIZE1 = VIDEO_VT(1485)
+      | VIDEO_VACT(1440);
   DEBUGASSERT(DSI_BASIC_SIZE1 == 0x5cd05a0);
   putreg32(DSI_BASIC_SIZE1, DSI_BASIC_SIZE1_REG);  // TODO: DMB
 
