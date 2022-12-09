@@ -195,13 +195,13 @@ void board_userled_all(uint32_t ledset)
   switch (ledset)
     {
       // Enable MIPI DSI Block
-      case 3: a64_mipi_dsi_enable(); break;
+      case 3: _info("a64_mipi_dsi_enable\n"); a64_mipi_dsi_enable(); break;
       // Enable MIPI Display Physical Layer
-      case 4: a64_mipi_dphy_enable(); break;
+      case 4: _info("a64_mipi_dphy_enable\n"); a64_mipi_dphy_enable(); break;
       // Init LCD Panel
-      case 6: pinephone_panel_init(); break;
+      case 6: _info("pinephone_panel_init\n"); pinephone_panel_init(); break;
       // Start MIPI DSI HSC and HSD
-      case 7: a64_mipi_dsi_start(); break;
+      case 7: _info("a64_mipi_dsi_start\n"); a64_mipi_dsi_start(); break;
       default: break;
     }
 }

@@ -308,6 +308,9 @@ ssize_t mipi_dsi_short_packet(
   return len;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// TODO: Remove this test code
+
 //// TODO: Remove. Dump the buffer
 void dump_buffer(const uint8_t *data, size_t len)
 {
