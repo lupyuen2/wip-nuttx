@@ -41,15 +41,6 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/// MIPI DSI Virtual Channel
-#define VIRTUAL_CHANNEL 0
-
-/// Base Address of Allwinner A64 CCU Controller (A64 Page 82)
-#define CCU_BASE_ADDRESS 0x01C20000
-
-/// Base Address of Allwinner A64 MIPI DSI Controller (A31 Page 842)
-#define DSI_BASE_ADDRESS 0x01CA0000
-
 /// Instru_En is Bit 0 of DSI_BASIC_CTL0_REG 
 /// (DSI Configuration Register 0) at Offset 0x10
 #define DSI_BASIC_CTL0_REG (DSI_BASE_ADDRESS + 0x10)
@@ -437,7 +428,7 @@ int a64_mipi_dsi_enable(void)
   {
       const uint32_t ECC = 19   << 24;
       const uint32_t WC = 2160 << 8;
-      const uint32_t VC  = VIRTUAL_CHANNEL << 6;
+      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
       const uint32_t DT  = 0x3E << 0;
       const uint32_t DSI_PIXEL_PH = ECC
           | WC
@@ -503,7 +494,7 @@ int a64_mipi_dsi_enable(void)
       const uint32_t ECC = 0x12 << 24;
       const uint32_t D1 = 0    << 16;
       const uint32_t D0 = 0    << 8;
-      const uint32_t VC  = VIRTUAL_CHANNEL << 6;
+      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
       const uint32_t DT  = 0x21 << 0;
       const uint32_t DSI_SYNC_HSS = ECC
           | D1
@@ -526,7 +517,7 @@ int a64_mipi_dsi_enable(void)
       const uint32_t ECC = 1    << 24;
       const uint32_t D1 = 0    << 16;
       const uint32_t D0 = 0    << 8;
-      const uint32_t VC  = VIRTUAL_CHANNEL << 6;
+      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
       const uint32_t DT  = 0x31 << 0;
       const uint32_t DSI_SYNC_HSE = ECC
           | D1
@@ -549,7 +540,7 @@ int a64_mipi_dsi_enable(void)
       const uint32_t ECC = 7 << 24;
       const uint32_t D1 = 0 << 16;
       const uint32_t D0 = 0 << 8;
-      const uint32_t VC  = VIRTUAL_CHANNEL << 6;
+      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
       const uint32_t DT  = 1 << 0;
       const uint32_t DSI_SYNC_VSS = ECC
           | D1
@@ -572,7 +563,7 @@ int a64_mipi_dsi_enable(void)
       const uint32_t ECC = 0x14 << 24;
       const uint32_t D1 = 0    << 16;
       const uint32_t D0 = 0    << 8;
-      const uint32_t VC  = VIRTUAL_CHANNEL << 6;
+      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
       const uint32_t DT  = 0x11 << 0;
       const uint32_t DSI_SYNC_VSE = ECC
           | D1

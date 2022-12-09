@@ -34,16 +34,11 @@
 
 #include <nuttx/arch.h>
 #include "arm64_arch.h"
+#include "a64_mipi_dphy.h"
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
-
-/// Base Address of Allwinner A64 CCU Controller (A64 Page 82)
-#define CCU_BASE_ADDRESS 0x01C20000
-
-/// Base Address of Allwinner A64 MIPI DPHY Controller (A64 Page 74)
-#define DPHY_BASE_ADDRESS 0x01CA1000
 
 /************************************************************************************************
  * Public Functions

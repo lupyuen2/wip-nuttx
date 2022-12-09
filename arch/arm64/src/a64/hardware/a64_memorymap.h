@@ -36,6 +36,15 @@
 #define A64_PIO_ADDR        0x01c20800 /* PIO             0x01c2:0800-0x01c2:0bff 1K */
 #define A64_RPIO_ADDR       0x01f02c00 /* R_PIO           0x01f0:2c00-0x01f0:2fff 1K */
 
+/// Base Address of Allwinner A64 CCU Controller
+#define CCU_BASE_ADDRESS 0x01c20000
+
+/// Base Address of Allwinner A64 MIPI DSI Controller
+#define DSI_BASE_ADDRESS 0x01ca0000
+
+/// Base Address of Allwinner A64 MIPI DPHY Controller
+#define DPHY_BASE_ADDRESS 0x01ca1000
+
 /****************************************************************************
  * Public Types
  ****************************************************************************/

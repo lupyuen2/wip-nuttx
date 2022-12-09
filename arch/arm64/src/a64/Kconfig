@@ -12,7 +12,7 @@ config A64_MIPI_DSI
 	default n
 	---help---
 		Select to enable support for MIPI Display Serial Interface (DSI)
-		and MIPI Display Physical Layer (DPHY).
+		and MIPI Display Physical Layer (D-PHY).
 
 config A64_UART
 	bool "UART"
