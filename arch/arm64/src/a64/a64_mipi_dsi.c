@@ -85,6 +85,10 @@ const uint64_t DSI_INST_LOOP_SEL_REG = A64_DSI_ADDR + 0x40;
 
 // DSI_PIXEL_PH_REG: DSI Offset 0x90 (A31 Page 848)
 const uint64_t DSI_PIXEL_PH_REG = A64_DSI_ADDR + 0x90;
+#define PIXEL_ECC(n) (n   << 24)
+#define PIXEL_WC(n) (n << 8)
+#define PIXEL_VC(n) (n << 6)
+#define PIXEL_DT(n) (n << 0)
 
 // DSI_PIXEL_PF0_REG: DSI Offset 0x98 (A31 Page 849)
 const uint64_t DSI_PIXEL_PF0_REG = A64_DSI_ADDR + 0x98;
@@ -106,6 +110,11 @@ const uint64_t DSI_BASIC_CTL_REG = A64_DSI_ADDR + 0x0c;
 
 // DSI_SYNC_HSS_REG: DSI Offset 0xb0 (A31 Page 850)
 const uint64_t DSI_SYNC_HSS_REG = A64_DSI_ADDR + 0xb0;
+#define SYNC_ECC(n) (n << 24)
+#define SYNC_D1(n) (n    << 16)
+#define SYNC_D0(n) (n   << 8)
+#define SYNC_VC(n) (n << 6)
+#define SYNC_DT(n) (n << 0)
 
 // DSI_SYNC_HSE_REG: DSI Offset 0xb4 (A31 Page 850)
 const uint64_t DSI_SYNC_HSE_REG = A64_DSI_ADDR + 0xb4;
@@ -531,18 +540,12 @@ int a64_mipi_dsi_enable(void)
   // Set DT (Bits 0 to 5) to 0x3E (24-bit Video Mode)
   ginfo("Set Pixel Format\n");
   DEBUGASSERT(DSI_PIXEL_PH_REG == 0x1ca0090);
-  {
-      const uint32_t ECC = 19   << 24;
-      const uint32_t WC = 2160 << 8;
-      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
-      const uint32_t DT  = 0x3E << 0;
-      const uint32_t DSI_PIXEL_PH = ECC
-          | WC
-          | VC
-          | DT;
-      DEBUGASSERT(DSI_PIXEL_PH == 0x1308703e);
-      putreg32(DSI_PIXEL_PH, DSI_PIXEL_PH_REG);  // TODO: DMB
-  }
+  const uint32_t DSI_PIXEL_PH = PIXEL_ECC(19)
+      | PIXEL_WC(2160)
+      | PIXEL_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
+      | PIXEL_DT(0x3E);
+  DEBUGASSERT(DSI_PIXEL_PH == 0x1308703e);
+  putreg32(DSI_PIXEL_PH, DSI_PIXEL_PH_REG);  // TODO: DMB
 
   // DSI_PIXEL_PF0_REG: DSI Offset 0x98 (A31 Page 849)
   // Set CRC_Force (Bits 0 to 15) to 0xffff (Force CRC to this value)
@@ -585,20 +588,13 @@ int a64_mipi_dsi_enable(void)
   // Set VC (Bits 6 to 7) to 0 (Virtual Channel)
   // Set DT (Bits 0 to 5) to 0x21 (HSS)
   DEBUGASSERT(DSI_SYNC_HSS_REG == 0x1ca00b0);
-  {
-      const uint32_t ECC = 0x12 << 24;
-      const uint32_t D1 = 0    << 16;
-      const uint32_t D0 = 0    << 8;
-      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
-      const uint32_t DT  = 0x21 << 0;
-      const uint32_t DSI_SYNC_HSS = ECC
-          | D1
-          | D0
-          | VC
-          | DT;
-      DEBUGASSERT(DSI_SYNC_HSS == 0x12000021);
-      putreg32(DSI_SYNC_HSS, DSI_SYNC_HSS_REG);  // TODO: DMB
-  }
+  const uint32_t DSI_SYNC_HSS = SYNC_ECC(0x12)
+      | SYNC_D1(0)
+      | SYNC_D0(0)
+      | SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
+      | SYNC_DT(0x21);
+  DEBUGASSERT(DSI_SYNC_HSS == 0x12000021);
+  putreg32(DSI_SYNC_HSS, DSI_SYNC_HSS_REG);  // TODO: DMB
 
   // DSI_SYNC_HSE_REG: DSI Offset 0xb4 (A31 Page 850)
   // Set ECC (Bits 24 to 31) to 1
@@ -607,20 +603,13 @@ int a64_mipi_dsi_enable(void)
   // Set VC (Bits 6 to 7) to 0 (Virtual Channel)
   // Set DT (Bits 0 to 5) to 0x31 (HSE)
   DEBUGASSERT(DSI_SYNC_HSE_REG == 0x1ca00b4);
-  {
-      const uint32_t ECC = 1    << 24;
-      const uint32_t D1 = 0    << 16;
-      const uint32_t D0 = 0    << 8;
-      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
-      const uint32_t DT  = 0x31 << 0;
-      const uint32_t DSI_SYNC_HSE = ECC
-          | D1
-          | D0
-          | VC
-          | DT;
-      DEBUGASSERT(DSI_SYNC_HSE == 0x1000031);
-      putreg32(DSI_SYNC_HSE, DSI_SYNC_HSE_REG);  // TODO: DMB
-  }
+  const uint32_t DSI_SYNC_HSE = SYNC_ECC(1)
+      | SYNC_D1(0)
+      | SYNC_D0(0)
+      | SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
+      | SYNC_DT(0x31);
+  DEBUGASSERT(DSI_SYNC_HSE == 0x1000031);
+  putreg32(DSI_SYNC_HSE, DSI_SYNC_HSE_REG);  // TODO: DMB
 
   // DSI_SYNC_VSS_REG: DSI Offset 0xb8 (A31 Page 851)
   // Set ECC (Bits 24 to 31) to 7
@@ -629,20 +618,13 @@ int a64_mipi_dsi_enable(void)
   // Set VC (Bits 6 to 7) to 0 (Virtual Channel)
   // Set DT (Bits 0 to 5) to 1 (VSS)
   DEBUGASSERT(DSI_SYNC_VSS_REG == 0x1ca00b8);
-  {
-      const uint32_t ECC = 7 << 24;
-      const uint32_t D1 = 0 << 16;
-      const uint32_t D0 = 0 << 8;
-      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
-      const uint32_t DT  = 1 << 0;
-      const uint32_t DSI_SYNC_VSS = ECC
-          | D1
-          | D0
-          | VC
-          | DT;
-      DEBUGASSERT(DSI_SYNC_VSS == 0x7000001);
-      putreg32(DSI_SYNC_VSS, DSI_SYNC_VSS_REG);  // TODO: DMB
-  }
+  const uint32_t DSI_SYNC_VSS = SYNC_ECC(7)
+      | SYNC_D1(0)
+      | SYNC_D0(0)
+      | SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
+      | SYNC_DT(1);
+  DEBUGASSERT(DSI_SYNC_VSS == 0x7000001);
+  putreg32(DSI_SYNC_VSS, DSI_SYNC_VSS_REG);  // TODO: DMB
 
   // DSI_SYNC_VSE_REG: DSI Offset 0xbc (A31 Page 851)
   // Set ECC (Bits 24 to 31) to 0x14
@@ -651,20 +633,13 @@ int a64_mipi_dsi_enable(void)
   // Set VC (Bits 6 to 7) to 0 (Virtual Channel)
   // Set DT (Bits 0 to 5) to 0x11 (VSE)
   DEBUGASSERT(DSI_SYNC_VSE_REG == 0x1ca00bc);
-  {
-      const uint32_t ECC = 0x14 << 24;
-      const uint32_t D1 = 0    << 16;
-      const uint32_t D0 = 0    << 8;
-      const uint32_t VC  = A64_MIPI_DSI_VIRTUAL_CHANNEL << 6;
-      const uint32_t DT  = 0x11 << 0;
-      const uint32_t DSI_SYNC_VSE = ECC
-          | D1
-          | D0
-          | VC
-          | DT;
-      DEBUGASSERT(DSI_SYNC_VSE == 0x14000011);
-      putreg32(DSI_SYNC_VSE, DSI_SYNC_VSE_REG);  // TODO: DMB
-  }
+  const uint32_t DSI_SYNC_VSE = SYNC_ECC(0x14)
+      | SYNC_D1(0)
+      | SYNC_D0(0)
+      | SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
+      | SYNC_DT(0x11);
+  DEBUGASSERT(DSI_SYNC_VSE == 0x14000011);
+  putreg32(DSI_SYNC_VSE, DSI_SYNC_VSE_REG);  // TODO: DMB
 
   // Set Basic Size (Undocumented)
   // DSI_BASIC_SIZE0_REG: DSI Offset 0x18
