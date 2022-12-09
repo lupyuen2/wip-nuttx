@@ -411,10 +411,10 @@ int a64_mipi_dsi_enable(void)
   // Set ECC_En (Bit 16) to 1 (Enable ECC)
   DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
 
-  const uint32_t DSI_BASIC_CTL0 = CRC_En
-      | ECC_En;
-  DEBUGASSERT(DSI_BASIC_CTL0 == 0x30000);
-  putreg32(DSI_BASIC_CTL0, DSI_BASIC_CTL0_REG);  // TODO: DMB
+  const uint32_t dsi_basic_ctl0 = CRC_En |
+                                  ECC_En;
+  DEBUGASSERT(dsi_basic_ctl0 == 0x30000);
+  putreg32(dsi_basic_ctl0, DSI_BASIC_CTL0_REG);  // TODO: DMB
 
   // DSI_TRANS_START_REG: DSI Offset 0x60 (Undocumented)
   // Set to 10
@@ -499,12 +499,12 @@ int a64_mipi_dsi_enable(void)
   ginfo("Set Video Start Delay\n");
   DEBUGASSERT(DSI_BASIC_CTL1_REG == 0x1ca0014);
 
-  const uint32_t DSI_BASIC_CTL1 = VIDEO_START_DELAY(1468)
-      | VIDEO_PRECISION_MODE_ALIGN
-      | VIDEO_FRAME_START
-      | DSI_MODE;
-  DEBUGASSERT(DSI_BASIC_CTL1 == 0x5bc7);
-  putreg32(DSI_BASIC_CTL1, DSI_BASIC_CTL1_REG);  // TODO: DMB
+  const uint32_t dsi_basic_ctl1 = VIDEO_START_DELAY(1468) |
+                                  VIDEO_PRECISION_MODE_ALIGN |
+                                  VIDEO_FRAME_START |
+                                  DSI_MODE;
+  DEBUGASSERT(dsi_basic_ctl1 == 0x5bc7);
+  putreg32(dsi_basic_ctl1, DSI_BASIC_CTL1_REG);  // TODO: DMB
 
   // Set Burst (Undocumented)
   // DSI_TCON_DRQ_REG: DSI Offset 0x7c
@@ -538,12 +538,12 @@ int a64_mipi_dsi_enable(void)
   // Set DT (Bits 0 to 5) to 0x3E (24-bit Video Mode)
   ginfo("Set Pixel Format\n");
   DEBUGASSERT(DSI_PIXEL_PH_REG == 0x1ca0090);
-  const uint32_t DSI_PIXEL_PH = PIXEL_ECC(19)
-      | PIXEL_WC(2160)
-      | PIXEL_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
-      | PIXEL_DT(0x3E);
-  DEBUGASSERT(DSI_PIXEL_PH == 0x1308703e);
-  putreg32(DSI_PIXEL_PH, DSI_PIXEL_PH_REG);  // TODO: DMB
+  const uint32_t dsi_pixel_ph = PIXEL_ECC(19) | 
+                                PIXEL_WC(2160) | 
+                                PIXEL_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
+                                PIXEL_DT(0x3E);
+  DEBUGASSERT(dsi_pixel_ph == 0x1308703e);
+  putreg32(dsi_pixel_ph, DSI_PIXEL_PH_REG);  // TODO: DMB
 
   // DSI_PIXEL_PF0_REG: DSI Offset 0x98 (A31 Page 849)
   // Set CRC_Force (Bits 0 to 15) to 0xffff (Force CRC to this value)
@@ -566,11 +566,11 @@ int a64_mipi_dsi_enable(void)
   // Set Pixel_Format (Bits 0 to 3) to 8 (24-bit RGB888)
   DEBUGASSERT(DSI_PIXEL_CTL0_REG == 0x1ca0080);
 
-  const uint32_t DSI_PIXEL_CTL0 = PD_PLUG_DIS
-      | PIXEL_ENDIAN
-      | PIXEL_FORMAT(8);
-  DEBUGASSERT(DSI_PIXEL_CTL0 == 0x10008);
-  putreg32(DSI_PIXEL_CTL0, DSI_PIXEL_CTL0_REG);  // TODO: DMB
+  const uint32_t dsi_pixel_ctl0 = PD_PLUG_DIS | 
+                                  PIXEL_ENDIAN | 
+                                  PIXEL_FORMAT(8);
+  DEBUGASSERT(dsi_pixel_ctl0 == 0x10008);
+  putreg32(dsi_pixel_ctl0, DSI_PIXEL_CTL0_REG);  // TODO: DMB
 
   // Set Sync Timings
   // DSI_BASIC_CTL_REG: DSI Offset 0x0c (Undocumented)
@@ -586,13 +586,13 @@ int a64_mipi_dsi_enable(void)
   // Set VC (Bits 6 to 7) to 0 (Virtual Channel)
   // Set DT (Bits 0 to 5) to 0x21 (HSS)
   DEBUGASSERT(DSI_SYNC_HSS_REG == 0x1ca00b0);
-  const uint32_t DSI_SYNC_HSS = SYNC_ECC(0x12)
-      | SYNC_D1(0)
-      | SYNC_D0(0)
-      | SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
-      | SYNC_DT(0x21);
-  DEBUGASSERT(DSI_SYNC_HSS == 0x12000021);
-  putreg32(DSI_SYNC_HSS, DSI_SYNC_HSS_REG);  // TODO: DMB
+  const uint32_t dsi_sync_hss = SYNC_ECC(0x12) | 
+                                SYNC_D1(0) | 
+                                SYNC_D0(0) | 
+                                SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) | 
+                                SYNC_DT(0x21);
+  DEBUGASSERT(dsi_sync_hss == 0x12000021);
+  putreg32(dsi_sync_hss, DSI_SYNC_HSS_REG);  // TODO: DMB
 
   // DSI_SYNC_HSE_REG: DSI Offset 0xb4 (A31 Page 850)
   // Set ECC (Bits 24 to 31) to 1
@@ -601,13 +601,13 @@ int a64_mipi_dsi_enable(void)
   // Set VC (Bits 6 to 7) to 0 (Virtual Channel)
   // Set DT (Bits 0 to 5) to 0x31 (HSE)
   DEBUGASSERT(DSI_SYNC_HSE_REG == 0x1ca00b4);
-  const uint32_t DSI_SYNC_HSE = SYNC_ECC(1)
-      | SYNC_D1(0)
-      | SYNC_D0(0)
-      | SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
-      | SYNC_DT(0x31);
-  DEBUGASSERT(DSI_SYNC_HSE == 0x1000031);
-  putreg32(DSI_SYNC_HSE, DSI_SYNC_HSE_REG);  // TODO: DMB
+  const uint32_t dsi_sync_hse = SYNC_ECC(1) | 
+                                SYNC_D1(0) | 
+                                SYNC_D0(0) | 
+                                SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) | 
+                                SYNC_DT(0x31);
+  DEBUGASSERT(dsi_sync_hse == 0x1000031);
+  putreg32(dsi_sync_hse, DSI_SYNC_HSE_REG);  // TODO: DMB
 
   // DSI_SYNC_VSS_REG: DSI Offset 0xb8 (A31 Page 851)
   // Set ECC (Bits 24 to 31) to 7
@@ -616,13 +616,13 @@ int a64_mipi_dsi_enable(void)
   // Set VC (Bits 6 to 7) to 0 (Virtual Channel)
   // Set DT (Bits 0 to 5) to 1 (VSS)
   DEBUGASSERT(DSI_SYNC_VSS_REG == 0x1ca00b8);
-  const uint32_t DSI_SYNC_VSS = SYNC_ECC(7)
-      | SYNC_D1(0)
-      | SYNC_D0(0)
-      | SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
-      | SYNC_DT(1);
-  DEBUGASSERT(DSI_SYNC_VSS == 0x7000001);
-  putreg32(DSI_SYNC_VSS, DSI_SYNC_VSS_REG);  // TODO: DMB
+  const uint32_t dsi_sync_vss = SYNC_ECC(7) | 
+                                SYNC_D1(0) | 
+                                SYNC_D0(0) | 
+                                SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) | 
+                                SYNC_DT(1);
+  DEBUGASSERT(dsi_sync_vss == 0x7000001);
+  putreg32(dsi_sync_vss, DSI_SYNC_VSS_REG);  // TODO: DMB
 
   // DSI_SYNC_VSE_REG: DSI Offset 0xbc (A31 Page 851)
   // Set ECC (Bits 24 to 31) to 0x14
@@ -631,13 +631,13 @@ int a64_mipi_dsi_enable(void)
   // Set VC (Bits 6 to 7) to 0 (Virtual Channel)
   // Set DT (Bits 0 to 5) to 0x11 (VSE)
   DEBUGASSERT(DSI_SYNC_VSE_REG == 0x1ca00bc);
-  const uint32_t DSI_SYNC_VSE = SYNC_ECC(0x14)
-      | SYNC_D1(0)
-      | SYNC_D0(0)
-      | SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL)
-      | SYNC_DT(0x11);
-  DEBUGASSERT(DSI_SYNC_VSE == 0x14000011);
-  putreg32(DSI_SYNC_VSE, DSI_SYNC_VSE_REG);  // TODO: DMB
+  const uint32_t dsi_sync_vse = SYNC_ECC(0x14) | 
+                                SYNC_D1(0) | 
+                                SYNC_D0(0) | 
+                                SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) | 
+                                SYNC_DT(0x11);
+  DEBUGASSERT(dsi_sync_vse == 0x14000011);
+  putreg32(dsi_sync_vse, DSI_SYNC_VSE_REG);  // TODO: DMB
 
   // Set Basic Size (Undocumented)
   // DSI_BASIC_SIZE0_REG: DSI Offset 0x18
@@ -646,20 +646,20 @@ int a64_mipi_dsi_enable(void)
   ginfo("Set Basic Size\n");
   DEBUGASSERT(DSI_BASIC_SIZE0_REG == 0x1ca0018);
 
-  const uint32_t DSI_BASIC_SIZE0 = VIDEO_VBP(17)
-      | VIDEO_VSA(10);
-  DEBUGASSERT(DSI_BASIC_SIZE0 == 0x11000a);
-  putreg32(DSI_BASIC_SIZE0, DSI_BASIC_SIZE0_REG);  // TODO: DMB
+  const uint32_t dsi_basic_size0 = VIDEO_VBP(17) | 
+                                   VIDEO_VSA(10);
+  DEBUGASSERT(dsi_basic_size0 == 0x11000a);
+  putreg32(dsi_basic_size0, DSI_BASIC_SIZE0_REG);  // TODO: DMB
 
   // DSI_BASIC_SIZE1_REG: DSI Offset 0x1c
   // Set Video_VT (Bits 16 to 28) to 1485
   // Set Video_VACT (Bits 0 to 11) to 1440
   DEBUGASSERT(DSI_BASIC_SIZE1_REG == 0x1ca001c);
 
-  const uint32_t DSI_BASIC_SIZE1 = VIDEO_VT(1485)
-      | VIDEO_VACT(1440);
-  DEBUGASSERT(DSI_BASIC_SIZE1 == 0x5cd05a0);
-  putreg32(DSI_BASIC_SIZE1, DSI_BASIC_SIZE1_REG);  // TODO: DMB
+  const uint32_t dsi_basic_size1 = VIDEO_VT(1485) | 
+                                   VIDEO_VACT(1440);
+  DEBUGASSERT(dsi_basic_size1 == 0x5cd05a0);
+  putreg32(dsi_basic_size1, DSI_BASIC_SIZE1_REG);  // TODO: DMB
 
   // Set Horizontal Blanking
   // DSI_BLK_HSA0_REG: DSI Offset 0xc0 (A31 Page 852)
@@ -674,10 +674,10 @@ int a64_mipi_dsi_enable(void)
   // Set HSA_PD (Bits 0 to 7) to 0
   DEBUGASSERT(DSI_BLK_HSA1_REG == 0x1ca00c4);
 
-  const uint32_t DSI_BLK_HSA1 = HSA_PF(0x50b4)
-      | HSA_PD(0);
-  DEBUGASSERT(DSI_BLK_HSA1 == 0x50b40000);
-  putreg32(DSI_BLK_HSA1, DSI_BLK_HSA1_REG);  // TODO: DMB
+  const uint32_t dsi_blk_hsa1 = HSA_PF(0x50b4) | 
+                                HSA_PD(0);
+  DEBUGASSERT(dsi_blk_hsa1 == 0x50b40000);
+  putreg32(dsi_blk_hsa1, DSI_BLK_HSA1_REG);  // TODO: DMB
 
   // DSI_BLK_HBP0_REG: DSI Offset 0xc8 (A31 Page 852)
   // Set HBP_PH (Bits 0 to 31) to 0x3500 5419
@@ -689,10 +689,10 @@ int a64_mipi_dsi_enable(void)
   // Set HBP_PD (Bits 0 to 7) to 0
   DEBUGASSERT(DSI_BLK_HBP1_REG == 0x1ca00cc);
 
-  const uint32_t DSI_BLK_HBP1 = HBP_PF(0x757a)
-      | HBP_PD(0);
-  DEBUGASSERT(DSI_BLK_HBP1 == 0x757a0000);
-  putreg32(DSI_BLK_HBP1, DSI_BLK_HBP1_REG);  // TODO: DMB
+  const uint32_t dsi_blk_hbp1 = HBP_PF(0x757a) | 
+                                HBP_PD(0);
+  DEBUGASSERT(dsi_blk_hbp1 == 0x757a0000);
+  putreg32(dsi_blk_hbp1, DSI_BLK_HBP1_REG);  // TODO: DMB
 
   // DSI_BLK_HFP0_REG: DSI Offset 0xd0 (A31 Page 852)
   // Set HFP_PH (Bits 0 to 31) to 0x900 4a19
@@ -704,10 +704,10 @@ int a64_mipi_dsi_enable(void)
   // Set HFP_PD (Bits 0 to 7) to 0
   DEBUGASSERT(DSI_BLK_HFP1_REG == 0x1ca00d4);
 
-  const uint32_t DSI_BLK_HFP1 = HFP_PF(0x50b4)
-      | HFP_PD(0);
-  DEBUGASSERT(DSI_BLK_HFP1 == 0x50b40000);
-  putreg32(DSI_BLK_HFP1, DSI_BLK_HFP1_REG);  // TODO: DMB
+  const uint32_t dsi_blk_hfp1 = HFP_PF(0x50b4) | 
+                                HFP_PD(0);
+  DEBUGASSERT(dsi_blk_hfp1 == 0x50b40000);
+  putreg32(dsi_blk_hfp1, DSI_BLK_HFP1_REG);  // TODO: DMB
 
   // DSI_BLK_HBLK0_REG: DSI Offset 0xe0 (A31 Page 853)
   // Set HBLK_PH (Bits 0 to 31) to 0xc09 1a19
@@ -719,10 +719,10 @@ int a64_mipi_dsi_enable(void)
   // Set HBLK_PD (Bits 0 to 7) to 0
   DEBUGASSERT(DSI_BLK_HBLK1_REG == 0x1ca00e4);
 
-  const uint32_t DSI_BLK_HBLK1 = HBLK_PF(0x72bd)
-      | HBLK_PD(0);
-  DEBUGASSERT(DSI_BLK_HBLK1 == 0x72bd0000);
-  putreg32(DSI_BLK_HBLK1, DSI_BLK_HBLK1_REG);  // TODO: DMB
+  const uint32_t dsi_blk_hblk1 = HBLK_PF(0x72bd) | 
+                                 HBLK_PD(0);
+  DEBUGASSERT(dsi_blk_hblk1 == 0x72bd0000);
+  putreg32(dsi_blk_hblk1, DSI_BLK_HBLK1_REG);  // TODO: DMB
 
   // Set Vertical Blanking
   // DSI_BLK_VBLK0_REG: DSI Offset 0xe8 (A31 Page 854)
@@ -736,10 +736,10 @@ int a64_mipi_dsi_enable(void)
   // Set VBLK_PD (Bits 0 to 7) to 0
   DEBUGASSERT(DSI_BLK_VBLK1_REG == 0x1ca00ec);
 
-  const uint32_t DSI_BLK_VBLK1 = VBLK_PF(0xffff)
-      | VBLK_PD(0);
-  DEBUGASSERT(DSI_BLK_VBLK1 == 0xffff0000);
-  putreg32(DSI_BLK_VBLK1, DSI_BLK_VBLK1_REG);  // TODO: DMB
+  const uint32_t dsi_blk_vblk1 = VBLK_PF(0xffff) | 
+                                 VBLK_PD(0);
+  DEBUGASSERT(dsi_blk_vblk1 == 0xffff0000);
+  putreg32(dsi_blk_vblk1, DSI_BLK_VBLK1_REG);  // TODO: DMB
 
   return OK;
 }
