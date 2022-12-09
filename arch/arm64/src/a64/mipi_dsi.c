@@ -92,6 +92,8 @@ static uint16_t crc16ccitt(FAR const uint8_t *src, size_t len, uint16_t crc16val
   size_t i;
   uint16_t v = crc16val;
 
+  DEBUGASSERT(src != NULL);
+
   for (i = 0; i < len; i++)
     {
       v = (v >> 8)
@@ -109,6 +111,8 @@ static uint16_t compute_crc(FAR const uint8_t *data, size_t len)
   // Use CRC-16-CCITT (x^16 + x^12 + x^5 + 1)
   uint16_t crc = crc16ccitt(data, len, 0xffff);
 
+  DEBUGASSERT(data != NULL);
+
   // debug("computeCrc: len={}, crc=0x{x}", .{ data.len, crc });
   // dump_buffer(&data[0], data.len);
   return crc;
@@ -122,7 +126,7 @@ static uint8_t compute_ecc(
   FAR const uint8_t *di_wc,  // Data Identifier + Word Count (3 bytes)
   size_t len  // Must be 3
 ) {
-  DEBUGASSERT(len == 3);
+  DEBUGASSERT(di_wc != NULL && len == 3);
   if (len != 3)
     {
       return 0;
@@ -183,7 +187,9 @@ ssize_t mipi_dsi_long_packet(
   size_t txlen          // Buffer Length
 )
 {
-  ginfo("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen); ////
+  ginfo("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen);
+  DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
+
   // Data Identifier (DI) (1 byte):
   // - Virtual Channel Identifier (Bits 6 to 7)
   // - Data Type (Bits 0 to 5)
@@ -255,7 +261,8 @@ ssize_t mipi_dsi_short_packet(
   size_t txlen          // Buffer Length
 )
 {
-  ginfo("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen); ////
+  ginfo("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen);
+  DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
   DEBUGASSERT(txlen == 1 || txlen == 2);
 
   // From BL808 Reference Manual (Page 201): https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf

@@ -75,8 +75,8 @@
 /// Disable DSI Processing. See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
 static void a64_disable_dsi_processing(void)
 {
-    // Set Instru_En to 0
-    modreg32(0, Instru_En, DSI_BASIC_CTL0_REG);  // TODO: DMB
+  // Set Instru_En to 0
+  modreg32(0, Instru_En, DSI_BASIC_CTL0_REG);  // TODO: DMB
 }
 
 /// Enable DSI Processing. See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
@@ -123,6 +123,7 @@ ssize_t a64_mipi_dsi_write(
   int ret;
   ssize_t pktlen = -1;
   ginfo("channel=%d, cmd=0x%x, txlen=%d\n", channel, cmd, (int) txlen); // TODO
+  DEBUGASSERT(txbuf != NULL);
   if (cmd == MIPI_DSI_DCS_SHORT_WRITE)       
     { 
       DEBUGASSERT(txlen == 1); 
