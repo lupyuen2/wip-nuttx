@@ -635,7 +635,6 @@ int a64_mipi_dsi_enable(void)
    * in A31 User Manual
    */
 
-
   dsi_basic_ctl1 = VIDEO_START_DELAY(1468) |
                    VIDEO_PRECISION_MODE_ALIGN |
                    VIDEO_FRAME_START |
@@ -700,7 +699,7 @@ int a64_mipi_dsi_enable(void)
    * (CRC initial to this value in 1st transmition every frame)
    */
 
-  dsi_pixel_pf1 = CRC_INIT_LINEN(0XFFFF) | 
+  dsi_pixel_pf1 = CRC_INIT_LINEN(0XFFFF) |
                   CRC_INIT_LINE0(0XFFFF);
   putreg32(dsi_pixel_pf1, DSI_PIXEL_PF1_REG);
 
@@ -709,7 +708,6 @@ int a64_mipi_dsi_enable(void)
    * Set Pixel_Endian (Bit 4) to 0 (LSB first)
    * Set Pixel_Format (Bits 0 to 3) to 8 (24-bit RGB888)
    */
-
 
   dsi_pixel_ctl0 = PD_PLUG_DIS |
                    PIXEL_ENDIAN |
@@ -795,7 +793,6 @@ int a64_mipi_dsi_enable(void)
    * Set Video_VSA (Bits 0 to 11) to 10
    */
 
-
   dsi_basic_size0 = VIDEO_VBP(17) |
                     VIDEO_VSA(10);
   putreg32(dsi_basic_size0, DSI_BASIC_SIZE0_REG);
@@ -804,7 +801,6 @@ int a64_mipi_dsi_enable(void)
    * Set Video_VT (Bits 16 to 28) to 1485
    * Set Video_VACT (Bits 0 to 11) to 1440
    */
-
 
   dsi_basic_size1 = VIDEO_VT(1485) |
                     VIDEO_VACT(1440);
@@ -825,7 +821,6 @@ int a64_mipi_dsi_enable(void)
    * Set HSA_PD (Bits 0 to 7) to 0
    */
 
-
   dsi_blk_hsa1 = HSA_PF(0x50b4) |
                  HSA_PD(0);
   putreg32(dsi_blk_hsa1, DSI_BLK_HSA1_REG);
@@ -840,7 +835,6 @@ int a64_mipi_dsi_enable(void)
    * Set HBP_PF (Bits 16 to 31) to 0x757a
    * Set HBP_PD (Bits 0 to 7) to 0
    */
-
 
   dsi_blk_hbp1 = HBP_PF(0x757a) |
                  HBP_PD(0);
@@ -857,7 +851,6 @@ int a64_mipi_dsi_enable(void)
    * Set HFP_PD (Bits 0 to 7) to 0
    */
 
-
   dsi_blk_hfp1 = HFP_PF(0x50b4) |
                  HFP_PD(0);
   putreg32(dsi_blk_hfp1, DSI_BLK_HFP1_REG);
@@ -872,7 +865,6 @@ int a64_mipi_dsi_enable(void)
    * Set HBLK_PF (Bits 16 to 31) to 0x72bd
    * Set HBLK_PD (Bits 0 to 7) to 0
    */
-
 
   dsi_blk_hblk1 = HBLK_PF(0x72bd) |
                   HBLK_PD(0);
@@ -1016,7 +1008,6 @@ int a64_mipi_dsi_start(void)
    * Set to 0xf02
    */
 
-  DEBUGASSERT(DSI_INST_JUMP_SEL_REG == 0x1ca0048);
   putreg32(0xf02, DSI_INST_JUMP_SEL_REG);
 
   /* Commit *****************************************************************/
@@ -1027,8 +1018,6 @@ int a64_mipi_dsi_start(void)
    * Set INSTRU_EN (Bit 0) to 1 (Enable DSI Processing from Instruction 0)
    */
 
-  DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
-  DEBUGASSERT(INSTRU_EN == 0x1);
   modreg32(INSTRU_EN,
            INSTRU_EN,
            DSI_BASIC_CTL0_REG);
@@ -1041,8 +1030,6 @@ int a64_mipi_dsi_start(void)
    * Set DSI_INST_FUNC_LANE_CEN (Bit 4) to 0
    */
 
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_LP11) == 0x1ca0020);
-  DEBUGASSERT(DSI_INST_FUNC_LANE_CEN == 0x10);
   modreg32(0x0,
            DSI_INST_FUNC_LANE_CEN,
            DSI_INST_FUNC_REG(DSI_INST_ID_LP11));
@@ -1059,7 +1046,6 @@ int a64_mipi_dsi_start(void)
    * Set to 0x63f0 7006
    */
 
-  DEBUGASSERT(DSI_INST_JUMP_SEL_REG == 0x1ca0048);
   putreg32(0x63f07006, DSI_INST_JUMP_SEL_REG);
 
   /* Commit *****************************************************************/
@@ -1070,11 +1056,20 @@ int a64_mipi_dsi_start(void)
    * Set INSTRU_EN (Bit 0) to 1 (Enable DSI Processing from Instruction 0)
    */
 
-  DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
-  DEBUGASSERT(INSTRU_EN == 0x1);
   modreg32(INSTRU_EN,
            INSTRU_EN,
            DSI_BASIC_CTL0_REG);
+
+  DEBUGASSERT(DSI_INST_JUMP_SEL_REG == 0x1ca0048);
+  DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
+  DEBUGASSERT(INSTRU_EN == 0x1);
+
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_LP11) == 0x1ca0020);
+  DEBUGASSERT(DSI_INST_FUNC_LANE_CEN == 0x10);
+
+  DEBUGASSERT(DSI_INST_JUMP_SEL_REG == 0x1ca0048);
+  DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
+  DEBUGASSERT(INSTRU_EN == 0x1);
 
   return OK;
 }
