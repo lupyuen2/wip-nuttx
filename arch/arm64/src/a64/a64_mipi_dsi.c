@@ -321,7 +321,7 @@ static int a64_wait_dsi_transmit(void)
       up_mdelay(1);
     }
 
-  gerr("timeout");
+  gerr("DSI Transmit Timeout");
   return ERROR;
 }
 
