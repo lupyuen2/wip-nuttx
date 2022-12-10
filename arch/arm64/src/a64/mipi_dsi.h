@@ -25,17 +25,21 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/// MIPI DSI Processor-to-Peripheral Transaction Types
+/* MIPI DSI Processor-to-Peripheral Transaction Types */
+
 enum mipi_dsi_e
 {
-  /// DCS Short Write (Without Parameter)
-  MIPI_DSI_DCS_SHORT_WRITE = 0x05,
+  /* DCS Short Write (Without Parameter) */
 
-  /// DCS Short Write (With Parameter)
+  MIPI_DSI_DCS_SHORT_WRITE       = 0x05,
+
+  /* DCS Short Write (With Parameter) */
+
   MIPI_DSI_DCS_SHORT_WRITE_PARAM = 0x15,
 
-  /// DCS Long Write
-  MIPI_DSI_DCS_LONG_WRITE = 0x39
+  /* DCS Long Write */
+
+  MIPI_DSI_DCS_LONG_WRITE        = 0x39
 };
 
 /****************************************************************************
@@ -48,7 +52,7 @@ enum mipi_dsi_e
  * Description:
  *   Compose a MIPI DSI Long Packet. A Short Packet consists of Data
  *   Identifier (Virtual Channel + Data Type), Word Count (Payload Size),
- *   Error Correction Code, Payload and Checksum. Packet Length is 
+ *   Error Correction Code, Payload and Checksum. Packet Length is
  *   Payload Size + 4 bytes.
  *
  * Input Parameters:
