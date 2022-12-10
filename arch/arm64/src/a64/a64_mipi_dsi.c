@@ -537,8 +537,6 @@ int a64_mipi_dsi_enable(void)
    * Set MIPIDSI_GATING (Bit 1) to 1 (Pass Gating Clock for MIPI DSI)
    */
 
-  DEBUGASSERT(BUS_CLK_GATING_REG0 == 0x1c20060);
-  DEBUGASSERT(MIPIDSI_GATING == 2);
   modreg32(MIPIDSI_GATING,
            MIPIDSI_GATING,
            BUS_CLK_GATING_REG0);
@@ -547,8 +545,6 @@ int a64_mipi_dsi_enable(void)
    * Set MIPI_DSI_RST (Bit 1) to 1 (Deassert MIPI DSI Reset)
    */
 
-  DEBUGASSERT(BUS_SOFT_RST_REG0 == 0x1c202c0);
-  DEBUGASSERT(MIPI_DSI_RST == 2);
   modreg32(MIPI_DSI_RST,
            MIPI_DSI_RST,
            BUS_SOFT_RST_REG0);
@@ -561,8 +557,6 @@ int a64_mipi_dsi_enable(void)
    * Set DSI_En (Bit 0) to 1 (Enable DSI)
    */
 
-  DEBUGASSERT(DSI_CTL_REG == 0x1ca0000);
-  DEBUGASSERT(DSI_EN == 1);
   putreg32(DSI_EN, DSI_CTL_REG);
 
   /* DSI Configuration Register 0 (A31 Page 845)
@@ -570,23 +564,19 @@ int a64_mipi_dsi_enable(void)
    * Set ECC_En (Bit 16) to 1 (Enable ECC)
    */
 
-  DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
   dsi_basic_ctl0 = CRC_EN | ECC_EN;
-  DEBUGASSERT(dsi_basic_ctl0 == 0x30000);
   putreg32(dsi_basic_ctl0, DSI_BASIC_CTL0_REG);
 
   /* DSI Transfer Start Register (Undocumented)
    * Set to 10
    */
 
-  DEBUGASSERT(DSI_TRANS_START_REG == 0x1ca0060);
   putreg32(10, DSI_TRANS_START_REG);
 
   /* DSI Transfer Zero Register (Undocumented)
    * Set to 0
    */
 
-  DEBUGASSERT(DSI_TRANS_ZERO_REG == 0x1ca0078);
   putreg32(0, DSI_TRANS_ZERO_REG);
 
   /* Set Instructions (Undocumented) */
@@ -595,49 +585,25 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Instruction Function Register (Undocumented)
    * Set DSI_INST_ID_LP11 to 0x1f
+   * Set DSI_INST_ID_TBA to 0x1000 0001
+   * Set DSI_INST_ID_HSC to 0x2000 0010
+   * Set DSI_INST_ID_HSD to 0x2000 000f
    */
 
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_LP11) == 0x1ca0020);
-  putreg32(0x1f, DSI_INST_FUNC_REG(DSI_INST_ID_LP11));
-
-  /* Set DSI_INST_ID_TBA to 0x1000 0001
-   */
-
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_TBA) == 0x1ca0024);
+  putreg32(0x1f,       DSI_INST_FUNC_REG(DSI_INST_ID_LP11));
   putreg32(0x10000001, DSI_INST_FUNC_REG(DSI_INST_ID_TBA));
-
-  /* Set DSI_INST_ID_HSC to 0x2000 0010
-   */
-
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_HSC) == 0x1ca0028);
   putreg32(0x20000010, DSI_INST_FUNC_REG(DSI_INST_ID_HSC));
-
-  /* Set DSI_INST_ID_HSD to 0x2000 000f
-   */
-
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_HSD) == 0x1ca002c);
   putreg32(0x2000000f, DSI_INST_FUNC_REG(DSI_INST_ID_HSD));
 
   /* Set DSI_INST_ID_LPDT to 0x3010 0001
+   * Set DSI_INST_ID_HSCEXIT to 0x4000 0010
+   * Set DSI_INST_ID_NOP to 0xf
+   * Set DSI_INST_ID_DLY to 0x5000 001f
    */
 
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_LPDT) == 0x1ca0030);
   putreg32(0x30100001, DSI_INST_FUNC_REG(DSI_INST_ID_LPDT));
-
-  /* Set DSI_INST_ID_HSCEXIT to 0x4000 0010
-   */
-
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_HSCEXIT) == 0x1ca0034);
   putreg32(0x40000010, DSI_INST_FUNC_REG(DSI_INST_ID_HSCEXIT));
-
-  /* Set DSI_INST_ID_NOP to 0xf */
-
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_NOP) == 0x1ca0038);
-  putreg32(0xf, DSI_INST_FUNC_REG(DSI_INST_ID_NOP));
-
-  /* Set DSI_INST_ID_DLY to 0x5000 001f */
-
-  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_DLY) == 0x1ca003c);
+  putreg32(0xf,        DSI_INST_FUNC_REG(DSI_INST_ID_NOP));
   putreg32(0x5000001f, DSI_INST_FUNC_REG(DSI_INST_ID_DLY));
 
   /* Configure Jump Instructions (Undocumented) *****************************/
@@ -648,14 +614,12 @@ int a64_mipi_dsi_enable(void)
    * Set DSI_INST_JUMP_CFG to 0x56 0001
    */
 
-  DEBUGASSERT(DSI_INST_JUMP_CFG_REG(DSI_INST_JUMP_CFG) == 0x1ca004c);
   putreg32(0x560001, DSI_INST_JUMP_CFG_REG(DSI_INST_JUMP_CFG));
 
   /* DSI Debug Data Register (Undocumented)
    * Set to 0xff
    */
 
-  DEBUGASSERT(DSI_DEBUG_DATA_REG == 0x1ca02f8);
   putreg32(0xff, DSI_DEBUG_DATA_REG);
 
   /* Set Video Start Delay **************************************************/
@@ -976,6 +940,35 @@ int a64_mipi_dsi_enable(void)
                   VBLK_PD(0);
   DEBUGASSERT(dsi_blk_vblk1 == 0xffff0000);
   putreg32(dsi_blk_vblk1, DSI_BLK_VBLK1_REG);
+
+
+  DEBUGASSERT(BUS_CLK_GATING_REG0 == 0x1c20060);
+  DEBUGASSERT(MIPIDSI_GATING == 2);
+
+  DEBUGASSERT(BUS_SOFT_RST_REG0 == 0x1c202c0);
+  DEBUGASSERT(MIPI_DSI_RST == 2);
+
+  DEBUGASSERT(DSI_CTL_REG == 0x1ca0000);
+  DEBUGASSERT(DSI_EN == 1);
+
+  DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
+  DEBUGASSERT(dsi_basic_ctl0 == 0x30000);
+
+  DEBUGASSERT(DSI_TRANS_START_REG == 0x1ca0060);
+  DEBUGASSERT(DSI_TRANS_ZERO_REG == 0x1ca0078);
+
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_LP11) == 0x1ca0020);
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_TBA) == 0x1ca0024);
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_HSC) == 0x1ca0028);
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_HSD) == 0x1ca002c);
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_LPDT) == 0x1ca0030);
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_HSCEXIT) == 0x1ca0034);
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_NOP) == 0x1ca0038);
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_DLY) == 0x1ca003c);
+
+  DEBUGASSERT(DSI_INST_JUMP_CFG_REG(DSI_INST_JUMP_CFG) == 0x1ca004c);
+
+  DEBUGASSERT(DSI_DEBUG_DATA_REG == 0x1ca02f8);
 
   return OK;
 }
