@@ -118,25 +118,50 @@ static uint16_t crc16ccitt(FAR const uint8_t *src,
   return v;
 }
 
-/// Compute 16-bit Cyclic Redundancy Check (CRC).
-/// See "12.3.6.13: Packet Footer", Page 210 of BL808 Reference Manual:
-/// https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
+/****************************************************************************
+ * Name: compute_crc
+ *
+ * Description:
+ *   Compute the MIPI DSI CRC for the data buffer.
+ *
+ * Input Parameters:
+ *   data - Data buffer
+ *   len  - Length of data buffer
+ *
+ * Returned Value:
+ *   MIPI DSI CRC value of the data buffer
+ *
+ ****************************************************************************/
+
 static uint16_t compute_crc(FAR const uint8_t *data, size_t len)
 {
-  // Use CRC-16-CCITT (x^16 + x^12 + x^5 + 1)
-  uint16_t crc = crc16ccitt(data, len, 0xffff);
+  uint16_t crc;
+
+  /* Compute  CRC-16-CCITT (x^16 + x^12 + x^5 + 1) */
 
   DEBUGASSERT(data != NULL);
+  crc = crc16ccitt(data, len, 0xffff);
 
-  // debug("computeCrc: len={}, crc=0x{x}", .{ data.len, crc });
-  // dump_buffer(&data[0], data.len);
   return crc;
 }
 
-/// Compute the Error Correction Code (ECC) (1 byte):
-/// Allow single-bit errors to be corrected and 2-bit errors to be detected in the Packet Header
-/// See "12.3.6.12: Error Correction Code", Page 208 of BL808 Reference Manual:
-/// https://files.pine64.org/doc/datasheet/ox64/BL808_RM_en_1.0(open).pdf
+/****************************************************************************
+ * Name: compute_ecc
+ *
+ * Description:
+ *   Compute the MIPI DSI Error Correction Code (ECC) for the 3-byte
+ *   data buffer. The ECC allows single-bit errors to be corrected and
+ *   2-bit errors to be detected in the MIPI DSI Packet Header.
+ *
+ * Input Parameters:
+ *   di_wc - Data buffer (Data Identifier + Word Count)
+ *   len   - Length of data buffer (Should be 3 bytes)
+ *
+ * Returned Value:
+ *   MIPI DSI ECC value of the data buffer
+ *
+ ****************************************************************************/
+
 static uint8_t compute_ecc(
   FAR const uint8_t *di_wc,  // Data Identifier + Word Count (3 bytes)
   size_t len  // Must be 3
