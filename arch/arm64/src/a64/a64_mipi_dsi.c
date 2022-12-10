@@ -635,13 +635,11 @@ int a64_mipi_dsi_enable(void)
    * in A31 User Manual
    */
 
-  DEBUGASSERT(DSI_BASIC_CTL1_REG == 0x1ca0014);
 
   dsi_basic_ctl1 = VIDEO_START_DELAY(1468) |
                    VIDEO_PRECISION_MODE_ALIGN |
                    VIDEO_FRAME_START |
                    DSI_MODE;
-  DEBUGASSERT(dsi_basic_ctl1 == 0x5bc7);
   putreg32(dsi_basic_ctl1, DSI_BASIC_CTL1_REG);
 
   /* Set Burst (Undocumented) ***********************************************/
@@ -652,7 +650,6 @@ int a64_mipi_dsi_enable(void)
    * Set to 0x1000 0007
    */
 
-  DEBUGASSERT(DSI_TCON_DRQ_REG == 0x1ca007c);
   putreg32(0x10000007, DSI_TCON_DRQ_REG);
 
   /* Set Instruction Loop (Undocumented) ************************************/
@@ -663,7 +660,6 @@ int a64_mipi_dsi_enable(void)
    * Set to 0x3000 0002
    */
 
-  DEBUGASSERT(DSI_INST_LOOP_SEL_REG == 0x1ca0040);
   putreg32(0x30000002, DSI_INST_LOOP_SEL_REG);
 
   /* DSI Instruction Loop Number Register (Undocumented)
@@ -671,10 +667,7 @@ int a64_mipi_dsi_enable(void)
    * Set Register 1 to 0x31 0031
    */
 
-  DEBUGASSERT(DSI_INST_LOOP_NUM_REG(0) == 0x1ca0044);
   putreg32(0x310031, DSI_INST_LOOP_NUM_REG(0));
-
-  DEBUGASSERT(DSI_INST_LOOP_NUM_REG(1) == 0x1ca0054);
   putreg32(0x310031, DSI_INST_LOOP_NUM_REG(1));
 
   /* Set Pixel Format *******************************************************/
@@ -688,19 +681,16 @@ int a64_mipi_dsi_enable(void)
    * Set DT (Bits 0 to 5) to 0x3E (24-bit Video Mode)
    */
 
-  DEBUGASSERT(DSI_PIXEL_PH_REG == 0x1ca0090);
   dsi_pixel_ph = PIXEL_ECC(19) |
                  PIXEL_WC(2160) |
                  PIXEL_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
                  PIXEL_DT(0x3e);
-  DEBUGASSERT(dsi_pixel_ph == 0x1308703e);
   putreg32(dsi_pixel_ph, DSI_PIXEL_PH_REG);
 
   /* DSI Pixel Package Register 2 (A31 Page 849)
    * Set CRC_Force (Bits 0 to 15) to 0xffff (Force CRC to this value)
    */
 
-  DEBUGASSERT(DSI_PIXEL_PF0_REG == 0x1ca0098);
   putreg32(CRC_FORCE, DSI_PIXEL_PF0_REG);
 
   /* DSI Pixel Package Register 3 (A31 Page 849)
@@ -710,11 +700,8 @@ int a64_mipi_dsi_enable(void)
    * (CRC initial to this value in 1st transmition every frame)
    */
 
-  DEBUGASSERT(DSI_PIXEL_PF1_REG == 0x1ca009c);
-
   dsi_pixel_pf1 = CRC_INIT_LINEN(0XFFFF) | 
                   CRC_INIT_LINE0(0XFFFF);
-  DEBUGASSERT(dsi_pixel_pf1 == 0xffffffff);
   putreg32(dsi_pixel_pf1, DSI_PIXEL_PF1_REG);
 
   /* DSI Pixel Format Register 0 (A31 Page 847)
@@ -723,12 +710,10 @@ int a64_mipi_dsi_enable(void)
    * Set Pixel_Format (Bits 0 to 3) to 8 (24-bit RGB888)
    */
 
-  DEBUGASSERT(DSI_PIXEL_CTL0_REG == 0x1ca0080);
 
   dsi_pixel_ctl0 = PD_PLUG_DIS |
                    PIXEL_ENDIAN |
                    PIXEL_FORMAT(8);
-  DEBUGASSERT(dsi_pixel_ctl0 == 0x10008);
   putreg32(dsi_pixel_ctl0, DSI_PIXEL_CTL0_REG);
 
   /* Set Sync Timings *******************************************************/
@@ -739,7 +724,6 @@ int a64_mipi_dsi_enable(void)
    * Set to 0
    */
 
-  DEBUGASSERT(DSI_BASIC_CTL_REG == 0x1ca000c);
   putreg32(0x0, DSI_BASIC_CTL_REG);
 
   /* DSI Sync Package Register 0 (A31 Page 850)
@@ -750,13 +734,11 @@ int a64_mipi_dsi_enable(void)
    * Set DT (Bits 0 to 5) to 0x21 (HSS)
    */
 
-  DEBUGASSERT(DSI_SYNC_HSS_REG == 0x1ca00b0);
   dsi_sync_hss = SYNC_ECC(0x12) |
                  SYNC_D1(0) |
                  SYNC_D0(0) |
                  SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
                  SYNC_DT(0x21);
-  DEBUGASSERT(dsi_sync_hss == 0x12000021);
   putreg32(dsi_sync_hss, DSI_SYNC_HSS_REG);
 
   /* DSI Sync Package Register 1 (A31 Page 850)
@@ -767,13 +749,11 @@ int a64_mipi_dsi_enable(void)
    * Set DT (Bits 0 to 5) to 0x31 (HSE)
    */
 
-  DEBUGASSERT(DSI_SYNC_HSE_REG == 0x1ca00b4);
   dsi_sync_hse = SYNC_ECC(1) |
                  SYNC_D1(0) |
                  SYNC_D0(0) |
                  SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
                  SYNC_DT(0x31);
-  DEBUGASSERT(dsi_sync_hse == 0x1000031);
   putreg32(dsi_sync_hse, DSI_SYNC_HSE_REG);
 
   /* DSI Sync Package Register 2 (A31 Page 851)
@@ -784,13 +764,11 @@ int a64_mipi_dsi_enable(void)
    * Set DT (Bits 0 to 5) to 1 (VSS)
    */
 
-  DEBUGASSERT(DSI_SYNC_VSS_REG == 0x1ca00b8);
   dsi_sync_vss = SYNC_ECC(7) |
                  SYNC_D1(0) |
                  SYNC_D0(0) |
                  SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
                  SYNC_DT(1);
-  DEBUGASSERT(dsi_sync_vss == 0x7000001);
   putreg32(dsi_sync_vss, DSI_SYNC_VSS_REG);
 
   /* DSI Sync Package Register 3 (A31 Page 851)
@@ -801,13 +779,11 @@ int a64_mipi_dsi_enable(void)
    * Set DT (Bits 0 to 5) to 0x11 (VSE)
    */
 
-  DEBUGASSERT(DSI_SYNC_VSE_REG == 0x1ca00bc);
   dsi_sync_vse = SYNC_ECC(0x14) |
                  SYNC_D1(0) |
                  SYNC_D0(0) |
                  SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
                  SYNC_DT(0x11);
-  DEBUGASSERT(dsi_sync_vse == 0x14000011);
   putreg32(dsi_sync_vse, DSI_SYNC_VSE_REG);
 
   /* Set Basic Size *********************************************************/
@@ -819,11 +795,9 @@ int a64_mipi_dsi_enable(void)
    * Set Video_VSA (Bits 0 to 11) to 10
    */
 
-  DEBUGASSERT(DSI_BASIC_SIZE0_REG == 0x1ca0018);
 
   dsi_basic_size0 = VIDEO_VBP(17) |
                     VIDEO_VSA(10);
-  DEBUGASSERT(dsi_basic_size0 == 0x11000a);
   putreg32(dsi_basic_size0, DSI_BASIC_SIZE0_REG);
 
   /* DSI Line Number Register 1 (A31 Page 847)
@@ -831,11 +805,9 @@ int a64_mipi_dsi_enable(void)
    * Set Video_VACT (Bits 0 to 11) to 1440
    */
 
-  DEBUGASSERT(DSI_BASIC_SIZE1_REG == 0x1ca001c);
 
   dsi_basic_size1 = VIDEO_VT(1485) |
                     VIDEO_VACT(1440);
-  DEBUGASSERT(dsi_basic_size1 == 0x5cd05a0);
   putreg32(dsi_basic_size1, DSI_BASIC_SIZE1_REG);
 
   /* Set Horizontal Blanking ************************************************/
@@ -846,7 +818,6 @@ int a64_mipi_dsi_enable(void)
    * Set HSA_PH (Bits 0 to 31) to 0x900 4a19
    */
 
-  DEBUGASSERT(DSI_BLK_HSA0_REG == 0x1ca00c0);
   putreg32(0x9004a19, DSI_BLK_HSA0_REG);
 
   /* DSI Blank Package Register 1 (A31 Page 852)
@@ -854,18 +825,15 @@ int a64_mipi_dsi_enable(void)
    * Set HSA_PD (Bits 0 to 7) to 0
    */
 
-  DEBUGASSERT(DSI_BLK_HSA1_REG == 0x1ca00c4);
 
   dsi_blk_hsa1 = HSA_PF(0x50b4) |
                  HSA_PD(0);
-  DEBUGASSERT(dsi_blk_hsa1 == 0x50b40000);
   putreg32(dsi_blk_hsa1, DSI_BLK_HSA1_REG);
 
   /* DSI Blank Package Register 2 (A31 Page 852)
    * Set HBP_PH (Bits 0 to 31) to 0x3500 5419
    */
 
-  DEBUGASSERT(DSI_BLK_HBP0_REG == 0x1ca00c8);
   putreg32(0x35005419, DSI_BLK_HBP0_REG);
 
   /* DSI Blank Package Register 3 (A31 Page 852)
@@ -873,18 +841,15 @@ int a64_mipi_dsi_enable(void)
    * Set HBP_PD (Bits 0 to 7) to 0
    */
 
-  DEBUGASSERT(DSI_BLK_HBP1_REG == 0x1ca00cc);
 
   dsi_blk_hbp1 = HBP_PF(0x757a) |
                  HBP_PD(0);
-  DEBUGASSERT(dsi_blk_hbp1 == 0x757a0000);
   putreg32(dsi_blk_hbp1, DSI_BLK_HBP1_REG);
 
   /* DSI Blank Package Register 4 (A31 Page 852)
    * Set HFP_PH (Bits 0 to 31) to 0x900 4a19
    */
 
-  DEBUGASSERT(DSI_BLK_HFP0_REG == 0x1ca00d0);
   putreg32(0x9004a19,  DSI_BLK_HFP0_REG);
 
   /* DSI Blank Package Register 5 (A31 Page 853)
@@ -892,18 +857,15 @@ int a64_mipi_dsi_enable(void)
    * Set HFP_PD (Bits 0 to 7) to 0
    */
 
-  DEBUGASSERT(DSI_BLK_HFP1_REG == 0x1ca00d4);
 
   dsi_blk_hfp1 = HFP_PF(0x50b4) |
                  HFP_PD(0);
-  DEBUGASSERT(dsi_blk_hfp1 == 0x50b40000);
   putreg32(dsi_blk_hfp1, DSI_BLK_HFP1_REG);
 
   /* DSI Blank Package Register 6 (A31 Page 853)
    * Set HBLK_PH (Bits 0 to 31) to 0xc09 1a19
    */
 
-  DEBUGASSERT(DSI_BLK_HBLK0_REG == 0x1ca00e0);
   putreg32(0xc091a19,  DSI_BLK_HBLK0_REG);
 
   /* DSI Blank Package Register 7 (A31 Page 853)
@@ -911,11 +873,9 @@ int a64_mipi_dsi_enable(void)
    * Set HBLK_PD (Bits 0 to 7) to 0
    */
 
-  DEBUGASSERT(DSI_BLK_HBLK1_REG == 0x1ca00e4);
 
   dsi_blk_hblk1 = HBLK_PF(0x72bd) |
                   HBLK_PD(0);
-  DEBUGASSERT(dsi_blk_hblk1 == 0x72bd0000);
   putreg32(dsi_blk_hblk1, DSI_BLK_HBLK1_REG);
 
   /* Set Vertical Blanking **************************************************/
@@ -926,7 +886,6 @@ int a64_mipi_dsi_enable(void)
    * Set VBLK_PH (Bits 0 to 31) to 0x1a00 0019
    */
 
-  DEBUGASSERT(DSI_BLK_VBLK0_REG == 0x1ca00e8);
   putreg32(0x1a000019, DSI_BLK_VBLK0_REG);
 
   /* DSI Blank Package Register 9 (A31 Page 854)
@@ -934,11 +893,8 @@ int a64_mipi_dsi_enable(void)
    * Set VBLK_PD (Bits 0 to 7) to 0
    */
 
-  DEBUGASSERT(DSI_BLK_VBLK1_REG == 0x1ca00ec);
-
   dsi_blk_vblk1 = VBLK_PF(0xffff) |
                   VBLK_PD(0);
-  DEBUGASSERT(dsi_blk_vblk1 == 0xffff0000);
   putreg32(dsi_blk_vblk1, DSI_BLK_VBLK1_REG);
 
 
@@ -969,6 +925,66 @@ int a64_mipi_dsi_enable(void)
   DEBUGASSERT(DSI_INST_JUMP_CFG_REG(DSI_INST_JUMP_CFG) == 0x1ca004c);
 
   DEBUGASSERT(DSI_DEBUG_DATA_REG == 0x1ca02f8);
+
+  DEBUGASSERT(DSI_BASIC_CTL1_REG == 0x1ca0014);
+  DEBUGASSERT(dsi_basic_ctl1 == 0x5bc7);
+
+  DEBUGASSERT(DSI_TCON_DRQ_REG == 0x1ca007c);
+
+  DEBUGASSERT(DSI_INST_LOOP_SEL_REG == 0x1ca0040);
+
+  DEBUGASSERT(DSI_INST_LOOP_NUM_REG(0) == 0x1ca0044);
+  DEBUGASSERT(DSI_INST_LOOP_NUM_REG(1) == 0x1ca0054);
+
+  DEBUGASSERT(DSI_PIXEL_PH_REG == 0x1ca0090);
+  DEBUGASSERT(dsi_pixel_ph == 0x1308703e);
+  DEBUGASSERT(DSI_PIXEL_PF0_REG == 0x1ca0098);
+
+  DEBUGASSERT(DSI_PIXEL_PF1_REG == 0x1ca009c);
+  DEBUGASSERT(dsi_pixel_pf1 == 0xffffffff);
+
+  DEBUGASSERT(DSI_PIXEL_CTL0_REG == 0x1ca0080);
+  DEBUGASSERT(dsi_pixel_ctl0 == 0x10008);
+  DEBUGASSERT(DSI_BASIC_CTL_REG == 0x1ca000c);
+
+  DEBUGASSERT(DSI_SYNC_HSS_REG == 0x1ca00b0);
+  DEBUGASSERT(dsi_sync_hss == 0x12000021);
+
+  DEBUGASSERT(DSI_SYNC_HSE_REG == 0x1ca00b4);
+  DEBUGASSERT(dsi_sync_hse == 0x1000031);
+
+  DEBUGASSERT(DSI_SYNC_VSS_REG == 0x1ca00b8);
+  DEBUGASSERT(dsi_sync_vss == 0x7000001);
+
+  DEBUGASSERT(DSI_SYNC_VSE_REG == 0x1ca00bc);
+  DEBUGASSERT(dsi_sync_vse == 0x14000011);
+
+  DEBUGASSERT(DSI_BASIC_SIZE0_REG == 0x1ca0018);
+  DEBUGASSERT(dsi_basic_size0 == 0x11000a);
+
+  DEBUGASSERT(DSI_BASIC_SIZE1_REG == 0x1ca001c);
+  DEBUGASSERT(dsi_basic_size1 == 0x5cd05a0);
+
+  DEBUGASSERT(DSI_BLK_HSA0_REG == 0x1ca00c0);
+  DEBUGASSERT(DSI_BLK_HSA1_REG == 0x1ca00c4);
+  DEBUGASSERT(dsi_blk_hsa1 == 0x50b40000);
+
+  DEBUGASSERT(DSI_BLK_HBP0_REG == 0x1ca00c8);
+  DEBUGASSERT(DSI_BLK_HBP1_REG == 0x1ca00cc);
+  DEBUGASSERT(dsi_blk_hbp1 == 0x757a0000);
+
+  DEBUGASSERT(DSI_BLK_HFP0_REG == 0x1ca00d0);
+  DEBUGASSERT(DSI_BLK_HFP1_REG == 0x1ca00d4);
+  DEBUGASSERT(dsi_blk_hfp1 == 0x50b40000);
+
+  DEBUGASSERT(DSI_BLK_HBLK0_REG == 0x1ca00e0);
+  DEBUGASSERT(DSI_BLK_HBLK1_REG == 0x1ca00e4);
+  DEBUGASSERT(dsi_blk_hblk1 == 0x72bd0000);
+
+  DEBUGASSERT(DSI_BLK_VBLK0_REG == 0x1ca00e8);
+  DEBUGASSERT(DSI_BLK_VBLK1_REG == 0x1ca00ec);
+
+  DEBUGASSERT(dsi_blk_vblk1 == 0xffff0000);
 
   return OK;
 }
