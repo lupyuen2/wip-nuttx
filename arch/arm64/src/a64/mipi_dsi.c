@@ -235,7 +235,7 @@ static uint8_t compute_ecc(FAR const uint8_t *di_wc,
  *   Compose a MIPI DSI Long Packet. A Short Packet consists of Data
  *   Identifier (Virtual Channel + Data Type), Word Count (Payload Size),
  *   Error Correction Code, Payload and Checksum. Packet Length is
- *   Payload Size + 4 bytes.
+ *   Payload Size + 6 bytes.
  *
  * Input Parameters:
  *   pktbuf  - Buffer for the returned packet
@@ -258,66 +258,108 @@ ssize_t mipi_dsi_long_packet(FAR uint8_t *pktbuf,
                              FAR const uint8_t *txbuf,
                              size_t txlen)
 {
-  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
-  DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
+  /* Data Identifier (DI) (1 byte):
+   * Virtual Channel Identifier (Bits 6 to 7)
+   * Data Type (Bits 0 to 5)
+   */
 
-  // Data Identifier (DI) (1 byte):
-  // - Virtual Channel Identifier (Bits 6 to 7)
-  // - Data Type (Bits 0 to 5)
-  // (Virtual Channel should be 0, I think)
-  DEBUGASSERT(channel < 4);
-  DEBUGASSERT(cmd < (1 << 6));
   const uint8_t vc = channel;
   const uint8_t dt = cmd;
   const uint8_t di = (vc << 6) | dt;
 
-  // Word Count (WC) (2 bytes)：
-  // - Number of bytes in the Packet Payload
+  /* Word Count (WC) (2 bytes)：
+   * Number of bytes in the Packet Payload
+   */
+
   const uint16_t wc = txlen;
   const uint8_t wcl = wc & 0xff;
   const uint8_t wch = wc >> 8;
 
-  // Data Identifier + Word Count (3 bytes): For computing Error Correction Code (ECC)
-  const uint8_t di_wc[3] = { di, wcl, wch };
+  /* Data Identifier + Word Count (3 bytes):
+   * For computing Error Correction Code (ECC)
+   */
 
-  // Compute Error Correction Code (ECC) for Data Identifier + Word Count
+  const uint8_t di_wc[3] =
+    {
+      di,
+      wcl,
+      wch
+    };
+
+  /* Compute ECC for Data Identifier + Word Count */
+
   const uint8_t ecc = compute_ecc(di_wc, sizeof(di_wc));
 
-  // Packet Header (4 bytes):
-  // - Data Identifier + Word Count + Error Correction Code
-  const uint8_t header[4] = { di_wc[0], di_wc[1], di_wc[2], ecc };
+  /* Packet Header (4 bytes):
+   * Data Identifier + Word Count + Error Correction Code
+   */
 
-  // Packet Payload:
-  // - Data (0 to 65,541 bytes):
-  // Number of data bytes should match the Word Count (WC)
-  DEBUGASSERT(txlen <= 65541);
-  if (txlen > 65541) { return ERROR; }  // TODO
+  const uint8_t header[4] =
+    {
+      di_wc[0],
+      di_wc[1],
+      di_wc[2],
+      ecc
+    };
 
-  // Checksum (CS) (2 bytes):
-  // - 16-bit Cyclic Redundancy Check (CRC) of the Payload (not the entire packet)
+  /* Checksum (CS) (2 bytes):
+   * 16-bit Cyclic Redundancy Check (CRC) of the Payload
+   * (Not the entire packet)
+   */
+
   const uint16_t cs = compute_crc(txbuf, txlen);
   const uint8_t csl = cs & 0xff;
   const uint8_t csh = cs >> 8;
 
-  // Packet Footer (2 bytes)
-  // - Checksum (CS)
-  const uint8_t footer[2] = { csl, csh };
+  /* Packet Footer (2 bytes):
+   * Checksum (CS)
+   */
 
-  // Packet:
-  // - Packet Header (4 bytes)
-  // - Payload (`len` bytes)
-  // - Packet Footer (2 bytes)
-  const size_t len = sizeof(header) + txlen + sizeof(footer);
-  DEBUGASSERT(len <= pktlen);  // Increase `pkt` size
-  if (len > pktlen)
+  const uint8_t footer[2] =
     {
+      csl,
+      csh
+    };
+
+  /* Packet Length:
+   * Packet Header (4 bytes)
+   * Payload (txlen bytes)
+   * Packet Footer (2 bytes)
+   */
+
+  const size_t len = sizeof(header) + txlen + sizeof(footer);
+
+  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
+  DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
+  DEBUGASSERT(channel < 4);
+  DEBUGASSERT(cmd < (1 << 6));
+
+  if (txlen > 65541)  /* Max 65,541 bytes for payload */
+    {
+      DEBUGPANIC();
       return ERROR;
     }
-  memcpy(pktbuf, header, sizeof(header)); // 4 bytes
-  memcpy(pktbuf + sizeof(header), txbuf, txlen);  // txlen bytes
-  memcpy(pktbuf + sizeof(header) + txlen, footer, sizeof(footer));  // 2 bytes
 
-  // Return the packet length
+  if (len > pktlen)  /* Packet Buffer too small */
+    {
+      DEBUGPANIC();
+      return ERROR;
+    }
+
+  /* Copy Packet Header, Payload, Packet Footer to Packet Buffer */
+
+  memcpy(pktbuf,
+         header,
+         sizeof(header));  /* 4 bytes */
+  memcpy(pktbuf + sizeof(header),
+         txbuf,
+         txlen);           /* txlen bytes */
+  memcpy(pktbuf + sizeof(header) + txlen,
+         footer,
+         sizeof(footer));  /* 2 bytes */
+
+  /* Return the Packet Length */
+
   return len;
 }
 

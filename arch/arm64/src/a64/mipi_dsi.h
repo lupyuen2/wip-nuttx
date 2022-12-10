@@ -53,7 +53,7 @@ enum mipi_dsi_e
  *   Compose a MIPI DSI Long Packet. A Short Packet consists of Data
  *   Identifier (Virtual Channel + Data Type), Word Count (Payload Size),
  *   Error Correction Code, Payload and Checksum. Packet Length is
- *   Payload Size + 4 bytes.
+ *   Payload Size + 6 bytes.
  *
  * Input Parameters:
  *   pktbuf  - Buffer for the returned packet
