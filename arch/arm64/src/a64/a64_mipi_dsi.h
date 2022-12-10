@@ -40,21 +40,63 @@
  * Public Function Prototypes
  ****************************************************************************/
 
-/// Write to MIPI DSI. See https://lupyuen.github.io/articles/dsi#transmit-packet-over-mipi-dsi
-/// On Success: Return number of written bytes. On Error: Return negative error code
-ssize_t a64_mipi_dsi_write(
-    uint8_t channel,  // Virtual Channel ID
-    enum mipi_dsi_e cmd,      // DCS Command
-    FAR const uint8_t *txbuf,  // Transmit Buffer
-    size_t txlen          // Buffer Length
-);
+/****************************************************************************
+ * Name: a64_mipi_dsi_enable
+ *
+ * Description:
+ *   Enable the MIPI DSI Block on the SoC. Should be called before executing
+ *   any MIPI DSI operations.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   OK is always returned at present.
+ *
+ ****************************************************************************/
 
-/// Enable MIPI DSI Block.
-/// Based on https://lupyuen.github.io/articles/dsi#appendix-enable-mipi-dsi-block
 int a64_mipi_dsi_enable(void);
 
-/// Start MIPI DSI HSC and HSD. (High Speed Clock Mode and High Speed Data Transmission)
-/// Based on https://lupyuen.github.io/articles/dsi#appendix-start-mipi-dsi-hsc-and-hsd
+/****************************************************************************
+ * Name: a64_mipi_dsi_write
+ *
+ * Description:
+ *   Transmit the payload data to the MIPI DSI Bus as a MIPI DSI Short or
+ *   Long Packet. This function is called to initialize the LCD Controller.
+ *
+ * Input Parameters:
+ *   channel - Virtual Channel
+ *   cmd     - DCS Command (Data Type)
+ *   txbuf   - Payload data for the packet
+ *   txlen   - Length of payload data (Max 65541 bytes)
+ *
+ * Returned Value:
+ *   Number of bytes transmitted; a negated errno value is returned on any
+ *   failure.
+ *
+ ****************************************************************************/
+
+ssize_t a64_mipi_dsi_write(uint8_t channel,
+                           enum mipi_dsi_e cmd,
+                           FAR const uint8_t *txbuf,
+                           size_t txlen);
+
+/****************************************************************************
+ * Name: a64_mipi_dsi_start
+ *
+ * Description:
+ *   Start the MIPI DSI Bus in High Speed Clock Mode (HSC) for High Speed
+ *   Data Transmission (HSD). Should be called after initializing the LCD
+ *   Controller, and before executing any Display Engine operations.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   OK is always returned at present.
+ *
+ ****************************************************************************/
+
 int a64_mipi_dsi_start(void);
 
 #endif /* __ARCH_ARM64_SRC_A64_A64_MIPI_DSI_H */
