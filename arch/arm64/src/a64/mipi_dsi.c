@@ -90,9 +90,19 @@ static uint16_t crc16ccitt_tab[256] =
  * Description:
  *   Return a 16-bit CRC-CCITT of the contents of the buffer.
  *
+ * Input Parameters:
+ *   src      - Data buffer
+ *   len      - Length of data buffer
+ *   crc16val - Initial value for CRC computation
+ *
+ * Returned Value:
+ *   CRC-CCITT value of the data buffer
+ *
  ****************************************************************************/
 
-static uint16_t crc16ccitt(FAR const uint8_t *src, size_t len, uint16_t crc16val)
+static uint16_t crc16ccitt(FAR const uint8_t *src,
+                           size_t len,
+                           uint16_t crc16val)
 {
   size_t i;
   uint16_t v = crc16val;
@@ -101,8 +111,8 @@ static uint16_t crc16ccitt(FAR const uint8_t *src, size_t len, uint16_t crc16val
 
   for (i = 0; i < len; i++)
     {
-      v = (v >> 8)
-          ^ crc16ccitt_tab[(v ^ src[i]) & 0xff];
+      v = (v >> 8) ^
+          crc16ccitt_tab[(v ^ src[i]) & 0xff];
     }
 
   return v;
@@ -186,7 +196,7 @@ static uint8_t compute_ecc(
  * Description:
  *   Compose a MIPI DSI Long Packet. A Short Packet consists of Data
  *   Identifier (Virtual Channel + Data Type), Word Count (Payload Size),
- *   Error Correction Code, Payload and Checksum. Packet Length is 
+ *   Error Correction Code, Payload and Checksum. Packet Length is
  *   Payload Size + 4 bytes.
  *
  * Input Parameters:
