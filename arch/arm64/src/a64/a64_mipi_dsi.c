@@ -52,8 +52,11 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Maximum Size of DSI Packets */
-#define DSI_MAX_PACKET_SIZE 128 /* In bytes */
+/* Maximum Size of DSI Packets that will be sent */
+#define DSI_MAX_PACKET_SIZE 128  /* In bytes */
+
+/* Timeout for DSI Transmission in milliseconds */
+#define DSI_TIMEOUT_MS      5
 
 /* A64 CCU Registers and Bit Definitions ************************************/
 
@@ -248,7 +251,9 @@ static void a64_disable_dsi_processing(void)
    * Set INSTRU_EN (Bit 0) to 0
    */
 
-  modreg32(0, INSTRU_EN, DSI_BASIC_CTL0_REG);
+  modreg32(0,
+           INSTRU_EN,
+           DSI_BASIC_CTL0_REG);
 }
 
 /****************************************************************************
@@ -271,7 +276,9 @@ static void a64_enable_dsi_processing(void)
    * Set INSTRU_EN (Bit 0) to 1
    */
 
-  modreg32(INSTRU_EN, INSTRU_EN, DSI_BASIC_CTL0_REG);
+  modreg32(INSTRU_EN,
+           INSTRU_EN,
+           DSI_BASIC_CTL0_REG);
 }
 
 /****************************************************************************
@@ -292,9 +299,9 @@ static int a64_wait_dsi_transmit(void)
 {
   int i;
 
-  /* Wait up to 5 milliseconds */
+  /* Retry sending until timeout */
 
-  for (i = 0; i < 5; i++)
+  for (i = 0; i < DSI_TIMEOUT_MS; i++)
     {
       /* To check whether the transmission is complete,
        * we poll on INSTRU_EN (Bit 0)
@@ -447,7 +454,9 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
       /* Write the 32-bit value */
 
       DEBUGASSERT(addr <= DSI_CMD_TX_END);
-      modreg32(v, 0xffffffff, addr);
+      modreg32(v,
+               0xffffffff,
+               addr);
       addr += 4;
     }
 
@@ -455,7 +464,9 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
    * Set TX_Size (Bits 0 to 7) to Packet Length - 1
   */
 
-  modreg32(pktlen - 1, 0xff, DSI_CMD_CTL_REG);
+  modreg32(pktlen - 1,
+           0xff,
+           DSI_CMD_CTL_REG);
 
   /* DSI Instruction Jump Select Register (Undocumented)
    * Set to begin the Low Power Transmission (LPTX)
@@ -502,6 +513,21 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
 int a64_mipi_dsi_enable(void)
 {
   uint32_t dsi_basic_ctl0;
+  uint32_t dsi_basic_ctl1;
+  uint32_t dsi_pixel_ph;
+  uint32_t dsi_pixel_pf1;
+  uint32_t dsi_pixel_ctl0;
+  uint32_t dsi_sync_hss;
+  uint32_t dsi_sync_hse;
+  uint32_t dsi_sync_vss;
+  uint32_t dsi_sync_vse;
+  uint32_t dsi_basic_size0;
+  uint32_t dsi_basic_size1;
+  uint32_t dsi_blk_hsa1;
+  uint32_t dsi_blk_hbp1;
+  uint32_t dsi_blk_hfp1;
+  uint32_t dsi_blk_hblk1;
+  uint32_t dsi_blk_vblk1;
 
   /* Enable MIPI DSI Bus ****************************************************/
 
@@ -513,7 +539,9 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(BUS_CLK_GATING_REG0 == 0x1c20060);
   DEBUGASSERT(MIPIDSI_GATING == 2);
-  modreg32(MIPIDSI_GATING, MIPIDSI_GATING, BUS_CLK_GATING_REG0);
+  modreg32(MIPIDSI_GATING,
+           MIPIDSI_GATING,
+           BUS_CLK_GATING_REG0);
 
   /* Bus Software Reset Register 0 (A64 Page 138)
    * Set MIPI_DSI_RST (Bit 1) to 1 (Deassert MIPI DSI Reset)
@@ -521,7 +549,9 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(BUS_SOFT_RST_REG0 == 0x1c202c0);
   DEBUGASSERT(MIPI_DSI_RST == 2);
-  modreg32(MIPI_DSI_RST, MIPI_DSI_RST, BUS_SOFT_RST_REG0);
+  modreg32(MIPI_DSI_RST,
+           MIPI_DSI_RST,
+           BUS_SOFT_RST_REG0);
 
   /* Enable DSI Block *******************************************************/
 
@@ -600,19 +630,17 @@ int a64_mipi_dsi_enable(void)
   DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_HSCEXIT) == 0x1ca0034);
   putreg32(0x40000010, DSI_INST_FUNC_REG(DSI_INST_ID_HSCEXIT));
 
-  /* Set DSI_INST_ID_NOP to 0xf
-   */
+  /* Set DSI_INST_ID_NOP to 0xf */
 
   DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_NOP) == 0x1ca0038);
   putreg32(0xf, DSI_INST_FUNC_REG(DSI_INST_ID_NOP));
 
-  /* Set DSI_INST_ID_DLY to 0x5000 001f
-   */
+  /* Set DSI_INST_ID_DLY to 0x5000 001f */
 
   DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_DLY) == 0x1ca003c);
   putreg32(0x5000001f, DSI_INST_FUNC_REG(DSI_INST_ID_DLY));
 
-  /* Configure Jump Instructions (Undocumented) */
+  /* Configure Jump Instructions (Undocumented) *****************************/
 
   ginfo("Configure Jump Instructions\n");
 
@@ -630,8 +658,7 @@ int a64_mipi_dsi_enable(void)
   DEBUGASSERT(DSI_DEBUG_DATA_REG == 0x1ca02f8);
   putreg32(0xff, DSI_DEBUG_DATA_REG);
 
-  /* Set Video Start Delay
-   */
+  /* Set Video Start Delay **************************************************/
 
   ginfo("Set Video Start Delay\n");
 
@@ -646,15 +673,14 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_BASIC_CTL1_REG == 0x1ca0014);
 
-  const uint32_t dsi_basic_ctl1 = VIDEO_START_DELAY(1468) |
-                                  VIDEO_PRECISION_MODE_ALIGN |
-                                  VIDEO_FRAME_START |
-                                  DSI_MODE;
+  dsi_basic_ctl1 = VIDEO_START_DELAY(1468) |
+                   VIDEO_PRECISION_MODE_ALIGN |
+                   VIDEO_FRAME_START |
+                   DSI_MODE;
   DEBUGASSERT(dsi_basic_ctl1 == 0x5bc7);
   putreg32(dsi_basic_ctl1, DSI_BASIC_CTL1_REG);
 
-  /* Set Burst (Undocumented)
-   */
+  /* Set Burst (Undocumented) ***********************************************/
 
   ginfo("Set Burst\n");
 
@@ -665,8 +691,7 @@ int a64_mipi_dsi_enable(void)
   DEBUGASSERT(DSI_TCON_DRQ_REG == 0x1ca007c);
   putreg32(0x10000007, DSI_TCON_DRQ_REG);
 
-  /* Set Instruction Loop (Undocumented)
-   */
+  /* Set Instruction Loop (Undocumented) ************************************/
 
   ginfo("Set Instruction Loop\n");
 
@@ -679,19 +704,16 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Instruction Loop Number Register (Undocumented)
    * Set Register 0 to 0x31 0031
+   * Set Register 1 to 0x31 0031
    */
 
   DEBUGASSERT(DSI_INST_LOOP_NUM_REG(0) == 0x1ca0044);
   putreg32(0x310031, DSI_INST_LOOP_NUM_REG(0));
 
-  /* Set Register 1 to 0x31 0031
-   */
-
   DEBUGASSERT(DSI_INST_LOOP_NUM_REG(1) == 0x1ca0054);
   putreg32(0x310031, DSI_INST_LOOP_NUM_REG(1));
 
-  /* Set Pixel Format
-   */
+  /* Set Pixel Format *******************************************************/
 
   ginfo("Set Pixel Format\n");
 
@@ -703,10 +725,10 @@ int a64_mipi_dsi_enable(void)
    */
 
   DEBUGASSERT(DSI_PIXEL_PH_REG == 0x1ca0090);
-  const uint32_t dsi_pixel_ph = PIXEL_ECC(19) |
-                                PIXEL_WC(2160) |
-                                PIXEL_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
-                                PIXEL_DT(0x3e);
+  dsi_pixel_ph = PIXEL_ECC(19) |
+                 PIXEL_WC(2160) |
+                 PIXEL_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
+                 PIXEL_DT(0x3e);
   DEBUGASSERT(dsi_pixel_ph == 0x1308703e);
   putreg32(dsi_pixel_ph, DSI_PIXEL_PH_REG);
 
@@ -726,10 +748,10 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_PIXEL_PF1_REG == 0x1ca009c);
 
-  const uint32_t DSI_PIXEL_PF1 = CRC_INIT_LINEN(0XFFFF)
-      | CRC_INIT_LINE0(0XFFFF);
-  DEBUGASSERT(DSI_PIXEL_PF1 == 0xffffffff);
-  putreg32(DSI_PIXEL_PF1, DSI_PIXEL_PF1_REG);
+  dsi_pixel_pf1 = CRC_INIT_LINEN(0XFFFF) | 
+                  CRC_INIT_LINE0(0XFFFF);
+  DEBUGASSERT(dsi_pixel_pf1 == 0xffffffff);
+  putreg32(dsi_pixel_pf1, DSI_PIXEL_PF1_REG);
 
   /* DSI Pixel Format Register 0 (A31 Page 847)
    * Set PD_Plug_Dis (Bit 16) to 1 (Disable PD plug before pixel bytes)
@@ -739,14 +761,13 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_PIXEL_CTL0_REG == 0x1ca0080);
 
-  const uint32_t dsi_pixel_ctl0 = PD_PLUG_DIS |
-                                  PIXEL_ENDIAN |
-                                  PIXEL_FORMAT(8);
+  dsi_pixel_ctl0 = PD_PLUG_DIS |
+                   PIXEL_ENDIAN |
+                   PIXEL_FORMAT(8);
   DEBUGASSERT(dsi_pixel_ctl0 == 0x10008);
   putreg32(dsi_pixel_ctl0, DSI_PIXEL_CTL0_REG);
 
-  /* Set Sync Timings
-   */
+  /* Set Sync Timings *******************************************************/
 
   ginfo("Set Sync Timings\n");
 
@@ -766,11 +787,11 @@ int a64_mipi_dsi_enable(void)
    */
 
   DEBUGASSERT(DSI_SYNC_HSS_REG == 0x1ca00b0);
-  const uint32_t dsi_sync_hss = SYNC_ECC(0x12) |
-                                SYNC_D1(0) |
-                                SYNC_D0(0) |
-                                SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
-                                SYNC_DT(0x21);
+  dsi_sync_hss = SYNC_ECC(0x12) |
+                 SYNC_D1(0) |
+                 SYNC_D0(0) |
+                 SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
+                 SYNC_DT(0x21);
   DEBUGASSERT(dsi_sync_hss == 0x12000021);
   putreg32(dsi_sync_hss, DSI_SYNC_HSS_REG);
 
@@ -783,11 +804,11 @@ int a64_mipi_dsi_enable(void)
    */
 
   DEBUGASSERT(DSI_SYNC_HSE_REG == 0x1ca00b4);
-  const uint32_t dsi_sync_hse = SYNC_ECC(1) |
-                                SYNC_D1(0) |
-                                SYNC_D0(0) |
-                                SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
-                                SYNC_DT(0x31);
+  dsi_sync_hse = SYNC_ECC(1) |
+                 SYNC_D1(0) |
+                 SYNC_D0(0) |
+                 SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
+                 SYNC_DT(0x31);
   DEBUGASSERT(dsi_sync_hse == 0x1000031);
   putreg32(dsi_sync_hse, DSI_SYNC_HSE_REG);
 
@@ -800,11 +821,11 @@ int a64_mipi_dsi_enable(void)
    */
 
   DEBUGASSERT(DSI_SYNC_VSS_REG == 0x1ca00b8);
-  const uint32_t dsi_sync_vss = SYNC_ECC(7) |
-                                SYNC_D1(0) |
-                                SYNC_D0(0) |
-                                SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
-                                SYNC_DT(1);
+  dsi_sync_vss = SYNC_ECC(7) |
+                 SYNC_D1(0) |
+                 SYNC_D0(0) |
+                 SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
+                 SYNC_DT(1);
   DEBUGASSERT(dsi_sync_vss == 0x7000001);
   putreg32(dsi_sync_vss, DSI_SYNC_VSS_REG);
 
@@ -817,16 +838,15 @@ int a64_mipi_dsi_enable(void)
    */
 
   DEBUGASSERT(DSI_SYNC_VSE_REG == 0x1ca00bc);
-  const uint32_t dsi_sync_vse = SYNC_ECC(0x14) |
-                                SYNC_D1(0) |
-                                SYNC_D0(0) |
-                                SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
-                                SYNC_DT(0x11);
+  dsi_sync_vse = SYNC_ECC(0x14) |
+                 SYNC_D1(0) |
+                 SYNC_D0(0) |
+                 SYNC_VC(A64_MIPI_DSI_VIRTUAL_CHANNEL) |
+                 SYNC_DT(0x11);
   DEBUGASSERT(dsi_sync_vse == 0x14000011);
   putreg32(dsi_sync_vse, DSI_SYNC_VSE_REG);
 
-  /* Set Basic Size
-   */
+  /* Set Basic Size *********************************************************/
 
   ginfo("Set Basic Size\n");
 
@@ -837,8 +857,8 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_BASIC_SIZE0_REG == 0x1ca0018);
 
-  const uint32_t dsi_basic_size0 = VIDEO_VBP(17) |
-                                   VIDEO_VSA(10);
+  dsi_basic_size0 = VIDEO_VBP(17) |
+                    VIDEO_VSA(10);
   DEBUGASSERT(dsi_basic_size0 == 0x11000a);
   putreg32(dsi_basic_size0, DSI_BASIC_SIZE0_REG);
 
@@ -849,13 +869,12 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_BASIC_SIZE1_REG == 0x1ca001c);
 
-  const uint32_t dsi_basic_size1 = VIDEO_VT(1485) |
-                                   VIDEO_VACT(1440);
+  dsi_basic_size1 = VIDEO_VT(1485) |
+                    VIDEO_VACT(1440);
   DEBUGASSERT(dsi_basic_size1 == 0x5cd05a0);
   putreg32(dsi_basic_size1, DSI_BASIC_SIZE1_REG);
 
-  /* Set Horizontal Blanking
-   */
+  /* Set Horizontal Blanking ************************************************/
 
   ginfo("Set Horizontal Blanking\n");
 
@@ -864,8 +883,7 @@ int a64_mipi_dsi_enable(void)
    */
 
   DEBUGASSERT(DSI_BLK_HSA0_REG == 0x1ca00c0);
-  const uint32_t DSI_BLK_HSA0 = 0x9004a19;
-  putreg32(DSI_BLK_HSA0, DSI_BLK_HSA0_REG);
+  putreg32(0x9004a19, DSI_BLK_HSA0_REG);
 
   /* DSI Blank Package Register 1 (A31 Page 852)
    * Set HSA_PF (Bits 16 to 31) to 0x50b4
@@ -874,8 +892,8 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_BLK_HSA1_REG == 0x1ca00c4);
 
-  const uint32_t dsi_blk_hsa1 = HSA_PF(0x50b4) |
-                                HSA_PD(0);
+  dsi_blk_hsa1 = HSA_PF(0x50b4) |
+                 HSA_PD(0);
   DEBUGASSERT(dsi_blk_hsa1 == 0x50b40000);
   putreg32(dsi_blk_hsa1, DSI_BLK_HSA1_REG);
 
@@ -893,8 +911,8 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_BLK_HBP1_REG == 0x1ca00cc);
 
-  const uint32_t dsi_blk_hbp1 = HBP_PF(0x757a) |
-                                HBP_PD(0);
+  dsi_blk_hbp1 = HBP_PF(0x757a) |
+                 HBP_PD(0);
   DEBUGASSERT(dsi_blk_hbp1 == 0x757a0000);
   putreg32(dsi_blk_hbp1, DSI_BLK_HBP1_REG);
 
@@ -912,8 +930,8 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_BLK_HFP1_REG == 0x1ca00d4);
 
-  const uint32_t dsi_blk_hfp1 = HFP_PF(0x50b4) |
-                                HFP_PD(0);
+  dsi_blk_hfp1 = HFP_PF(0x50b4) |
+                 HFP_PD(0);
   DEBUGASSERT(dsi_blk_hfp1 == 0x50b40000);
   putreg32(dsi_blk_hfp1, DSI_BLK_HFP1_REG);
 
@@ -931,13 +949,12 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_BLK_HBLK1_REG == 0x1ca00e4);
 
-  const uint32_t dsi_blk_hblk1 = HBLK_PF(0x72bd) |
-                                 HBLK_PD(0);
+  dsi_blk_hblk1 = HBLK_PF(0x72bd) |
+                  HBLK_PD(0);
   DEBUGASSERT(dsi_blk_hblk1 == 0x72bd0000);
   putreg32(dsi_blk_hblk1, DSI_BLK_HBLK1_REG);
 
-  /* Set Vertical Blanking
-   */
+  /* Set Vertical Blanking **************************************************/
 
   ginfo("Set Vertical Blanking\n");
 
@@ -955,8 +972,8 @@ int a64_mipi_dsi_enable(void)
 
   DEBUGASSERT(DSI_BLK_VBLK1_REG == 0x1ca00ec);
 
-  const uint32_t dsi_blk_vblk1 = VBLK_PF(0xffff) |
-                                 VBLK_PD(0);
+  dsi_blk_vblk1 = VBLK_PF(0xffff) |
+                  VBLK_PD(0);
   DEBUGASSERT(dsi_blk_vblk1 == 0xffff0000);
   putreg32(dsi_blk_vblk1, DSI_BLK_VBLK1_REG);
 
@@ -982,8 +999,7 @@ int a64_mipi_dsi_enable(void)
 
 int a64_mipi_dsi_start(void)
 {
-  /* Start HSC (Undocumented)
-   */
+  /* Start HSC (Undocumented) ***********************************************/
 
   ginfo("Start HSC\n");
 
@@ -994,8 +1010,7 @@ int a64_mipi_dsi_start(void)
   DEBUGASSERT(DSI_INST_JUMP_SEL_REG == 0x1ca0048);
   putreg32(0xf02, DSI_INST_JUMP_SEL_REG);
 
-  /* Commit
-   */
+  /* Commit *****************************************************************/
 
   ginfo("Commit\n");
 
@@ -1005,30 +1020,29 @@ int a64_mipi_dsi_start(void)
 
   DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
   DEBUGASSERT(INSTRU_EN == 0x1);
-  modreg32(INSTRU_EN, INSTRU_EN, DSI_BASIC_CTL0_REG);
+  modreg32(INSTRU_EN,
+           INSTRU_EN,
+           DSI_BASIC_CTL0_REG);
 
-  /* Instruction Function Lane (Undocumented)
-   */
+  /* Instruction Function Lane (Undocumented) *******************************/
 
   ginfo("Instruction Function Lane\n");
 
   /* DSI Instruction Function Register (Undocumented)
    * Set DSI_INST_FUNC_LANE_CEN (Bit 4) to 0
-   * Index 0 is DSI_INST_ID_LP11
    */
 
-  DEBUGASSERT(DSI_INST_FUNC_REG(0) == 0x1ca0020);
-
+  DEBUGASSERT(DSI_INST_FUNC_REG(DSI_INST_ID_LP11) == 0x1ca0020);
   DEBUGASSERT(DSI_INST_FUNC_LANE_CEN == 0x10);
-  modreg32(0x0, DSI_INST_FUNC_LANE_CEN, DSI_INST_FUNC_REG(0));
+  modreg32(0x0,
+           DSI_INST_FUNC_LANE_CEN,
+           DSI_INST_FUNC_REG(DSI_INST_ID_LP11));
 
-  /* Wait 1 millisecond
-   */
+  /* Wait 1 millisecond */
 
   up_mdelay(1);
 
-  /* Start HSD (Undocumented)
-   */
+  /* Start HSD (Undocumented) ***********************************************/
 
   ginfo("Start HSD\n");
 
@@ -1039,8 +1053,7 @@ int a64_mipi_dsi_start(void)
   DEBUGASSERT(DSI_INST_JUMP_SEL_REG == 0x1ca0048);
   putreg32(0x63f07006, DSI_INST_JUMP_SEL_REG);
 
-  /* Commit
-   */
+  /* Commit *****************************************************************/
 
   ginfo("Commit\n");
 
@@ -1050,7 +1063,9 @@ int a64_mipi_dsi_start(void)
 
   DEBUGASSERT(DSI_BASIC_CTL0_REG == 0x1ca0010);
   DEBUGASSERT(INSTRU_EN == 0x1);
-  modreg32(INSTRU_EN, INSTRU_EN, DSI_BASIC_CTL0_REG);
+  modreg32(INSTRU_EN,
+           INSTRU_EN,
+           DSI_BASIC_CTL0_REG);
 
   return OK;
 }
