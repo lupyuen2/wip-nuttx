@@ -376,7 +376,7 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
       /* For DCS Long Write: Compose Long Packet */
 
       case MIPI_DSI_DCS_LONG_WRITE:
-        pktlen = mipi_dsi_long_packet(pkt, sizeof(pkt), channel, cmd, 
+        pktlen = mipi_dsi_long_packet(pkt, sizeof(pkt), channel, cmd,
                                       txbuf, txlen);
         break;
 
@@ -385,12 +385,12 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
        */
 
       case MIPI_DSI_DCS_SHORT_WRITE:
-        pktlen = mipi_dsi_short_packet(pkt, sizeof(pkt), channel, cmd, 
+        pktlen = mipi_dsi_short_packet(pkt, sizeof(pkt), channel, cmd,
                                        txbuf, txlen);
         break;
 
       case MIPI_DSI_DCS_SHORT_WRITE_PARAM:
-        pktlen = mipi_dsi_short_packet(pkt, sizeof(pkt), channel, cmd, 
+        pktlen = mipi_dsi_short_packet(pkt, sizeof(pkt), channel, cmd,
                                        txbuf, txlen);
         break;
 
@@ -406,6 +406,7 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
     {
       return pktlen;
     }
+
   ginfodumpbuffer("pkt", pkt, pktlen);
   DEBUGASSERT(pktlen >= 4);
 
@@ -418,7 +419,7 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
   putreg32(RX_OVERFLOW | RX_FLAG | TX_FLAG,
            DSI_CMD_CTL_REG);
 
-  /* Write the packet to DSI Low Power Transmit Package Register 
+  /* Write the packet to DSI Low Power Transmit Package Register
    * (A31 Page 856)
    */
 
@@ -427,16 +428,19 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
     {
       /* Fetch the next 4 bytes, fill with 0 if not available */
 
-      const uint32_t b[4] = { pkt[i],
-                              (i + 1 < pktlen) ? pkt[i + 1] : 0,
-                              (i + 2 < pktlen) ? pkt[i + 2] : 0,
-                              (i + 3 < pktlen) ? pkt[i + 3] : 0 };
+      const uint32_t b[4] =
+        {
+          pkt[i],
+          (i + 1 < pktlen) ? pkt[i + 1] : 0,
+          (i + 2 < pktlen) ? pkt[i + 2] : 0,
+          (i + 3 < pktlen) ? pkt[i + 3] : 0
+        };
 
       /* Merge the next 4 bytes into a 32-bit value */
 
-      const uint32_t v = b[0] + 
-                        (b[1] << 8) + 
-                        (b[2] << 16) + 
+      const uint32_t v = b[0] +
+                        (b[1] << 8) +
+                        (b[2] << 16) +
                         (b[3] << 24);
 
       /* Write the 32-bit value */
@@ -450,7 +454,7 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
    * Set TX_Size (Bits 0 to 7) to Packet Length - 1
   */
 
-  modreg32(pktlen - 1, 0xFF, DSI_CMD_CTL_REG);
+  modreg32(pktlen - 1, 0xff, DSI_CMD_CTL_REG);
 
   /* DSI Instruction Jump Select Register (Undocumented)
    * Set to begin the Low Power Transmission (LPTX)
@@ -475,6 +479,7 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
     }
 
   /* Return number of bytes transmitted */
+
   return txlen;
 }
 
