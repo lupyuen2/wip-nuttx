@@ -99,6 +99,8 @@
 
 int a64_mipi_dphy_enable(void)
 {
+  uint32_t mipi_dsi_clk;
+
   /* Set DSI Clock to 150 MHz (600 MHz / 4) *********************************/
 
   ginfo("Set DSI Clock to 150 MHz\n");
@@ -110,95 +112,71 @@ int a64_mipi_dphy_enable(void)
    * Set DPHY_CLK_DIV_M (Bits 0 to 3) to 3 (DSI DPHY Clock divide ratio - 1)
    */
 
-  DEBUGASSERT(MIPI_DSI_CLK_REG == 0x1c20168);
-  const uint32_t mipi_dsi_clk = DSI_DPHY_GATING |
-                                DSI_DPHY_SRC_SEL(0b10) |
-                                DPHY_CLK_DIV_M(3);
-  DEBUGASSERT(mipi_dsi_clk == 0x8203);
+  mipi_dsi_clk = DSI_DPHY_GATING |
+                 DSI_DPHY_SRC_SEL(0b10) |
+                 DPHY_CLK_DIV_M(3);
   putreg32(mipi_dsi_clk, MIPI_DSI_CLK_REG);
 
   /* Power on DPHY Tx (Undocumented) ****************************************/
 
   ginfo("Power on DPHY Tx\n");
-
-  DEBUGASSERT(DPHY_TX_CTL_REG == 0x1ca1004);
   putreg32(0x10000000, DPHY_TX_CTL_REG);
-
-  DEBUGASSERT(DPHY_TX_TIME0_REG == 0x1ca1010);
-  putreg32(0xa06000e, DPHY_TX_TIME0_REG);
-
-  DEBUGASSERT(DPHY_TX_TIME1_REG == 0x1ca1014);
-  putreg32(0xa033207, DPHY_TX_TIME1_REG);
-
-  DEBUGASSERT(DPHY_TX_TIME2_REG == 0x1ca1018);
-  putreg32(0x1e, DPHY_TX_TIME2_REG);
-
-  DEBUGASSERT(DPHY_TX_TIME3_REG == 0x1ca101c);
-  putreg32(0x0, DPHY_TX_TIME3_REG);
-
-  DEBUGASSERT(DPHY_TX_TIME4_REG == 0x1ca1020);
-  putreg32(0x303, DPHY_TX_TIME4_REG);
+  putreg32(0xa06000e,  DPHY_TX_TIME0_REG);
+  putreg32(0xa033207,  DPHY_TX_TIME1_REG);
+  putreg32(0x1e,       DPHY_TX_TIME2_REG);
+  putreg32(0x0,        DPHY_TX_TIME3_REG);
+  putreg32(0x303,      DPHY_TX_TIME4_REG);
 
   /* Enable DPHY (Undocumented) *********************************************/
 
   ginfo("Enable DPHY\n");
-
-  DEBUGASSERT(DPHY_GCTL_REG == 0x1ca1000);
-  putreg32(0x31, DPHY_GCTL_REG);
-
-  DEBUGASSERT(DPHY_ANA0_REG == 0x1ca104c);
+  putreg32(0x31,       DPHY_GCTL_REG);
   putreg32(0x9f007f00, DPHY_ANA0_REG);
-
-  DEBUGASSERT(DPHY_ANA1_REG == 0x1ca1050);
   putreg32(0x17000000, DPHY_ANA1_REG);
-
-  DEBUGASSERT(DPHY_ANA4_REG == 0x1ca105c);
-  putreg32(0x1f01555, DPHY_ANA4_REG);
-
-  DEBUGASSERT(DPHY_ANA2_REG == 0x1ca1054);
-  putreg32(0x2, DPHY_ANA2_REG);
-
-  /* Wait at least 5 microseconds */
-
-  up_mdelay(1);
+  putreg32(0x1f01555,  DPHY_ANA4_REG);
+  putreg32(0x2,        DPHY_ANA2_REG);
+  up_mdelay(1);  /* Wait at least 5 microseconds */
 
   /* Enable LDOR, LDOC, LDOD (Undocumented) *********************************/
 
   ginfo("Enable LDOR, LDOC, LDOD\n");
-
-  DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
   putreg32(0x3040000, DPHY_ANA3_REG);
+  up_mdelay(1);  /* Wait at least 1 microsecond */
 
-  /* Wait at least 1 microsecond */
-
-  up_mdelay(1);
-
-  DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
   modreg32(ANA3_ENABLEVTTC, ANA3_ENABLEVTTC, DPHY_ANA3_REG);
+  up_mdelay(1);  /* Wait at least 1 microsecond */
 
-  /* Wait at least 1 microsecond */
+  modreg32(ANA3_ENABLEDIV, ANA3_ENABLEDIV, DPHY_ANA3_REG);
+  up_mdelay(1);  /* Wait at least 1 microsecond */
 
-  up_mdelay(1);
+  modreg32(ANA2_ENABLECKCPU, ANA2_ENABLECKCPU, DPHY_ANA2_REG);
+  up_mdelay(1);  /* Wait at least 1 microsecond */
+
+  modreg32(ANA1_VTTMODE, ANA1_VTTMODE, DPHY_ANA1_REG);
+  modreg32(ANA2_ENABLEP2SCPU, ANA2_ENABLEP2SCPU, DPHY_ANA2_REG);
+
+  DEBUGASSERT(MIPI_DSI_CLK_REG == 0x1c20168);
+  DEBUGASSERT(mipi_dsi_clk == 0x8203);
+
+  DEBUGASSERT(DPHY_TX_CTL_REG == 0x1ca1004);
+  DEBUGASSERT(DPHY_TX_TIME0_REG == 0x1ca1010);
+  DEBUGASSERT(DPHY_TX_TIME1_REG == 0x1ca1014);
+  DEBUGASSERT(DPHY_TX_TIME2_REG == 0x1ca1018);
+  DEBUGASSERT(DPHY_TX_TIME3_REG == 0x1ca101c);
+  DEBUGASSERT(DPHY_TX_TIME4_REG == 0x1ca1020);
+
+  DEBUGASSERT(DPHY_GCTL_REG == 0x1ca1000);
+  DEBUGASSERT(DPHY_ANA0_REG == 0x1ca104c);
+  DEBUGASSERT(DPHY_ANA1_REG == 0x1ca1050);
+  DEBUGASSERT(DPHY_ANA4_REG == 0x1ca105c);
+  DEBUGASSERT(DPHY_ANA2_REG == 0x1ca1054);
 
   DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
-  modreg32(ANA3_ENABLEDIV, ANA3_ENABLEDIV, DPHY_ANA3_REG);
-
-  /* Wait at least 1 microsecond */
-
-  up_mdelay(1);
-
+  DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
+  DEBUGASSERT(DPHY_ANA3_REG == 0x1ca1058);
   DEBUGASSERT(DPHY_ANA2_REG == 0x1ca1054);
-  modreg32(ANA2_ENABLECKCPU, ANA2_ENABLECKCPU, DPHY_ANA2_REG);
-
-  /* Wait at least 1 microsecond */
-
-  up_mdelay(1);
-
   DEBUGASSERT(DPHY_ANA1_REG == 0x1ca1050);
-  modreg32(ANA1_VTTMODE, ANA1_VTTMODE, DPHY_ANA1_REG);
-
   DEBUGASSERT(DPHY_ANA2_REG == 0x1ca1054);
-  modreg32(ANA2_ENABLEP2SCPU, ANA2_ENABLEP2SCPU, DPHY_ANA2_REG);
 
   return OK;
 }
