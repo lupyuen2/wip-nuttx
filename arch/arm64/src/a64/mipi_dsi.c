@@ -206,7 +206,7 @@ static uint8_t compute_ecc(
 ssize_t mipi_dsi_long_packet(FAR uint8_t *pktbuf,
                              size_t pktlen,
                              uint8_t channel,
-                             uint8_t cmd,
+                             enum mipi_dsi_e cmd,
                              FAR const uint8_t *txbuf,
                              size_t txlen)
 {
@@ -298,7 +298,7 @@ ssize_t mipi_dsi_long_packet(FAR uint8_t *pktbuf,
 ssize_t mipi_dsi_short_packet(FAR uint8_t *pktbuf,
                               size_t pktlen,
                               uint8_t channel,
-                              uint8_t cmd,
+                              enum mipi_dsi_e cmd,
                               FAR const uint8_t *txbuf,
                               size_t txlen)
 {

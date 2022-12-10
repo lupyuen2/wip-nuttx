@@ -25,42 +25,80 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/// MIPI DSI Processor-to-Peripheral transaction types:
-/// DCS Long Write. See https://lupyuen.github.io/articles/dsi#display-command-set-for-mipi-dsi
-#define MIPI_DSI_DCS_LONG_WRITE 0x39
+/// MIPI DSI Processor-to-Peripheral Transaction Types
+enum mipi_dsi_e
+{
+  /// DCS Short Write (Without Parameter)
+  MIPI_DSI_DCS_SHORT_WRITE = 0x05,
 
-/// DCS Short Write (Without Parameter)
-#define MIPI_DSI_DCS_SHORT_WRITE 0x05
+  /// DCS Short Write (With Parameter)
+  MIPI_DSI_DCS_SHORT_WRITE_PARAM = 0x15,
 
-/// DCS Short Write (With Parameter)
-#define MIPI_DSI_DCS_SHORT_WRITE_PARAM 0x15
+  /// DCS Long Write
+  MIPI_DSI_DCS_LONG_WRITE = 0x39
+};
 
 /****************************************************************************
  * Public Function Prototypes
  ****************************************************************************/
 
-// Compose MIPI DSI Long Packet. See https://lupyuen.github.io/articles/dsi#long-packet-for-mipi-dsi
-// Return the number of bytes in the composed packet.
-// Returns -1 if pktlen too short
-ssize_t mipi_dsi_long_packet(
-  FAR uint8_t *pktbuf,    // Buffer for the Returned Long Packet
-  size_t pktlen,    // Buffer Size for the Returned Long Packet
-  uint8_t channel,  // Virtual Channel ID
-  uint8_t cmd,      // DCS Command
-  FAR const uint8_t *txbuf,  // Transmit Buffer
-  size_t txlen          // Buffer Length
-);
+/****************************************************************************
+ * Name: mipi_dsi_long_packet
+ *
+ * Description:
+ *   Compose a MIPI DSI Long Packet. A Short Packet consists of Data
+ *   Identifier (Virtual Channel + Data Type), Word Count (Payload Size),
+ *   Error Correction Code, Payload and Checksum. Packet Length is 
+ *   Payload Size + 4 bytes.
+ *
+ * Input Parameters:
+ *   pktbuf  - Buffer for the returned packet
+ *   pktlen  - Size of the packet buffer
+ *   channel - Virtual Channel
+ *   cmd     - DCS Command (Data Type)
+ *   txbuf   - Payload data for the packet
+ *   txlen   - Length of payload data (Max 65541 bytes)
+ *
+ * Returned Value:
+ *   Number of bytes in the returned packet; ERROR (-1) if packet buffer is
+ *   too small for the packet
+ *
+ ****************************************************************************/
 
-// Compose MIPI DSI Short Packet. See https://lupyuen.github.io/articles/dsi#appendix-short-packet-for-mipi-dsi
-// Return the number of bytes in the composed packet.
-// Returns -1 if pktlen too short
-ssize_t mipi_dsi_short_packet(
-  FAR uint8_t *pktbuf,    // Buffer for the Returned Short Packet
-  size_t pktlen,    // Buffer Size for the Returned Short Packet
-  uint8_t channel,  // Virtual Channel ID
-  uint8_t cmd,      // DCS Command
-  FAR const uint8_t *txbuf,  // Transmit Buffer
-  size_t txlen          // Buffer Length
-);
+ssize_t mipi_dsi_long_packet(FAR uint8_t *pktbuf,
+                             size_t pktlen,
+                             uint8_t channel,
+                             enum mipi_dsi_e cmd,
+                             FAR const uint8_t *txbuf,
+                             size_t txlen);
+
+/****************************************************************************
+ * Name: mipi_dsi_short_packet
+ *
+ * Description:
+ *   Compose a MIPI DSI Short Packet. A Short Packet consists of Data
+ *   Identifier (Virtual Channel + Data Type), Data (1 or 2 bytes) and
+ *   Error Correction Code. Packet Length is 4 bytes.
+ *
+ * Input Parameters:
+ *   pktbuf  - Buffer for the returned packet
+ *   pktlen  - Size of the packet buffer
+ *   channel - Virtual Channel
+ *   cmd     - DCS Command (Data Type)
+ *   txbuf   - Payload data for the packet
+ *   txlen   - Length of payload data (1 or 2 bytes)
+ *
+ * Returned Value:
+ *   Number of bytes in the returned packet; ERROR (-1) if packet buffer is
+ *   too small for the packet
+ *
+ ****************************************************************************/
+
+ssize_t mipi_dsi_short_packet(FAR uint8_t *pktbuf,
+                              size_t pktlen,
+                              uint8_t channel,
+                              enum mipi_dsi_e cmd,
+                              FAR const uint8_t *txbuf,
+                              size_t txlen);
 
 #endif /* __ARCH_ARM64_SRC_A64_MIPI_DSI_H */
