@@ -265,7 +265,8 @@ ssize_t mipi_dsi_long_packet(FAR uint8_t *pktbuf,
 
   const uint8_t vc = channel;
   const uint8_t dt = cmd;
-  const uint8_t di = (vc << 6) | dt;
+  const uint8_t di = (vc << 6) |
+                     dt;
 
   /* Word Count (WC) (2 bytes)：
    * Number of bytes in the Packet Payload
@@ -288,7 +289,8 @@ ssize_t mipi_dsi_long_packet(FAR uint8_t *pktbuf,
 
   /* Compute ECC for Data Identifier + Word Count */
 
-  const uint8_t ecc = compute_ecc(di_wc, sizeof(di_wc));
+  const uint8_t ecc = compute_ecc(di_wc,
+                                  sizeof(di_wc));
 
   /* Packet Header (4 bytes):
    * Data Identifier + Word Count + Error Correction Code
@@ -327,7 +329,9 @@ ssize_t mipi_dsi_long_packet(FAR uint8_t *pktbuf,
    * Packet Footer (2 bytes)
    */
 
-  const size_t len = sizeof(header) + txlen + sizeof(footer);
+  const size_t len = sizeof(header) +
+                     txlen +
+                     sizeof(footer);
 
   ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
   DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
@@ -392,57 +396,90 @@ ssize_t mipi_dsi_short_packet(FAR uint8_t *pktbuf,
                               FAR const uint8_t *txbuf,
                               size_t txlen)
 {
-  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
-  DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
-  DEBUGASSERT(txlen == 1 || txlen == 2);
-  if (txlen < 1 || txlen > 2) { return ERROR; }
+  /* A Short Packet consists of 8-bit Data Identifier (DI),
+   * 2 bytes of commands or data, and 8-bit ECC.
+   * The length of a short packet is 4 bytes including ECC.
+   * Thus a MIPI DSI Short Packet (compared with Long Packet):
+   * - Doesn't have Packet Payload and Packet Footer (CRC)
+   * - Instead of Word Count (WC), the Packet Header now has 2 bytes of data
+   * Everything else is the same.
+   */
 
-  // A Short Packet consists of 8-bit Data Identifier (DI),
-  // 2 bytes of commands or data, and 8-bit ECC.
-  // The length of a short packet is 4 bytes including ECC.
-  // Thus a MIPI DSI Short Packet (compared with Long Packet)...
-  // - Doesn't have Packet Payload and Packet Footer (CRC)
-  // - Instead of Word Count (WC), the Packet Header now has 2 bytes of data
-  // Everything else is the same.
+  /* Data Identifier (DI) (1 byte):
+   * Virtual Channel Identifier (Bits 6 to 7)
+   * Data Type (Bits 0 to 5)
+   */
 
-  // Data Identifier (DI) (1 byte):
-  // - Virtual Channel Identifier (Bits 6 to 7)
-  // - Data Type (Bits 0 to 5)
-  // (Virtual Channel should be 0, I think)
-  DEBUGASSERT(channel < 4);
-  DEBUGASSERT(cmd < (1 << 6));
   const uint8_t vc = channel;
   const uint8_t dt = cmd;
-  const uint8_t di = (vc << 6) | dt;
+  const uint8_t di = (vc << 6) |
+                     dt;
 
-  // Data (2 bytes), fill with 0 if Second Byte is missing
+  /* Data (2 bytes): Fill with 0 if Second Byte is missing */
+
   const uint8_t data[2] =
     {
-      txbuf[0],                     // First Byte
-      (txlen == 2) ? txbuf[1] : 0,  // Second Byte
+      txbuf[0],                     /* First Byte */
+      (txlen == 2) ? txbuf[1] : 0,  /* Second Byte */
     };
 
-  // Data Identifier + Data (3 bytes): For computing Error Correction Code (ECC)
-  const uint8_t di_data[3] = { di, data[0], data[1] };
+  /* Data Identifier + Data (3 bytes):
+   * For computing Error Correction Code (ECC)
+   */
 
-  // Compute Error Correction Code (ECC) for Data Identifier + Word Count
-  const uint8_t ecc = compute_ecc(di_data, sizeof(di_data));
-
-  // Packet Header (4 bytes):
-  // - Data Identifier + Data + Error Correction Code
-  const uint8_t header[4] = { di_data[0], di_data[1], di_data[2], ecc };
-
-  // Packet:
-  // - Packet Header (4 bytes)
-  const size_t len = sizeof(header);
-  DEBUGASSERT(len <= pktlen);  // Increase `pkt` size
-  if (len > pktlen)
+  const uint8_t di_data[3] =
     {
+      di,
+      data[0],
+      data[1]
+    };
+
+  /* Compute ECC for Data Identifier + Word Count */
+
+  const uint8_t ecc = compute_ecc(di_data,
+                                  sizeof(di_data));
+
+  /* Packet Header (4 bytes):
+   * Data Identifier + Data + Error Correction Code
+   */
+
+  const uint8_t header[4] =
+    {
+      di_data[0],
+      di_data[1],
+      di_data[2],
+      ecc
+    };
+
+  /* Packet Length is Packet Header Size (4 bytes) */
+
+  const size_t len = sizeof(header);
+
+  ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
+  DEBUGASSERT(pktbuf != NULL && txbuf != NULL);
+  DEBUGASSERT(channel < 4);
+  DEBUGASSERT(cmd < (1 << 6));
+
+  if (txlen < 1 || txlen > 2)  /* Payload should be 1 or 2 bytes */
+    {
+      DEBUGPANIC();
       return ERROR;
     }
-  memcpy(pktbuf, header, sizeof(header)); // 4 bytes
 
-  // Return the packet length
+  if (len > pktlen)  /* Packet Buffer too small */
+    {
+      DEBUGPANIC();
+      return ERROR;
+    }
+
+  /* Copy Packet Header to Packet Buffer */
+
+  memcpy(pktbuf,
+         header,
+         sizeof(header));  /* 4 bytes */
+
+  /* Return the Packet Length */
+
   return len;
 }
 
