@@ -222,6 +222,7 @@
 
 /* DSI Low Power Transmit Package Register (A31 Page 856) */
 #define DSI_CMD_TX_REG     (A64_DSI_ADDR + 0x300)
+#define DSI_CMD_TX_END     (A64_DSI_ADDR + 0x3fc)
 
 /****************************************************************************
  * Private Functions
@@ -346,6 +347,8 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
   int ret;
   ssize_t pktlen = -1;
   uint8_t pkt[DSI_MAX_PACKET_SIZE];
+  uint64_t addr;
+  int i;
 
   /* Length should be 1 for Short Write, 2 for Short Write With Param */
 
@@ -398,79 +401,80 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
 
   /* Check for Packet Error */
 
+  ginfo("pktlen=%ld\n", pktlen);
   if (pktlen < 0)
     {
       return pktlen;
     }
+  ginfodumpbuffer("pkt", pkt, pktlen);
   DEBUGASSERT(pktlen >= 4);
 
-  // Dump the packet
-  ginfo("pktlen=%ld\n", pktlen);
-  ginfodumpbuffer("pkt", pkt, pktlen);
+  /* DSI Low Power Control Register (A31 Page 854)
+   * Set RX_Overflow (Bit 26) to 1 (Clear flag for "Receive Overflow")
+   * Set RX_Flag (Bit 25) to 1 (Clear flag for "Receive has started")
+   * Set TX_Flag (Bit 9) to 1 (Clear flag for "Transmit has started")
+   */
 
-  // DSI Low Power Control Register (A31 Page 854)
-  // Set the following bits to 1
-  // RX_Overflow (Bit 26): Clear flag for "Receive Overflow"
-  // RX_Flag (Bit 25): Clear flag for "Receive has started"
-  // TX_Flag (Bit 9): Clear flag for "Transmit has started"
-  // All other bits must be set to 0.
-  putreg32(
-      RX_OVERFLOW | RX_FLAG | TX_FLAG,
-      DSI_CMD_CTL_REG
-  );
+  putreg32(RX_OVERFLOW | RX_FLAG | TX_FLAG,
+           DSI_CMD_CTL_REG);
 
-  // Write the Long Packet to
-  // DSI Low Power Transmit Package Register (A31 Page 856)
-  uint64_t addr = DSI_CMD_TX_REG;
-  int i;
+  /* Write the packet to DSI Low Power Transmit Package Register 
+   * (A31 Page 856)
+   */
+
+  addr = DSI_CMD_TX_REG;
   for (i = 0; i < pktlen; i += 4)
     {
-      // Fetch the next 4 bytes, fill with 0 if not available
-      const uint32_t b[4] =
-        {
-          pkt[i],
-          (i + 1 < pktlen) ? pkt[i + 1] : 0,
-          (i + 2 < pktlen) ? pkt[i + 2] : 0,
-          (i + 3 < pktlen) ? pkt[i + 3] : 0,
-        };
+      /* Fetch the next 4 bytes, fill with 0 if not available */
 
-      // Merge the next 4 bytes into a 32-bit value
-      const uint32_t v =
-          b[0]
-          + (b[1] << 8)
-          + (b[2] << 16)
-          + (b[3] << 24);
+      const uint32_t b[4] = { pkt[i],
+                              (i + 1 < pktlen) ? pkt[i + 1] : 0,
+                              (i + 2 < pktlen) ? pkt[i + 2] : 0,
+                              (i + 3 < pktlen) ? pkt[i + 3] : 0 };
 
-      // Write the 32-bit value
-      DEBUGASSERT(addr <= A64_DSI_ADDR + 0x3FC);
-      modreg32(v, 0xFFFFFFFF, addr);
+      /* Merge the next 4 bytes into a 32-bit value */
+
+      const uint32_t v = b[0] + 
+                        (b[1] << 8) + 
+                        (b[2] << 16) + 
+                        (b[3] << 24);
+
+      /* Write the 32-bit value */
+
+      DEBUGASSERT(addr <= DSI_CMD_TX_END);
+      modreg32(v, 0xffffffff, addr);
       addr += 4;
     }
 
-  // Set Packet Length - 1 in Bits 0 to 7 (TX_Size) of
-  // DSI Low Power Control Register (A31 Page 854)
+  /* DSI Low Power Control Register (A31 Page 854)
+   * Set TX_Size (Bits 0 to 7) to Packet Length - 1
+  */
+
   modreg32(pktlen - 1, 0xFF, DSI_CMD_CTL_REG);
 
-  // DSI Instruction Jump Select Register (Undocumented)
-  // Set to begin the Low Power Transmission (LPTX)
-  putreg32(
-      DSI_INST_ID_LPDT << (4 * DSI_INST_ID_LP11) |
-      DSI_INST_ID_END  << (4 * DSI_INST_ID_LPDT),
-      DSI_INST_JUMP_SEL_REG
-  );
+  /* DSI Instruction Jump Select Register (Undocumented)
+   * Set to begin the Low Power Transmission (LPTX)
+   */
 
-  // Disable DSI Processing then Enable DSI Processing
+  putreg32(DSI_INST_ID_LPDT << (4 * DSI_INST_ID_LP11) |
+           DSI_INST_ID_END  << (4 * DSI_INST_ID_LPDT),
+           DSI_INST_JUMP_SEL_REG);
+
+  /* Disable DSI Processing then Enable DSI Processing */
+
   a64_disable_dsi_processing();
   a64_enable_dsi_processing();
 
-  // Wait for transmission to complete
+  /* Wait for transmission to complete */
+
   ret = a64_wait_dsi_transmit();
-  if (ret < 0) {
+  if (ret < 0)
+    {
       a64_disable_dsi_processing();
       return ret;
-  }
+    }
 
-  // Return number of bytes transmitted
+  /* Return number of bytes transmitted */
   return txlen;
 }
 
