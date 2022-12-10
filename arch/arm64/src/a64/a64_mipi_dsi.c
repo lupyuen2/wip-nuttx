@@ -326,6 +326,7 @@ static int a64_wait_dsi_transmit(void)
  * Description:
  *   Transmit the payload data to the MIPI DSI Bus as a MIPI DSI Short or
  *   Long Packet. This function is called to initialize the LCD Controller.
+ *   Assumes that the MIPI DSI Block has been enabled on the SoC.
  *
  * Input Parameters:
  *   channel - Virtual Channel
@@ -487,8 +488,8 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
  * Name: a64_mipi_dsi_enable
  *
  * Description:
- *   Enable the MIPI DSI Block on the SoC. Should be called before executing
- *   any MIPI DSI operations.
+ *   Enable the MIPI DSI Block on the SoC. Should be called before
+ *   transferring data on the MIPI DSI Bus.
  *
  * Input Parameters:
  *   None
@@ -969,6 +970,7 @@ int a64_mipi_dsi_enable(void)
  *   Start the MIPI DSI Bus in High Speed Clock Mode (HSC) for High Speed
  *   Data Transmission (HSD). Should be called after initializing the LCD
  *   Controller, and before executing any Display Engine operations.
+ *   Assumes that the MIPI DSI Block has been enabled on the SoC.
  *
  * Input Parameters:
  *   None
