@@ -53,7 +53,7 @@
  ****************************************************************************/
 
 /* Maximum Size of DSI Packets */
-#define MIPI_DSI_MAX_PACKET_SIZE 128
+#define DSI_MAX_PACKET_SIZE 128 /* In bytes */
 
 /* A64 CCU Registers and Bit Definitions ************************************/
 
@@ -323,16 +323,18 @@ static int a64_wait_dsi_transmit(void)
  * Name: a64_mipi_dsi_write
  *
  * Description:
- *   Write to MIPI DSI.
+ *   Transmit the payload data to the MIPI DSI Bus as a MIPI DSI Short or
+ *   Long Packet.
  *
  * Input Parameters:
- *   channel - Virtual Channel ID
- *   cmd     - DCS Command
- *   txbuf   - Transmit Buffer
- *   txlen   - Length of Transmit Buffer
+ *   channel - Virtual Channel
+ *   cmd     - DCS Command (Data Type)
+ *   txbuf   - Payload data for the packet
+ *   txlen   - Length of payload data (Max 65541 bytes)
  *
  * Returned Value:
- *   Number of bytes written; a negated errno value is returned on any failure.
+ *   Number of bytes transmitted; a negated errno value is returned on any
+ *   failure.
  *
  ****************************************************************************/
 
@@ -343,27 +345,21 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
 {
   int ret;
   ssize_t pktlen = -1;
-  uint8_t pkt[MIPI_DSI_MAX_PACKET_SIZE];
+  uint8_t pkt[DSI_MAX_PACKET_SIZE];
 
   /* Length should be 1 for Short Write, 2 for Short Write With Param */
 
   ginfo("channel=%d, cmd=0x%x, txlen=%ld\n", channel, cmd, txlen);
   DEBUGASSERT(txbuf != NULL);
-  if (cmd == MIPI_DSI_DCS_SHORT_WRITE)
+  if (cmd == MIPI_DSI_DCS_SHORT_WRITE && txlen != 1)
     {
-      DEBUGASSERT(txlen == 1);
-      if (txlen != 1) 
-        {
-          return ERROR; 
-        }
+      DEBUGPANIC();
+      return ERROR;
     }
-  else if (cmd == MIPI_DSI_DCS_SHORT_WRITE_PARAM)
+  else if (cmd == MIPI_DSI_DCS_SHORT_WRITE_PARAM && txlen != 2)
     {
-      DEBUGASSERT(txlen == 2);
-      if (txlen != 2)
-        {
-          return ERROR; 
-        }
+      DEBUGPANIC();
+      return ERROR;
     }
 
   // Allocate Packet Buffer
@@ -463,7 +459,7 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
       return ret;
   }
 
-  // Return number of written bytes
+  // Return number of bytes transmitted
   return txlen;
 }
 
