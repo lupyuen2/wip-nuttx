@@ -150,65 +150,78 @@ static uint16_t compute_crc(FAR const uint8_t *data, size_t len)
  *
  * Description:
  *   Compute the MIPI DSI Error Correction Code (ECC) for the 3-byte
- *   data buffer. The ECC allows single-bit errors to be corrected and
+ *   Packet Header. The ECC allows single-bit errors to be corrected and
  *   2-bit errors to be detected in the MIPI DSI Packet Header.
  *
  * Input Parameters:
- *   di_wc - Data buffer (Data Identifier + Word Count)
- *   len   - Length of data buffer (Should be 3 bytes)
+ *   di_wc - Packet Header (Data Identifier + Word Count)
+ *   len   - Length of Packet Header (Should be 3 bytes)
  *
  * Returned Value:
- *   MIPI DSI ECC value of the data buffer
+ *   MIPI DSI ECC value of the Packet Header
  *
  ****************************************************************************/
 
-static uint8_t compute_ecc(
-  FAR const uint8_t *di_wc,  // Data Identifier + Word Count (3 bytes)
-  size_t len  // Must be 3
-) {
-  DEBUGASSERT(di_wc != NULL && len == 3);
+static uint8_t compute_ecc(FAR const uint8_t *di_wc,
+                           size_t len)
+{
+  uint32_t di_wc_word;
+  bool d[24];
+  bool ecc[8];
+  int i;
+
+  /* Packet Header should be exactly 3 bytes */
+
+  DEBUGASSERT(di_wc != NULL);
   if (len != 3)
     {
+      DEBUGPANIC();
       return 0;
     }
 
-  // Combine DI and WC into a 24-bit word
-  uint32_t di_wc_word =
-      di_wc[0]
-      | (di_wc[1] << 8)
-      | (di_wc[2] << 16);
+  /* Combine Data Identifier and Word Count into a 24-bit word */
 
-  // Extract the 24 bits from the word
-  bool d[24];
+  di_wc_word = di_wc[0] |
+               (di_wc[1] << 8) |
+               (di_wc[2] << 16);
+
+  /* Extract the 24 bits from the word */
+
   memset(d, 0, sizeof(d));
-  int i;
   for (i = 0; i < 24; i++)
     {
       d[i] = di_wc_word & 1;
       di_wc_word >>= 1;
     }
 
-  // Compute the ECC bits
-  bool ecc[8];
+  /* Compute the ECC bits */
+
   memset(ecc, 0, sizeof(ecc));
   ecc[7] = 0;
   ecc[6] = 0;
-  ecc[5] = d[10] ^ d[11] ^ d[12] ^ d[13] ^ d[14] ^ d[15] ^ d[16] ^ d[17] ^ d[18] ^ d[19] ^ d[21] ^ d[22] ^ d[23];
-  ecc[4] = d[4]  ^ d[5]  ^ d[6]  ^ d[7]  ^ d[8]  ^ d[9]  ^ d[16] ^ d[17] ^ d[18] ^ d[19] ^ d[20] ^ d[22] ^ d[23];
-  ecc[3] = d[1]  ^ d[2]  ^ d[3]  ^ d[7]  ^ d[8]  ^ d[9]  ^ d[13] ^ d[14] ^ d[15] ^ d[19] ^ d[20] ^ d[21] ^ d[23];
-  ecc[2] = d[0]  ^ d[2]  ^ d[3]  ^ d[5]  ^ d[6]  ^ d[9]  ^ d[11] ^ d[12] ^ d[15] ^ d[18] ^ d[20] ^ d[21] ^ d[22];
-  ecc[1] = d[0]  ^ d[1]  ^ d[3]  ^ d[4]  ^ d[6]  ^ d[8]  ^ d[10] ^ d[12] ^ d[14] ^ d[17] ^ d[20] ^ d[21] ^ d[22] ^ d[23];
-  ecc[0] = d[0]  ^ d[1]  ^ d[2]  ^ d[4]  ^ d[5]  ^ d[7]  ^ d[10] ^ d[11] ^ d[13] ^ d[16] ^ d[20] ^ d[21] ^ d[22] ^ d[23];
+  ecc[5] = d[10] ^ d[11] ^ d[12] ^ d[13] ^ d[14] ^ d[15] ^ d[16] ^ d[17] ^
+           d[18] ^ d[19] ^ d[21] ^ d[22] ^ d[23];
+  ecc[4] = d[4]  ^ d[5]  ^ d[6]  ^ d[7]  ^ d[8]  ^ d[9]  ^ d[16] ^ d[17] ^
+           d[18] ^ d[19] ^ d[20] ^ d[22] ^ d[23];
+  ecc[3] = d[1]  ^ d[2]  ^ d[3]  ^ d[7]  ^ d[8]  ^ d[9]  ^ d[13] ^ d[14] ^
+           d[15] ^ d[19] ^ d[20] ^ d[21] ^ d[23];
+  ecc[2] = d[0]  ^ d[2]  ^ d[3]  ^ d[5]  ^ d[6]  ^ d[9]  ^ d[11] ^ d[12] ^
+           d[15] ^ d[18] ^ d[20] ^ d[21] ^ d[22];
+  ecc[1] = d[0]  ^ d[1]  ^ d[3]  ^ d[4]  ^ d[6]  ^ d[8]  ^ d[10] ^ d[12] ^
+           d[14] ^ d[17] ^ d[20] ^ d[21] ^ d[22] ^ d[23];
+  ecc[0] = d[0]  ^ d[1]  ^ d[2]  ^ d[4]  ^ d[5]  ^ d[7]  ^ d[10] ^ d[11] ^
+           d[13] ^ d[16] ^ d[20] ^ d[21] ^ d[22] ^ d[23];
 
-  // Merge the ECC bits
-  return ecc[0]
-      | (ecc[1] << 1)
-      | (ecc[2] << 2)
-      | (ecc[3] << 3)
-      | (ecc[4] << 4)
-      | (ecc[5] << 5)
-      | (ecc[6] << 6)
-      | (ecc[7] << 7);
+  /* Merge the ECC bits */
+
+  return ecc[0] |
+         (ecc[1] << 1) |
+         (ecc[2] << 2) |
+         (ecc[3] << 3) |
+         (ecc[4] << 4) |
+         (ecc[5] << 5) |
+         (ecc[6] << 6) |
+         (ecc[7] << 7);
 }
 
 /****************************************************************************
