@@ -362,36 +362,47 @@ ssize_t a64_mipi_dsi_write(uint8_t channel,
       return ERROR;
     }
 
-  // Allocate Packet Buffer
+  /* Erase the Packet Buffer */
+
   memset(pkt, 0, sizeof(pkt));
 
-  // Compose Short or Long Packet depending on DCS Command
+  /* Compose Short or Long Packet depending on DCS Command */
+
   switch (cmd)
     {
-      // For DCS Long Write: Compose Long Packet
+      /* For DCS Long Write: Compose Long Packet */
+
       case MIPI_DSI_DCS_LONG_WRITE:
-        pktlen = mipi_dsi_long_packet(pkt, sizeof(pkt), channel, cmd, txbuf, txlen);
+        pktlen = mipi_dsi_long_packet(pkt, sizeof(pkt), channel, cmd, 
+                                      txbuf, txlen);
         break;
 
-      // For DCS Short Write (with and without parameter):
-      // Compose Short Packet
+      /* For DCS Short Write (with and without parameter):
+       * Compose Short Packet
+       */
+
       case MIPI_DSI_DCS_SHORT_WRITE:
-        pktlen = mipi_dsi_short_packet(pkt, sizeof(pkt), channel, cmd, txbuf, txlen);
+        pktlen = mipi_dsi_short_packet(pkt, sizeof(pkt), channel, cmd, 
+                                       txbuf, txlen);
         break;
 
       case MIPI_DSI_DCS_SHORT_WRITE_PARAM:
-        pktlen = mipi_dsi_short_packet(pkt, sizeof(pkt), channel, cmd, txbuf, txlen);
+        pktlen = mipi_dsi_short_packet(pkt, sizeof(pkt), channel, cmd, 
+                                       txbuf, txlen);
         break;
 
       default:
-        DEBUGPANIC();  // Invalid DCS Command
-        break;
+        DEBUGPANIC();  /* Invalid DCS Command */
+        return ERROR;
     };
+
+  /* Check for Packet Error */
+
   if (pktlen < 0)
     {
-      return pktlen; // TODO
+      return pktlen;
     }
-  DEBUGASSERT(pktlen > 0);
+  DEBUGASSERT(pktlen >= 4);
 
   // Dump the packet
   ginfo("pktlen=%ld\n", pktlen);
