@@ -889,7 +889,6 @@ int a64_mipi_dsi_enable(void)
                   VBLK_PD(0);
   putreg32(dsi_blk_vblk1, DSI_BLK_VBLK1_REG);
 
-
   DEBUGASSERT(BUS_CLK_GATING_REG0 == 0x1c20060);
   DEBUGASSERT(MIPIDSI_GATING == 2);
 
