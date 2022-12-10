@@ -249,6 +249,7 @@ static void a64_disable_dsi_processing(void)
 {
   /* DSI Configuration Register 0 (A31 Page 845)
    * Set INSTRU_EN (Bit 0) to 0
+   * (Disable DSI Processing)
    */
 
   modreg32(0,
@@ -274,6 +275,7 @@ static void a64_enable_dsi_processing(void)
 {
   /* DSI Configuration Register 0 (A31 Page 845)
    * Set INSTRU_EN (Bit 0) to 1
+   * (Enable DSI Processing from Instruction 0)
    */
 
   modreg32(INSTRU_EN,
@@ -534,7 +536,8 @@ int a64_mipi_dsi_enable(void)
   ginfo("Enable MIPI DSI Bus\n");
 
   /* Bus Clock Gating Register 0 (A64 Page 100)
-   * Set MIPIDSI_GATING (Bit 1) to 1 (Pass Gating Clock for MIPI DSI)
+   * Set MIPIDSI_GATING (Bit 1) to 1
+   * (Pass Gating Clock for MIPI DSI)
    */
 
   modreg32(MIPIDSI_GATING,
@@ -542,7 +545,8 @@ int a64_mipi_dsi_enable(void)
            BUS_CLK_GATING_REG0);
 
   /* Bus Software Reset Register 0 (A64 Page 138)
-   * Set MIPI_DSI_RST (Bit 1) to 1 (Deassert MIPI DSI Reset)
+   * Set MIPI_DSI_RST (Bit 1) to 1
+   * (Deassert MIPI DSI Reset)
    */
 
   modreg32(MIPI_DSI_RST,
@@ -694,9 +698,9 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Pixel Package Register 3 (A31 Page 849)
    * Set CRC_Init_LineN (Bits 16 to 31) to 0xffff
-   * (CRC initial to this value in transmitions except 1st one)
+   *   (CRC initial to this value in transmitions except 1st one)
    * Set CRC_Init_Line0 (Bits 0 to 15) to 0xffff
-   * (CRC initial to this value in 1st transmition every frame)
+   *   (CRC initial to this value in 1st transmition every frame)
    */
 
   dsi_pixel_pf1 = CRC_INIT_LINEN(0XFFFF) |
@@ -704,9 +708,12 @@ int a64_mipi_dsi_enable(void)
   putreg32(dsi_pixel_pf1, DSI_PIXEL_PF1_REG);
 
   /* DSI Pixel Format Register 0 (A31 Page 847)
-   * Set PD_Plug_Dis (Bit 16) to 1 (Disable PD plug before pixel bytes)
-   * Set Pixel_Endian (Bit 4) to 0 (LSB first)
-   * Set Pixel_Format (Bits 0 to 3) to 8 (24-bit RGB888)
+   * Set PD_Plug_Dis (Bit 16) to 1
+   *   (Disable PD plug before pixel bytes)
+   * Set Pixel_Endian (Bit 4) to 0
+   *   (LSB first)
+   * Set Pixel_Format (Bits 0 to 3) to 8
+   *   (24-bit RGB888)
    */
 
   dsi_pixel_ctl0 = PD_PLUG_DIS |
@@ -726,10 +733,10 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Sync Package Register 0 (A31 Page 850)
    * Set ECC (Bits 24 to 31) to 0x12
-   * Set D1 (Bits 16 to 23) to 0
-   * Set D0 (Bits 8 to 15) to 0
-   * Set VC (Bits 6 to 7) to 0 (Virtual Channel)
-   * Set DT (Bits 0 to 5) to 0x21 (HSS)
+   * Set D1  (Bits 16 to 23) to 0
+   * Set D0  (Bits 8  to 15) to 0
+   * Set VC  (Bits 6  to 7)  to 0 (Virtual Channel)
+   * Set DT  (Bits 0  to 5)  to 0x21 (HSS)
    */
 
   dsi_sync_hss = SYNC_ECC(0x12) |
@@ -741,10 +748,10 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Sync Package Register 1 (A31 Page 850)
    * Set ECC (Bits 24 to 31) to 1
-   * Set D1 (Bits 16 to 23) to 0
-   * Set D0 (Bits 8 to 15) to 0
-   * Set VC (Bits 6 to 7) to 0 (Virtual Channel)
-   * Set DT (Bits 0 to 5) to 0x31 (HSE)
+   * Set D1  (Bits 16 to 23) to 0
+   * Set D0  (Bits 8  to 15) to 0
+   * Set VC  (Bits 6  to 7)  to 0 (Virtual Channel)
+   * Set DT  (Bits 0  to 5)  to 0x31 (HSE)
    */
 
   dsi_sync_hse = SYNC_ECC(1) |
@@ -756,10 +763,10 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Sync Package Register 2 (A31 Page 851)
    * Set ECC (Bits 24 to 31) to 7
-   * Set D1 (Bits 16 to 23) to 0
-   * Set D0 (Bits 8 to 15) to 0
-   * Set VC (Bits 6 to 7) to 0 (Virtual Channel)
-   * Set DT (Bits 0 to 5) to 1 (VSS)
+   * Set D1  (Bits 16 to 23) to 0
+   * Set D0  (Bits 8  to 15) to 0
+   * Set VC  (Bits 6  to 7)  to 0 (Virtual Channel)
+   * Set DT  (Bits 0  to 5)  to 1 (VSS)
    */
 
   dsi_sync_vss = SYNC_ECC(7) |
@@ -771,10 +778,10 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Sync Package Register 3 (A31 Page 851)
    * Set ECC (Bits 24 to 31) to 0x14
-   * Set D1 (Bits 16 to 23) to 0
-   * Set D0 (Bits 8 to 15) to 0
-   * Set VC (Bits 6 to 7) to 0 (Virtual Channel)
-   * Set DT (Bits 0 to 5) to 0x11 (VSE)
+   * Set D1  (Bits 16 to 23) to 0
+   * Set D0  (Bits 8  to 15) to 0
+   * Set VC  (Bits 6  to 7)  to 0 (Virtual Channel)
+   * Set DT  (Bits 0  to 5)  to 0x11 (VSE)
    */
 
   dsi_sync_vse = SYNC_ECC(0x14) |
@@ -790,7 +797,7 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Line Number Register 0 (A31 Page 847)
    * Set Video_VBP (Bits 16 to 27) to 17
-   * Set Video_VSA (Bits 0 to 11) to 10
+   * Set Video_VSA (Bits 0  to 11) to 10
    */
 
   dsi_basic_size0 = VIDEO_VBP(17) |
@@ -798,8 +805,8 @@ int a64_mipi_dsi_enable(void)
   putreg32(dsi_basic_size0, DSI_BASIC_SIZE0_REG);
 
   /* DSI Line Number Register 1 (A31 Page 847)
-   * Set Video_VT (Bits 16 to 28) to 1485
-   * Set Video_VACT (Bits 0 to 11) to 1440
+   * Set Video_VT   (Bits 16 to 28) to 1485
+   * Set Video_VACT (Bits 0  to 11) to 1440
    */
 
   dsi_basic_size1 = VIDEO_VT(1485) |
@@ -818,7 +825,7 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Blank Package Register 1 (A31 Page 852)
    * Set HSA_PF (Bits 16 to 31) to 0x50b4
-   * Set HSA_PD (Bits 0 to 7) to 0
+   * Set HSA_PD (Bits 0  to 7)  to 0
    */
 
   dsi_blk_hsa1 = HSA_PF(0x50b4) |
@@ -833,7 +840,7 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Blank Package Register 3 (A31 Page 852)
    * Set HBP_PF (Bits 16 to 31) to 0x757a
-   * Set HBP_PD (Bits 0 to 7) to 0
+   * Set HBP_PD (Bits 0  to 7)  to 0
    */
 
   dsi_blk_hbp1 = HBP_PF(0x757a) |
@@ -848,7 +855,7 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Blank Package Register 5 (A31 Page 853)
    * Set HFP_PF (Bits 16 to 31) to 0x50b4
-   * Set HFP_PD (Bits 0 to 7) to 0
+   * Set HFP_PD (Bits 0  to 7)  to 0
    */
 
   dsi_blk_hfp1 = HFP_PF(0x50b4) |
@@ -863,7 +870,7 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Blank Package Register 7 (A31 Page 853)
    * Set HBLK_PF (Bits 16 to 31) to 0x72bd
-   * Set HBLK_PD (Bits 0 to 7) to 0
+   * Set HBLK_PD (Bits 0  to 7)  to 0
    */
 
   dsi_blk_hblk1 = HBLK_PF(0x72bd) |
@@ -882,7 +889,7 @@ int a64_mipi_dsi_enable(void)
 
   /* DSI Blank Package Register 9 (A31 Page 854)
    * Set VBLK_PF (Bits 16 to 31) to 0xffff
-   * Set VBLK_PD (Bits 0 to 7) to 0
+   * Set VBLK_PD (Bits 0  to 7)  to 0
    */
 
   dsi_blk_vblk1 = VBLK_PF(0xffff) |
@@ -1014,7 +1021,8 @@ int a64_mipi_dsi_start(void)
   ginfo("Commit\n");
 
   /* DSI Configuration Register 0 (A31 Page 845)
-   * Set INSTRU_EN (Bit 0) to 1 (Enable DSI Processing from Instruction 0)
+   * Set INSTRU_EN (Bit 0) to 1
+   * (Enable DSI Processing from Instruction 0)
    */
 
   modreg32(INSTRU_EN,
@@ -1052,7 +1060,8 @@ int a64_mipi_dsi_start(void)
   ginfo("Commit\n");
 
   /* DSI Configuration Register 0 (A31 Page 845)
-   * Set INSTRU_EN (Bit 0) to 1 (Enable DSI Processing from Instruction 0)
+   * Set INSTRU_EN (Bit 0) to 1
+   * (Disable DSI Processing)
    */
 
   modreg32(INSTRU_EN,

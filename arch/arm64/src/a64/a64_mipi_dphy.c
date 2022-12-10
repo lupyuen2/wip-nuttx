@@ -106,10 +106,12 @@ int a64_mipi_dphy_enable(void)
   ginfo("Set DSI Clock to 150 MHz\n");
 
   /* MIPI_DSI Clock Register
-   * Set DSI_DPHY_GATING (Bit 15) to 1 (DSI DPHY Clock is On)
+   * Set DSI_DPHY_GATING (Bit 15) to 1
+   *   (DSI DPHY Clock is On)
    * Set DSI_DPHY_SRC_SEL (Bits 8 to 9) to 0b10
    *   (DSI DPHY Clock Source is PLL_PERIPH0(1X))
-   * Set DPHY_CLK_DIV_M (Bits 0 to 3) to 3 (DSI DPHY Clock divide ratio - 1)
+   * Set DPHY_CLK_DIV_M (Bits 0 to 3) to 3
+   *   (DSI DPHY Clock divide ratio - 1)
    */
 
   mipi_dsi_clk = DSI_DPHY_GATING |
@@ -143,16 +145,16 @@ int a64_mipi_dphy_enable(void)
   putreg32(0x3040000, DPHY_ANA3_REG);
   up_mdelay(1);  /* Wait at least 1 microsecond */
 
-  modreg32(ANA3_ENABLEVTTC, ANA3_ENABLEVTTC, DPHY_ANA3_REG);
+  modreg32(ANA3_ENABLEVTTC,   ANA3_ENABLEVTTC,   DPHY_ANA3_REG);
   up_mdelay(1);  /* Wait at least 1 microsecond */
 
-  modreg32(ANA3_ENABLEDIV, ANA3_ENABLEDIV, DPHY_ANA3_REG);
+  modreg32(ANA3_ENABLEDIV,    ANA3_ENABLEDIV,    DPHY_ANA3_REG);
   up_mdelay(1);  /* Wait at least 1 microsecond */
 
-  modreg32(ANA2_ENABLECKCPU, ANA2_ENABLECKCPU, DPHY_ANA2_REG);
+  modreg32(ANA2_ENABLECKCPU,  ANA2_ENABLECKCPU,  DPHY_ANA2_REG);
   up_mdelay(1);  /* Wait at least 1 microsecond */
 
-  modreg32(ANA1_VTTMODE, ANA1_VTTMODE, DPHY_ANA1_REG);
+  modreg32(ANA1_VTTMODE,      ANA1_VTTMODE,      DPHY_ANA1_REG);
   modreg32(ANA2_ENABLEP2SCPU, ANA2_ENABLEP2SCPU, DPHY_ANA2_REG);
 
   DEBUGASSERT(MIPI_DSI_CLK_REG == 0x1c20168);
