@@ -76,6 +76,7 @@ int a64_tcon0_init(void)
 
   ginfo("Configure PLL_VIDEO0\n");
 
+  // PLL_VIDEO0 Control Register
   // PLL_VIDEO0_CTRL_REG: CCU Offset 0x10 (A64 Page 86)
   // Set PLL_ENABLE (Bit 31) to 1 (Enable PLL)
   // Set PLL_MODE_SEL (Bit 24) to 1 (Integer Mode)
@@ -99,6 +100,7 @@ int a64_tcon0_init(void)
 
   ginfo("Enable LDO1 and LDO2\n");
 
+  // PLL_MIPI Control Register
   // PLL_MIPI_CTRL_REG: CCU Offset 0x40 (A64 Page 94)
   // Set LDO1_EN (Bit 23) to 1 (Enable On-chip LDO1)
   // Set LDO2_EN (Bit 22) to 1 (Enable On-chip LDO2)
@@ -119,6 +121,7 @@ int a64_tcon0_init(void)
 
   ginfo("Configure MIPI PLL\n");
 
+  // PLL_MIPI Control Register
   // PLL_MIPI_CTRL_REG: CCU Offset 0x40 (A64 Page 94)
   // Set PLL_ENABLE (Bit 31) to 1 (Enable MIPI PLL)
   // Set LDO1_EN (Bit 23) to 1 (Enable On-chip LDO1)
@@ -149,6 +152,7 @@ int a64_tcon0_init(void)
 
   ginfo("Set TCON0 Clock Source to MIPI PLL\n");
 
+  // TCON0 Clock Register
   // TCON0_CLK_REG: CCU Offset 0x118 (A64 Page 117)
   // Set SCLK_GATING (Bit 31) to 1 (Special Clock is On)
   // Set CLK_SRC_SEL (Bits 24 to 26) to 0 (Clock Source is MIPI PLL)
@@ -167,6 +171,7 @@ int a64_tcon0_init(void)
 
   ginfo("Enable TCON0 Clock\n");
 
+  // Bus Clock Gating Register 1
   // BUS_CLK_GATING_REG1: CCU Offset 0x64 (A64 Page 102)
   // Set TCON0_GATING (Bit 3) to 1 (Pass Clock for TCON0)
   #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x64)
@@ -179,6 +184,7 @@ int a64_tcon0_init(void)
 
   ginfo("Deassert TCON0 Reset\n");
 
+  // Bus Software Reset Register 1
   // BUS_SOFT_RST_REG1: CCU Offset 0x2c4 (A64 Page 140)
   // Set TCON0_RST (Bit 3) to 1 (Deassert TCON0 Reset)
   #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x2c4)
@@ -191,18 +197,21 @@ int a64_tcon0_init(void)
 
   ginfo("Disable TCON0 and Interrupts\n");
 
+  // TCON Global Control Register
   // TCON_GCTL_REG: TCON0 Offset 0x00 (A64 Page 508)
   // Set to 0 (Disable TCON0)
   #define TCON_GCTL_REG (A64_TCON0_ADDR + 0x00)
   DEBUGASSERT(TCON_GCTL_REG == 0x1c0c000);
   putreg32(0, TCON_GCTL_REG);
 
+  // TCON Global Interrupt Register 0
   // TCON_GINT0_REG: TCON0 Offset 0x04 (A64 Page 509)
   // Set to 0 (Disable TCON0 Interrupts)
   #define TCON_GINT0_REG (A64_TCON0_ADDR + 0x04)
   DEBUGASSERT(TCON_GINT0_REG == 0x1c0c004);
   putreg32(0x0, TCON_GINT0_REG);
 
+  // TCON Global Interrupt Register 1
   // TCON_GINT1_REG: TCON0 Offset 0x08 (A64 Page 510)
   // Set to 0 (Disable TCON0 Interrupts)
   #define TCON_GINT1_REG (A64_TCON0_ADDR + 0x08)
@@ -213,12 +222,14 @@ int a64_tcon0_init(void)
 
   ginfo("Enable Tristate Output\n");
 
+  // TCON0 IO Trigger Register
   // TCON0_IO_TRI_REG: TCON0 Offset 0x8c (A64 Page 520)
   // Set to 0xffff ffff to Enable TCON0 Tristate Output
   #define TCON0_IO_TRI_REG (A64_TCON0_ADDR + 0x8c)
   DEBUGASSERT(TCON0_IO_TRI_REG == 0x1c0c08c);
   putreg32(0xffffffff, TCON0_IO_TRI_REG);
 
+  // TCON1 IO Trigger Register
   // TCON1_IO_TRI_REG: TCON0 Offset 0xf4
   // Set to 0xffff ffff to Enable TCON1 Tristate Output
   // Note: TCON1_IO_TRI_REG is actually in TCON0 Address Range, not in TCON1 Address Range as stated in A64 User Manual
@@ -230,6 +241,7 @@ int a64_tcon0_init(void)
 
   ginfo("Set DCLK to MIPI PLL / 6\n");
 
+  // TCON0 Data Clock Register
   // TCON0_DCLK_REG: TCON0 Offset 0x44 (A64 Page 513)
   // Set TCON0_Dclk_En (Bits 28 to 31) to 8 (Enable TCON0 Clocks: DCLK, DCLK1, DCLK2, DCLKM2)
   // Set TCON0_Dclk_Div (Bits 0 to 6) to 6 (DCLK Divisor)
@@ -244,6 +256,7 @@ int a64_tcon0_init(void)
   DEBUGASSERT(tcon0_dclk == 0x80000006);
   putreg32(tcon0_dclk, TCON0_DCLK_REG);
 
+  // TCON0 Control Register
   // TCON0_CTL_REG: TCON0 Offset 0x40 (A64 Page 512)
   // Set TCON0_En (Bit 31) to 1 (Enable TCON0)
   // Set TCON0_IF (Bits 24 to 25) to 1 (8080 Interface)
@@ -261,6 +274,7 @@ int a64_tcon0_init(void)
   DEBUGASSERT(tcon0_ctl == 0x81000000);
   putreg32(tcon0_ctl, TCON0_CTL_REG);
 
+  // TCON0 Basic Timing Register 0
   // TCON0_BASIC0_REG: TCON0 Offset 0x48 (A64 Page 514)
   // Set TCON0_X (Bits 16 to 27) to 719 (Panel Width - 1)
   // Set TCON0_Y (Bits 0 to 11) to 1439 (Panel Height - 1)
@@ -281,6 +295,7 @@ int a64_tcon0_init(void)
   DEBUGASSERT(TCON0_ECC_FIFO == 0x1c0c0f8);
   putreg32(0x8, TCON0_ECC_FIFO);
 
+  // TCON0 CPU Panel Interface Register
   // TCON0_CPU_IF_REG: TCON0 Offset 0x60 (A64 Page 516)
   // Set CPU_Mode (Bits 28 to 31) to 1 (24-bit DSI)
   // Set FLUSH (Bit 16) to 1 (Enable Direct Transfer Mode)
@@ -305,6 +320,7 @@ int a64_tcon0_init(void)
 
   ginfo("Set CPU Panel Trigger\n");
 
+  // TCON0 CPU Panel Trigger Register 0
   // TCON0_CPU_TRI0_REG: TCON0 Offset 0x160 (A64 Page 521)
   // Set Block_Space (Bits 16 to 27) to 47 (Block Space)
   // Set Block_Size (Bits 0 to 11) to 719 (Panel Width - 1)
@@ -320,6 +336,7 @@ int a64_tcon0_init(void)
   DEBUGASSERT(tcon0_cpu_tri0 == 0x2f02cf);
   putreg32(tcon0_cpu_tri0, TCON0_CPU_TRI0_REG);
 
+  // TCON0 CPU Panel Trigger Register 1
   // TCON0_CPU_TRI1_REG: TCON0 Offset 0x164 (A64 Page 522)
   // Set Block_Current_Num (Bits 16 to 31) to 0 (Block Current Number)
   // Set Block_Num (Bits 0 to 15) to 1439 (Panel Height - 1)
@@ -334,6 +351,7 @@ int a64_tcon0_init(void)
   DEBUGASSERT(tcon0_cpu_tri1 == 0x59f);
   putreg32(tcon0_cpu_tri1, TCON0_CPU_TRI1_REG);
 
+  // TCON0 CPU Panel Trigger Register 2
   // TCON0_CPU_TRI2_REG: TCON0 Offset 0x168 (A64 Page 522)
   // Set Start_Delay (Bits 16 to 31) to 7106 (Start Delay)
   // Set Trans_Start_Mode (Bit 15) to 0 (Trans Start Mode is ECC FIFO + TRI FIFO)
@@ -358,6 +376,7 @@ int a64_tcon0_init(void)
 
   ginfo("Set Safe Period\n");
 
+  // TCON Safe Period Register
   // TCON_SAFE_PERIOD_REG: TCON0 Offset 0x1f0 (A64 Page 525)
   // Set Safe_Period_FIFO_Num (Bits 16 to 28) to 3000
   // Set Safe_Period_Line (Bits 4 to 15) to 0
@@ -380,6 +399,7 @@ int a64_tcon0_init(void)
 
   ginfo("Enable Output Triggers\n");
 
+  // TCON0 IO Trigger Register
   // TCON0_IO_TRI_REG: TCON0 Offset 0x8c (A64 Page 520)
   // Set Reserved (Bits 29 to 31) to 0b111
   // Set RGB_Endian (Bit 28) to 0 (Normal RGB Endian)
@@ -390,7 +410,7 @@ int a64_tcon0_init(void)
   // Set Data_Output_Tri_En (Bits 0 to 23) to 0 (Enable TCON0 Output Port)
   DEBUGASSERT(TCON0_IO_TRI_REG == 0x1c0c08c);
 
-  #define Reserved (0b111 << 29)
+  #define IO_Reserved (0b111 << 29)
   #define RGB_Endian(n) ((n)     << 28)
   #define IO3_Output_Tri_En(n) ((n)     << 27)
   #define IO2_Output_Tri_En(n) ((n)     << 26)
@@ -398,7 +418,7 @@ int a64_tcon0_init(void)
   #define IO0_Output_Tri_En(n) ((n)     << 24)
   #define Data_Output_Tri_En(n) ((n)     << 0)
   uint32_t tcon0_io_tri;
-  tcon0_io_tri = Reserved
+  tcon0_io_tri = IO_Reserved
       | RGB_Endian(0)
       | IO3_Output_Tri_En(0)
       | IO2_Output_Tri_En(0)
@@ -412,6 +432,7 @@ int a64_tcon0_init(void)
 
   ginfo("Enable TCON0\n");
 
+  // TCON Global Control Register
   // TCON_GCTL_REG: TCON0 Offset 0x00 (A64 Page 508)
   // Set TCON_En (Bit 31) to 1 (Enable TCON0)
   DEBUGASSERT(TCON_GCTL_REG == 0x1c0c000);
