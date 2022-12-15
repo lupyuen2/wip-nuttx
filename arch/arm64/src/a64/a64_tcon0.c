@@ -135,7 +135,6 @@ int a64_tcon0_init(void)
   #define PLL_FACTOR_N(n) ((n)  << 8)
   #define PLL_FACTOR_K (1  << 4)
   #define PLL_PRE_DIV_M(n) ((n) << 0)
-  uint32_t pll_mipi_ctrl;
   pll_mipi_ctrl = PLL_ENABLE
       | LDO1_EN
       | LDO2_EN
@@ -309,6 +308,7 @@ int a64_tcon0_init(void)
   // TCON0_CPU_TRI0_REG: TCON0 Offset 0x160 (A64 Page 521)
   // Set Block_Space (Bits 16 to 27) to 47 (Block Space)
   // Set Block_Size (Bits 0 to 11) to 719 (Panel Width - 1)
+  // Note: Block Space is probably derived from Panel Width
   #define TCON0_CPU_TRI0_REG (A64_TCON0_ADDR + 0x160)
   DEBUGASSERT(TCON0_CPU_TRI0_REG == 0x1c0c160);
 
@@ -323,54 +323,63 @@ int a64_tcon0_init(void)
   // TCON0_CPU_TRI1_REG: TCON0 Offset 0x164 (A64 Page 522)
   // Set Block_Current_Num (Bits 16 to 31) to 0 (Block Current Number)
   // Set Block_Num (Bits 0 to 15) to 1439 (Panel Height - 1)
-  #define TCON0_CPU_TRI1_REG = A64_TCON0_ADDR + 0x164;
+  #define TCON0_CPU_TRI1_REG (A64_TCON0_ADDR + 0x164)
   DEBUGASSERT(TCON0_CPU_TRI1_REG == 0x1c0c164);
 
-  #define Block_Current_Num (0    << 16;
-  #define Block_Num ((PANEL_HEIGHT - 1) << 0;
-  TCON0_CPU_TRI1 = Block_Current_Num
-      | Block_Num;
-  DEBUGASSERT(TCON0_CPU_TRI1 == 0x59f);
-  putreg32(TCON0_CPU_TRI1, TCON0_CPU_TRI1_REG);
+  #define Block_Current_Num (0    << 16)
+  #define Block_Num(n) ((n) << 0)
+  uint32_t tcon0_cpu_tri1;
+  tcon0_cpu_tri1 = Block_Current_Num
+      | Block_Num(A64_TCON0_PANEL_HEIGHT - 1);
+  DEBUGASSERT(tcon0_cpu_tri1 == 0x59f);
+  putreg32(tcon0_cpu_tri1, TCON0_CPU_TRI1_REG);
 
   // TCON0_CPU_TRI2_REG: TCON0 Offset 0x168 (A64 Page 522)
   // Set Start_Delay (Bits 16 to 31) to 7106 (Start Delay)
   // Set Trans_Start_Mode (Bit 15) to 0 (Trans Start Mode is ECC FIFO + TRI FIFO)
   // Set Sync_Mode (Bits 13 to 14) to 0 (Sync Mode is Auto)
   // Set Trans_Start_Set (Bits 0 to 12) to 10 (Trans Start Set)
-  #define TCON0_CPU_TRI2_REG = A64_TCON0_ADDR + 0x168;
+  #define TCON0_CPU_TRI2_REG (A64_TCON0_ADDR + 0x168)
   DEBUGASSERT(TCON0_CPU_TRI2_REG == 0x1c0c168);
 
-  #define Start_Delay (7106 << 16;
-  #define Trans_Start_Mode (0    << 15;
-  #define Sync_Mode (0    << 13;
-  #define Trans_Start_Set (10   << 0;
-  TCON0_CPU_TRI2 = Start_Delay
-      | Trans_Start_Mode
-      | Sync_Mode
-      | Trans_Start_Set;
-  DEBUGASSERT(TCON0_CPU_TRI2 == 0x1bc2000a);
-  putreg32(TCON0_CPU_TRI2, TCON0_CPU_TRI2_REG);
+  #define Start_Delay(n) ((n) << 16)
+  #define Trans_Start_Mode(n) ((n)    << 15)
+  #define Sync_Mode(n) ((n)    << 13)
+  #define Trans_Start_Set(n) ((n)   << 0)
+  uint32_t tcon0_cpu_tri2;
+  tcon0_cpu_tri2 = Start_Delay(7106)
+      | Trans_Start_Mode(0)
+      | Sync_Mode(0)
+      | Trans_Start_Set(10);
+  DEBUGASSERT(tcon0_cpu_tri2 == 0x1bc2000a);
+  putreg32(tcon0_cpu_tri2, TCON0_CPU_TRI2_REG);
 
-  // Set Safe Period
+  /* Set Safe Period ********************************************************/
+
+  ginfo("Set Safe Period\n");
+
   // TCON_SAFE_PERIOD_REG: TCON0 Offset 0x1f0 (A64 Page 525)
   // Set Safe_Period_FIFO_Num (Bits 16 to 28) to 3000
   // Set Safe_Period_Line (Bits 4 to 15) to 0
-  // Set Safe_Period_Mode (Bits 0 to 2) to 3 (Safe Period Mode: Safe at 2 and safe at sync active)
-  debug("Set Safe Period", .{});
-  #define TCON_SAFE_PERIOD_REG = A64_TCON0_ADDR + 0x1f0;
+  // Set Safe_Period_Mode (Bits 0 to 2) to 3 
+  // (Safe Period Mode: Safe at 2 and safe at sync active)
+  #define TCON_SAFE_PERIOD_REG (A64_TCON0_ADDR + 0x1f0)
   DEBUGASSERT(TCON_SAFE_PERIOD_REG == 0x1c0c1f0);
 
-  #define Safe_Period_FIFO_Num (3000 << 16;
-  #define Safe_Period_Line (0    << 4;
-  #define Safe_Period_Mode (3    << 0;
-  TCON_SAFE_PERIOD = Safe_Period_FIFO_Num
-      | Safe_Period_Line
-      | Safe_Period_Mode;
-  DEBUGASSERT(TCON_SAFE_PERIOD == 0xbb80003);
-  putreg32(TCON_SAFE_PERIOD, TCON_SAFE_PERIOD_REG);
+  #define Safe_Period_FIFO_Num(n) ((n) << 16)
+  #define Safe_Period_Line(n) ((n)    << 4)
+  #define Safe_Period_Mode(n) ((n)    << 0)
+  uint32_t tcon_safe_period;
+  tcon_safe_period = Safe_Period_FIFO_Num(3000)
+      | Safe_Period_Line(0)
+      | Safe_Period_Mode(3);
+  DEBUGASSERT(tcon_safe_period == 0xbb80003);
+  putreg32(tcon_safe_period, TCON_SAFE_PERIOD_REG);
 
-  // Enable Output Triggers
+  /* Enable Output Triggers *************************************************/
+
+  ginfo("Enable Output Triggers\n");
+
   // TCON0_IO_TRI_REG: TCON0 Offset 0x8c (A64 Page 520)
   // Set Reserved (Bits 29 to 31) to 0b111
   // Set RGB_Endian (Bit 28) to 0 (Normal RGB Endian)
@@ -379,35 +388,35 @@ int a64_tcon0_init(void)
   // Set IO1_Output_Tri_En (Bit 25) to 0 (Enable IO1 Output Tri)
   // Set IO0_Output_Tri_En (Bit 24) to 0 (Enable IO0 Output Tri)
   // Set Data_Output_Tri_En (Bits 0 to 23) to 0 (Enable TCON0 Output Port)
-  debug("Enable Output Triggers", .{});
   DEBUGASSERT(TCON0_IO_TRI_REG == 0x1c0c08c);
 
-  #define Reserved (0b111 << 29;
-  #define RGB_Endian (0     << 28;
-  #define IO3_Output_Tri_En (0     << 27;
-  #define IO2_Output_Tri_En (0     << 26;
-  #define IO1_Output_Tri_En (0     << 25;
-  #define IO0_Output_Tri_En (0     << 24;
-  #define Data_Output_Tri_En (0     << 0;
-  TCON0_IO_TRI = Reserved
-      | RGB_Endian
-      | IO3_Output_Tri_En
-      | IO2_Output_Tri_En
-      | IO1_Output_Tri_En
-      | IO0_Output_Tri_En
-      | Data_Output_Tri_En;
-  DEBUGASSERT(TCON0_IO_TRI == 0xe0000000);
-  putreg32(TCON0_IO_TRI, TCON0_IO_TRI_REG);
+  #define Reserved (0b111 << 29)
+  #define RGB_Endian(n) ((n)     << 28)
+  #define IO3_Output_Tri_En(n) ((n)     << 27)
+  #define IO2_Output_Tri_En(n) ((n)     << 26)
+  #define IO1_Output_Tri_En(n) ((n)     << 25)
+  #define IO0_Output_Tri_En(n) ((n)     << 24)
+  #define Data_Output_Tri_En(n) ((n)     << 0)
+  uint32_t tcon0_io_tri;
+  tcon0_io_tri = Reserved
+      | RGB_Endian(0)
+      | IO3_Output_Tri_En(0)
+      | IO2_Output_Tri_En(0)
+      | IO1_Output_Tri_En(0)
+      | IO0_Output_Tri_En(0)
+      | Data_Output_Tri_En(0);
+  DEBUGASSERT(tcon0_io_tri == 0xe0000000);
+  putreg32(tcon0_io_tri, TCON0_IO_TRI_REG);
 
-  // Enable TCON0
+  /* Enable TCON0 ***********************************************************/
+
+  ginfo("Enable TCON0\n");
+
   // TCON_GCTL_REG: TCON0 Offset 0x00 (A64 Page 508)
   // Set TCON_En (Bit 31) to 1 (Enable TCON0)
-  debug("Enable TCON0", .{});
   DEBUGASSERT(TCON_GCTL_REG == 0x1c0c000);
-  #define TCON_En (1 << 31;
-  #define TCON_GCTL = TCON_En;
-  DEBUGASSERT(TCON_GCTL == 0x80000000);
-  modreg32(TCON_GCTL, TCON_GCTL, TCON_GCTL_REG);
+  #define TCON_En (1 << 31)
+  modreg32(TCON_En, TCON_En, TCON_GCTL_REG);
 
   return OK;
 }

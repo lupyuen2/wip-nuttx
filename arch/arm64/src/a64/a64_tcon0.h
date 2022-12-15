@@ -41,4 +41,22 @@
  * Public Function Prototypes
  ****************************************************************************/
 
+/****************************************************************************
+ * Name: a64_tcon0_init
+ *
+ * Description:
+ *   Initialize Timing Controller TCON0 to stream pixel data from Display
+ *   Engine to MIPI Display Serial Interface. Should be called before
+ *   enabling the MIPI DSI Block on the SoC.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   OK is always returned at present.
+ *
+ ****************************************************************************/
+
+int a64_tcon0_init(void);
+
 #endif /* __ARCH_ARM64_SRC_A64_A64_TCON0_H */
