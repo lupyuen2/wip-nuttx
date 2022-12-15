@@ -52,20 +52,20 @@
 
 // PLL_VIDEO0 Control Register (A64 Page 86)
 #define PLL_VIDEO0_CTRL_REG (A64_CCU_ADDR + 0x10)
-#define PLL_ENABLE      (1 << 31)
-#define PLL_MODE_SEL    (1 << 24)
-#define PLL_FACTOR_N(n) ((n) << 8)
-#define PLL_PREDIV_M(n) ((n) << 0)
+#define PLL_VIDEO0_ENABLE      (1 << 31)
+#define PLL_VIDEO0_MODE_SEL    (1 << 24)
+#define PLL_VIDEO0_FACTOR_N(n) ((n) << 8)
+#define PLL_VIDEO0_PREDIV_M(n) ((n) << 0)
 
 // PLL_MIPI Control Register (A64 Page 94)
 #define PLL_MIPI_CTRL_REG (A64_CCU_ADDR + 0x40)
-#define PLL_ENABLE (1  << 31)
-#define LDO1_EN (1 << 23)
-#define LDO2_EN (1 << 22)
-#define PLL_SRC(n) ((n)  << 21)
-#define PLL_FACTOR_N(n) ((n)  << 8)
-#define PLL_FACTOR_K (1  << 4)
-#define PLL_PRE_DIV_M(n) ((n) << 0)
+#define PLL_MIPI_ENABLE (1  << 31)
+#define PLL_MIPI_LDO1_EN (1 << 23)
+#define PLL_MIPI_LDO2_EN (1 << 22)
+#define PLL_MIPI_SRC(n) ((n)  << 21)
+#define PLL_MIPI_FACTOR_N(n) ((n)  << 8)
+#define PLL_MIPI_FACTOR_K (1  << 4)
+#define PLL_MIPI_PRE_DIV_M(n) ((n) << 0)
 
 // TCON0 Clock Register (A64 Page 117)
 #define TCON0_CLK_REG (A64_CCU_ADDR + 0x118)
@@ -189,10 +189,10 @@ int a64_tcon0_init(void)
   // Set PLL_PREDIV_M (Bits 0 to 3) to 7 (PLL Pre Divider)
   DEBUGASSERT(PLL_VIDEO0_CTRL_REG == 0x1c20010);
   uint32_t pll_video0_ctrl;
-  pll_video0_ctrl = PLL_ENABLE
-          | PLL_MODE_SEL
-          | PLL_FACTOR_N(0x62)
-          | PLL_PREDIV_M(7);
+  pll_video0_ctrl = PLL_VIDEO0_ENABLE
+          | PLL_VIDEO0_MODE_SEL
+          | PLL_VIDEO0_FACTOR_N(0x62)
+          | PLL_VIDEO0_PREDIV_M(7);
   DEBUGASSERT(pll_video0_ctrl == 0x81006207);
   putreg32(pll_video0_ctrl, PLL_VIDEO0_CTRL_REG);
 
@@ -205,8 +205,8 @@ int a64_tcon0_init(void)
   // Set LDO2_EN (Bit 22) to 1 (Enable On-chip LDO2)
   DEBUGASSERT(PLL_MIPI_CTRL_REG == 0x1c20040);
   uint32_t pll_mipi_ctrl;
-  pll_mipi_ctrl = LDO1_EN
-      | LDO2_EN;
+  pll_mipi_ctrl = PLL_MIPI_LDO1_EN
+      | PLL_MIPI_LDO2_EN;
   DEBUGASSERT(pll_mipi_ctrl == 0xc00000);
   putreg32(pll_mipi_ctrl, PLL_MIPI_CTRL_REG);
 
@@ -226,13 +226,13 @@ int a64_tcon0_init(void)
   // Set PLL_FACTOR_K (Bits 4 to 5) to 1 (PLL Factor K)
   // Set PLL_PRE_DIV_M (Bits 0 to 3) to 10 (PLL Pre Divider)
   DEBUGASSERT(PLL_MIPI_CTRL_REG == 0x1c20040);
-  pll_mipi_ctrl = PLL_ENABLE
-      | LDO1_EN
-      | LDO2_EN
-      | PLL_SRC(0)
-      | PLL_FACTOR_N(7)
-      | PLL_FACTOR_K
-      | PLL_PRE_DIV_M(10);
+  pll_mipi_ctrl = PLL_MIPI_ENABLE
+      | PLL_MIPI_LDO1_EN
+      | PLL_MIPI_LDO2_EN
+      | PLL_MIPI_SRC(0)
+      | PLL_MIPI_FACTOR_N(7)
+      | PLL_MIPI_FACTOR_K
+      | PLL_MIPI_PRE_DIV_M(10);
   DEBUGASSERT(pll_mipi_ctrl == 0x80c0071a);
   putreg32(pll_mipi_ctrl, PLL_MIPI_CTRL_REG);
 
