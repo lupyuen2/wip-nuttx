@@ -127,7 +127,7 @@
 // TCON0 CPU Panel Interface Register (A64 Page 516)
 #define TCON0_CPU_IF_REG (A64_TCON0_ADDR + 0x60)
 #define CPU_Mode (1 << 28)
-#define FLUSH (1 << 16)
+#define FLUSH_Mode (1 << 16)
 #define Trigger_FIFO_En (1 << 2)
 #define Trigger_En (1 << 0)
 
@@ -345,14 +345,14 @@ int a64_tcon0_init(void)
 
   // TCON0 CPU Panel Interface Register (A64 Page 516)
   // Set CPU_Mode (Bits 28 to 31) to 1 (24-bit DSI)
-  // Set FLUSH (Bit 16) to 1 (Enable Direct Transfer Mode)
+  // Set FLUSH_Mode (Bit 16) to 1 (Enable Direct Transfer Mode)
   // Set Trigger_FIFO_En (Bit 2) to 1 (Enable FIFO Trigger)
   // Set Trigger_En (Bit 0) to 1 (Enable Trigger Mode)
   DEBUGASSERT(TCON0_CPU_IF_REG == 0x1c0c060);
 
   uint32_t tcon0_cpu_if;
   tcon0_cpu_if = CPU_Mode
-      | FLUSH
+      | FLUSH_Mode
       | Trigger_FIFO_En
       | Trigger_En;
   DEBUGASSERT(tcon0_cpu_if == 0x10010005);
