@@ -84,7 +84,7 @@
 
 // TCON Global Control Register (A64 Page 508)
 #define TCON_GCTL_REG (A64_TCON0_ADDR + 0x00)
-#define TCON_En (1 << 31)
+#define TCON_EN (1 << 31)
 
 // TCON Global Interrupt Register 0 (A64 Page 509)
 #define TCON_GINT0_REG (A64_TCON0_ADDR + 0x04)
@@ -94,25 +94,25 @@
 
 // TCON0 IO Trigger Register (A64 Page 520)
 #define TCON0_IO_TRI_REG (A64_TCON0_ADDR + 0x8c)
-#define IO_Reserved (0b111 << 29)
-#define RGB_Endian(n) ((n)     << 28)
-#define IO3_Output_Tri_En(n) ((n)     << 27)
-#define IO2_Output_Tri_En(n) ((n)     << 26)
-#define IO1_Output_Tri_En(n) ((n)     << 25)
-#define IO0_Output_Tri_En(n) ((n)     << 24)
-#define Data_Output_Tri_En(n) ((n)     << 0)
+#define IO_RESERVED (0b111 << 29)
+#define RGB_ENDIAN(n) ((n)     << 28)
+#define IO3_OUTPUT_TRI_EN(n) ((n)     << 27)
+#define IO2_OUTPUT_TRI_EN(n) ((n)     << 26)
+#define IO1_OUTPUT_TRI_EN(n) ((n)     << 25)
+#define IO0_OUTPUT_TRI_EN(n) ((n)     << 24)
+#define DATA_OUTPUT_TRI_EN(n) ((n)     << 0)
 
 // TCON1 IO Trigger Register (A64 Page 520)
 #define TCON1_IO_TRI_REG (A64_TCON0_ADDR + 0xf4)
 
 // TCON0 Data Clock Register (A64 Page 513)
 #define TCON0_DCLK_REG (A64_TCON0_ADDR + 0x44)
-#define TCON0_Dclk_En(n) ((n) << 28)
-#define TCON0_Dclk_Div(n) ((n) << 0)
+#define TCON0_DCLK_EN(n) ((n) << 28)
+#define TCON0_DCLK_DIV(n) ((n) << 0)
 
 // TCON0 Control Register (A64 Page 512)
 #define TCON0_CTL_REG (A64_TCON0_ADDR + 0x40)
-#define TCON0_En (1 << 31)
+#define TCON0_EN (1 << 31)
 #define TCON0_IF(n) ((n) << 24)
 #define TCON0_SRC_SEL(n) ((n) << 0);
 
@@ -126,33 +126,33 @@
 
 // TCON0 CPU Panel Interface Register (A64 Page 516)
 #define TCON0_CPU_IF_REG (A64_TCON0_ADDR + 0x60)
-#define CPU_Mode (1 << 28)
-#define FLUSH_Mode (1 << 16)
-#define Trigger_FIFO_En (1 << 2)
-#define Trigger_En (1 << 0)
+#define CPU_MODE (1 << 28)
+#define FLUSH_MODE (1 << 16)
+#define TRIGGER_FIFO_EN (1 << 2)
+#define TRIGGER_EN (1 << 0)
 
 // TCON0 CPU Panel Trigger Register 0 (A64 Page 521)
 #define TCON0_CPU_TRI0_REG (A64_TCON0_ADDR + 0x160)
-#define Block_Space(n) ((n)  << 16)
-#define Block_Size(n) ((n) << 0)
+#define BLOCK_SPACE(n) ((n)  << 16)
+#define BLOCK_SIZE(n) ((n) << 0)
 
 // TCON0 CPU Panel Trigger Register 1 (A64 Page 522)
 #define TCON0_CPU_TRI1_REG (A64_TCON0_ADDR + 0x164)
-#define Block_Current_Num (0    << 16)
-#define Block_Num(n) ((n) << 0)
+#define BLOCK_CURRENT_NUM(n) ((n)    << 16)
+#define BLOCK_NUM(n) ((n) << 0)
 
 // TCON0 CPU Panel Trigger Register 2 (A64 Page 522)
 #define TCON0_CPU_TRI2_REG (A64_TCON0_ADDR + 0x168)
-#define Start_Delay(n) ((n) << 16)
-#define Trans_Start_Mode(n) ((n)    << 15)
-#define Sync_Mode(n) ((n)    << 13)
-#define Trans_Start_Set(n) ((n)   << 0)
+#define START_DELAY(n) ((n) << 16)
+#define TRANS_START_MODE(n) ((n)    << 15)
+#define SYNC_MODE(n) ((n)    << 13)
+#define TRANS_START_SET(n) ((n)   << 0)
 
 // TCON Safe Period Register (A64 Page 525)
 #define TCON_SAFE_PERIOD_REG (A64_TCON0_ADDR + 0x1f0)
-#define Safe_Period_FIFO_Num(n) ((n) << 16)
-#define Safe_Period_Line(n) ((n)    << 4)
-#define Safe_Period_Mode(n) ((n)    << 0)
+#define SAFE_PERIOD_FIFO_NUM(n) ((n) << 16)
+#define SAFE_PERIOD_LINE(n) ((n)    << 4)
+#define SAFE_PERIOD_MODE(n) ((n)    << 0)
 
 /* A64 CCU Registers and Bit Definitions ************************************/
 
@@ -311,8 +311,8 @@ int a64_tcon0_init(void)
   // Set TCON0_Dclk_Div (Bits 0 to 6) to 6 (DCLK Divisor)
   DEBUGASSERT(TCON0_DCLK_REG == 0x1c0c044);
   uint32_t tcon0_dclk;
-  tcon0_dclk = TCON0_Dclk_En(8)
-      | TCON0_Dclk_Div(6);
+  tcon0_dclk = TCON0_DCLK_EN(8)
+      | TCON0_DCLK_DIV(6);
   DEBUGASSERT(tcon0_dclk == 0x80000006);
   putreg32(tcon0_dclk, TCON0_DCLK_REG);
 
@@ -322,7 +322,7 @@ int a64_tcon0_init(void)
   // Set TCON0_SRC_SEL (Bits 0 to 2) to 0 (TCON0 Source is DE0)
   DEBUGASSERT(TCON0_CTL_REG == 0x1c0c040);
   uint32_t tcon0_ctl;
-  tcon0_ctl = TCON0_En
+  tcon0_ctl = TCON0_EN
       | TCON0_IF(1)
       | TCON0_SRC_SEL(0);
   DEBUGASSERT(tcon0_ctl == 0x81000000);
@@ -351,10 +351,10 @@ int a64_tcon0_init(void)
   DEBUGASSERT(TCON0_CPU_IF_REG == 0x1c0c060);
 
   uint32_t tcon0_cpu_if;
-  tcon0_cpu_if = CPU_Mode
-      | FLUSH_Mode
-      | Trigger_FIFO_En
-      | Trigger_En;
+  tcon0_cpu_if = CPU_MODE
+      | FLUSH_MODE
+      | TRIGGER_FIFO_EN
+      | TRIGGER_EN;
   DEBUGASSERT(tcon0_cpu_if == 0x10010005);
   putreg32(tcon0_cpu_if, TCON0_CPU_IF_REG);
 
@@ -369,8 +369,8 @@ int a64_tcon0_init(void)
   DEBUGASSERT(TCON0_CPU_TRI0_REG == 0x1c0c160);
 
   uint32_t tcon0_cpu_tri0;
-  tcon0_cpu_tri0 = Block_Space(47)
-      | Block_Size(A64_TCON0_PANEL_WIDTH - 1);
+  tcon0_cpu_tri0 = BLOCK_SPACE(47)
+      | BLOCK_SIZE(A64_TCON0_PANEL_WIDTH - 1);
   DEBUGASSERT(tcon0_cpu_tri0 == 0x2f02cf);
   putreg32(tcon0_cpu_tri0, TCON0_CPU_TRI0_REG);
 
@@ -380,8 +380,8 @@ int a64_tcon0_init(void)
   DEBUGASSERT(TCON0_CPU_TRI1_REG == 0x1c0c164);
 
   uint32_t tcon0_cpu_tri1;
-  tcon0_cpu_tri1 = Block_Current_Num
-      | Block_Num(A64_TCON0_PANEL_HEIGHT - 1);
+  tcon0_cpu_tri1 = BLOCK_CURRENT_NUM(0)
+      | BLOCK_NUM(A64_TCON0_PANEL_HEIGHT - 1);
   DEBUGASSERT(tcon0_cpu_tri1 == 0x59f);
   putreg32(tcon0_cpu_tri1, TCON0_CPU_TRI1_REG);
 
@@ -393,10 +393,10 @@ int a64_tcon0_init(void)
   DEBUGASSERT(TCON0_CPU_TRI2_REG == 0x1c0c168);
 
   uint32_t tcon0_cpu_tri2;
-  tcon0_cpu_tri2 = Start_Delay(7106)
-      | Trans_Start_Mode(0)
-      | Sync_Mode(0)
-      | Trans_Start_Set(10);
+  tcon0_cpu_tri2 = START_DELAY(7106)
+      | TRANS_START_MODE(0)
+      | SYNC_MODE(0)
+      | TRANS_START_SET(10);
   DEBUGASSERT(tcon0_cpu_tri2 == 0x1bc2000a);
   putreg32(tcon0_cpu_tri2, TCON0_CPU_TRI2_REG);
 
@@ -412,9 +412,9 @@ int a64_tcon0_init(void)
   DEBUGASSERT(TCON_SAFE_PERIOD_REG == 0x1c0c1f0);
 
   uint32_t tcon_safe_period;
-  tcon_safe_period = Safe_Period_FIFO_Num(3000)
-      | Safe_Period_Line(0)
-      | Safe_Period_Mode(3);
+  tcon_safe_period = SAFE_PERIOD_FIFO_NUM(3000)
+      | SAFE_PERIOD_LINE(0)
+      | SAFE_PERIOD_MODE(3);
   DEBUGASSERT(tcon_safe_period == 0xbb80003);
   putreg32(tcon_safe_period, TCON_SAFE_PERIOD_REG);
 
@@ -433,13 +433,13 @@ int a64_tcon0_init(void)
   DEBUGASSERT(TCON0_IO_TRI_REG == 0x1c0c08c);
 
   uint32_t tcon0_io_tri;
-  tcon0_io_tri = IO_Reserved
-      | RGB_Endian(0)
-      | IO3_Output_Tri_En(0)
-      | IO2_Output_Tri_En(0)
-      | IO1_Output_Tri_En(0)
-      | IO0_Output_Tri_En(0)
-      | Data_Output_Tri_En(0);
+  tcon0_io_tri = IO_RESERVED
+      | RGB_ENDIAN(0)
+      | IO3_OUTPUT_TRI_EN(0)
+      | IO2_OUTPUT_TRI_EN(0)
+      | IO1_OUTPUT_TRI_EN(0)
+      | IO0_OUTPUT_TRI_EN(0)
+      | DATA_OUTPUT_TRI_EN(0);
   DEBUGASSERT(tcon0_io_tri == 0xe0000000);
   putreg32(tcon0_io_tri, TCON0_IO_TRI_REG);
 
@@ -450,7 +450,7 @@ int a64_tcon0_init(void)
   // TCON Global Control Register (A64 Page 508)
   // Set TCON_En (Bit 31) to 1 (Enable TCON0)
   DEBUGASSERT(TCON_GCTL_REG == 0x1c0c000);
-  modreg32(TCON_En, TCON_En, TCON_GCTL_REG);
+  modreg32(TCON_EN, TCON_EN, TCON_GCTL_REG);
 
   return OK;
 }
