@@ -335,7 +335,8 @@ int a64_tcon0_init(void)
 
   /* TCON1 IO Trigger Register (A64 Page 520)
    * Set to 0xffff ffff to Enable TCON1 Tristate Output
-   * Note: TCON1_IO_TRI_REG is actually in TCON0 Address Range, not in TCON1 Address Range as stated in A64 User Manual
+   * Note: TCON1_IO_TRI_REG is actually in TCON0 Address Range,
+   * not in TCON1 Address Range as stated in A64 User Manual
    */
 
   putreg32(0xffffffff, TCON1_IO_TRI_REG);
@@ -345,7 +346,8 @@ int a64_tcon0_init(void)
   ginfo("Set DCLK to MIPI PLL / 6\n");
 
   /* TCON0 Data Clock Register (A64 Page 513)
-   * Set TCON0_Dclk_En (Bits 28 to 31) to 8 (Enable TCON0 Clocks: DCLK, DCLK1, DCLK2, DCLKM2)
+   * Set TCON0_Dclk_En (Bits 28 to 31) to 8
+   *   (Enable TCON0 Clocks: DCLK, DCLK1, DCLK2, DCLKM2)
    * Set TCON0_Dclk_Div (Bits 0 to 6) to 6 (DCLK Divisor)
    */
 
@@ -417,7 +419,8 @@ int a64_tcon0_init(void)
 
   /* TCON0 CPU Panel Trigger Register 2 (A64 Page 522)
    * Set Start_Delay (Bits 16 to 31) to 7106 (Start Delay)
-   * Set Trans_Start_Mode (Bit 15) to 0 (Trans Start Mode is ECC FIFO + TRI FIFO)
+   * Set Trans_Start_Mode (Bit 15) to 0
+   *   (Trans Start Mode is ECC FIFO + TRI FIFO)
    * Set Sync_Mode (Bits 13 to 14) to 0 (Sync Mode is Auto)
    * Set Trans_Start_Set (Bits 0 to 12) to 10 (Trans Start Set)
    */
