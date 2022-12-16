@@ -222,10 +222,10 @@ int a64_tcon0_init(void)
    * Set PLL_PREDIV_M (Bits 0 to 3) to 7 (PLL Pre Divider)
    */
 
-  pll_video0_ctrl = PLL_VIDEO0_ENABLE
-          | PLL_VIDEO0_MODE_SEL
-          | PLL_VIDEO0_FACTOR_N(0x62)
-          | PLL_VIDEO0_PREDIV_M(7);
+  pll_video0_ctrl = PLL_VIDEO0_ENABLE |
+                    PLL_VIDEO0_MODE_SEL |
+                    PLL_VIDEO0_FACTOR_N(0x62) |
+                    PLL_VIDEO0_PREDIV_M(7);
   putreg32(pll_video0_ctrl, PLL_VIDEO0_CTRL_REG);
 
   /* Enable LDO1 and LDO2 ***************************************************/
@@ -237,8 +237,7 @@ int a64_tcon0_init(void)
    * Set LDO2_EN (Bit 22) to 1 (Enable On-chip LDO2)
    */
 
-  pll_mipi_ctrl1 = PLL_MIPI_LDO1_EN
-      | PLL_MIPI_LDO2_EN;
+  pll_mipi_ctrl1 = PLL_MIPI_LDO1_EN | PLL_MIPI_LDO2_EN;
   putreg32(pll_mipi_ctrl1, PLL_MIPI_CTRL_REG);
 
   /* Wait at least 100 microseconds */
@@ -259,13 +258,13 @@ int a64_tcon0_init(void)
    * Set PLL_PRE_DIV_M (Bits 0 to 3) to 10 (PLL Pre Divider)
    */
 
-  pll_mipi_ctrl2 = PLL_MIPI_ENABLE
-      | PLL_MIPI_LDO1_EN
-      | PLL_MIPI_LDO2_EN
-      | PLL_MIPI_SRC(0)
-      | PLL_MIPI_FACTOR_N(7)
-      | PLL_MIPI_FACTOR_K(1)
-      | PLL_MIPI_PRE_DIV_M(10);
+  pll_mipi_ctrl2 = PLL_MIPI_ENABLE |
+                   PLL_MIPI_LDO1_EN |
+                   PLL_MIPI_LDO2_EN |
+                   PLL_MIPI_SRC(0) |
+                   PLL_MIPI_FACTOR_N(7) |
+                   PLL_MIPI_FACTOR_K(1) |
+                   PLL_MIPI_PRE_DIV_M(10);
   putreg32(pll_mipi_ctrl2, PLL_MIPI_CTRL_REG);
 
   /* Set TCON0 Clock Source to MIPI PLL *************************************/
@@ -277,8 +276,7 @@ int a64_tcon0_init(void)
    * Set CLK_SRC_SEL (Bits 24 to 26) to 0 (Clock Source is MIPI PLL)
    */
 
-  tcon0_clk = SCLK_GATING
-      | CLK_SRC_SEL(0);
+  tcon0_clk = SCLK_GATING | CLK_SRC_SEL(0);
   putreg32(tcon0_clk, TCON0_CLK_REG);
 
   /* Enable TCON0 Clock *****************************************************/
@@ -351,8 +349,7 @@ int a64_tcon0_init(void)
    * Set TCON0_Dclk_Div (Bits 0 to 6) to 6 (DCLK Divisor)
    */
 
-  tcon0_dclk = TCON0_DCLK_EN(8)
-      | TCON0_DCLK_DIV(6);
+  tcon0_dclk = TCON0_DCLK_EN(8) | TCON0_DCLK_DIV(6);
   putreg32(tcon0_dclk, TCON0_DCLK_REG);
 
   /* TCON0 Control Register (A64 Page 512)
@@ -361,9 +358,7 @@ int a64_tcon0_init(void)
    * Set TCON0_SRC_SEL (Bits 0 to 2) to 0 (TCON0 Source is DE0)
    */
 
-  tcon0_ctl = TCON0_EN
-      | TCON0_IF(1)
-      | TCON0_SRC_SEL(0);
+  tcon0_ctl = TCON0_EN | TCON0_IF(1) | TCON0_SRC_SEL(0);
   putreg32(tcon0_ctl, TCON0_CTL_REG);
 
   /* TCON0 Basic Timing Register 0 (A64 Page 514)
@@ -371,8 +366,8 @@ int a64_tcon0_init(void)
    * Set TCON0_Y (Bits 0 to 11) to 1439 (Panel Height - 1)
    */
 
-  tcon0_basic0 = TCON0_X(A64_TCON0_PANEL_WIDTH  - 1)
-      | TCON0_Y(A64_TCON0_PANEL_HEIGHT - 1);
+  tcon0_basic0 = TCON0_X(A64_TCON0_PANEL_WIDTH - 1) |
+                 TCON0_Y(A64_TCON0_PANEL_HEIGHT - 1);
   putreg32(tcon0_basic0, TCON0_BASIC0_REG);
 
   /* TCON0 ECC FIFO Register (Undocumented)
@@ -388,10 +383,7 @@ int a64_tcon0_init(void)
    * Set Trigger_En (Bit 0) to 1 (Enable Trigger Mode)
    */
 
-  tcon0_cpu_if = CPU_MODE
-      | FLUSH_MODE
-      | TRIGGER_FIFO_EN
-      | TRIGGER_EN;
+  tcon0_cpu_if = CPU_MODE | FLUSH_MODE | TRIGGER_FIFO_EN | TRIGGER_EN;
   putreg32(tcon0_cpu_if, TCON0_CPU_IF_REG);
 
   /* Set CPU Panel Trigger **************************************************/
@@ -404,8 +396,7 @@ int a64_tcon0_init(void)
    * Note: Block Space is probably derived from Panel Width
    */
 
-  tcon0_cpu_tri0 = BLOCK_SPACE(47)
-      | BLOCK_SIZE(A64_TCON0_PANEL_WIDTH - 1);
+  tcon0_cpu_tri0 = BLOCK_SPACE(47) | BLOCK_SIZE(A64_TCON0_PANEL_WIDTH - 1);
   putreg32(tcon0_cpu_tri0, TCON0_CPU_TRI0_REG);
 
   /* TCON0 CPU Panel Trigger Register 1 (A64 Page 522)
@@ -413,8 +404,8 @@ int a64_tcon0_init(void)
    * Set Block_Num (Bits 0 to 15) to 1439 (Panel Height - 1)
    */
 
-  tcon0_cpu_tri1 = BLOCK_CURRENT_NUM(0)
-      | BLOCK_NUM(A64_TCON0_PANEL_HEIGHT - 1);
+  tcon0_cpu_tri1 = BLOCK_CURRENT_NUM(0) |
+                   BLOCK_NUM(A64_TCON0_PANEL_HEIGHT - 1);
   putreg32(tcon0_cpu_tri1, TCON0_CPU_TRI1_REG);
 
   /* TCON0 CPU Panel Trigger Register 2 (A64 Page 522)
@@ -425,10 +416,10 @@ int a64_tcon0_init(void)
    * Set Trans_Start_Set (Bits 0 to 12) to 10 (Trans Start Set)
    */
 
-  tcon0_cpu_tri2 = START_DELAY(7106)
-      | TRANS_START_MODE(0)
-      | SYNC_MODE(0)
-      | TRANS_START_SET(10);
+  tcon0_cpu_tri2 = START_DELAY(7106) |
+                   TRANS_START_MODE(0) |
+                   SYNC_MODE(0) |
+                   TRANS_START_SET(10);
   putreg32(tcon0_cpu_tri2, TCON0_CPU_TRI2_REG);
 
   /* Set Safe Period ********************************************************/
@@ -442,9 +433,9 @@ int a64_tcon0_init(void)
    * (Safe Period Mode: Safe at 2 and safe at sync active)
    */
 
-  tcon_safe_period = SAFE_PERIOD_FIFO_NUM(3000)
-      | SAFE_PERIOD_LINE(0)
-      | SAFE_PERIOD_MODE(3);
+  tcon_safe_period = SAFE_PERIOD_FIFO_NUM(3000) |
+                     SAFE_PERIOD_LINE(0) |
+                     SAFE_PERIOD_MODE(3);
   putreg32(tcon_safe_period, TCON_SAFE_PERIOD_REG);
 
   /* Enable Output Triggers *************************************************/
@@ -461,13 +452,13 @@ int a64_tcon0_init(void)
    * Set Data_Output_Tri_En (Bits 0 to 23) to 0 (Enable TCON0 Output Port)
    */
 
-  tcon0_io_tri = IO_RESERVED
-      | RGB_ENDIAN(0)
-      | IO3_OUTPUT_TRI_EN(0)
-      | IO2_OUTPUT_TRI_EN(0)
-      | IO1_OUTPUT_TRI_EN(0)
-      | IO0_OUTPUT_TRI_EN(0)
-      | DATA_OUTPUT_TRI_EN(0);
+  tcon0_io_tri = IO_RESERVED |
+                 RGB_ENDIAN(0) |
+                 IO3_OUTPUT_TRI_EN(0) |
+                 IO2_OUTPUT_TRI_EN(0) |
+                 IO1_OUTPUT_TRI_EN(0) |
+                 IO0_OUTPUT_TRI_EN(0) |
+                 DATA_OUTPUT_TRI_EN(0);
   putreg32(tcon0_io_tri, TCON0_IO_TRI_REG);
 
   /* Enable TCON0 ***********************************************************/
