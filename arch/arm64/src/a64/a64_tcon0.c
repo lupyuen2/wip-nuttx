@@ -438,7 +438,7 @@ int a64_tcon0_init(void)
   /* TCON Safe Period Register (A64 Page 525)
    * Set Safe_Period_FIFO_Num (Bits 16 to 28) to 3000
    * Set Safe_Period_Line (Bits 4 to 15) to 0
-   * Set Safe_Period_Mode (Bits 0 to 2) to 3 
+   * Set Safe_Period_Mode (Bits 0 to 2) to 3
    * (Safe Period Mode: Safe at 2 and safe at sync active)
    */
 
