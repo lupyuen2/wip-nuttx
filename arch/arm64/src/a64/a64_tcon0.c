@@ -471,8 +471,5 @@ int a64_tcon0_init(void)
 
   modreg32(TCON_EN, TCON_EN, TCON_GCTL_REG);
 
-  //// TODO: Remove Test Code
-  #include "../../pinephone-nuttx/test/test_a64_tcon0.c" //// TODO: Remove Test Code
-
   return OK;
 }
