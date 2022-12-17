@@ -908,3 +908,6 @@ int a64_de_enable(
 
   return OK;
 }
+
+//// TODO: Remove Test Code
+#include "../../pinephone-nuttx/test/test_a64_de.c" //// TODO: Remove Test Code
