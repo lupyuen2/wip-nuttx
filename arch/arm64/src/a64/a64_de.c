@@ -44,6 +44,7 @@
 #include <debug.h>
 
 #include <nuttx/arch.h>
+#include "hardware/a64_memorymap.h"
 #include "arm64_arch.h"
 #include "a64_de.h"
 
