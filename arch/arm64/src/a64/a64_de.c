@@ -67,6 +67,42 @@
 /// UI_SCALER1(CH1) (UI Scaler 1) is at MIXER0 Offset 0x04 0000 (DE Page 90, 0x114 0000)
 #define A64_UI_SCALER1_CH1_ADDR (A64_MIXER0_ADDR + 0x040000)
 
+// SRAM Registers Base Address is 0x01C0 0000 (A31 Page 191)
+#define SRAM_REGISTERS_BASE_ADDRESS 0x01C00000
+
+// CCU (Clock Control Unit) Base Address is 0x01C2 0000 (A64 Page 81)
+#define CCU_BASE_ADDRESS 0x01C20000
+
+// DRC (Dynamic Range Controller) is at Address 0x011B 0000 (DE Page 48, 0x11B 0000)
+#define DRC_BASE_ADDRESS 0x011B0000
+
+// VIDEO_SCALER(CH0) is at MIXER0 Offset 0x02 0000 (DE Page 90, 0x112 0000)
+#define VIDEO_SCALER_BASE_ADDRESS (A64_MIXER0_ADDR + 0x020000)
+
+// UI_SCALER1(CH1) is at MIXER0 Offset 0x04 0000 (DE Page 90, 0x114 0000)
+#define UI_SCALER1_BASE_ADDRESS (A64_MIXER0_ADDR + 0x040000)
+
+// UI_SCALER2(CH2) is at MIXER0 Offset 0x05 0000 (DE Page 90, 0x115 0000)
+#define UI_SCALER2_BASE_ADDRESS (A64_MIXER0_ADDR + 0x050000)
+
+// FCE (Fresh and Contrast Enhancement) is at MIXER0 Offset 0x0A 0000 (DE Page 61, 0x11A 0000)
+#define FCE_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A0000)
+
+// BWS (Black and White Stetch) is at MIXER0 Offset 0x0A 2000 (DE Page 42, 0x11A 2000)
+#define BWS_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A2000)
+
+// LTI (Luminance Transient Improvement) is at MIXER0 Offset 0x0A 4000 (DE Page 71, 0x11A 4000)
+#define LTI_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A4000)
+
+// PEAKING (Luma Peaking) is at MIXER0 Offset 0x0A 6000 (DE Page 80, 0x11A 6000)
+#define PEAKING_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A6000)
+
+// ASE (Adaptive Saturation Enhancement) is at MIXER0 Offset 0x0A 8000 (DE Page 40, 0x11A 8000)
+#define ASE_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A8000)
+
+// FCC (Fancy Color Curvature Change) is at MIXER0 Offset 0x0A A000 (DE Page 56, 0x11A A000)
+#define FCC_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0AA000)
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -86,7 +122,7 @@ int a64_de_init(void)
   // SRAM_CTRL_REG1 (SRAM Control Register 1) is at SRAM Registers Offset 0x4
   
   const SRAM_CTRL_REG1 = SRAM_REGISTERS_BASE_ADDRESS + 0x4;
-  comptime{ assert(SRAM_CTRL_REG1 == 0x1C00004); }
+  DEBUGASSERT(SRAM_CTRL_REG1 == 0x1C00004);
   putreg32(0x0, SRAM_CTRL_REG1);  // TODO: DMB
 
   /* Set Display Engine PLL to 297 MHz **************************************/
@@ -112,10 +148,10 @@ int a64_de_init(void)
       | PLL_MODE_SEL
       | PLL_FACTOR_N
       | PLL_PRE_DIV_M;
-  comptime{ assert(pll == 0x81001701); }
+  DEBUGASSERT(pll == 0x81001701);
 
   const PLL_DE_CTRL_REG = CCU_BASE_ADDRESS + 0x0048;
-  comptime{ assert(PLL_DE_CTRL_REG == 0x1C20048); }
+  DEBUGASSERT(PLL_DE_CTRL_REG == 0x1C20048);
   putreg32(pll, PLL_DE_CTRL_REG);  // TODO: DMB
 
   /* Wait for Display Engine PLL to be stable *******************************/
@@ -144,7 +180,7 @@ int a64_de_init(void)
   const CLK_SRC_SEL: u27 = 1 << 24;  // Clock Source is Display Engine PLL
   const clk = SCLK_GATING
       | CLK_SRC_SEL;
-  comptime{ assert(clk == 0x81000000); }
+  DEBUGASSERT(clk == 0x81000000);
 
   const SCLK_GATING_MASK: u32 = 0b1   << 31;
   const CLK_SRC_SEL_MASK: u27 = 0b111 << 24;
@@ -152,7 +188,7 @@ int a64_de_init(void)
       | CLK_SRC_SEL_MASK;
 
   const DE_CLK_REG = CCU_BASE_ADDRESS + 0x0104;
-  comptime{ assert(DE_CLK_REG == 0x1C20104); }
+  DEBUGASSERT(DE_CLK_REG == 0x1C20104);
   modreg32(clk, clk_mask, DE_CLK_REG);
 
   /* Enable AHB for Display Engine: De-Assert Display Engine ****************/
@@ -167,7 +203,7 @@ int a64_de_init(void)
   
   const DE_RST: u13 = 1 << 12;  // De-Assert Display Engine
   const BUS_SOFT_RST_REG1 = CCU_BASE_ADDRESS + 0x02C4;
-  comptime{ assert(BUS_SOFT_RST_REG1 == 0x1C202C4); }
+  DEBUGASSERT(BUS_SOFT_RST_REG1 == 0x1C202C4);
   modreg32(DE_RST, DE_RST, BUS_SOFT_RST_REG1);
 
   /* Enable AHB for Display Engine: Pass Display Engine *********************/
@@ -182,7 +218,7 @@ int a64_de_init(void)
   
   const DE_GATING: u13 = 1 << 12;  // Pass Display Engine
   const BUS_CLK_GATING_REG1 = CCU_BASE_ADDRESS + 0x0064;
-  comptime{ assert(BUS_CLK_GATING_REG1 == 0x1C20064); }
+  DEBUGASSERT(BUS_CLK_GATING_REG1 == 0x1C20064);
   modreg32(DE_GATING, DE_GATING, BUS_CLK_GATING_REG1);
 
   /* Enable Clock for MIXER0: SCLK Clock Pass *******************************/
@@ -197,7 +233,7 @@ int a64_de_init(void)
   
   const CORE0_SCLK_GATE: u1 = 1 << 0;  // Clock Pass
   const SCLK_GATE = DISPLAY_ENGINE_BASE_ADDRESS + 0x000;
-  comptime{ assert(SCLK_GATE == 0x1000000); }
+  DEBUGASSERT(SCLK_GATE == 0x1000000);
   modreg32(CORE0_SCLK_GATE, CORE0_SCLK_GATE, SCLK_GATE);
 
   /* Enable Clock for MIXER0: HCLK Clock Reset Off **************************/
@@ -212,7 +248,7 @@ int a64_de_init(void)
   
   const CORE0_HCLK_RESET: u1 = 1 << 0;  // Reset Off
   const AHB_RESET = DISPLAY_ENGINE_BASE_ADDRESS + 0x008;
-  comptime{ assert(AHB_RESET == 0x1000008); }
+  DEBUGASSERT(AHB_RESET == 0x1000008);
   modreg32(CORE0_HCLK_RESET, CORE0_HCLK_RESET, AHB_RESET);
 
   /* Enable Clock for MIXER0: HCLK Clock Pass *******************************/
@@ -227,7 +263,7 @@ int a64_de_init(void)
   
   const CORE0_HCLK_GATE: u1 = 1 << 0;  // Clock Pass
   const HCLK_GATE = DISPLAY_ENGINE_BASE_ADDRESS + 0x004;
-  comptime{ assert(HCLK_GATE == 0x1000004); }
+  DEBUGASSERT(HCLK_GATE == 0x1000004);
   modreg32(CORE0_HCLK_GATE, CORE0_HCLK_GATE, HCLK_GATE);
 
   /* Route MIXER0 to TCON0 **************************************************/
@@ -243,7 +279,7 @@ int a64_de_init(void)
   
   const DE2TCON_MUX_MASK: u1 = 1 << 0;  // Route MIXER0 to TCON0; Route MIXER1 to TCON1
   const DE2TCON_MUX = DISPLAY_ENGINE_BASE_ADDRESS + 0x010;
-  comptime{ assert(DE2TCON_MUX == 0x1000010); }
+  DEBUGASSERT(DE2TCON_MUX == 0x1000010);
   modreg32(0, DE2TCON_MUX_MASK, DE2TCON_MUX);
 
   /* Clear MIXER0 Registers: GLB, BLD, OVL_V, OVL_UI ************************/
@@ -262,11 +298,11 @@ int a64_de_init(void)
   
   var i: usize = 0;
   while (i < 0x6000) : (i += 4) {
-      putreg32(0, MIXER0_BASE_ADDRESS + i);
+      putreg32(0, A64_MIXER0_ADDR + i);
       enableLog = false;
   }
   enableLog = true;
-  debug("  to *0x{x} = 0x0", .{ MIXER0_BASE_ADDRESS + i - 1 });
+  debug("  to *0x{x} = 0x0", .{ A64_MIXER0_ADDR + i - 1 });
 
   /* Disable MIXER0 VSU *****************************************************/
 
@@ -278,7 +314,7 @@ int a64_de_init(void)
   // (DE Page 130, 0x112 0000)
   
   const VS_CTRL_REG = VIDEO_SCALER_BASE_ADDRESS + 0;
-  comptime{ assert(VS_CTRL_REG == 0x1120000); }
+  DEBUGASSERT(VS_CTRL_REG == 0x1120000);
   putreg32(0, VS_CTRL_REG);
 
   /* Disable MIXER0 Undocumented ********************************************/
@@ -301,7 +337,7 @@ int a64_de_init(void)
   // (DE Page 66, 0x114 0000)
   
   const UIS_CTRL_REG1 = UI_SCALER1_BASE_ADDRESS + 0;
-  comptime{ assert(UIS_CTRL_REG1 == 0x1140000); }
+  DEBUGASSERT(UIS_CTRL_REG1 == 0x1140000);
   putreg32(0, UIS_CTRL_REG1);
 
   /* Disable MIXER0 UI_SCALER2 **********************************************/
@@ -314,7 +350,7 @@ int a64_de_init(void)
   // (DE Page 66, 0x115 0000)
   
   const UIS_CTRL_REG2 = UI_SCALER2_BASE_ADDRESS + 0;
-  comptime{ assert(UIS_CTRL_REG2 == 0x1150000); }
+  DEBUGASSERT(UIS_CTRL_REG2 == 0x1150000);
   putreg32(0, UIS_CTRL_REG2);
 
   // TODO: Missing UI_SCALER3(CH3) at MIXER0 Offset 0x06 0000 (DE Page 90, 0x116 0000)
@@ -330,7 +366,7 @@ int a64_de_init(void)
   // (DE Page 62, 0x11A 0000)
   
   const GCTRL_REG_FCE = FCE_BASE_ADDRESS + 0;
-  comptime{ assert(GCTRL_REG_FCE == 0x11A0000); }
+  DEBUGASSERT(GCTRL_REG_FCE == 0x11A0000);
   putreg32(0, GCTRL_REG_FCE);
 
   /* Disable MIXER0 BWS *****************************************************/
@@ -343,7 +379,7 @@ int a64_de_init(void)
   // (DE Page 42, 0x11A 2000)
   
   const GCTRL_REG_BWS = BWS_BASE_ADDRESS + 0;
-  comptime{ assert(GCTRL_REG_BWS == 0x11A2000); }
+  DEBUGASSERT(GCTRL_REG_BWS == 0x11A2000);
   putreg32(0, GCTRL_REG_BWS);
 
   /* Disable MIXER0 LTI *****************************************************/
@@ -356,7 +392,7 @@ int a64_de_init(void)
   // (DE Page 72, 0x11A 4000)
   
   const LTI_CTL = LTI_BASE_ADDRESS + 0;
-  comptime{ assert(LTI_CTL == 0x11A4000); }
+  DEBUGASSERT(LTI_CTL == 0x11A4000);
   putreg32(0, LTI_CTL);
 
   /* Disable MIXER0 PEAKING *************************************************/
@@ -369,7 +405,7 @@ int a64_de_init(void)
   // (DE Page 80, 0x11A 6000)
   
   const LP_CTRL_REG = PEAKING_BASE_ADDRESS + 0;
-  comptime{ assert(LP_CTRL_REG == 0x11A6000); }
+  DEBUGASSERT(LP_CTRL_REG == 0x11A6000);
   putreg32(0, LP_CTRL_REG);
 
   /* Disable MIXER0 ASE *****************************************************/
@@ -382,7 +418,7 @@ int a64_de_init(void)
   // (DE Page 40, 0x11A 8000)
   
   const ASE_CTL_REG = ASE_BASE_ADDRESS + 0;
-  comptime{ assert(ASE_CTL_REG == 0x11A8000); }
+  DEBUGASSERT(ASE_CTL_REG == 0x11A8000);
   putreg32(0, ASE_CTL_REG);
 
   /* Disable MIXER0 FCC *****************************************************/
@@ -395,7 +431,7 @@ int a64_de_init(void)
   // (DE Page 56, 0x11A A000)
   
   const FCC_CTL_REG = FCC_BASE_ADDRESS + 0;
-  comptime{ assert(FCC_CTL_REG == 0x11A_A000); }
+  DEBUGASSERT(FCC_CTL_REG == 0x11A_A000);
   putreg32(0, FCC_CTL_REG);
 
   /* Disable MIXER0 DRC *****************************************************/
@@ -408,7 +444,7 @@ int a64_de_init(void)
   // (DE Page 49, 0x11B 0000)
   
   const GNECTL_REG = DRC_BASE_ADDRESS + 0;
-  comptime{ assert(GNECTL_REG == 0x11B0000); }
+  DEBUGASSERT(GNECTL_REG == 0x11B0000);
   putreg32(0, GNECTL_REG);
 
   /* Enable MIXER0 **********************************************************/
@@ -423,8 +459,8 @@ int a64_de_init(void)
   // (DE Page 90, 0x110 0000)
   
   const EN_MIXER: u1 = 1 << 0;  // Enable Mixer
-  const GLB_CTL = MIXER0_BASE_ADDRESS + 0;
-  comptime{ assert(GLB_CTL == 0x1100000); }
+  const GLB_CTL = A64_MIXER0_ADDR + 0;
+  DEBUGASSERT(GLB_CTL == 0x1100000);
   putreg32(EN_MIXER, GLB_CTL);  // TODO: DMB
 
   return OK;
@@ -455,10 +491,10 @@ int a64_de_blender_init(void)
       | RED
       | GREEN
       | BLUE;
-  comptime{ assert(color == 0xFF000000); }
+  DEBUGASSERT(color == 0xFF000000);
 
   const BLD_BK_COLOR = BLD_BASE_ADDRESS + 0x88;
-  comptime{ assert(BLD_BK_COLOR == 0x1101088); }
+  DEBUGASSERT(BLD_BK_COLOR == 0x1101088);
   putreg32(color, BLD_BK_COLOR);
 
   /* Set Blender Pre-Multiply ***********************************************/
@@ -482,10 +518,10 @@ int a64_de_blender_init(void)
       | P2_ALPHA_MODE
       | P1_ALPHA_MODE
       | P0_ALPHA_MODE;
-  comptime{ assert(premultiply == 0); }
+  DEBUGASSERT(premultiply == 0);
 
   const BLD_PREMUL_CTL = BLD_BASE_ADDRESS + 0x84;
-  comptime{ assert(BLD_PREMUL_CTL == 0x1101084); }
+  DEBUGASSERT(BLD_PREMUL_CTL == 0x1101084);
   putreg32(premultiply, BLD_PREMUL_CTL);
 
   return OK;
@@ -518,7 +554,7 @@ int a64_de_ui_channel_init(
   // (DE Page 102, 0x110 3000 / 0x110 4000 / 0x110 5000)
   const OVL_UI_BASE_ADDRESS = OVL_UI_CH1_BASE_ADDRESS
       + @intCast(u64, channel - 1) * 0x1000;
-  comptime{ assert(OVL_UI_BASE_ADDRESS == 0x1103000 or OVL_UI_BASE_ADDRESS == 0x1104000 or OVL_UI_BASE_ADDRESS == 0x1105000); }
+  DEBUGASSERT(OVL_UI_BASE_ADDRESS == 0x1103000 || OVL_UI_BASE_ADDRESS == 0x1104000 || OVL_UI_BASE_ADDRESS == 0x1105000);
 
   // UI_SCALER1(CH1) is at MIXER0 Offset 0x04 0000
   // UI_SCALER2(CH2) is at MIXER0 Offset 0x05 0000
@@ -540,7 +576,7 @@ int a64_de_ui_channel_init(
       // (DE Page 102)
       debug("", .{  });
       const OVL_UI_ATTR_CTL = OVL_UI_BASE_ADDRESS + 0x00;
-      comptime{ assert(OVL_UI_ATTR_CTL == 0x1103000 or OVL_UI_ATTR_CTL == 0x1104000 or OVL_UI_ATTR_CTL == 0x1105000); }
+      DEBUGASSERT(OVL_UI_ATTR_CTL == 0x1103000 || OVL_UI_ATTR_CTL == 0x1104000 || OVL_UI_ATTR_CTL == 0x1105000);
       putreg32(0, OVL_UI_ATTR_CTL);
 
       /* Disable Scaler *****************************************************/
@@ -554,7 +590,7 @@ int a64_de_ui_channel_init(
       // (DE Page 66)
       debug("", .{  });
       const UIS_CTRL_REG = UI_SCALER_BASE_ADDRESS + 0;
-      comptime{ assert(UIS_CTRL_REG == 0x1140000 or UIS_CTRL_REG == 0x1150000 or UIS_CTRL_REG == 0x1160000); }
+      DEBUGASSERT(UIS_CTRL_REG == 0x1140000 || UIS_CTRL_REG == 0x1150000 || UIS_CTRL_REG == 0x1160000);
       putreg32(0, UIS_CTRL_REG);
       
       // Skip to next UI Channel
@@ -600,10 +636,10 @@ int a64_de_ui_channel_init(
       | LAY_FBFMT
       | LAY_ALPHA_MODE
       | LAY_EN;
-  comptime{ assert(attr == 0xFF000405 or attr == 0xFF000005 or attr == 0x7F000005); }
+  DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
 
   const OVL_UI_ATTR_CTL = OVL_UI_BASE_ADDRESS + 0x00;
-  comptime{ assert(OVL_UI_ATTR_CTL == 0x1103000 or OVL_UI_ATTR_CTL == 0x1104000 or OVL_UI_ATTR_CTL == 0x1105000); }
+  DEBUGASSERT(OVL_UI_ATTR_CTL == 0x1103000 || OVL_UI_ATTR_CTL == 0x1104000 || OVL_UI_ATTR_CTL == 0x1105000);
   putreg32(attr, OVL_UI_ATTR_CTL);
 
   // OVL_UI_TOP_LADD (UI Overlay Top Field Memory Block Low Address) at OVL_UI Offset 0x10
@@ -611,14 +647,14 @@ int a64_de_ui_channel_init(
   // (DE Page 104, 0x110 3010 / 0x110 4010 / 0x110 5010)
   const ptr = @ptrToInt(fbmem.?);
   const OVL_UI_TOP_LADD = OVL_UI_BASE_ADDRESS + 0x10;
-  comptime{ assert(OVL_UI_TOP_LADD == 0x1103010 or OVL_UI_TOP_LADD == 0x1104010 or OVL_UI_TOP_LADD == 0x1105010); }
+  DEBUGASSERT(OVL_UI_TOP_LADD == 0x1103010 || OVL_UI_TOP_LADD == 0x1104010 || OVL_UI_TOP_LADD == 0x1105010);
   putreg32(@intCast(u32, ptr), OVL_UI_TOP_LADD);
 
   // OVL_UI_PITCH (UI Overlay Memory Pitch) at OVL_UI Offset 0x0C
   // Set to (width * 4), number of bytes per row
   // (DE Page 104, 0x110 300C / 0x110 400C / 0x110 500C)
   const OVL_UI_PITCH = OVL_UI_BASE_ADDRESS + 0x0C;
-  comptime{ assert(OVL_UI_PITCH == 0x110300C or OVL_UI_PITCH == 0x110400C or OVL_UI_PITCH == 0x110500C); }
+  DEBUGASSERT(OVL_UI_PITCH == 0x110300C || OVL_UI_PITCH == 0x110400C || OVL_UI_PITCH == 0x110500C);
   putreg32(xres * 4, OVL_UI_PITCH);
 
   // OVL_UI_MBSIZE (UI Overlay Memory Block Size) at OVL_UI Offset 0x04
@@ -627,21 +663,21 @@ int a64_de_ui_channel_init(
   const height_width: u32 = @intCast(u32, yres - 1) << 16
       | (xres - 1);
   const OVL_UI_MBSIZE = OVL_UI_BASE_ADDRESS + 0x04;
-  comptime{ assert(OVL_UI_MBSIZE == 0x1103004 or OVL_UI_MBSIZE == 0x1104004 or OVL_UI_MBSIZE == 0x1105004); }
+  DEBUGASSERT(OVL_UI_MBSIZE == 0x1103004 || OVL_UI_MBSIZE == 0x1104004 || OVL_UI_MBSIZE == 0x1105004);
   putreg32(height_width, OVL_UI_MBSIZE);
 
   // OVL_UI_SIZE (UI Overlay Overlay Window Size) at OVL_UI Offset 0x88
   // Set to (height-1) << 16 + (width-1)
   // (DE Page 106, 0x110 3088 / 0x110 4088 / 0x110 5088)
   const OVL_UI_SIZE = OVL_UI_BASE_ADDRESS + 0x88;
-  comptime{ assert(OVL_UI_SIZE == 0x1103088 or OVL_UI_SIZE == 0x1104088 or OVL_UI_SIZE == 0x1105088); }
+  DEBUGASSERT(OVL_UI_SIZE == 0x1103088 || OVL_UI_SIZE == 0x1104088 || OVL_UI_SIZE == 0x1105088);
   putreg32(height_width, OVL_UI_SIZE);
 
   // OVL_UI_COOR (UI Overlay Memory Block Coordinate) at OVL_UI Offset 0x08
   // Set to 0 (Overlay at X=0, Y=0)
   // (DE Page 104, 0x110 3008 / 0x110 4008 / 0x110 5008)
   const OVL_UI_COOR = OVL_UI_BASE_ADDRESS + 0x08;
-  comptime{ assert(OVL_UI_COOR == 0x1103008 or OVL_UI_COOR == 0x1104008 or OVL_UI_COOR == 0x1105008); }
+  DEBUGASSERT(OVL_UI_COOR == 0x1103008 || OVL_UI_COOR == 0x1104008 || OVL_UI_COOR == 0x1105008);
   putreg32(0, OVL_UI_COOR);
 
   // For Channel 1: Set Blender Output
@@ -655,14 +691,14 @@ int a64_de_ui_channel_init(
     // Set to (height-1) << 16 + (width-1)
     // (DE Page 110, 0x110 108C)
     const BLD_SIZE = BLD_BASE_ADDRESS + 0x08C;
-    comptime{ assert(BLD_SIZE == 0x110108C); }
+    DEBUGASSERT(BLD_SIZE == 0x110108C);
     putreg32(height_width, BLD_SIZE);
             
     // GLB_SIZE (Global Size) at GLB Offset 0x00C
     // Set to (height-1) << 16 + (width-1)
     // (DE Page 93, 0x110 000C)
     const GLB_SIZE = GLB_BASE_ADDRESS + 0x00C;
-    comptime{ assert(GLB_SIZE == 0x110000C); }
+    DEBUGASSERT(GLB_SIZE == 0x110000C);
     putreg32(height_width, GLB_SIZE);
   }
 
@@ -682,7 +718,7 @@ int a64_de_ui_channel_init(
   // Set to (height-1) << 16 + (width-1)
   // (DE Page 108, 0x110 1008 / 0x110 1018 / 0x110 1028)
   const BLD_CH_ISIZE = BLD_BASE_ADDRESS + 0x008 + pipe * 0x10;
-  comptime{ assert(BLD_CH_ISIZE == 0x1101008 or BLD_CH_ISIZE == 0x1101018 or BLD_CH_ISIZE == 0x1101028); }
+  DEBUGASSERT(BLD_CH_ISIZE == 0x1101008 || BLD_CH_ISIZE == 0x1101018 || BLD_CH_ISIZE == 0x1101028);
   putreg32(height_width, BLD_CH_ISIZE);
 
   // BLD_FILL_COLOR (Blender Fill Color) at BLD Offset 0x004 + N*0x10 (N=0,1,2,3,4)
@@ -700,10 +736,10 @@ int a64_de_ui_channel_init(
       | RED
       | GREEN
       | BLUE;
-  comptime{ assert(color == 0xFF000000); }
+  DEBUGASSERT(color == 0xFF000000);
 
   const BLD_FILL_COLOR = BLD_BASE_ADDRESS + 0x004 + pipe * 0x10;
-  comptime{ assert(BLD_FILL_COLOR == 0x1101004 or BLD_FILL_COLOR == 0x1101014 or BLD_FILL_COLOR == 0x1101024); }
+  DEBUGASSERT(BLD_FILL_COLOR == 0x1101004 || BLD_FILL_COLOR == 0x1101014 || BLD_FILL_COLOR == 0x1101024);
   putreg32(color, BLD_FILL_COLOR);
 
   // BLD_CH_OFFSET (Blender Input Memory Offset) at BLD Offset 0x00C + N*0x10 (N=0,1,2,3,4)
@@ -714,10 +750,10 @@ int a64_de_ui_channel_init(
   // (DE Page 108, 0x110 100C / 0x110 101C / 0x110 102C)
   const offset = @intCast(u32, yoffset) << 16
       | xoffset;
-  comptime{ assert(offset == 0 or offset == 0x340034); }
+  DEBUGASSERT(offset == 0 || offset == 0x340034);
 
   const BLD_CH_OFFSET = BLD_BASE_ADDRESS + 0x00C + pipe * 0x10;
-  comptime{ assert(BLD_CH_OFFSET == 0x110100C or BLD_CH_OFFSET == 0x110101C or BLD_CH_OFFSET == 0x110102C); }
+  DEBUGASSERT(BLD_CH_OFFSET == 0x110100C || BLD_CH_OFFSET == 0x110101C || BLD_CH_OFFSET == 0x110102C);
   putreg32(offset, BLD_CH_OFFSET);
 
   // BLD_CTL (Blender Control) at BLD Offset 0x090 + N*4
@@ -741,7 +777,7 @@ int a64_de_ui_channel_init(
       | BLEND_PFS;
 
   const BLD_CTL = BLD_BASE_ADDRESS + 0x090 + pipe * 4;
-  comptime{ assert(BLD_CTL == 0x1101090 or BLD_CTL == 0x1101094 or BLD_CTL == 0x1101098); }
+  DEBUGASSERT(BLD_CTL == 0x1101090 || BLD_CTL == 0x1101094 || BLD_CTL == 0x1101098);
   putreg32(blend, BLD_CTL);
 
   /* Disable Scaler *********************************************************/
@@ -755,7 +791,7 @@ int a64_de_ui_channel_init(
   // (DE Page 66, 0x114 0000 / 0x115 0000 / 0x116 0000)
   debug("", .{  });
   const UIS_CTRL_REG = UI_SCALER_BASE_ADDRESS + 0;
-  comptime{ assert(UIS_CTRL_REG == 0x1140000 or UIS_CTRL_REG == 0x1150000 or UIS_CTRL_REG == 0x1160000); }
+  DEBUGASSERT(UIS_CTRL_REG == 0x1140000 || UIS_CTRL_REG == 0x1150000 || UIS_CTRL_REG == 0x1160000);
   putreg32(0, UIS_CTRL_REG);
 
   return OK;
@@ -767,7 +803,7 @@ int a64_de_enable(
   uint8_t channels  // Number of enabled UI Channels
 )
 {
-  comptime { assert(channels == 1 or channels == 3); }
+  DEBUGASSERT(channels == 1 || channels == 3);
 
   /* Set Blender Route ******************************************************/
 
@@ -798,10 +834,10 @@ int a64_de_enable(
   const route = P2_RTCTL
       | P1_RTCTL
       | P0_RTCTL;
-  comptime{ assert(route == 0x321 or route == 1); }
+  DEBUGASSERT(route == 0x321 || route == 1);
 
   const BLD_CH_RTCTL = BLD_BASE_ADDRESS + 0x080;
-  comptime{ assert(BLD_CH_RTCTL == 0x1101080); }
+  DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
   putreg32(route, BLD_CH_RTCTL);  // TODO: DMB
 
   /* Enable Blender Pipes ***************************************************/
@@ -837,10 +873,10 @@ int a64_de_enable(
       | P1_EN
       | P0_EN
       | P0_FCEN;
-  comptime{ assert(fill == 0x701 or fill == 0x101); }
+  DEBUGASSERT(fill == 0x701 || fill == 0x101);
 
   const BLD_FILL_COLOR_CTL = BLD_BASE_ADDRESS + 0x000;
-  comptime{ assert(BLD_FILL_COLOR_CTL == 0x1101000); }
+  DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
   putreg32(fill, BLD_FILL_COLOR_CTL);  // TODO: DMB
 
   /* Apply Settings *********************************************************/
@@ -855,10 +891,10 @@ int a64_de_enable(
   // (DE Page 93, 0x110 0008)
   
   const DOUBLE_BUFFER_RDY: u1 = 1 << 0;  // Register Value is ready for update
-  comptime{ assert(DOUBLE_BUFFER_RDY == 1); }
+  DEBUGASSERT(DOUBLE_BUFFER_RDY == 1);
 
   const GLB_DBUFFER = GLB_BASE_ADDRESS + 0x008;
-  comptime{ assert(GLB_DBUFFER == 0x1100008); }
+  DEBUGASSERT(GLB_DBUFFER == 0x1100008);
   putreg32(DOUBLE_BUFFER_RDY, GLB_DBUFFER);  // TODO: DMB
 
   return OK;
