@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/arm64/src/a64/hardware/a64_memorymap.h
+ * arch/arm64/src/a64/a64_de.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,39 +18,43 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_ARM64_SRC_A64_HARDWARE_A64_MEMORYMAP_H
-#define __ARCH_ARM64_SRC_A64_HARDWARE_A64_MEMORYMAP_H
+/* Reference:
+ *
+ * "Rendering PinePhone's Display (DE and TCON0)"
+ * https://lupyuen.github.io/articles/de
+ *
+ * "NuttX RTOS for PinePhone: Render Graphics in Zig"
+ * https://lupyuen.github.io/articles/de2
+ *
+ * "A64 Page" refers to Allwinner A64 User Manual
+ * https://lupyuen.github.io/images/Allwinner_A64_User_Manual_V1.1.pdf
+ * 
+ * "DE Page" refers to Allwinner Display Engine 2.0 Specification
+ * https://lupyuen.github.io/images/Allwinner_DE2.0_Spec_V1.0.pdf
+ */
 
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
 #include <nuttx/config.h>
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
+#include <debug.h>
+
+#include <nuttx/arch.h>
+#include "arm64_arch.h"
+#include "a64_de.h"
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Peripheral Base Addresses */
-
-#define A64_DE_ADDR         0x01000000 /* DE              0x0100:0000-0x012f:ffff 3M */
-#define A64_TCON0_ADDR      0x01c0c000 /* TCON 0          0x01c0:c000-0x01c0:cfff 4K */
-#define A64_CCU_ADDR        0x01c20000 /* CCU             0x01c2:0000-0x01c2:03ff 1K */
-#define A64_PIO_ADDR        0x01c20800 /* PIO             0x01c2:0800-0x01c2:0bff 1K */
-#define A64_DSI_ADDR        0x01ca0000 /* MIPI DSI        0x01ca:0000-0x01ca:0fff 4K */
-#define A64_DPHY_ADDR       0x01ca1000 /* MIPI DSI-PHY    0x01ca:1000-0x01ca:1fff 4K */
-#define A64_RPIO_ADDR       0x01f02c00 /* R_PIO           0x01f0:2c00-0x01f0:2fff 1K */
-
 /****************************************************************************
- * Public Types
+ * Private Functions
  ****************************************************************************/
 
 /****************************************************************************
- * Public Data
+ * Public Functions
  ****************************************************************************/
-
-/****************************************************************************
- * Public Functions Prototypes
- ****************************************************************************/
-
-#endif /* __ARCH_ARM64_SRC_A64_HARDWARE_A64_MEMORYMAP_H */
