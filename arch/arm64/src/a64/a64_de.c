@@ -123,7 +123,7 @@ int a64_de_init(void)
   
   #define SRAM_CTRL_REG1 (SRAM_REGISTERS_BASE_ADDRESS + 0x4)
   DEBUGASSERT(SRAM_CTRL_REG1 == 0x1C00004);
-  putreg32(0x0, SRAM_CTRL_REG1);  // TODO: DMB
+  putreg32(0x0, SRAM_CTRL_REG1);  
 
   /* Set Display Engine PLL to 297 MHz **************************************/
 
@@ -153,7 +153,7 @@ int a64_de_init(void)
 
   #define PLL_DE_CTRL_REG (CCU_BASE_ADDRESS + 0x0048)
   DEBUGASSERT(PLL_DE_CTRL_REG == 0x1C20048);
-  putreg32(pll, PLL_DE_CTRL_REG);  // TODO: DMB
+  putreg32(pll, PLL_DE_CTRL_REG);  
 
   /* Wait for Display Engine PLL to be stable *******************************/
 
@@ -463,7 +463,7 @@ int a64_de_init(void)
   #define EN_MIXER (1 << 0)
   #define GLB_CTL (A64_MIXER0_ADDR + 0)
   DEBUGASSERT(GLB_CTL == 0x1100000);
-  putreg32(EN_MIXER, GLB_CTL);  // TODO: DMB
+  putreg32(EN_MIXER, GLB_CTL);  
 
   return OK;
 }
@@ -847,7 +847,7 @@ int a64_de_enable(
 
   #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
   DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
-  putreg32(route, BLD_CH_RTCTL);  // TODO: DMB
+  putreg32(route, BLD_CH_RTCTL);  
 #endif
 
   /* Enable Blender Pipes ***************************************************/
@@ -891,7 +891,7 @@ int a64_de_enable(
 
   #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
   DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
-  putreg32(fill, BLD_FILL_COLOR_CTL);  // TODO: DMB
+  putreg32(fill, BLD_FILL_COLOR_CTL);  
 #endif
 
   /* Apply Settings *********************************************************/
@@ -910,7 +910,7 @@ int a64_de_enable(
 
   #define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
   DEBUGASSERT(GLB_DBUFFER == 0x1100008);
-  putreg32(DOUBLE_BUFFER_RDY, GLB_DBUFFER);  // TODO: DMB
+  putreg32(DOUBLE_BUFFER_RDY, GLB_DBUFFER);  
 
   return OK;
 }
