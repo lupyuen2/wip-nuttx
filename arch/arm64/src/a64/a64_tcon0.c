@@ -41,6 +41,7 @@
 #include <debug.h>
 
 #include <nuttx/arch.h>
+#include "hardware/a64_memorymap.h"
 #include "arm64_arch.h"
 #include "a64_tcon0.h"
 
@@ -173,10 +174,8 @@
 #define SAFE_PERIOD_LINE(n)     ((n) << 4)
 #define SAFE_PERIOD_FIFO_NUM(n) ((n) << 16)
 
-/* A64 CCU Registers and Bit Definitions ************************************/
-
 /****************************************************************************
- * Private Functions
+ * Public Functions
  ****************************************************************************/
 
 /****************************************************************************
