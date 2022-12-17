@@ -341,14 +341,63 @@ int a64_de_init(void)
   return OK;
 }
 
-/// Initialise the UI Blender for PinePhone's A64 Display Engine.
+/// Initialize the UI Blender for PinePhone's A64 Display Engine.
 /// Must be called after a64_de_init, and before a64_de_ui_channel_init
 int a64_de_blender_init(void)
 {
+#ifdef TODO
+
+    // Set Blender Background
+    // BLD_BK_COLOR (Blender Background Color) at BLD Offset 0x88
+    // Set to 0xFF00 0000 (Black Background Color)
+    // RESERVED (Bits 24 to 31) = 0xFF (Undocumented)
+    // RED   (Bits 16 to 23) = 0
+    // GREEN (Bits 8  to 15) = 0
+    // BLUE  (Bits 0  to 7)  = 0
+    // (DE Page 109, 0x110 1088)
+    debug("Set Blender Background", .{});
+    const RESERVED: u32 = 0xFF << 24;
+    const RED:      u24 = 0    << 16;
+    const GREEN:    u16 = 0    << 8;
+    const BLUE:     u8  = 0    << 0;
+    const color = RESERVED
+        | RED
+        | GREEN
+        | BLUE;
+    comptime{ assert(color == 0xFF00_0000); }
+
+    const BLD_BK_COLOR = BLD_BASE_ADDRESS + 0x88;
+    comptime{ assert(BLD_BK_COLOR == 0x110_1088); }
+    putreg32(color, BLD_BK_COLOR);
+
+    // Set Blender Pre-Multiply
+    // BLD_PREMUL_CTL (Blender Pre-Multiply Control) at BLD Offset 0x84
+    // Set to 0 (No Pre-Multiply for Alpha, Pipes 0 to 3)
+    // P3_ALPHA_MODE (Bit 3) = 0 (Pipe 3: No Pre-Multiply)
+    // P2_ALPHA_MODE (Bit 2) = 0 (Pipe 2: No Pre-Multiply)
+    // P1_ALPHA_MODE (Bit 1) = 0 (Pipe 1: No Pre-Multiply)
+    // P0_ALPHA_MODE (Bit 0) = 0 (Pipe 0: No Pre-Multiply)
+    // (DE Page 109, 0x110 1084)
+    debug("Set Blender Pre-Multiply", .{});
+    const P3_ALPHA_MODE: u4 = 0 << 3;  // Pipe 3: No Pre-Multiply
+    const P2_ALPHA_MODE: u3 = 0 << 2;  // Pipe 2: No Pre-Multiply
+    const P1_ALPHA_MODE: u2 = 0 << 1;  // Pipe 1: No Pre-Multiply
+    const P0_ALPHA_MODE: u1 = 0 << 0;  // Pipe 0: No Pre-Multiply
+    const premultiply = P3_ALPHA_MODE
+        | P2_ALPHA_MODE
+        | P1_ALPHA_MODE
+        | P0_ALPHA_MODE;
+    comptime{ assert(premultiply == 0); }
+
+    const BLD_PREMUL_CTL = BLD_BASE_ADDRESS + 0x84;
+    comptime{ assert(BLD_PREMUL_CTL == 0x110_1084); }
+    putreg32(premultiply, BLD_PREMUL_CTL);
+
+#endif
   return OK;
 }
 
-/// Initialise a UI Channel for PinePhone's A64 Display Engine.
+/// Initialize a UI Channel for PinePhone's A64 Display Engine.
 /// We use 3 UI Channels: Base UI Channel (#1) plus 2 Overlay UI Channels (#2, #3).
 /// Must be called after a64_de_blender_init, and before a64_de_enable
 int a64_de_ui_channel_init(
@@ -362,6 +411,8 @@ int a64_de_ui_channel_init(
   uint16_t yoffset  // Vertical offset in pixel rows
 )
 {
+#ifdef TODO
+#endif
   return OK;
 }
 
@@ -371,5 +422,7 @@ int a64_de_enable(
   uint8_t channels  // Number of enabled UI Channels
 )
 {
+#ifdef TODO
+#endif
   return OK;
 }
