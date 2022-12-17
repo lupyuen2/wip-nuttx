@@ -144,7 +144,8 @@ int a64_de_init(void)
   const PLL_MODE_SEL: u25 = 1  << 24;  // Integer Mode
   const PLL_FACTOR_N: u15 = 23 <<  8;  // N = 24
   const PLL_PRE_DIV_M: u4 = 1  <<  0;  // M = 2
-  const pll = PLL_ENABLE
+  uint32_t pll;
+  pll = PLL_ENABLE
       | PLL_MODE_SEL
       | PLL_FACTOR_N
       | PLL_PRE_DIV_M;
@@ -162,6 +163,7 @@ int a64_de_init(void)
   // Poll PLL_DE_CTRL_REG (from above) until LOCK (Bit 28) is 1
   // (PLL is Locked and Stable)
   
+  // TODO: Timeout
   while (getreg32(PLL_DE_CTRL_REG) & (1 << 28) == 0) {}
 
   /* Set Special Clock to Display Engine PLL ********************************/
@@ -178,13 +180,15 @@ int a64_de_init(void)
   
   const SCLK_GATING: u32 = 1 << 31;  // Enable Special Clock
   const CLK_SRC_SEL: u27 = 1 << 24;  // Clock Source is Display Engine PLL
-  const clk = SCLK_GATING
+  uint32_t clk;
+  clk = SCLK_GATING
       | CLK_SRC_SEL;
   DEBUGASSERT(clk == 0x81000000);
 
   const SCLK_GATING_MASK: u32 = 0b1   << 31;
   const CLK_SRC_SEL_MASK: u27 = 0b111 << 24;
-  const clk_mask = SCLK_GATING_MASK
+  uint32_t clk_mask;
+  clk_mask = SCLK_GATING_MASK
       | CLK_SRC_SEL_MASK;
 
   const DE_CLK_REG = CCU_BASE_ADDRESS + 0x0104;
@@ -487,7 +491,8 @@ int a64_de_blender_init(void)
   const RED:      u24 = 0    << 16;
   const GREEN:    u16 = 0    << 8;
   const BLUE:     u8  = 0    << 0;
-  const color = RESERVED
+  uint32_t color;
+  color = RESERVED
       | RED
       | GREEN
       | BLUE;
@@ -514,7 +519,8 @@ int a64_de_blender_init(void)
   const P2_ALPHA_MODE: u3 = 0 << 2;  // Pipe 2: No Pre-Multiply
   const P1_ALPHA_MODE: u2 = 0 << 1;  // Pipe 1: No Pre-Multiply
   const P0_ALPHA_MODE: u1 = 0 << 0;  // Pipe 0: No Pre-Multiply
-  const premultiply = P3_ALPHA_MODE
+  uint32_t premultiply;
+  premultiply = P3_ALPHA_MODE
       | P2_ALPHA_MODE
       | P1_ALPHA_MODE
       | P0_ALPHA_MODE;
@@ -542,11 +548,9 @@ int a64_de_ui_channel_init(
 )
 {
   // Validate Framebuffer Size and Stride at Compile Time
-  comptime {
-      assert(channel >= 1 and channel <= 3);
-      assert(fblen == @intCast(usize, xres) * yres * 4);
-      assert(stride == @intCast(usize, xres) * 4);
-  }
+  DEBUGASSERT(channel >= 1 && channel <= 3);
+  DEBUGASSERT(fblen == @intCast(usize, xres) * yres * 4);
+  DEBUGASSERT(stride == @intCast(usize, xres) * 4);
 
   // OVL_UI(CH1) (UI Overlay 1) is at MIXER0 Offset 0x3000
   // OVL_UI(CH2) (UI Overlay 2) is at MIXER0 Offset 0x4000
@@ -564,7 +568,7 @@ int a64_de_ui_channel_init(
       + @intCast(u64, channel - 1) * 0x10000;
 
   // If UI Channel should be disabled...
-  if (fbmem == null) {
+  if (fbmem == NULL) {
       /* Disable Overlay and Pipe *******************************************/
 
       ginfo("Channel %d: Disable Overlay and Pipe\n", channel);
@@ -574,7 +578,6 @@ int a64_de_ui_channel_init(
       // Set to 0 (Disable UI Overlay Channel)
       // LAY_EN (Bit 0) = 0 (Disable Layer)
       // (DE Page 102)
-      debug("", .{  });
       const OVL_UI_ATTR_CTL = OVL_UI_BASE_ADDRESS + 0x00;
       DEBUGASSERT(OVL_UI_ATTR_CTL == 0x1103000 || OVL_UI_ATTR_CTL == 0x1104000 || OVL_UI_ATTR_CTL == 0x1105000);
       putreg32(0, OVL_UI_ATTR_CTL);
@@ -588,7 +591,6 @@ int a64_de_ui_channel_init(
       // Set to 0 (Disable UI Scaler)
       // EN (Bit 0) = 0 (Disable UI Scaler)
       // (DE Page 66)
-      debug("", .{  });
       const UIS_CTRL_REG = UI_SCALER_BASE_ADDRESS + 0;
       DEBUGASSERT(UIS_CTRL_REG == 0x1140000 || UIS_CTRL_REG == 0x1150000 || UIS_CTRL_REG == 0x1160000);
       putreg32(0, UIS_CTRL_REG);
@@ -615,15 +617,16 @@ int a64_de_ui_channel_init(
   //   (Input Alpha Value = Global Alpha Value * Pixel’s Alpha Value)
   // LAY_EN (Bit 0) = 1 (Enable Layer)
   // (DE Page 102, 0x110 3000 / 0x110 4000 / 0x110 5000)
-  debug("", .{  });
-  const LAY_GLBALPHA: u32 = switch (channel) {  // For Global Alpha Value...
+  uint32_t lay_glbalpha;
+  lay_glbalpha: u32 = switch (channel) {  // For Global Alpha Value...
       1 => 0xFF,  // Channel 1: Opaque
       2 => 0xFF,  // Channel 2: Opaque
       3 => 0x7F,  // Channel 3: Semi-Transparent
       else => unreachable,
   } << 24;  // Bits 24 to 31
 
-  const LAY_FBFMT: u13 = switch (channel) {  // For Input Data Format...
+  uint32_t lay_fbfmt;
+  lay_fbfmt: u13 = switch (channel) {  // For Input Data Format...
       1 => 4,  // Channel 1: XRGB 8888
       2 => 0,  // Channel 2: ARGB 8888
       3 => 0,  // Channel 3: ARGB 8888
@@ -632,8 +635,9 @@ int a64_de_ui_channel_init(
 
   const LAY_ALPHA_MODE: u3 = 2 << 1;  // Global Alpha is mixed with Pixel Alpha
   const LAY_EN:         u1 = 1 << 0;  // Enable Layer
-  const attr = LAY_GLBALPHA
-      | LAY_FBFMT
+  uint32_t attr;
+  attr = lay_glbalpha
+      | lay_fbfmt
       | LAY_ALPHA_MODE
       | LAY_EN;
   DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
@@ -645,10 +649,10 @@ int a64_de_ui_channel_init(
   // OVL_UI_TOP_LADD (UI Overlay Top Field Memory Block Low Address) at OVL_UI Offset 0x10
   // Set to Framebuffer Address: fb0, fb1 or fb2
   // (DE Page 104, 0x110 3010 / 0x110 4010 / 0x110 5010)
-  const ptr = @ptrToInt(fbmem.?);
+  DEBUGASSERT(fbmem & 0xffffffff == fbmem);  // 32 bits only
   const OVL_UI_TOP_LADD = OVL_UI_BASE_ADDRESS + 0x10;
   DEBUGASSERT(OVL_UI_TOP_LADD == 0x1103010 || OVL_UI_TOP_LADD == 0x1104010 || OVL_UI_TOP_LADD == 0x1105010);
-  putreg32(@intCast(u32, ptr), OVL_UI_TOP_LADD);
+  putreg32(fbmem, OVL_UI_TOP_LADD);
 
   // OVL_UI_PITCH (UI Overlay Memory Pitch) at OVL_UI Offset 0x0C
   // Set to (width * 4), number of bytes per row
@@ -660,7 +664,8 @@ int a64_de_ui_channel_init(
   // OVL_UI_MBSIZE (UI Overlay Memory Block Size) at OVL_UI Offset 0x04
   // Set to (height-1) << 16 + (width-1)
   // (DE Page 104, 0x110 3004 / 0x110 4004 / 0x110 5004)
-  const height_width: u32 = @intCast(u32, yres - 1) << 16
+  uint32_t height_width;
+  height_width: u32 = @intCast(u32, yres - 1) << 16
       | (xres - 1);
   const OVL_UI_MBSIZE = OVL_UI_BASE_ADDRESS + 0x04;
   DEBUGASSERT(OVL_UI_MBSIZE == 0x1103004 || OVL_UI_MBSIZE == 0x1104004 || OVL_UI_MBSIZE == 0x1105004);
@@ -702,14 +707,14 @@ int a64_de_ui_channel_init(
     putreg32(height_width, GLB_SIZE);
   }
 
+  uint8_t pipe;
+  pipe = channel - 1;
+
   /* Set Blender Input Pipe *************************************************/
 
   ginfo("Channel %d: Set Blender Input Pipe %d (%d x %d)\n", channel, pipe, xres, yres);
 
   // Set Blender Input Pipe (N = Pipe Number, from 0 to 2 for Channels 1 to 3)
-  const pipe: u64 = channel - 1;
-  debug("", .{  });
-
   // Note: DE Page 91 shows incorrect offset N*0x14 for 
   // BLD_CH_ISIZE, BLD_FILL_COLOR and BLD_CH_OFFSET. 
   // Correct offset is N*0x10, see DE Page 108
@@ -732,7 +737,8 @@ int a64_de_ui_channel_init(
   const RED:   u24 = 0    << 16;  // Black
   const GREEN: u18 = 0    << 8;
   const BLUE:  u8  = 0    << 0;
-  const color = ALPHA
+  uint32_t color;
+  color = ALPHA
       | RED
       | GREEN
       | BLUE;
@@ -748,7 +754,8 @@ int a64_de_ui_channel_init(
   // For Channel 2: Set to 0x34 0034
   // For Channel 3: Set to 0
   // (DE Page 108, 0x110 100C / 0x110 101C / 0x110 102C)
-  const offset = @intCast(u32, yoffset) << 16
+  uint32_t offset;
+  offset = @intCast(u32, yoffset) << 16
       | xoffset;
   DEBUGASSERT(offset == 0 || offset == 0x340034);
 
@@ -771,7 +778,8 @@ int a64_de_ui_channel_init(
   const BLEND_AFS: u20 = 1 << 16;  // Coefficient for source alpha data Q[s] is 1
   const BLEND_PFD: u12 = 3 << 8;   // Coefficient for destination pixel data F[d] is 1-A[s]
   const BLEND_PFS: u4  = 1 << 0;   // Coefficient for source pixel data F[s] is 1
-  const blend = BLEND_AFD
+  uint32_t blend;
+  blend = BLEND_AFD
       | BLEND_AFS
       | BLEND_PFD
       | BLEND_PFS;
@@ -789,7 +797,6 @@ int a64_de_ui_channel_init(
   // Set to 0 (Disable UI Scaler)
   // EN (Bit 0) = 0 (Disable UI Scaler)
   // (DE Page 66, 0x114 0000 / 0x115 0000 / 0x116 0000)
-  debug("", .{  });
   const UIS_CTRL_REG = UI_SCALER_BASE_ADDRESS + 0;
   DEBUGASSERT(UIS_CTRL_REG == 0x1140000 || UIS_CTRL_REG == 0x1150000 || UIS_CTRL_REG == 0x1160000);
   putreg32(0, UIS_CTRL_REG);
@@ -818,21 +825,24 @@ int a64_de_enable(
   // If Rendering 1 UI Channel: Set to 1 (DMB)
   //   P0_RTCTL (Bits 0 to 3) = 1 (Pipe 0 from Channel 1)
   // (DE Page 108, 0x110 1080)
-  const P2_RTCTL: u12 = switch (channels) {  // For Pipe 2...
+  uint32_t p2_rtctl;
+  p2_rtctl: u12 = switch (channels) {  // For Pipe 2...
       3 => 3,  // 3 UI Channels: Select Pipe 2 from UI Channel 3
       1 => 0,  // 1 UI Channel:  Unused Pipe 2
       else => unreachable,
   } << 8;  // Bits 8 to 11
 
-  const P1_RTCTL: u8 = switch (channels) {  // For Pipe 1...
+  uint32_t p1_rtctl;
+  p1_rtctl: u8 = switch (channels) {  // For Pipe 1...
       3 => 2,  // 3 UI Channels: Select Pipe 1 from UI Channel 2
       1 => 0,  // 1 UI Channel:  Unused Pipe 1
       else => unreachable,
   } << 4;  // Bits 4 to 7
 
   const P0_RTCTL: u4 = 1 << 0;  // Select Pipe 0 from UI Channel 1
-  const route = P2_RTCTL
-      | P1_RTCTL
+  uint32_t route;
+  route = p2_rtctl
+      | p1_rtctl
       | P0_RTCTL;
   DEBUGASSERT(route == 0x321 || route == 1);
 
@@ -855,13 +865,15 @@ int a64_de_enable(
   //   P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
   //   P0_FCEN (Bit 0)  = 1 (Enable Pipe 0 Fill Color)
   // (DE Page 106, 0x110 1000)
-  const P2_EN: u11 = switch (channels) {  // For Pipe 2...
+  uint32_t p2_en;
+  p2_en: u11 = switch (channels) {  // For Pipe 2...
       3 => 1,  // 3 UI Channels: Enable Pipe 2
       1 => 0,  // 1 UI Channel:  Disable Pipe 2
       else => unreachable,
   } << 10;  // Bit 10
 
-  const P1_EN: u10 = switch (channels) {  // For Pipe 1...
+  uint32_t p1_en;
+  p1_en: u10 = switch (channels) {  // For Pipe 1...
       3 => 1,  // 3 UI Channels: Enable Pipe 1
       1 => 0,  // 1 UI Channel:  Disable Pipe 1
       else => unreachable,
@@ -869,8 +881,9 @@ int a64_de_enable(
 
   const P0_EN:   u9 = 1 << 8;  // Enable Pipe 0
   const P0_FCEN: u1 = 1 << 0;  // Enable Pipe 0 Fill Color
-  const fill = P2_EN
-      | P1_EN
+  uint32_t fill;
+  fill = p2_en
+      | p1_en
       | P0_EN
       | P0_FCEN;
   DEBUGASSERT(fill == 0x701 || fill == 0x101);
