@@ -164,7 +164,7 @@ int a64_de_init(void)
   // (PLL is Locked and Stable)
   
   // TODO: Timeout
-  while (getreg32(PLL_DE_CTRL_REG) & (1 << 28) == 0) {}
+  while ((getreg32(PLL_DE_CTRL_REG) & (1 << 28)) == 0) {}
 
   /* Set Special Clock to Display Engine PLL ********************************/
 
@@ -300,13 +300,11 @@ int a64_de_init(void)
   // OVL_UI(CH3) (UI Overlay 3) at MIXER0 Offset 0x5000
   // (DE Page 90, 0x110 0000 - 0x110 5FFF)
 
-  ginfo("BEGIN A64_MIXER0_ADDR\n");
   int i;
   for (i = 0; i < 0x6000; i += 4)
   {
     putreg32(0, A64_MIXER0_ADDR + i);
   }
-  ginfo("END A64_MIXER0_ADDR\n");
 
   /* Disable MIXER0 VSU *****************************************************/
 
@@ -594,7 +592,7 @@ int a64_de_ui_channel_init(
       putreg32(0, UIS_CTRL_REG(channel));
       
       // Skip to next UI Channel
-      return;
+      return OK;
   }
 
   /* Set Overlay ************************************************************/
@@ -649,10 +647,10 @@ int a64_de_ui_channel_init(
   // OVL_UI_TOP_LADD (UI Overlay Top Field Memory Block Low Address) at OVL_UI Offset 0x10
   // Set to Framebuffer Address: fb0, fb1 or fb2
   // (DE Page 104, 0x110 3010 / 0x110 4010 / 0x110 5010)
-  DEBUGASSERT(((uint64_t)fbmem) & 0xffffffff == fbmem);  // 32 bits only
+  DEBUGASSERT((((uint64_t)fbmem) & 0xffffffff) == (uint64_t)fbmem);  // 32 bits only
   #define OVL_UI_TOP_LADD(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x10)
   DEBUGASSERT(OVL_UI_TOP_LADD(channel) == 0x1103010 || OVL_UI_TOP_LADD(channel) == 0x1104010 || OVL_UI_TOP_LADD(channel) == 0x1105010);
-  putreg32(fbmem, OVL_UI_TOP_LADD(channel));
+  putreg32((uint32_t)fbmem, OVL_UI_TOP_LADD(channel));
 
   // OVL_UI_PITCH (UI Overlay Memory Pitch) at OVL_UI Offset 0x0C
   // Set to (width * 4), number of bytes per row
