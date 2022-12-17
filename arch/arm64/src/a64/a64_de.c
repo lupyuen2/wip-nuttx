@@ -650,7 +650,7 @@ int a64_de_ui_channel_init(
   DEBUGASSERT((((uint64_t)fbmem) & 0xffffffff) == (uint64_t)fbmem);  // 32 bits only
   #define OVL_UI_TOP_LADD(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x10)
   DEBUGASSERT(OVL_UI_TOP_LADD(channel) == 0x1103010 || OVL_UI_TOP_LADD(channel) == 0x1104010 || OVL_UI_TOP_LADD(channel) == 0x1105010);
-  putreg32((uint32_t)fbmem, OVL_UI_TOP_LADD(channel));
+  putreg32((uint64_t)fbmem, OVL_UI_TOP_LADD(channel));
 
   // OVL_UI_PITCH (UI Overlay Memory Pitch) at OVL_UI Offset 0x0C
   // Set to (width * 4), number of bytes per row
