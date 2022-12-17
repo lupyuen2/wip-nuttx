@@ -599,7 +599,6 @@ int a64_de_ui_channel_init(
 
   ginfo("Channel %d: Set Overlay (%d x %d)\n", channel, xres, yres);
 
-#ifdef TODO
   // Set Overlay (Assume Layer = 0)
   // OVL_UI_ATTR_CTL (UI Overlay Attribute Control) at OVL_UI Offset 0x00
   // For Channel 1: Set to 0xFF00 0405
@@ -615,20 +614,20 @@ int a64_de_ui_channel_init(
   // LAY_EN (Bit 0) = 1 (Enable Layer)
   // (DE Page 102, 0x110 3000 / 0x110 4000 / 0x110 5000)
   uint32_t lay_glbalpha;
-  lay_glbalpha: u32 = switch (channel) {  // For Global Alpha Value...
-      1 => 0xFF,  // Channel 1: Opaque
-      2 => 0xFF,  // Channel 2: Opaque
-      3 => 0x7F,  // Channel 3: Semi-Transparent
-      else => unreachable,
-  } << 24;  // Bits 24 to 31
+  lay_glbalpha = (
+      (channel == 1) ? 0xff :  // Channel 1: Opaque
+      (channel == 2) ? 0xff :  // Channel 2: Opaque
+      (channel == 3) ? 0x7f :  // Channel 3: Semi-Transparent
+      0xff
+  ) << 24;  // Bits 24 to 31
 
   uint32_t lay_fbfmt;
-  lay_fbfmt: u13 = switch (channel) {  // For Input Data Format...
-      1 => 4,  // Channel 1: XRGB 8888
-      2 => 0,  // Channel 2: ARGB 8888
-      3 => 0,  // Channel 3: ARGB 8888
-      else => unreachable,
-  } << 8;  // Bits 8 to 12
+  lay_fbfmt = (
+      (channel == 1) ? 4 :  // Channel 1: XRGB 8888
+      (channel == 2) ? 0 :  // Channel 2: ARGB 8888
+      (channel == 3) ? 0 :  // Channel 3: ARGB 8888
+      0
+  ) << 8;  // Bits 8 to 12
 
   #define LAY_ALPHA_MODE (2 << 1)
   #define LAY_EN (1 << 0)
@@ -642,7 +641,6 @@ int a64_de_ui_channel_init(
   #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
   DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
   putreg32(attr, OVL_UI_ATTR_CTL(channel));
-#endif
 
   // OVL_UI_TOP_LADD (UI Overlay Top Field Memory Block Low Address) at OVL_UI Offset 0x10
   // Set to Framebuffer Address: fb0, fb1 or fb2
@@ -814,31 +812,30 @@ int a64_de_enable(
 
   ginfo("Set Blender Route\n");
 
-#ifdef TODO
   // Set Blender Route
   // BLD_CH_RTCTL (Blender Routing Control) at BLD Offset 0x080
+  // If Rendering 1 UI Channel: Set to 1 (DMB)
+  //   P0_RTCTL (Bits 0 to 3) = 1 (Pipe 0 from Channel 1)
   // If Rendering 3 UI Channels: Set to 0x321 (DMB)
   //   P2_RTCTL (Bits 8 to 11) = 3 (Pipe 2 from Channel 3)
   //   P1_RTCTL (Bits 4 to 7)  = 2 (Pipe 1 from Channel 2)
   //   P0_RTCTL (Bits 0 to 3)  = 1 (Pipe 0 from Channel 1)
-  // If Rendering 1 UI Channel: Set to 1 (DMB)
-  //   P0_RTCTL (Bits 0 to 3) = 1 (Pipe 0 from Channel 1)
   // (DE Page 108, 0x110 1080)
   uint32_t p2_rtctl;
-  p2_rtctl: u12 = switch (channels) {  // For Pipe 2...
-      3 => 3,  // 3 UI Channels: Select Pipe 2 from UI Channel 3
-      1 => 0,  // 1 UI Channel:  Unused Pipe 2
-      else => unreachable,
-  } << 8;  // Bits 8 to 11
+  p2_rtctl = (
+      (channels == 1) ? 0 :  // 1 UI Channel:  Unused Pipe 2
+      (channels == 3) ? 3 :  // 3 UI Channels: Select Pipe 2 from UI Channel 3
+      0
+  ) << 8;  // Bits 8 to 11
 
   uint32_t p1_rtctl;
-  p1_rtctl: u8 = switch (channels) {  // For Pipe 1...
-      3 => 2,  // 3 UI Channels: Select Pipe 1 from UI Channel 2
-      1 => 0,  // 1 UI Channel:  Unused Pipe 1
-      else => unreachable,
-  } << 4;  // Bits 4 to 7
+  p1_rtctl = (
+      (channels == 1) ? 0 :  // 1 UI Channel:  Unused Pipe 1
+      (channels == 3) ? 2 :  // 3 UI Channels: Select Pipe 1 from UI Channel 2
+      0
+   ) << 4;  // Bits 4 to 7
 
-  #define P0_RTCTL (1 << 0;  // Select Pipe 0 from UI Channel 1
+  #define P0_RTCTL (1 << 0)
   uint32_t route;
   route = p2_rtctl
       | p1_rtctl
@@ -848,40 +845,38 @@ int a64_de_enable(
   #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
   DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
   putreg32(route, BLD_CH_RTCTL);  
-#endif
 
   /* Enable Blender Pipes ***************************************************/
 
   ginfo("Enable Blender Pipes\n");
 
-#ifdef TODO
   // Enable Blender Pipes
   // BLD_FILL_COLOR_CTL (Blender Fill Color Control) at BLD Offset 0x000
+  // If Rendering 1 UI Channel: Set to 0x101 (DMB)
+  //   P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
+  //   P0_FCEN (Bit 0)  = 1 (Enable Pipe 0 Fill Color)
   // If Rendering 3 UI Channels: Set to 0x701 (DMB)
   //   P2_EN   (Bit 10) = 1 (Enable Pipe 2)
   //   P1_EN   (Bit 9)  = 1 (Enable Pipe 1)
   //   P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
   //   P0_FCEN (Bit 0)  = 1 (Enable Pipe 0 Fill Color)
-  // If Rendering 1 UI Channel: Set to 0x101 (DMB)
-  //   P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
-  //   P0_FCEN (Bit 0)  = 1 (Enable Pipe 0 Fill Color)
   // (DE Page 106, 0x110 1000)
   uint32_t p2_en;
-  p2_en: u11 = switch (channels) {  // For Pipe 2...
-      3 => 1,  // 3 UI Channels: Enable Pipe 2
-      1 => 0,  // 1 UI Channel:  Disable Pipe 2
-      else => unreachable,
-  } << 10;  // Bit 10
+  p2_en = (
+      (channels == 1) ? 0 :  // 1 UI Channel:  Disable Pipe 2
+      (channels == 3) ? 1 :  // 3 UI Channels: Enable Pipe 2
+      0
+   ) << 10;  // Bit 10
 
   uint32_t p1_en;
-  p1_en: u10 = switch (channels) {  // For Pipe 1...
-      3 => 1,  // 3 UI Channels: Enable Pipe 1
-      1 => 0,  // 1 UI Channel:  Disable Pipe 1
-      else => unreachable,
-  } << 9;  // Bit 9
+  p1_en = (
+      (channels == 1) ? 0 :  // 1 UI Channel:  Disable Pipe 1
+      (channels == 3) ? 1 :  // 3 UI Channels: Enable Pipe 1
+      0
+   ) << 9;  // Bit 9
 
-  #define P0_EN (1 << 8;  // Enable Pipe 0
-  #define P0_FCEN (1 << 0;  // Enable Pipe 0 Fill Color
+  #define P0_EN (1 << 8)
+  #define P0_FCEN (1 << 0)
   uint32_t fill;
   fill = p2_en
       | p1_en
@@ -892,7 +887,6 @@ int a64_de_enable(
   #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
   DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
   putreg32(fill, BLD_FILL_COLOR_CTL);  
-#endif
 
   /* Apply Settings *********************************************************/
 
