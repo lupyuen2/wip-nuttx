@@ -640,11 +640,11 @@ int a64_de_ui_channel_init(
       | LAY_ALPHA_MODE
       | LAY_EN;
   DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
-#endif
 
   #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
   DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
   putreg32(attr, OVL_UI_ATTR_CTL(channel));
+#endif
 
   // OVL_UI_TOP_LADD (UI Overlay Top Field Memory Block Low Address) at OVL_UI Offset 0x10
   // Set to Framebuffer Address: fb0, fb1 or fb2
@@ -665,7 +665,7 @@ int a64_de_ui_channel_init(
   // Set to (height-1) << 16 + (width-1)
   // (DE Page 104, 0x110 3004 / 0x110 4004 / 0x110 5004)
   uint32_t height_width;
-  height_width (@intCast(u32, yres - 1) << 16
+  height_width = ((yres - 1) << 16)
       | (xres - 1);
   #define OVL_UI_MBSIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x04)
   DEBUGASSERT(OVL_UI_MBSIZE(channel) == 0x1103004 || OVL_UI_MBSIZE(channel) == 0x1104004 || OVL_UI_MBSIZE(channel) == 0x1105004);
@@ -675,8 +675,8 @@ int a64_de_ui_channel_init(
   // Set to (height-1) << 16 + (width-1)
   // (DE Page 106, 0x110 3088 / 0x110 4088 / 0x110 5088)
   #define OVL_UI_SIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x88)
-  DEBUGASSERT(OVL_UI_SIZE == 0x1103088 || OVL_UI_SIZE == 0x1104088 || OVL_UI_SIZE == 0x1105088);
-  putreg32(height_width, OVL_UI_SIZE);
+  DEBUGASSERT(OVL_UI_SIZE(channel) == 0x1103088 || OVL_UI_SIZE(channel) == 0x1104088 || OVL_UI_SIZE(channel) == 0x1105088);
+  putreg32(height_width, OVL_UI_SIZE(channel));
 
   // OVL_UI_COOR (UI Overlay Memory Block Coordinate) at OVL_UI Offset 0x08
   // Set to 0 (Overlay at X=0, Y=0)
@@ -702,7 +702,7 @@ int a64_de_ui_channel_init(
     // GLB_SIZE (Global Size) at GLB Offset 0x00C
     // Set to (height-1) << 16 + (width-1)
     // (DE Page 93, 0x110 000C)
-    #define GLB_SIZE (GLB_BASE_ADDRESS + 0x00C)
+    #define GLB_SIZE (A64_GLB_ADDR + 0x00C)
     DEBUGASSERT(GLB_SIZE == 0x110000C);
     putreg32(height_width, GLB_SIZE);
   }
@@ -728,15 +728,15 @@ int a64_de_ui_channel_init(
 
   // BLD_FILL_COLOR (Blender Fill Color) at BLD Offset 0x004 + N*0x10 (N=0,1,2,3,4)
   // Set to 0xFF00 0000 (Opaque Black)
-  // ALPHA (Bits 24 to 31) = 0xFF
+  // ALPHA (Bits 24 to 31) = 0xFF (Opaque)
   // RED   (Bits 16 to 23) = 0
   // GREEN (Bits 8  to 15) = 0
   // BLUE  (Bits 0  to 7)  = 0
   // (DE Page 107, 0x110 1004 / 0x110 1014 / 0x110 1024)
-  #define ALPHA (0xFF << 24;  // Opaque
-  #define RED (0    << 16;  // Black
-  #define GREEN (0    << 8;
-  #define BLUE (0    << 0;
+  #define ALPHA (0xFF << 24)
+  #define RED (0    << 16)
+  #define GREEN (0    << 8)
+  #define BLUE (0    << 0)
   uint32_t color;
   color = ALPHA
       | RED
@@ -755,7 +755,7 @@ int a64_de_ui_channel_init(
   // For Channel 3: Set to 0
   // (DE Page 108, 0x110 100C / 0x110 101C / 0x110 102C)
   uint32_t offset;
-  offset = @intCast(u32, yoffset) << 16
+  offset = ((yoffset) << 16)
       | xoffset;
   DEBUGASSERT(offset == 0 || offset == 0x340034);
 
@@ -816,6 +816,7 @@ int a64_de_enable(
 
   ginfo("Set Blender Route\n");
 
+#ifdef TODO
   // Set Blender Route
   // BLD_CH_RTCTL (Blender Routing Control) at BLD Offset 0x080
   // If Rendering 3 UI Channels: Set to 0x321 (DMB)
@@ -849,11 +850,13 @@ int a64_de_enable(
   #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
   DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
   putreg32(route, BLD_CH_RTCTL);  // TODO: DMB
+#endif
 
   /* Enable Blender Pipes ***************************************************/
 
   ginfo("Enable Blender Pipes\n");
 
+#ifdef TODO
   // Enable Blender Pipes
   // BLD_FILL_COLOR_CTL (Blender Fill Color Control) at BLD Offset 0x000
   // If Rendering 3 UI Channels: Set to 0x701 (DMB)
@@ -891,6 +894,7 @@ int a64_de_enable(
   #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
   DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
   putreg32(fill, BLD_FILL_COLOR_CTL);  // TODO: DMB
+#endif
 
   /* Apply Settings *********************************************************/
 
