@@ -265,12 +265,16 @@
 
 // Blender Routing Control (DE Page 108)
 #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
+  #define P0_RTCTL (1 << 0)
 
 // Blender Fill Color Control (DE Page 106)
 #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
+  #define P0_EN (1 << 8)
+  #define P0_FCEN (1 << 0)
 
 // Global Double Buffer Control (DE Page 93)
 #define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
+  #define DOUBLE_BUFFER_RDY (1 << 0)
 
 /****************************************************************************
  * Private Functions
@@ -878,7 +882,6 @@ int a64_de_enable(
       0
    ) << 4;
 
-  #define P0_RTCTL (1 << 0)
   uint32_t route;
   route = p2_rtctl
       | p1_rtctl
@@ -915,8 +918,6 @@ int a64_de_enable(
       0
    ) << 9;
 
-  #define P0_EN (1 << 8)
-  #define P0_FCEN (1 << 0)
   uint32_t fill;
   fill = p2_en
       | p1_en
@@ -935,7 +936,6 @@ int a64_de_enable(
   // Set DOUBLE_BUFFER_RDY (Bit 0) = 1
   // (Register Value is ready for update)
 
-  #define DOUBLE_BUFFER_RDY (1 << 0)
   DEBUGASSERT(DOUBLE_BUFFER_RDY == 1);
 
   DEBUGASSERT(GLB_DBUFFER == 0x1100008);
