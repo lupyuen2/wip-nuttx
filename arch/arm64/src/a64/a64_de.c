@@ -255,6 +255,10 @@
 
 // Blender Control (DE Page 110)
 #define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
+  #define BLEND_AFD(n) ((n) << 24)
+  #define BLEND_AFS(n) ((n) << 16)
+  #define BLEND_PFD(n) ((n) << 8)
+  #define BLEND_PFS(n) ((n) << 0)
 
 // UI Scaler Control Register (DE Page 66)
 #define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0)
@@ -820,15 +824,11 @@ int a64_de_ui_channel_init(
   //   (Coefficient for destination pixel data F[d] is 1-A[s])
   // Set BLEND_PFS (Bits 0 to 3) = 1
   //   (Coefficient for source pixel data F[s] is 1)
-  #define BLEND_AFD (3 << 24)
-  #define BLEND_AFS (1 << 16)
-  #define BLEND_PFD (3 << 8)
-  #define BLEND_PFS (1 << 0)
   uint32_t blend;
-  blend = BLEND_AFD
-      | BLEND_AFS
-      | BLEND_PFD
-      | BLEND_PFS;
+  blend = BLEND_AFD(3)
+      | BLEND_AFS(1)
+      | BLEND_PFD(3)
+      | BLEND_PFS(1);
 
   DEBUGASSERT(BLD_CTL(pipe) == 0x1101090 || BLD_CTL(pipe) == 0x1101094 || BLD_CTL(pipe) == 0x1101098);
   putreg32(blend, BLD_CTL(pipe));
