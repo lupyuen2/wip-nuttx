@@ -273,8 +273,10 @@
 
 // Blender Fill Color Control (DE Page 106)
 #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
-#define P0_EN (1 << 8)
-#define P0_FCEN (1 << 0)
+#define P2_EN(n) ((n) << 10)
+#define P1_EN(n) ((n) << 9)
+#define P0_EN(n) ((n) << 8)
+#define P0_FCEN(n) ((n) << 0)
 
 // Global Double Buffer Control (DE Page 93)
 #define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
@@ -905,24 +907,22 @@ int a64_de_enable(
   //   Set P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
   //   Set P0_FCEN (Bit 0)  = 1 (Enable Pipe 0 Fill Color)
   uint32_t p2_en;
-  p2_en = (
+  p2_en =
       (channels == 1) ? 0 :  // 1 UI Channel:  Disable Pipe 2
       (channels == 3) ? 1 :  // 3 UI Channels: Enable Pipe 2
-      0
-   ) << 10;
+      0;
 
   uint32_t p1_en;
-  p1_en = (
+  p1_en =
       (channels == 1) ? 0 :  // 1 UI Channel:  Disable Pipe 1
       (channels == 3) ? 1 :  // 3 UI Channels: Enable Pipe 1
-      0
-   ) << 9;
+      0;
 
   uint32_t fill;
-  fill = p2_en
-      | p1_en
-      | P0_EN
-      | P0_FCEN;
+  fill = P2_EN(p2_en)
+      | P1_EN(p1_en)
+      | P0_EN(1)
+      | P0_FCEN(1);
   DEBUGASSERT(fill == 0x701 || fill == 0x101);
 
   DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
