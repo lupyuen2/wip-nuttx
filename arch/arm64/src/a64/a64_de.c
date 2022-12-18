@@ -73,12 +73,6 @@
 /// UI Overlay 1 (DE Page 102)
 #define A64_OVL_UI_CH1_ADDR (A64_MIXER0_ADDR + 0x3000)
 
-// SRAM Registers (A31 Page 191)
-#define A64_SRAM_REG_ADDR 0x01C00000
-
-// Dynamic Range Controller (DE Page 48)
-#define A64_DRC_ADDR 0x011B0000
-
 // Video Scaler (DE Page 90)
 #define A64_VIDEO_SCALER_ADDR (A64_MIXER0_ADDR + 0x020000)
 

@@ -41,6 +41,12 @@
 #define A64_DPHY_ADDR       0x01ca1000 /* MIPI DSI-PHY    0x01ca:1000-0x01ca:1fff 4K */
 #define A64_RPIO_ADDR       0x01f02c00 /* R_PIO           0x01f0:2c00-0x01f0:2fff 1K */
 
+// SRAM Registers (A31 Page 191)
+#define A64_SRAM_REG_ADDR 0x01c00000
+
+// Dynamic Range Controller (DE Page 48)
+#define A64_DRC_ADDR 0x011b0000
+
 /****************************************************************************
  * Public Types
  ****************************************************************************/
