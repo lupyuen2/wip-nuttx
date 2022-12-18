@@ -582,7 +582,7 @@ int a64_de_blender_init(void)
   ginfo("Set Blender Background\n");
 
   // Blender Background Color (DE Page 109)
-  // Set to 0xFF00 0000 (Black Background Color)
+  // Set to Black Background Color
   // Set RESERVED (Bits 24 to 31) to 0xFF (Undocumented)
   // Set RED (Bits 16 to 23) to 0
   // Set GREEN (Bits 8 to 15) to 0
@@ -595,7 +595,7 @@ int a64_de_blender_init(void)
   ginfo("Set Blender Pre-Multiply\n");
 
   // Blender Pre-Multiply Control (DE Page 109)
-  // Set to 0 (No Pre-Multiply for Alpha, Pipes 0 to 3)
+  // Set to No Pre-Multiply for Alpha, Pipes 0 to 3
   // Set P3_ALPHA_MODE (Bit 3) to 0 (Pipe 3: No Pre-Multiply)
   // Set P2_ALPHA_MODE (Bit 2) to 0 (Pipe 2: No Pre-Multiply)
   // Set P1_ALPHA_MODE (Bit 1) to 0 (Pipe 1: No Pre-Multiply)
