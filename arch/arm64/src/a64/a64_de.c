@@ -588,15 +588,15 @@ int a64_de_blender_init(void)
   // Set GREEN (Bits 8  to 15) = 0
   // Set BLUE  (Bits 0  to 7)  = 0
 
-  #define RESERVED (0xFF << 24)
-  #define RED (0    << 16)
-  #define GREEN (0    << 8)
-  #define BLUE (0    << 0)
+  #define BK_RESERVED (0xFF << 24)
+  #define BK_RED (0    << 16)
+  #define BK_GREEN (0    << 8)
+  #define BK_BLUE (0    << 0)
   uint32_t color;
-  color = RESERVED
-      | RED
-      | GREEN
-      | BLUE;
+  color = BK_RESERVED
+      | BK_RED
+      | BK_GREEN
+      | BK_BLUE;
   DEBUGASSERT(color == 0xFF000000);
 
   DEBUGASSERT(BLD_BK_COLOR == 0x1101088);
@@ -787,15 +787,15 @@ int a64_de_ui_channel_init(
   // Set RED   (Bits 16 to 23) = 0
   // Set GREEN (Bits 8  to 15) = 0
   // Set BLUE  (Bits 0  to 7)  = 0
-  #define ALPHA (0xFF << 24)
-  #define RED (0    << 16)
-  #define GREEN (0    << 8)
-  #define BLUE (0    << 0)
+  #define FILL_ALPHA (0xFF << 24)
+  #define FILL_RED (0    << 16)
+  #define FILL_GREEN (0    << 8)
+  #define FILL_BLUE (0    << 0)
   uint32_t color;
-  color = ALPHA
-      | RED
-      | GREEN
-      | BLUE;
+  color = FILL_ALPHA
+      | FILL_RED
+      | FILL_GREEN
+      | FILL_BLUE;
   DEBUGASSERT(color == 0xFF000000);
 
   DEBUGASSERT(BLD_FILL_COLOR(pipe) == 0x1101004 || BLD_FILL_COLOR(pipe) == 0x1101014 || BLD_FILL_COLOR(pipe) == 0x1101024);
