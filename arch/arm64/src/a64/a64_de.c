@@ -61,9 +61,6 @@
 
 // Base Addresses
 
-// Dynamic Range Controller (DE Page 48)
-#define A64_DRC_ADDR 0x011b0000 // 64K
-
 /// Mixer 0 (DE Page 24)
 #define A64_MIXER0_ADDR (A64_DE_ADDR + 0x100000)
 
@@ -108,6 +105,9 @@
 
 // UI Scalers 1, 2 and 3 (DE Page 90)
 #define A64_UI_SCALER_ADDR(ch) (A64_UI_SCALER1_ADDR + ((ch) - 1) * 0x10000)
+
+// Dynamic Range Controller (DE Page 48)
+#define A64_DRC_ADDR (A64_DE_ADDR + 0x1b0000)
 
 ////////////////////////////////////////////////////////////////
 // TODO
