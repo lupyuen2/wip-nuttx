@@ -861,9 +861,7 @@ int a64_de_enable(
   route = P2_RTCTL(p2_rtctl) |
           P1_RTCTL(p1_rtctl) |
           P0_RTCTL(1);
-  DEBUGASSERT(route == 0x321 || route == 1);
 
-  DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
   putreg32(route, BLD_CH_RTCTL);
 
   /* Enable Blender Pipes ***************************************************/
@@ -894,9 +892,6 @@ int a64_de_enable(
          P1_EN(p1_en) |
          P0_EN(1) |
          P0_FCEN(1);
-  DEBUGASSERT(fill == 0x701 || fill == 0x101);
-
-  DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
   putreg32(fill, BLD_FILL_COLOR_CTL);
 
   /* Apply Settings *********************************************************/
@@ -907,10 +902,18 @@ int a64_de_enable(
   // Set DOUBLE_BUFFER_RDY (Bit 0) to 1
   // (Register Value is ready for update)
 
-  DEBUGASSERT(DOUBLE_BUFFER_RDY == 1);
-
-  DEBUGASSERT(GLB_DBUFFER == 0x1100008);
   putreg32(DOUBLE_BUFFER_RDY, GLB_DBUFFER);
+
+  ///
+  DEBUGASSERT(route == 0x321 || route == 1);
+  DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
+
+  DEBUGASSERT(fill == 0x701 || fill == 0x101);
+  DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
+
+  DEBUGASSERT(DOUBLE_BUFFER_RDY == 1);
+  DEBUGASSERT(GLB_DBUFFER == 0x1100008);
+  ///
 
   return OK;
 }
