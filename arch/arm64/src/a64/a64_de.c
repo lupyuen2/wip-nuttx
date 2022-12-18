@@ -210,6 +210,8 @@
 
 // UI Overlay Attribute Control (DE Page 102)
 #define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
+  #define LAY_ALPHA_MODE(n) ((n) << 1)
+  #define LAY_EN (1 << 0)
 
 // UI Scaler Control Register (DE Page 66)
 #define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0)
@@ -243,6 +245,10 @@
 
 // Blender Fill Color (DE Page 107)
 #define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
+  #define FILL_ALPHA(n) ((n) << 24)
+  #define FILL_RED(n) ((n)    << 16)
+  #define FILL_GREEN(n) ((n)    << 8)
+  #define FILL_BLUE(n) ((n)    << 0)
 
 // Blender Input Memory Offset (DE Page 108)
 #define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
@@ -705,12 +711,10 @@ int a64_de_ui_channel_init(
       0
   ) << 8;  // Bits 8 to 12
 
-  #define LAY_ALPHA_MODE (2 << 1)
-  #define LAY_EN (1 << 0)
   uint32_t attr;
   attr = lay_glbalpha
       | lay_fbfmt
-      | LAY_ALPHA_MODE
+      | LAY_ALPHA_MODE(2)
       | LAY_EN;
   DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
 
@@ -787,15 +791,11 @@ int a64_de_ui_channel_init(
   // Set RED   (Bits 16 to 23) = 0
   // Set GREEN (Bits 8  to 15) = 0
   // Set BLUE  (Bits 0  to 7)  = 0
-  #define FILL_ALPHA (0xFF << 24)
-  #define FILL_RED (0    << 16)
-  #define FILL_GREEN (0    << 8)
-  #define FILL_BLUE (0    << 0)
   uint32_t color;
-  color = FILL_ALPHA
-      | FILL_RED
-      | FILL_GREEN
-      | FILL_BLUE;
+  color = FILL_ALPHA(0xff)
+      | FILL_RED(0)
+      | FILL_GREEN(0)
+      | FILL_BLUE(0);
   DEBUGASSERT(color == 0xFF000000);
 
   DEBUGASSERT(BLD_FILL_COLOR(pipe) == 0x1101004 || BLD_FILL_COLOR(pipe) == 0x1101014 || BLD_FILL_COLOR(pipe) == 0x1101024);
