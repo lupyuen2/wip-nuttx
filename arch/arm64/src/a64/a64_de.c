@@ -194,87 +194,12 @@
 #define GLB_CTL (A64_MIXER0_ADDR + 0x00)
 #define EN_MIXER (1 << 0)
 
-// Blender Pre-Multiply Control (DE Page 109)
-#define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x84)
-#define P3_ALPHA_MODE(n) ((n) << 3)
-#define P2_ALPHA_MODE(n) ((n) << 2)
-#define P1_ALPHA_MODE(n) ((n) << 1)
-#define P0_ALPHA_MODE(n) ((n) << 0)
-
-// Blender Background Color (DE Page 109)
-#define BLD_BK_COLOR (A64_BLD_ADDR + 0x88)
-#define BK_RESERVED (0xFF << 24)
-#define BK_RED(n) ((n)    << 16)
-#define BK_GREEN(n) ((n)    << 8)
-#define BK_BLUE(n) ((n)    << 0)
-
-// UI Overlay Attribute Control (DE Page 102)
-#define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
-#define LAY_GLBALPHA(n) ((n) << 24)
-#define LAY_FBFMT(n) ((n) << 8)
-#define LAY_ALPHA_MODE(n) ((n) << 1)
-#define LAY_EN (1 << 0)
-
-// UI Scaler Control Register (DE Page 66)
-#define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0x00)
-
-// UI Overlay Attribute Control (DE Page 102)
-#define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
-
-// UI Overlay Top Field Memory Block Low Address (DE Page 104)
-#define OVL_UI_TOP_LADD(ch) (A64_OVL_UI_ADDR(ch) + 0x10)
-
-// UI Overlay Memory Pitch (DE Page 104)
-#define OVL_UI_PITCH(ch) (A64_OVL_UI_ADDR(ch) + 0x0C)
-
-// UI Overlay Memory Block Size (DE Page 104)
-#define OVL_UI_MBSIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x04)
-
-// UI Overlay Overlay Window Size (DE Page 106)
-#define OVL_UI_SIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x88)
-
-// UI Overlay Memory Block Coordinate (DE Page 104)
-#define OVL_UI_COOR(ch) (A64_OVL_UI_ADDR(ch) + 0x08)
-
-// Blender Output Size Setting (DE Page 110)
-#define BLD_SIZE (A64_BLD_ADDR + 0x08C)
+// Global Double Buffer Control (DE Page 93)
+#define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
+#define DOUBLE_BUFFER_RDY (1 << 0)
 
 // Global Size (DE Page 93)
 #define GLB_SIZE (A64_GLB_ADDR + 0x00C)
-
-// Note: DE Page 91 shows incorrect offset N*0x14 for
-// BLD_CH_ISIZE, BLD_FILL_COLOR and BLD_CH_OFFSET.
-// Correct offset is N*0x10 (DE Page 108)
-// (N = Pipe Number, from 0 to 2 for Channels 1 to 3)
-
-// Blender Input Memory Size (DE Page 108)
-#define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
-
-// Blender Fill Color (DE Page 107)
-#define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
-#define FILL_ALPHA(n) ((n) << 24)
-#define FILL_RED(n) ((n)    << 16)
-#define FILL_GREEN(n) ((n)    << 8)
-#define FILL_BLUE(n) ((n)    << 0)
-
-// Blender Input Memory Offset (DE Page 108)
-#define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
-
-// Blender Control (DE Page 110)
-#define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
-#define BLEND_AFD(n) ((n) << 24)
-#define BLEND_AFS(n) ((n) << 16)
-#define BLEND_PFD(n) ((n) << 8)
-#define BLEND_PFS(n) ((n) << 0)
-
-// UI Scaler Control Register (DE Page 66)
-#define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0x00)
-
-// Blender Routing Control (DE Page 108)
-#define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
-#define P2_RTCTL(n) ((n) << 8)
-#define P1_RTCTL(n) ((n) << 4)
-#define P0_RTCTL(n) ((n) << 0)
 
 // Blender Fill Color Control (DE Page 106)
 #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
@@ -283,9 +208,78 @@
 #define P0_EN(n) ((n) << 8)
 #define P0_FCEN(n) ((n) << 0)
 
-// Global Double Buffer Control (DE Page 93)
-#define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
-#define DOUBLE_BUFFER_RDY (1 << 0)
+// Note: DE Page 91 shows incorrect offset N*0x14 for
+// BLD_FILL_COLOR, BLD_CH_ISIZE and BLD_CH_OFFSET.
+// Correct offset is N*0x10 (DE Page 108)
+// (N = Pipe Number, from 0 to 2 for Channels 1 to 3)
+
+// Blender Fill Color (DE Page 107)
+#define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
+#define FILL_ALPHA(n) ((n) << 24)
+#define FILL_RED(n) ((n)    << 16)
+#define FILL_GREEN(n) ((n)    << 8)
+#define FILL_BLUE(n) ((n)    << 0)
+
+// Blender Input Memory Size (DE Page 108)
+#define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
+
+// Blender Input Memory Offset (DE Page 108)
+#define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
+
+// Blender Routing Control (DE Page 108)
+#define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
+#define P2_RTCTL(n) ((n) << 8)
+#define P1_RTCTL(n) ((n) << 4)
+#define P0_RTCTL(n) ((n) << 0)
+
+// Blender Pre-Multiply Control (DE Page 109)
+#define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x084)
+#define P3_ALPHA_MODE(n) ((n) << 3)
+#define P2_ALPHA_MODE(n) ((n) << 2)
+#define P1_ALPHA_MODE(n) ((n) << 1)
+#define P0_ALPHA_MODE(n) ((n) << 0)
+
+// Blender Background Color (DE Page 109)
+#define BLD_BK_COLOR (A64_BLD_ADDR + 0x088)
+#define BK_RESERVED (0xFF << 24)
+#define BK_RED(n) ((n)    << 16)
+#define BK_GREEN(n) ((n)    << 8)
+#define BK_BLUE(n) ((n)    << 0)
+
+// Blender Output Size Setting (DE Page 110)
+#define BLD_SIZE (A64_BLD_ADDR + 0x08C)
+
+// Blender Control (DE Page 110)
+#define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
+#define BLEND_AFD(n) ((n) << 24)
+#define BLEND_AFS(n) ((n) << 16)
+#define BLEND_PFD(n) ((n) << 8)
+#define BLEND_PFS(n) ((n) << 0)
+
+// UI Overlay Attribute Control (DE Page 102)
+#define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
+#define LAY_GLBALPHA(n) ((n) << 24)
+#define LAY_FBFMT(n) ((n) << 8)
+#define LAY_ALPHA_MODE(n) ((n) << 1)
+#define LAY_EN (1 << 0)
+
+// UI Overlay Memory Block Size (DE Page 104)
+#define OVL_UI_MBSIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x04)
+
+// UI Overlay Memory Block Coordinate (DE Page 104)
+#define OVL_UI_COOR(ch) (A64_OVL_UI_ADDR(ch) + 0x08)
+
+// UI Overlay Memory Pitch (DE Page 104)
+#define OVL_UI_PITCH(ch) (A64_OVL_UI_ADDR(ch) + 0x0C)
+
+// UI Overlay Top Field Memory Block Low Address (DE Page 104)
+#define OVL_UI_TOP_LADD(ch) (A64_OVL_UI_ADDR(ch) + 0x10)
+
+// UI Overlay Overlay Window Size (DE Page 106)
+#define OVL_UI_SIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x88)
+
+// UI Scaler Control Register (DE Page 66)
+#define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0x00)
 
 /****************************************************************************
  * Private Functions
