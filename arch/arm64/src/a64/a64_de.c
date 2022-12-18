@@ -161,7 +161,7 @@
 
 // TODO: 0x113 0000 is undocumented
 // Is there a mixup with UI_SCALER3?
-#define _1130000 0x1130000
+#define UNDOC_1130000 0x1130000
 
 // UI Scaler 1 Control Register (DE Page 66)
 #define UIS_CTRL_REG1 (A64_UI_SCALER1_ADDR + 0)
@@ -456,16 +456,6 @@ int a64_de_init(void)
 
   ginfo("Clear MIXER0 Registers: GLB, BLD, OVL_V, OVL_UI\n");
 
-  // Clear MIXER0 Registers: Global Registers (GLB), Blender (BLD), Video Overlay (OVL_V), UI Overlay (OVL_UI)
-  // Set MIXER0 Offsets 0x0000 - 0x5FFF to 0
-  // GLB (Global Regisers) at MIXER0 Offset 0x0000
-  // BLD (Blender) at MIXER0 Offset 0x1000
-  // OVL_V(CH0) (Video Overlay) at MIXER0 Offset 0x2000
-  // OVL_UI(CH1) (UI Overlay 1) at MIXER0 Offset 0x3000
-  // OVL_UI(CH2) (UI Overlay 2) at MIXER0 Offset 0x4000
-  // OVL_UI(CH3) (UI Overlay 3) at MIXER0 Offset 0x5000
-  // (DE Page 90, 0x110 0000 - 0x110 5FFF)
-
   for (i = 0; i < 0x6000; i += 4)
   {
     putreg32(0, A64_MIXER0_ADDR + i);
@@ -485,10 +475,10 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 Undocumented\n");
 
-  // TODO: 0x113 0000 is undocumented
+  // Note: 0x113 0000 is undocumented
   // Is there a mixup with UI_SCALER3?
-
-  putreg32(0, _1130000);
+  DEBUGASSERT(UNDOC_1130000 == 0x1130000);
+  putreg32(0, UNDOC_1130000);
 
   /* Disable MIXER0 UI_SCALER1 **********************************************/
 
@@ -607,9 +597,9 @@ int a64_de_blender_init(void)
   // Blender Background Color (DE Page 109)
   // Set to 0xFF00 0000 (Black Background Color)
   // Set RESERVED (Bits 24 to 31) to 0xFF (Undocumented)
-  // Set RED   (Bits 16 to 23) to 0
-  // Set GREEN (Bits 8  to 15) to 0
-  // Set BLUE  (Bits 0  to 7) to 0
+  // Set RED (Bits 16 to 23) to 0
+  // Set GREEN (Bits 8 to 15) to 0
+  // Set BLUE (Bits 0 to 7) to 0
 
   uint32_t color;
   color = BK_RESERVED | BK_RED(0) | BK_GREEN(0) | BK_BLUE(0);
@@ -779,7 +769,7 @@ int a64_de_ui_channel_init(
 
   // Note: DE Page 91 shows incorrect offset N*0x14 for
   // BLD_CH_ISIZE, BLD_FILL_COLOR and BLD_CH_OFFSET.
-  // Correct offset is N*0x10, see DE Page 108
+  // Correct offset is N*0x10 (DE Page 108)
   // (N = Pipe Number, from 0 to 2 for Channels 1 to 3)
 
   // Blender Input Memory Size (DE Page 108)
@@ -790,9 +780,9 @@ int a64_de_ui_channel_init(
   // Blender Fill Color (DE Page 107)
   // Set to Opaque Black
   // Set ALPHA (Bits 24 to 31) to 0xFF (Opaque)
-  // Set RED   (Bits 16 to 23) to 0
-  // Set GREEN (Bits 8  to 15) to 0
-  // Set BLUE  (Bits 0  to 7) to 0
+  // Set RED (Bits 16 to 23) to 0
+  // Set GREEN (Bits 8 to 15) to 0
+  // Set BLUE (Bits 0 to 7) to 0
   uint32_t color;
   color = FILL_ALPHA(0xff) | FILL_RED(0) | FILL_GREEN(0) | FILL_BLUE(0);
   DEBUGASSERT(color == 0xFF000000);
@@ -880,12 +870,12 @@ int a64_de_enable(
 
   // Blender Fill Color Control (DE Page 106)
   // If Rendering 1 UI Channel:
-  //   Set P0_EN   (Bit 8) to 1 (Enable Pipe 0)
+  //   Set P0_EN (Bit 8) to 1 (Enable Pipe 0)
   //   Set P0_FCEN (Bit 0) to 1 (Enable Pipe 0 Fill Color)
   // If Rendering 3 UI Channels:
-  //   Set P2_EN   (Bit 10) to 1 (Enable Pipe 2)
-  //   Set P1_EN   (Bit 9) to 1 (Enable Pipe 1)
-  //   Set P0_EN   (Bit 8) to 1 (Enable Pipe 0)
+  //   Set P2_EN (Bit 10) to 1 (Enable Pipe 2)
+  //   Set P1_EN (Bit 9) to 1 (Enable Pipe 1)
+  //   Set P0_EN (Bit 8) to 1 (Enable Pipe 0)
   //   Set P0_FCEN (Bit 0) to 1 (Enable Pipe 0 Fill Color)
   uint32_t p2_en;
   p2_en = (channels == 1) ? 0 :  // 1 UI Channel:  Disable Pipe 2
