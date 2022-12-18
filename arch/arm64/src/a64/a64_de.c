@@ -52,6 +52,10 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+/* Timeout for Display Engine PLL in milliseconds */
+
+#define PLL_TIMEOUT_MS      5
+
 /// MIXER0 is at DE Offset 0x10 0000 (DE Page 24, 0x110 0000)
 #define A64_MIXER0_ADDR (A64_DE_ADDR + 0x100000)
 
@@ -100,6 +104,50 @@
 // FCC (Fancy Color Curvature Change) is at MIXER0 Offset 0x0A A000 (DE Page 56, 0x11A A000)
 #define A64_FCC_ADDR (A64_MIXER0_ADDR + 0x0AA000)
 
+#define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
+
+/****************************************************************************
+ * Private Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Name: a64_wait_pll
+ *
+ * Description:
+ *   Wait for Display Engine PLL to be stable.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   Zero (OK) on success; ERROR if timeout.
+ *
+ ****************************************************************************/
+
+static int a64_wait_pll(void)
+{
+  int i;
+
+  for (i = 0; i < PLL_TIMEOUT_MS; i++)
+    {
+      /* Poll on LOCK (Bit 28) of PLL_DE_CTRL_REG */
+
+      if ((getreg32(PLL_DE_CTRL_REG) & (1 << 28)) != 0)
+        {
+          /* If LOCK is 1, then Display Engine PLL is stable */
+
+          return OK;
+        }
+
+      /* Sleep 1 millisecond and try again */
+
+      up_mdelay(1);
+    }
+
+  gerr("PLL Timeout");
+  return ERROR;
+}
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -109,6 +157,8 @@
 // Must be called before any DE operations
 int a64_de_init(void)
 {
+  int i;
+
   /* Set High Speed SRAM to DMA Mode ****************************************/
 
   ginfo("Set High Speed SRAM to DMA Mode\n");
@@ -148,20 +198,19 @@ int a64_de_init(void)
       | PLL_PRE_DIV_M;
   DEBUGASSERT(pll == 0x81001701);
 
-  #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
   DEBUGASSERT(PLL_DE_CTRL_REG == 0x1C20048);
   putreg32(pll, PLL_DE_CTRL_REG);  
 
   /* Wait for Display Engine PLL to be stable *******************************/
 
   ginfo("Wait for Display Engine PLL to be stable\n");
-
-  // Wait for Display Engine PLL to be stable
-  // Poll PLL_DE_CTRL_REG (from above) until LOCK (Bit 28) is 1
-  // (PLL is Locked and Stable)
   
-  // TODO: Timeout
-  while ((getreg32(PLL_DE_CTRL_REG) & (1 << 28)) == 0) {}
+  int ret;
+  ret = a64_wait_pll();
+  if (ret < 0)
+    {
+      return ret;
+    }
 
   /* Set Special Clock to Display Engine PLL ********************************/
 
@@ -297,7 +346,6 @@ int a64_de_init(void)
   // OVL_UI(CH3) (UI Overlay 3) at MIXER0 Offset 0x5000
   // (DE Page 90, 0x110 0000 - 0x110 5FFF)
 
-  int i;
   for (i = 0; i < 0x6000; i += 4)
   {
     putreg32(0, A64_MIXER0_ADDR + i);
