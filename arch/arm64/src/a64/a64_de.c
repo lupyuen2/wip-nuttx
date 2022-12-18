@@ -120,27 +120,41 @@
 
 // PLL Display Engine Control Register (A64 Page 96)
 #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
+  #define PLL_ENABLE (1  << 31)
+  #define PLL_MODE_SEL (1  << 24)
+  #define PLL_FACTOR_N (23 <<  8)
+  #define PLL_PRE_DIV_M (1  <<  0)
 
 // Display Engine Clock Register (A64 Page 117)
 #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
+  #define SCLK_GATING (1 << 31)
+  #define CLK_SRC_SEL (1 << 24)
+  #define SCLK_GATING_MASK (0b1   << 31)
+  #define CLK_SRC_SEL_MASK (0b111 << 24)
 
 // Bus Software Reset Register 1 (A64 Page 140)
 #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
+  #define DE_RST (1 << 12)
 
 // Bus Clock Gating Register 1 (A64 Page 102)
 #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
+  #define DE_GATING (1 << 12)
 
 // DE SCLK Gating Register (DE Page 25)
 #define SCLK_GATE (A64_DE_ADDR + 0x000)
+  #define CORE0_SCLK_GATE (1 << 0)
 
 // DE AHB Reset register (DE Page 25)
 #define AHB_RESET (A64_DE_ADDR + 0x008)
+  #define CORE0_HCLK_RESET (1 << 0)
 
 // DE HCLK Gating Register (DE Page 25)
 #define HCLK_GATE (A64_DE_ADDR + 0x004)
+  #define CORE0_HCLK_GATE (1 << 0)
 
 // DE2TCON MUX Register (DE Page 26)
 #define DE2TCON_MUX (A64_DE_ADDR + 0x010)
+  #define DE2TCON_MUX_MASK (1 << 0)
 
 // Video Scaler Control Register (DE Page 130)
 #define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
@@ -178,6 +192,7 @@
 
 // Mixer 0 Global Control Register (DE Page 92)
 #define GLB_CTL (A64_MIXER0_ADDR + 0)
+  #define EN_MIXER (1 << 0)
 
 // Blender Background Color (DE Page 109)
 #define BLD_BK_COLOR (A64_BLD_ADDR + 0x88)
@@ -312,10 +327,6 @@ int a64_de_init(void)
   // Set PLL_PRE_DIV_M (Bits 0 to 3) to 1 (M = 2)
   // Actual PLL Output = 24 MHz * N / M = 288 MHz
   // (Slighltly below 297 MHz due to truncation)
-  #define PLL_ENABLE (1  << 31)
-  #define PLL_MODE_SEL (1  << 24)
-  #define PLL_FACTOR_N (23 <<  8)
-  #define PLL_PRE_DIV_M (1  <<  0)
   uint32_t pll;
   pll = PLL_ENABLE
       | PLL_MODE_SEL
@@ -345,15 +356,11 @@ int a64_de_init(void)
   // Set SCLK_GATING (Bit 31)        = 1 (Enable Special Clock)
   // Set CLK_SRC_SEL (Bits 24 to 26) = 1 (Clock Source is Display Engine PLL)
 
-  #define SCLK_GATING (1 << 31)
-  #define CLK_SRC_SEL (1 << 24)
   uint32_t clk;
   clk = SCLK_GATING
       | CLK_SRC_SEL;
   DEBUGASSERT(clk == 0x81000000);
 
-  #define SCLK_GATING_MASK (0b1   << 31)
-  #define CLK_SRC_SEL_MASK (0b111 << 24)
   uint32_t clk_mask;
   clk_mask = SCLK_GATING_MASK
       | CLK_SRC_SEL_MASK;
@@ -368,7 +375,6 @@ int a64_de_init(void)
   // Bus Software Reset Register 1 (A64 Page 140)
   // Set DE_RST (Bit 12) = 1 (De-Assert Display Engine)
 
-  #define DE_RST (1 << 12)
   DEBUGASSERT(BUS_SOFT_RST_REG1 == 0x1C202C4);
   modreg32(DE_RST, DE_RST, BUS_SOFT_RST_REG1);
 
@@ -379,7 +385,6 @@ int a64_de_init(void)
   // Bus Clock Gating Register 1 (A64 Page 102)
   // Set DE_GATING (Bit 12) = 1 (Pass Display Engine)
 
-  #define DE_GATING (1 << 12)
   DEBUGASSERT(BUS_CLK_GATING_REG1 == 0x1C20064);
   modreg32(DE_GATING, DE_GATING, BUS_CLK_GATING_REG1);
 
@@ -390,7 +395,6 @@ int a64_de_init(void)
   // DE SCLK Gating Register (DE Page 25)
   // Set CORE0_SCLK_GATE (Bit 0) = 1 (Clock Pass)
 
-  #define CORE0_SCLK_GATE (1 << 0)
   DEBUGASSERT(SCLK_GATE == 0x1000000);
   modreg32(CORE0_SCLK_GATE, CORE0_SCLK_GATE, SCLK_GATE);
 
@@ -401,7 +405,6 @@ int a64_de_init(void)
   // DE AHB Reset register (DE Page 25)
   // Set CORE0_HCLK_RESET (Bit 0) = 1 (Reset Off)
 
-  #define CORE0_HCLK_RESET (1 << 0)
   DEBUGASSERT(AHB_RESET == 0x1000008);
   modreg32(CORE0_HCLK_RESET, CORE0_HCLK_RESET, AHB_RESET);
 
@@ -412,7 +415,6 @@ int a64_de_init(void)
   // DE HCLK Gating Register (DE Page 25)
   // Set CORE0_HCLK_GATE (Bit 0) = 1 (Clock Pass)
 
-  #define CORE0_HCLK_GATE (1 << 0)
   DEBUGASSERT(HCLK_GATE == 0x1000004);
   modreg32(CORE0_HCLK_GATE, CORE0_HCLK_GATE, HCLK_GATE);
 
@@ -424,7 +426,6 @@ int a64_de_init(void)
   // Set DE2TCON_MUX (Bit 0) = 0
   // (Route MIXER0 to TCON0; Route MIXER1 to TCON1)
 
-  #define DE2TCON_MUX_MASK (1 << 0)
   DEBUGASSERT(DE2TCON_MUX == 0x1000010);
   modreg32(0, DE2TCON_MUX_MASK, DE2TCON_MUX);
 
@@ -566,7 +567,6 @@ int a64_de_init(void)
   // Mixer 0 Global Control Register (DE Page 92)
   // Set EN (Bit 0) = 1 (Enable Mixer)
 
-  #define EN_MIXER (1 << 0)
   DEBUGASSERT(GLB_CTL == 0x1100000);
   putreg32(EN_MIXER, GLB_CTL);
 
