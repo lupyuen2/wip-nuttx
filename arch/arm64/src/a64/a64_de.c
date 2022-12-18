@@ -120,41 +120,41 @@
 
 // PLL Display Engine Control Register (A64 Page 96)
 #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
-  #define PLL_ENABLE (1  << 31)
-  #define PLL_MODE_SEL (1  << 24)
-  #define PLL_FACTOR_N(n) ((n) <<  8)
-  #define PLL_PRE_DIV_M(n) ((n)  <<  0)
+#define PLL_ENABLE (1  << 31)
+#define PLL_MODE_SEL (1  << 24)
+#define PLL_FACTOR_N(n) ((n) <<  8)
+#define PLL_PRE_DIV_M(n) ((n)  <<  0)
 
 // Display Engine Clock Register (A64 Page 117)
 #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
-  #define SCLK_GATING (1 << 31)
-  #define CLK_SRC_SEL(n) ((n) << 24)
-  #define SCLK_GATING_MASK (0b1   << 31)
-  #define CLK_SRC_SEL_MASK (0b111 << 24)
+#define SCLK_GATING (1 << 31)
+#define CLK_SRC_SEL(n) ((n) << 24)
+#define SCLK_GATING_MASK (0b1   << 31)
+#define CLK_SRC_SEL_MASK (0b111 << 24)
 
 // Bus Software Reset Register 1 (A64 Page 140)
 #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
-  #define DE_RST (1 << 12)
+#define DE_RST (1 << 12)
 
 // Bus Clock Gating Register 1 (A64 Page 102)
 #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
-  #define DE_GATING (1 << 12)
+#define DE_GATING (1 << 12)
 
 // DE SCLK Gating Register (DE Page 25)
 #define SCLK_GATE (A64_DE_ADDR + 0x000)
-  #define CORE0_SCLK_GATE (1 << 0)
+#define CORE0_SCLK_GATE (1 << 0)
 
 // DE AHB Reset register (DE Page 25)
 #define AHB_RESET (A64_DE_ADDR + 0x008)
-  #define CORE0_HCLK_RESET (1 << 0)
+#define CORE0_HCLK_RESET (1 << 0)
 
 // DE HCLK Gating Register (DE Page 25)
 #define HCLK_GATE (A64_DE_ADDR + 0x004)
-  #define CORE0_HCLK_GATE (1 << 0)
+#define CORE0_HCLK_GATE (1 << 0)
 
 // DE2TCON MUX Register (DE Page 26)
 #define DE2TCON_MUX (A64_DE_ADDR + 0x010)
-  #define DE2TCON_MUX_MASK (1 << 0)
+#define DE2TCON_MUX_MASK (1 << 0)
 
 // Video Scaler Control Register (DE Page 130)
 #define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
@@ -192,26 +192,28 @@
 
 // Mixer 0 Global Control Register (DE Page 92)
 #define GLB_CTL (A64_MIXER0_ADDR + 0)
-  #define EN_MIXER (1 << 0)
+#define EN_MIXER (1 << 0)
 
 // Blender Background Color (DE Page 109)
 #define BLD_BK_COLOR (A64_BLD_ADDR + 0x88)
-  #define BK_RESERVED (0xFF << 24)
-  #define BK_RED(n) ((n)    << 16)
-  #define BK_GREEN(n) ((n)    << 8)
-  #define BK_BLUE(n) ((n)    << 0)
+#define BK_RESERVED (0xFF << 24)
+#define BK_RED(n) ((n)    << 16)
+#define BK_GREEN(n) ((n)    << 8)
+#define BK_BLUE(n) ((n)    << 0)
 
 // Blender Pre-Multiply Control (DE Page 109)
 #define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x84)
-  #define P3_ALPHA_MODE(n) ((n) << 3)
-  #define P2_ALPHA_MODE(n) ((n) << 2)
-  #define P1_ALPHA_MODE(n) ((n) << 1)
-  #define P0_ALPHA_MODE(n) ((n) << 0)
+#define P3_ALPHA_MODE(n) ((n) << 3)
+#define P2_ALPHA_MODE(n) ((n) << 2)
+#define P1_ALPHA_MODE(n) ((n) << 1)
+#define P0_ALPHA_MODE(n) ((n) << 0)
 
 // UI Overlay Attribute Control (DE Page 102)
 #define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
-  #define LAY_ALPHA_MODE(n) ((n) << 1)
-  #define LAY_EN (1 << 0)
+#define LAY_GLBALPHA(n) ((n) << 24)
+#define LAY_FBFMT(n) ((n) << 8)
+#define LAY_ALPHA_MODE(n) ((n) << 1)
+#define LAY_EN (1 << 0)
 
 // UI Scaler Control Register (DE Page 66)
 #define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0)
@@ -245,36 +247,36 @@
 
 // Blender Fill Color (DE Page 107)
 #define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
-  #define FILL_ALPHA(n) ((n) << 24)
-  #define FILL_RED(n) ((n)    << 16)
-  #define FILL_GREEN(n) ((n)    << 8)
-  #define FILL_BLUE(n) ((n)    << 0)
+#define FILL_ALPHA(n) ((n) << 24)
+#define FILL_RED(n) ((n)    << 16)
+#define FILL_GREEN(n) ((n)    << 8)
+#define FILL_BLUE(n) ((n)    << 0)
 
 // Blender Input Memory Offset (DE Page 108)
 #define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
 
 // Blender Control (DE Page 110)
 #define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
-  #define BLEND_AFD(n) ((n) << 24)
-  #define BLEND_AFS(n) ((n) << 16)
-  #define BLEND_PFD(n) ((n) << 8)
-  #define BLEND_PFS(n) ((n) << 0)
+#define BLEND_AFD(n) ((n) << 24)
+#define BLEND_AFS(n) ((n) << 16)
+#define BLEND_PFD(n) ((n) << 8)
+#define BLEND_PFS(n) ((n) << 0)
 
 // UI Scaler Control Register (DE Page 66)
 #define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0)
 
 // Blender Routing Control (DE Page 108)
 #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
-  #define P0_RTCTL (1 << 0)
+#define P0_RTCTL (1 << 0)
 
 // Blender Fill Color Control (DE Page 106)
 #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
-  #define P0_EN (1 << 8)
-  #define P0_FCEN (1 << 0)
+#define P0_EN (1 << 8)
+#define P0_FCEN (1 << 0)
 
 // Global Double Buffer Control (DE Page 93)
 #define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
-  #define DOUBLE_BUFFER_RDY (1 << 0)
+#define DOUBLE_BUFFER_RDY (1 << 0)
 
 /****************************************************************************
  * Private Functions
@@ -704,24 +706,22 @@ int a64_de_ui_channel_init(
   //   (Input Alpha Value = Global Alpha Value * Pixel’s Alpha Value)
   // Set LAY_EN (Bit 0) = 1 (Enable Layer)
   uint32_t lay_glbalpha;
-  lay_glbalpha = (
+  lay_glbalpha =
       (channel == 1) ? 0xff :  // Channel 1: Opaque
       (channel == 2) ? 0xff :  // Channel 2: Opaque
       (channel == 3) ? 0x7f :  // Channel 3: Semi-Transparent
-      0xff
-  ) << 24;  // Bits 24 to 31
+      0xff;
 
   uint32_t lay_fbfmt;
-  lay_fbfmt = (
+  lay_fbfmt =
       (channel == 1) ? 4 :  // Channel 1: XRGB 8888
       (channel == 2) ? 0 :  // Channel 2: ARGB 8888
       (channel == 3) ? 0 :  // Channel 3: ARGB 8888
-      0
-  ) << 8;  // Bits 8 to 12
+      0;
 
   uint32_t attr;
-  attr = lay_glbalpha
-      | lay_fbfmt
+  attr = LAY_GLBALPHA(lay_glbalpha)
+      | LAY_FBFMT(lay_fbfmt)
       | LAY_ALPHA_MODE(2)
       | LAY_EN;
   DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
