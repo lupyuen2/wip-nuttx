@@ -106,12 +106,13 @@
 // Fancy Color Curvature Change (DE Page 56)
 #define A64_FCC_ADDR (A64_MIXER0_ADDR + 0x0AA000)
 
-  // UI Overlays 1, 2 and 3 (DE Page 102)
-  #define OVL_UI_BASE_ADDRESS(ch) (A64_OVL_UI_CH1_ADDR + ((ch) - 1) * 0x1000)
+// UI Overlays 1, 2 and 3 (DE Page 102)
+#define A64_OVL_UI_ADDR(ch) (A64_OVL_UI_CH1_ADDR + ((ch) - 1) * 0x1000)
 
-  // UI Scalers 1, 2 and 3 (DE Page 90)
-  #define UI_SCALER_BASE_ADDRESS(ch) (A64_UI_SCALER1_ADDR + ((ch) - 1) * 0x10000)
+// UI Scalers 1, 2 and 3 (DE Page 90)
+#define A64_UI_SCALER_ADDR(ch) (A64_UI_SCALER1_ADDR + ((ch) - 1) * 0x10000)
 
+////////////////////////////////////////////////////////////////
 // TODO
 
 // SRAM Control Register 1 (A31 Page 191)
@@ -120,123 +121,123 @@
 // PLL Display Engine Control Register (A64 Page 96)
 #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
 
-  // Display Engine Clock Register (A64 Page 117)
-  #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
+// Display Engine Clock Register (A64 Page 117)
+#define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
 
-  // Bus Software Reset Register 1 (A64 Page 140)
-  #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
+// Bus Software Reset Register 1 (A64 Page 140)
+#define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
 
-  // Bus Clock Gating Register 1 (A64 Page 102)
-  #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
+// Bus Clock Gating Register 1 (A64 Page 102)
+#define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
 
-  // DE SCLK Gating Register (DE Page 25)
-  #define SCLK_GATE (A64_DE_ADDR + 0x000)
+// DE SCLK Gating Register (DE Page 25)
+#define SCLK_GATE (A64_DE_ADDR + 0x000)
 
-  // DE AHB Reset register (DE Page 25)
-  #define AHB_RESET (A64_DE_ADDR + 0x008)
+// DE AHB Reset register (DE Page 25)
+#define AHB_RESET (A64_DE_ADDR + 0x008)
 
-  // DE HCLK Gating Register (DE Page 25)
-  #define HCLK_GATE (A64_DE_ADDR + 0x004)
+// DE HCLK Gating Register (DE Page 25)
+#define HCLK_GATE (A64_DE_ADDR + 0x004)
 
-  // DE2TCON MUX Register (DE Page 26)
-  #define DE2TCON_MUX (A64_DE_ADDR + 0x010)
+// DE2TCON MUX Register (DE Page 26)
+#define DE2TCON_MUX (A64_DE_ADDR + 0x010)
 
-  // Video Scaler Control Register (DE Page 130)
-  #define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
+// Video Scaler Control Register (DE Page 130)
+#define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
 
-  // TODO: 0x113 0000 is undocumented
-  // Is there a mixup with UI_SCALER3?
-  #define _1130000 0x1130000
+// TODO: 0x113 0000 is undocumented
+// Is there a mixup with UI_SCALER3?
+#define _1130000 0x1130000
 
-  // UI Scaler 1 Control Register (DE Page 66)
-  #define UIS_CTRL_REG1 (A64_UI_SCALER1_ADDR + 0)
+// UI Scaler 1 Control Register (DE Page 66)
+#define UIS_CTRL_REG1 (A64_UI_SCALER1_ADDR + 0)
 
-  // UI Scaler 2 Control Register (DE Page 66)
-  #define UIS_CTRL_REG2 (A64_UI_SCALER2_ADDR + 0)
+// UI Scaler 2 Control Register (DE Page 66)
+#define UIS_CTRL_REG2 (A64_UI_SCALER2_ADDR + 0)
 
-  // Fresh and Contrast Enhancement Global Control Register (DE Page 61)
-  #define GCTRL_REG_FCE (A64_FCE_ADDR + 0)
+// Fresh and Contrast Enhancement Global Control Register (DE Page 61)
+#define GCTRL_REG_FCE (A64_FCE_ADDR + 0)
 
-  // Black and White Stretch Global Control Register (DE Page 42)
-  #define GCTRL_REG_BWS (A64_BWS_ADDR + 0)
+// Black and White Stretch Global Control Register (DE Page 42)
+#define GCTRL_REG_BWS (A64_BWS_ADDR + 0)
 
-  // Luminance Transient Improvement Global Control Register (DE Page 72)
-  #define LTI_CTL (A64_LTI_ADDR + 0)
+// Luminance Transient Improvement Global Control Register (DE Page 72)
+#define LTI_CTL (A64_LTI_ADDR + 0)
 
-  // Luma Peaking Module Control Register (DE Page 80)
-  #define LP_CTRL_REG (A64_PEAKING_ADDR + 0)
+// Luma Peaking Module Control Register (DE Page 80)
+#define LP_CTRL_REG (A64_PEAKING_ADDR + 0)
 
-  // Adaptive Saturation Enhancement Global Control Register (DE Page 40)
-  #define ASE_CTL_REG (A64_ASE_ADDR + 0)
+// Adaptive Saturation Enhancement Global Control Register (DE Page 40)
+#define ASE_CTL_REG (A64_ASE_ADDR + 0)
 
-  // Fancy Color Curvature Change Control Register (DE Page 56)
-  #define FCC_CTL_REG (A64_FCC_ADDR + 0)
+// Fancy Color Curvature Change Control Register (DE Page 56)
+#define FCC_CTL_REG (A64_FCC_ADDR + 0)
 
-  // Dynamic Range Controller Module General Control Register (DE Page 49)
-  #define GNECTL_REG (A64_DRC_ADDR + 0)
+// Dynamic Range Controller Module General Control Register (DE Page 49)
+#define GNECTL_REG (A64_DRC_ADDR + 0)
 
-  // Mixer 0 Global Control Register (DE Page 92)
-  #define GLB_CTL (A64_MIXER0_ADDR + 0)
+// Mixer 0 Global Control Register (DE Page 92)
+#define GLB_CTL (A64_MIXER0_ADDR + 0)
 
-  // Blender Background Color (DE Page 109)
-  #define BLD_BK_COLOR (A64_BLD_ADDR + 0x88)
+// Blender Background Color (DE Page 109)
+#define BLD_BK_COLOR (A64_BLD_ADDR + 0x88)
 
-  // Blender Pre-Multiply Control (DE Page 109)
-  #define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x84)
+// Blender Pre-Multiply Control (DE Page 109)
+#define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x84)
 
-      // UI Overlay Attribute Control (DE Page 102)
-      #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
+// UI Overlay Attribute Control (DE Page 102)
+#define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
 
-      // UI Scaler Control Register (DE Page 66)
-      #define UIS_CTRL_REG(ch) (UI_SCALER_BASE_ADDRESS(ch) + 0)
+// UI Scaler Control Register (DE Page 66)
+#define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0)
 
-  // UI Overlay Attribute Control (DE Page 102)
-  #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
+// UI Overlay Attribute Control (DE Page 102)
+#define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
 
-  // UI Overlay Top Field Memory Block Low Address (DE Page 104)
-  #define OVL_UI_TOP_LADD(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x10)
+// UI Overlay Top Field Memory Block Low Address (DE Page 104)
+#define OVL_UI_TOP_LADD(ch) (A64_OVL_UI_ADDR(ch) + 0x10)
 
-  // UI Overlay Memory Pitch (DE Page 104)
-  #define OVL_UI_PITCH(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x0C)
+// UI Overlay Memory Pitch (DE Page 104)
+#define OVL_UI_PITCH(ch) (A64_OVL_UI_ADDR(ch) + 0x0C)
 
-  // UI Overlay Memory Block Size (DE Page 104)
-  #define OVL_UI_MBSIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x04)
+// UI Overlay Memory Block Size (DE Page 104)
+#define OVL_UI_MBSIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x04)
 
-  // UI Overlay Overlay Window Size (DE Page 106)
-  #define OVL_UI_SIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x88)
+// UI Overlay Overlay Window Size (DE Page 106)
+#define OVL_UI_SIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x88)
 
-  // UI Overlay Memory Block Coordinate (DE Page 104)
-  #define OVL_UI_COOR(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x08)
+// UI Overlay Memory Block Coordinate (DE Page 104)
+#define OVL_UI_COOR(ch) (A64_OVL_UI_ADDR(ch) + 0x08)
 
-    // Blender Output Size Setting (DE Page 110)
-    #define BLD_SIZE (A64_BLD_ADDR + 0x08C)
+// Blender Output Size Setting (DE Page 110)
+#define BLD_SIZE (A64_BLD_ADDR + 0x08C)
 
-    // Global Size (DE Page 93)
-    #define GLB_SIZE (A64_GLB_ADDR + 0x00C)
+// Global Size (DE Page 93)
+#define GLB_SIZE (A64_GLB_ADDR + 0x00C)
 
-  // Blender Input Memory Size (DE Page 108)
-  #define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
+// Blender Input Memory Size (DE Page 108)
+#define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
 
-  // Blender Fill Color (DE Page 107)
-  #define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
+// Blender Fill Color (DE Page 107)
+#define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
 
-  // Blender Input Memory Offset (DE Page 108)
-  #define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
+// Blender Input Memory Offset (DE Page 108)
+#define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
 
-  // Blender Control (DE Page 110)
-  #define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
+// Blender Control (DE Page 110)
+#define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
 
-  // UI Scaler Control Register (DE Page 66)
-  #define UIS_CTRL_REG(ch) (UI_SCALER_BASE_ADDRESS(ch) + 0)
+// UI Scaler Control Register (DE Page 66)
+#define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0)
 
-  // Blender Routing Control (DE Page 108)
-  #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
+// Blender Routing Control (DE Page 108)
+#define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
 
-  // Blender Fill Color Control (DE Page 106)
-  #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
+// Blender Fill Color Control (DE Page 106)
+#define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
 
-  // Global Double Buffer Control (DE Page 93)
-  #define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
+// Global Double Buffer Control (DE Page 93)
+#define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
 
 /****************************************************************************
  * Private Functions
@@ -649,7 +650,7 @@ int a64_de_ui_channel_init(
   DEBUGASSERT(stride == xres * 4);
 
   // UI Overlays 1, 2 and 3 (DE Page 102)
-  DEBUGASSERT(OVL_UI_BASE_ADDRESS(channel) == 0x1103000 || OVL_UI_BASE_ADDRESS(channel) == 0x1104000 || OVL_UI_BASE_ADDRESS(channel) == 0x1105000);
+  DEBUGASSERT(A64_OVL_UI_ADDR(channel) == 0x1103000 || A64_OVL_UI_ADDR(channel) == 0x1104000 || A64_OVL_UI_ADDR(channel) == 0x1105000);
 
   // If UI Channel should be disabled...
   if (fbmem == NULL) {
