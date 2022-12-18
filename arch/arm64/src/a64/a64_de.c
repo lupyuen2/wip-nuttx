@@ -128,7 +128,7 @@
 // Display Engine Clock Register (A64 Page 117)
 #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
   #define SCLK_GATING (1 << 31)
-  #define CLK_SRC_SEL (1 << 24)
+  #define CLK_SRC_SEL(n) ((n) << 24)
   #define SCLK_GATING_MASK (0b1   << 31)
   #define CLK_SRC_SEL_MASK (0b111 << 24)
 
@@ -358,7 +358,7 @@ int a64_de_init(void)
 
   uint32_t clk;
   clk = SCLK_GATING
-      | CLK_SRC_SEL;
+      | CLK_SRC_SEL(1);
   DEBUGASSERT(clk == 0x81000000);
 
   uint32_t clk_mask;
