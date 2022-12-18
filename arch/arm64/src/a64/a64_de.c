@@ -106,10 +106,137 @@
 // Fancy Color Curvature Change (DE Page 56)
 #define A64_FCC_ADDR (A64_MIXER0_ADDR + 0x0AA000)
 
+  // UI Overlays 1, 2 and 3 (DE Page 102)
+  #define OVL_UI_BASE_ADDRESS(ch) (A64_OVL_UI_CH1_ADDR + ((ch) - 1) * 0x1000)
+
+  // UI Scalers 1, 2 and 3 (DE Page 90)
+  #define UI_SCALER_BASE_ADDRESS(ch) (A64_UI_SCALER1_ADDR + ((ch) - 1) * 0x10000)
+
 // TODO
+
+// SRAM Control Register 1 (A31 Page 191)
+#define SRAM_CTRL_REG1 (A64_SRAM_REG_ADDR + 0x4)
 
 // PLL Display Engine Control Register (A64 Page 96)
 #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
+
+  // Display Engine Clock Register (A64 Page 117)
+  #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
+
+  // Bus Software Reset Register 1 (A64 Page 140)
+  #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
+
+  // Bus Clock Gating Register 1 (A64 Page 102)
+  #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
+
+  // DE SCLK Gating Register (DE Page 25)
+  #define SCLK_GATE (A64_DE_ADDR + 0x000)
+
+  // DE AHB Reset register (DE Page 25)
+  #define AHB_RESET (A64_DE_ADDR + 0x008)
+
+  // DE HCLK Gating Register (DE Page 25)
+  #define HCLK_GATE (A64_DE_ADDR + 0x004)
+
+  // DE2TCON MUX Register (DE Page 26)
+  #define DE2TCON_MUX (A64_DE_ADDR + 0x010)
+
+  // Video Scaler Control Register (DE Page 130)
+  #define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
+
+  // TODO: 0x113 0000 is undocumented
+  // Is there a mixup with UI_SCALER3?
+  #define _1130000 0x1130000
+
+  // UI Scaler 1 Control Register (DE Page 66)
+  #define UIS_CTRL_REG1 (A64_UI_SCALER1_ADDR + 0)
+
+  // UI Scaler 2 Control Register (DE Page 66)
+  #define UIS_CTRL_REG2 (A64_UI_SCALER2_ADDR + 0)
+
+  // Fresh and Contrast Enhancement Global Control Register (DE Page 61)
+  #define GCTRL_REG_FCE (A64_FCE_ADDR + 0)
+
+  // Black and White Stretch Global Control Register (DE Page 42)
+  #define GCTRL_REG_BWS (A64_BWS_ADDR + 0)
+
+  // Luminance Transient Improvement Global Control Register (DE Page 72)
+  #define LTI_CTL (A64_LTI_ADDR + 0)
+
+  // Luma Peaking Module Control Register (DE Page 80)
+  #define LP_CTRL_REG (A64_PEAKING_ADDR + 0)
+
+  // Adaptive Saturation Enhancement Global Control Register (DE Page 40)
+  #define ASE_CTL_REG (A64_ASE_ADDR + 0)
+
+  // Fancy Color Curvature Change Control Register (DE Page 56)
+  #define FCC_CTL_REG (A64_FCC_ADDR + 0)
+
+  // Dynamic Range Controller Module General Control Register (DE Page 49)
+  #define GNECTL_REG (A64_DRC_ADDR + 0)
+
+  // Mixer 0 Global Control Register (DE Page 92)
+  #define GLB_CTL (A64_MIXER0_ADDR + 0)
+
+  // Blender Background Color (DE Page 109)
+  #define BLD_BK_COLOR (A64_BLD_ADDR + 0x88)
+
+  // Blender Pre-Multiply Control (DE Page 109)
+  #define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x84)
+
+      // UI Overlay Attribute Control (DE Page 102)
+      #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
+
+      // UI Scaler Control Register (DE Page 66)
+      #define UIS_CTRL_REG(ch) (UI_SCALER_BASE_ADDRESS(ch) + 0)
+
+  // UI Overlay Attribute Control (DE Page 102)
+  #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
+
+  // UI Overlay Top Field Memory Block Low Address (DE Page 104)
+  #define OVL_UI_TOP_LADD(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x10)
+
+  // UI Overlay Memory Pitch (DE Page 104)
+  #define OVL_UI_PITCH(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x0C)
+
+  // UI Overlay Memory Block Size (DE Page 104)
+  #define OVL_UI_MBSIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x04)
+
+  // UI Overlay Overlay Window Size (DE Page 106)
+  #define OVL_UI_SIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x88)
+
+  // UI Overlay Memory Block Coordinate (DE Page 104)
+  #define OVL_UI_COOR(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x08)
+
+    // Blender Output Size Setting (DE Page 110)
+    #define BLD_SIZE (A64_BLD_ADDR + 0x08C)
+
+    // Global Size (DE Page 93)
+    #define GLB_SIZE (A64_GLB_ADDR + 0x00C)
+
+  // Blender Input Memory Size (DE Page 108)
+  #define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
+
+  // Blender Fill Color (DE Page 107)
+  #define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
+
+  // Blender Input Memory Offset (DE Page 108)
+  #define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
+
+  // Blender Control (DE Page 110)
+  #define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
+
+  // UI Scaler Control Register (DE Page 66)
+  #define UIS_CTRL_REG(ch) (UI_SCALER_BASE_ADDRESS(ch) + 0)
+
+  // Blender Routing Control (DE Page 108)
+  #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
+
+  // Blender Fill Color Control (DE Page 106)
+  #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
+
+  // Global Double Buffer Control (DE Page 93)
+  #define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
 
 /****************************************************************************
  * Private Functions
@@ -170,7 +297,6 @@ int a64_de_init(void)
 
   // SRAM Control Register 1 (A31 Page 191)
   // Set BIST_DMA_CTRL_SEL (Bit 31) to 0 (DMA)
-  #define SRAM_CTRL_REG1 (A64_SRAM_REG_ADDR + 0x4)
   DEBUGASSERT(SRAM_CTRL_REG1 == 0x1C00004);
   putreg32(0x0, SRAM_CTRL_REG1);
 
@@ -214,10 +340,7 @@ int a64_de_init(void)
 
   ginfo("Set Special Clock to Display Engine PLL\n");
 
-  // DE_CLK_REG (Display Engine Clock Register) is at CCU Offset 0x0104
-  // (A64 Page 117, 0x1C2 0104)
-  // Clear DE_CLK_REG bits 0x0300 0000
-  // Set DE_CLK_REG bits 0x8100 0000
+  // Display Engine Clock Register (A64 Page 117)
   // Set SCLK_GATING (Bit 31)        = 1 (Enable Special Clock)
   // Set CLK_SRC_SEL (Bits 24 to 26) = 1 (Clock Source is Display Engine PLL)
 
@@ -234,7 +357,6 @@ int a64_de_init(void)
   clk_mask = SCLK_GATING_MASK
       | CLK_SRC_SEL_MASK;
 
-  #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
   DEBUGASSERT(DE_CLK_REG == 0x1C20104);
   modreg32(clk, clk_mask, DE_CLK_REG);
 
@@ -242,13 +364,10 @@ int a64_de_init(void)
 
   ginfo("Enable AHB for Display Engine: De-Assert Display Engine\n");
 
-  // BUS_SOFT_RST_REG1 (Bus Software Reset Register 1) is at CCU Offset 0x02C4
-  // (A64 Page 140, 0x1C2 02C4)
-  // Set BUS_SOFT_RST_REG1 bits 0x1000
+  // Bus Software Reset Register 1 (A64 Page 140)
   // Set DE_RST (Bit 12) = 1 (De-Assert Display Engine)
 
   #define DE_RST (1 << 12)
-  #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
   DEBUGASSERT(BUS_SOFT_RST_REG1 == 0x1C202C4);
   modreg32(DE_RST, DE_RST, BUS_SOFT_RST_REG1);
 
@@ -256,13 +375,10 @@ int a64_de_init(void)
 
   ginfo("Enable AHB for Display Engine: Pass Display Engine\n");
 
-  // BUS_CLK_GATING_REG1 (Bus Clock Gating Register 1) is at CCU Offset 0x0064
-  // (A64 Page 102, 0x1C2 0064)
-  // Set BUS_CLK_GATING_REG1 bits 0x1000
+  // Bus Clock Gating Register 1 (A64 Page 102)
   // Set DE_GATING (Bit 12) = 1 (Pass Display Engine)
 
   #define DE_GATING (1 << 12)
-  #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
   DEBUGASSERT(BUS_CLK_GATING_REG1 == 0x1C20064);
   modreg32(DE_GATING, DE_GATING, BUS_CLK_GATING_REG1);
 
@@ -270,13 +386,10 @@ int a64_de_init(void)
 
   ginfo("Enable Clock for MIXER0: SCLK Clock Pass\n");
 
-  // SCLK_GATE is at DE Offset 0x000
-  // (DE Page 25, 0x100 0000)
-  // Set SCLK_GATE bits 0x1
+  // DE SCLK Gating Register (DE Page 25)
   // Set CORE0_SCLK_GATE (Bit 0) = 1 (Clock Pass)
 
   #define CORE0_SCLK_GATE (1 << 0)
-  #define SCLK_GATE (A64_DE_ADDR + 0x000)
   DEBUGASSERT(SCLK_GATE == 0x1000000);
   modreg32(CORE0_SCLK_GATE, CORE0_SCLK_GATE, SCLK_GATE);
 
@@ -284,13 +397,10 @@ int a64_de_init(void)
 
   ginfo("Enable Clock for MIXER0: HCLK Clock Reset Off\n");
 
-  // AHB_RESET is at DE Offset 0x008
-  // (DE Page 25, 0x100 0008)
-  // Set AHB_RESET bits 0x1
+  // DE AHB Reset register (DE Page 25)
   // Set CORE0_HCLK_RESET (Bit 0) = 1 (Reset Off)
 
   #define CORE0_HCLK_RESET (1 << 0)
-  #define AHB_RESET (A64_DE_ADDR + 0x008)
   DEBUGASSERT(AHB_RESET == 0x1000008);
   modreg32(CORE0_HCLK_RESET, CORE0_HCLK_RESET, AHB_RESET);
 
@@ -298,13 +408,10 @@ int a64_de_init(void)
 
   ginfo("Enable Clock for MIXER0: HCLK Clock Pass\n");
 
-  // HCLK_GATE is at DE Offset 0x004
-  // (DE Page 25, 0x100 0004)
-  // Set HCLK_GATE bits 0x1
+  // DE HCLK Gating Register (DE Page 25)
   // Set CORE0_HCLK_GATE (Bit 0) = 1 (Clock Pass)
 
   #define CORE0_HCLK_GATE (1 << 0)
-  #define HCLK_GATE (A64_DE_ADDR + 0x004)
   DEBUGASSERT(HCLK_GATE == 0x1000004);
   modreg32(CORE0_HCLK_GATE, CORE0_HCLK_GATE, HCLK_GATE);
 
@@ -312,15 +419,11 @@ int a64_de_init(void)
 
   ginfo("Route MIXER0 to TCON0\n");
 
-  // DE2TCON_MUX is at DE Offset 0x010
-  // (DE Page 26, 0x100 0010)
-  // Route MIXER0 to TCON0
-  // Clear DE2TCON_MUX bits 0x1
+  // DE2TCON MUX Register (DE Page 26)
   // Set DE2TCON_MUX (Bit 0) = 0
   // (Route MIXER0 to TCON0; Route MIXER1 to TCON1)
 
   #define DE2TCON_MUX_MASK (1 << 0)
-  #define DE2TCON_MUX (A64_DE_ADDR + 0x010)
   DEBUGASSERT(DE2TCON_MUX == 0x1000010);
   modreg32(0, DE2TCON_MUX_MASK, DE2TCON_MUX);
 
@@ -347,10 +450,9 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 VSU\n");
 
-  // Video Scaler Control register (DE Page 130)
+  // Video Scaler Control Register (DE Page 130)
   // Set EN (Bit 0) = 0 (Disable Video Scaler)
 
-  #define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
   DEBUGASSERT(VS_CTRL_REG == 0x1120000);
   putreg32(0, VS_CTRL_REG);
 
@@ -361,7 +463,6 @@ int a64_de_init(void)
   // TODO: 0x113 0000 is undocumented
   // Is there a mixup with UI_SCALER3?
 
-  #define _1130000 0x1130000
   putreg32(0, _1130000);
 
   /* Disable MIXER0 UI_SCALER1 **********************************************/
@@ -371,7 +472,6 @@ int a64_de_init(void)
   // UI Scaler 1 Control Register (DE Page 66)
   // Set EN (Bit 0) = 0 (Disable UI Scaler)
 
-  #define UIS_CTRL_REG1 (A64_UI_SCALER1_ADDR + 0)
   DEBUGASSERT(UIS_CTRL_REG1 == 0x1140000);
   putreg32(0, UIS_CTRL_REG1);
 
@@ -382,7 +482,6 @@ int a64_de_init(void)
   // UI Scaler 2 Control Register (DE Page 66)
   // Set EN (Bit 0) = 0 (Disable UI Scaler)
 
-  #define UIS_CTRL_REG2 (A64_UI_SCALER2_ADDR + 0)
   DEBUGASSERT(UIS_CTRL_REG2 == 0x1150000);
   putreg32(0, UIS_CTRL_REG2);
 
@@ -396,7 +495,6 @@ int a64_de_init(void)
   // Fresh and Contrast Enhancement Global Control Register (DE Page 61)
   // Set EN (Bit 0) = 0 (Disable FCE)
 
-  #define GCTRL_REG_FCE (A64_FCE_ADDR + 0)
   DEBUGASSERT(GCTRL_REG_FCE == 0x11A0000);
   putreg32(0, GCTRL_REG_FCE);
 
@@ -407,7 +505,6 @@ int a64_de_init(void)
   // Black and White Stretch Global Control Register (DE Page 42)
   // Set EN (Bit 0) = 0 (Disable BWS)
 
-  #define GCTRL_REG_BWS (A64_BWS_ADDR + 0)
   DEBUGASSERT(GCTRL_REG_BWS == 0x11A2000);
   putreg32(0, GCTRL_REG_BWS);
 
@@ -418,7 +515,6 @@ int a64_de_init(void)
   // Luminance Transient Improvement Global Control Register (DE Page 72)
   // Set LTI_EN (Bit 0) = 0 (Close LTI)
 
-  #define LTI_CTL (A64_LTI_ADDR + 0)
   DEBUGASSERT(LTI_CTL == 0x11A4000);
   putreg32(0, LTI_CTL);
 
@@ -429,7 +525,6 @@ int a64_de_init(void)
   // Luma Peaking Module Control Register (DE Page 80)
   // Set EN (Bit 0) = 0 (Disable PEAKING)
 
-  #define LP_CTRL_REG (A64_PEAKING_ADDR + 0)
   DEBUGASSERT(LP_CTRL_REG == 0x11A6000);
   putreg32(0, LP_CTRL_REG);
 
@@ -440,7 +535,6 @@ int a64_de_init(void)
   // Adaptive Saturation Enhancement Global Control Register (DE Page 40)
   // Set ASE_EN (Bit 0) = 0 (Disable ASE)
 
-  #define ASE_CTL_REG (A64_ASE_ADDR + 0)
   DEBUGASSERT(ASE_CTL_REG == 0x11A8000);
   putreg32(0, ASE_CTL_REG);
 
@@ -451,7 +545,6 @@ int a64_de_init(void)
   // Fancy Color Curvature Change Control Register (DE Page 56)
   // Set Enable (Bit 0) = 0 (Disable FCC)
 
-  #define FCC_CTL_REG (A64_FCC_ADDR + 0)
   DEBUGASSERT(FCC_CTL_REG == 0x11AA000);
   putreg32(0, FCC_CTL_REG);
 
@@ -462,7 +555,6 @@ int a64_de_init(void)
   // Dynamic Range Controller Module General Control Register (DE Page 49)
   // Set BIST_EN (Bit 0) = 0 (Disable BIST)
 
-  #define GNECTL_REG (A64_DRC_ADDR + 0)
   DEBUGASSERT(GNECTL_REG == 0x11B0000);
   putreg32(0, GNECTL_REG);
 
@@ -474,7 +566,6 @@ int a64_de_init(void)
   // Set EN (Bit 0) = 1 (Enable Mixer)
 
   #define EN_MIXER (1 << 0)
-  #define GLB_CTL (A64_MIXER0_ADDR + 0)
   DEBUGASSERT(GLB_CTL == 0x1100000);
   putreg32(EN_MIXER, GLB_CTL);
 
@@ -507,7 +598,6 @@ int a64_de_blender_init(void)
       | BLUE;
   DEBUGASSERT(color == 0xFF000000);
 
-  #define BLD_BK_COLOR (A64_BLD_ADDR + 0x88)
   DEBUGASSERT(BLD_BK_COLOR == 0x1101088);
   putreg32(color, BLD_BK_COLOR);
 
@@ -533,7 +623,6 @@ int a64_de_blender_init(void)
       | P0_ALPHA_MODE;
   DEBUGASSERT(premultiply == 0);
 
-  #define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x84)
   DEBUGASSERT(BLD_PREMUL_CTL == 0x1101084);
   putreg32(premultiply, BLD_PREMUL_CTL);
 
@@ -559,18 +648,8 @@ int a64_de_ui_channel_init(
   DEBUGASSERT(fblen == xres * yres * 4);
   DEBUGASSERT(stride == xres * 4);
 
-  // OVL_UI(CH1) (UI Overlay 1) is at MIXER0 Offset 0x3000
-  // OVL_UI(CH2) (UI Overlay 2) is at MIXER0 Offset 0x4000
-  // OVL_UI(CH3) (UI Overlay 3) is at MIXER0 Offset 0x5000
-  // (DE Page 102, 0x110 3000 / 0x110 4000 / 0x110 5000)
-  #define OVL_UI_BASE_ADDRESS(ch) (A64_OVL_UI_CH1_ADDR + ((ch) - 1) * 0x1000)
+  // UI Overlays 1, 2 and 3 (DE Page 102)
   DEBUGASSERT(OVL_UI_BASE_ADDRESS(channel) == 0x1103000 || OVL_UI_BASE_ADDRESS(channel) == 0x1104000 || OVL_UI_BASE_ADDRESS(channel) == 0x1105000);
-
-  // UI_SCALER1(CH1) is at MIXER0 Offset 0x04 0000
-  // UI_SCALER2(CH2) is at MIXER0 Offset 0x05 0000
-  // UI_SCALER3(CH3) is at MIXER0 Offset 0x06 0000
-  // (DE Page 90, 0x114 0000 / 0x115 0000 / 0x116 0000)
-  #define UI_SCALER_BASE_ADDRESS(ch) (A64_UI_SCALER1_ADDR + ((ch) - 1) * 0x10000)
 
   // If UI Channel should be disabled...
   if (fbmem == NULL) {
@@ -580,7 +659,6 @@ int a64_de_ui_channel_init(
 
       // UI Overlay Attribute Control (DE Page 102)
       // Set LAY_EN (Bit 0) = 0 (Disable Layer)
-      #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
       DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
       putreg32(0, OVL_UI_ATTR_CTL(channel));
 
@@ -590,7 +668,6 @@ int a64_de_ui_channel_init(
 
       // UI Scaler Control Register (DE Page 66)
       // Set EN (Bit 0) = 0 (Disable UI Scaler)
-      #define UIS_CTRL_REG(ch) (UI_SCALER_BASE_ADDRESS(ch) + 0)
       DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
       putreg32(0, UIS_CTRL_REG(channel));
 
@@ -636,20 +713,17 @@ int a64_de_ui_channel_init(
       | LAY_EN;
   DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
 
-  #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
   DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
   putreg32(attr, OVL_UI_ATTR_CTL(channel));
 
   // UI Overlay Top Field Memory Block Low Address (DE Page 104)
   // Set to Framebuffer Address
   DEBUGASSERT((((uint64_t)fbmem) & 0xffffffff) == (uint64_t)fbmem);  // 32 bits only
-  #define OVL_UI_TOP_LADD(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x10)
   DEBUGASSERT(OVL_UI_TOP_LADD(channel) == 0x1103010 || OVL_UI_TOP_LADD(channel) == 0x1104010 || OVL_UI_TOP_LADD(channel) == 0x1105010);
   putreg32((uint64_t)fbmem, OVL_UI_TOP_LADD(channel));
 
   // UI Overlay Memory Pitch (DE Page 104)
   // Set to (width * 4), number of bytes per row
-  #define OVL_UI_PITCH(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x0C)
   DEBUGASSERT(OVL_UI_PITCH(channel) == 0x110300C || OVL_UI_PITCH(channel) == 0x110400C || OVL_UI_PITCH(channel) == 0x110500C);
   putreg32(xres * 4, OVL_UI_PITCH(channel));
 
@@ -658,19 +732,16 @@ int a64_de_ui_channel_init(
   uint32_t height_width;
   height_width = ((yres - 1) << 16)
       | (xres - 1);
-  #define OVL_UI_MBSIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x04)
   DEBUGASSERT(OVL_UI_MBSIZE(channel) == 0x1103004 || OVL_UI_MBSIZE(channel) == 0x1104004 || OVL_UI_MBSIZE(channel) == 0x1105004);
   putreg32(height_width, OVL_UI_MBSIZE(channel));
 
   // UI Overlay Overlay Window Size (DE Page 106)
   // Set to (height-1) << 16 + (width-1)
-  #define OVL_UI_SIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x88)
   DEBUGASSERT(OVL_UI_SIZE(channel) == 0x1103088 || OVL_UI_SIZE(channel) == 0x1104088 || OVL_UI_SIZE(channel) == 0x1105088);
   putreg32(height_width, OVL_UI_SIZE(channel));
 
   // UI Overlay Memory Block Coordinate (DE Page 104)
   // Set to 0 (Overlay at X=0, Y=0)
-  #define OVL_UI_COOR(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x08)
   DEBUGASSERT(OVL_UI_COOR(channel) == 0x1103008 || OVL_UI_COOR(channel) == 0x1104008 || OVL_UI_COOR(channel) == 0x1105008);
   putreg32(0, OVL_UI_COOR(channel));
 
@@ -683,13 +754,11 @@ int a64_de_ui_channel_init(
 
     // Blender Output Size Setting (DE Page 110)
     // Set to (height-1) << 16 + (width-1)
-    #define BLD_SIZE (A64_BLD_ADDR + 0x08C)
     DEBUGASSERT(BLD_SIZE == 0x110108C);
     putreg32(height_width, BLD_SIZE);
 
     // Global Size (DE Page 93)
     // Set to (height-1) << 16 + (width-1)
-    #define GLB_SIZE (A64_GLB_ADDR + 0x00C)
     DEBUGASSERT(GLB_SIZE == 0x110000C);
     putreg32(height_width, GLB_SIZE);
   }
@@ -708,7 +777,6 @@ int a64_de_ui_channel_init(
 
   // Blender Input Memory Size (DE Page 108)
   // Set to (height-1) << 16 + (width-1)
-  #define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
   DEBUGASSERT(BLD_CH_ISIZE(pipe) == 0x1101008 || BLD_CH_ISIZE(pipe) == 0x1101018 || BLD_CH_ISIZE(pipe) == 0x1101028);
   putreg32(height_width, BLD_CH_ISIZE(pipe));
 
@@ -729,7 +797,6 @@ int a64_de_ui_channel_init(
       | BLUE;
   DEBUGASSERT(color == 0xFF000000);
 
-  #define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
   DEBUGASSERT(BLD_FILL_COLOR(pipe) == 0x1101004 || BLD_FILL_COLOR(pipe) == 0x1101014 || BLD_FILL_COLOR(pipe) == 0x1101024);
   putreg32(color, BLD_FILL_COLOR(pipe));
 
@@ -740,7 +807,6 @@ int a64_de_ui_channel_init(
       | xoffset;
   DEBUGASSERT(offset == 0 || offset == 0x340034);
 
-  #define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
   DEBUGASSERT(BLD_CH_OFFSET(pipe) == 0x110100C || BLD_CH_OFFSET(pipe) == 0x110101C || BLD_CH_OFFSET(pipe) == 0x110102C);
   putreg32(offset, BLD_CH_OFFSET(pipe));
 
@@ -763,7 +829,6 @@ int a64_de_ui_channel_init(
       | BLEND_PFD
       | BLEND_PFS;
 
-  #define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
   DEBUGASSERT(BLD_CTL(pipe) == 0x1101090 || BLD_CTL(pipe) == 0x1101094 || BLD_CTL(pipe) == 0x1101098);
   putreg32(blend, BLD_CTL(pipe));
 
@@ -773,7 +838,6 @@ int a64_de_ui_channel_init(
 
   // UI Scaler Control Register (DE Page 66)
   // Set EN (Bit 0) = 0 (Disable UI Scaler)
-  #define UIS_CTRL_REG(ch) (UI_SCALER_BASE_ADDRESS(ch) + 0)
   DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
   putreg32(0, UIS_CTRL_REG(channel));
 
@@ -820,7 +884,6 @@ int a64_de_enable(
       | P0_RTCTL;
   DEBUGASSERT(route == 0x321 || route == 1);
 
-  #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
   DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
   putreg32(route, BLD_CH_RTCTL);
 
@@ -860,7 +923,6 @@ int a64_de_enable(
       | P0_FCEN;
   DEBUGASSERT(fill == 0x701 || fill == 0x101);
 
-  #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
   DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
   putreg32(fill, BLD_FILL_COLOR_CTL);
 
@@ -875,7 +937,6 @@ int a64_de_enable(
   #define DOUBLE_BUFFER_RDY (1 << 0)
   DEBUGASSERT(DOUBLE_BUFFER_RDY == 1);
 
-  #define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
   DEBUGASSERT(GLB_DBUFFER == 0x1100008);
   putreg32(DOUBLE_BUFFER_RDY, GLB_DBUFFER);
 
