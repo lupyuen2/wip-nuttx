@@ -345,8 +345,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 VSU\n");
 
-  // (DE Page 130, 0x112 0000)
-  // Set to 0: VS_CTRL_REG at VIDEO_SCALER(CH0) Offset 0
+  // Video Scaler Control register (DE Page 130)
   // Set EN (Bit 0) = 0 (Disable Video Scaler)
 
   #define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
@@ -367,9 +366,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 UI_SCALER1\n");
 
-  // (DE Page 66, 0x114 0000)
-  // Disable MIXER0 UI_SCALER1
-  // Set to 0: UIS_CTRL_REG at UI_SCALER1(CH1) Offset 0
+  // UI Scaler 1 Control Register (DE Page 66)
   // Set EN (Bit 0) = 0 (Disable UI Scaler)
 
   #define UIS_CTRL_REG1 (A64_UI_SCALER1_ADDR + 0)
@@ -380,8 +377,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 UI_SCALER2\n");
 
-  // (DE Page 66, 0x115 0000)
-  // Set to 0: UIS_CTRL_REG at UI_SCALER2(CH2) Offset 0
+  // UI Scaler 2 Control Register (DE Page 66)
   // Set EN (Bit 0) = 0 (Disable UI Scaler)
 
   #define UIS_CTRL_REG2 (A64_UI_SCALER2_ADDR + 0)
@@ -395,8 +391,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 FCE\n");
 
-  // (DE Page 62, 0x11A 0000)
-  // Set to 0: GCTRL_REG(FCE) at FCE Offset 0
+  // Fresh and Contrast Enhancement Global Control Register (DE Page 61)
   // Set EN (Bit 0) = 0 (Disable FCE)
 
   #define GCTRL_REG_FCE (A64_FCE_ADDR + 0)
@@ -407,8 +402,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 BWS\n");
 
-  // (DE Page 42, 0x11A 2000)
-  // Set to 0: GCTRL_REG(BWS) at BWS Offset 0
+  // Black and White Stretch Global Control Register (DE Page 42)
   // Set EN (Bit 0) = 0 (Disable BWS)
 
   #define GCTRL_REG_BWS (A64_BWS_ADDR + 0)
@@ -419,8 +413,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 LTI\n");
 
-  // (DE Page 72, 0x11A 4000)
-  // Set to 0: LTI_CTL at LTI Offset 0
+  // Luminance Transient Improvement Global Control Register (DE Page 72)
   // Set LTI_EN (Bit 0) = 0 (Close LTI)
 
   #define LTI_CTL (A64_LTI_ADDR + 0)
@@ -431,8 +424,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 PEAKING\n");
 
-  // (DE Page 80, 0x11A 6000)
-  // Set to 0: LP_CTRL_REG at PEAKING Offset 0
+  // Luma Peaking Module Control Register (DE Page 80)
   // Set EN (Bit 0) = 0 (Disable PEAKING)
 
   #define LP_CTRL_REG (A64_PEAKING_ADDR + 0)
@@ -443,8 +435,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 ASE\n");
 
-  // (DE Page 40, 0x11A 8000)
-  // Set to 0: ASE_CTL_REG at ASE Offset 0
+  // Adaptive Saturation Enhancement Global Control Register (DE Page 40)
   // Set ASE_EN (Bit 0) = 0 (Disable ASE)
 
   #define ASE_CTL_REG (A64_ASE_ADDR + 0)
@@ -455,8 +446,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 FCC\n");
 
-  // (DE Page 56, 0x11A A000)
-  // Set to 0: FCC_CTL_REG at FCC Offset 0
+  // Fancy Color Curvature Change Control Register (DE Page 56)
   // Set Enable (Bit 0) = 0 (Disable FCC)
 
   #define FCC_CTL_REG (A64_FCC_ADDR + 0)
@@ -467,8 +457,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 DRC\n");
 
-  // (DE Page 49, 0x11B 0000)
-  // Set to 0: GNECTL_REG at DRC Offset 0
+  // Dynamic Range Controller Module General Control Register (DE Page 49)
   // Set BIST_EN (Bit 0) = 0 (Disable BIST)
 
   #define GNECTL_REG (A64_DRC_ADDR + 0)
@@ -479,11 +468,8 @@ int a64_de_init(void)
 
   ginfo("Enable MIXER0\n");
 
-  // (DE Page 90, 0x110 0000)
-  // Set GLB_CTL to 1
+  // Mixer 0 Global Control Register (DE Page 92)
   // Set EN (Bit 0) = 1 (Enable Mixer)
-  // (DE Page 92)
-  // GLB_CTL is at MIXER0 Offset 0
 
   #define EN_MIXER (1 << 0)
   #define GLB_CTL (A64_MIXER0_ADDR + 0)
