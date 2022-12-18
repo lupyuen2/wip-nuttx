@@ -378,8 +378,8 @@ int a64_de_init(void)
   ginfo("Set Special Clock to Display Engine PLL\n");
 
   // Display Engine Clock Register (A64 Page 117)
-  // Set SCLK_GATING (Bit 31)        = 1 (Enable Special Clock)
-  // Set CLK_SRC_SEL (Bits 24 to 26) = 1 (Clock Source is Display Engine PLL)
+  // Set SCLK_GATING (Bit 31) to 1 (Enable Special Clock)
+  // Set CLK_SRC_SEL (Bits 24 to 26) to 1 (Clock Source is Display Engine PLL)
 
   uint32_t clk;
   clk = SCLK_GATING | CLK_SRC_SEL(1);
@@ -396,7 +396,7 @@ int a64_de_init(void)
   ginfo("Enable AHB for Display Engine: De-Assert Display Engine\n");
 
   // Bus Software Reset Register 1 (A64 Page 140)
-  // Set DE_RST (Bit 12) = 1 (De-Assert Display Engine)
+  // Set DE_RST (Bit 12) to 1 (De-Assert Display Engine)
 
   DEBUGASSERT(BUS_SOFT_RST_REG1 == 0x1C202C4);
   modreg32(DE_RST, DE_RST, BUS_SOFT_RST_REG1);
@@ -406,7 +406,7 @@ int a64_de_init(void)
   ginfo("Enable AHB for Display Engine: Pass Display Engine\n");
 
   // Bus Clock Gating Register 1 (A64 Page 102)
-  // Set DE_GATING (Bit 12) = 1 (Pass Display Engine)
+  // Set DE_GATING (Bit 12) to 1 (Pass Display Engine)
 
   DEBUGASSERT(BUS_CLK_GATING_REG1 == 0x1C20064);
   modreg32(DE_GATING, DE_GATING, BUS_CLK_GATING_REG1);
@@ -416,7 +416,7 @@ int a64_de_init(void)
   ginfo("Enable Clock for MIXER0: SCLK Clock Pass\n");
 
   // DE SCLK Gating Register (DE Page 25)
-  // Set CORE0_SCLK_GATE (Bit 0) = 1 (Clock Pass)
+  // Set CORE0_SCLK_GATE (Bit 0) to 1 (Clock Pass)
 
   DEBUGASSERT(SCLK_GATE == 0x1000000);
   modreg32(CORE0_SCLK_GATE, CORE0_SCLK_GATE, SCLK_GATE);
@@ -426,7 +426,7 @@ int a64_de_init(void)
   ginfo("Enable Clock for MIXER0: HCLK Clock Reset Off\n");
 
   // DE AHB Reset register (DE Page 25)
-  // Set CORE0_HCLK_RESET (Bit 0) = 1 (Reset Off)
+  // Set CORE0_HCLK_RESET (Bit 0) to 1 (Reset Off)
 
   DEBUGASSERT(AHB_RESET == 0x1000008);
   modreg32(CORE0_HCLK_RESET, CORE0_HCLK_RESET, AHB_RESET);
@@ -436,7 +436,7 @@ int a64_de_init(void)
   ginfo("Enable Clock for MIXER0: HCLK Clock Pass\n");
 
   // DE HCLK Gating Register (DE Page 25)
-  // Set CORE0_HCLK_GATE (Bit 0) = 1 (Clock Pass)
+  // Set CORE0_HCLK_GATE (Bit 0) to 1 (Clock Pass)
 
   DEBUGASSERT(HCLK_GATE == 0x1000004);
   modreg32(CORE0_HCLK_GATE, CORE0_HCLK_GATE, HCLK_GATE);
@@ -446,7 +446,7 @@ int a64_de_init(void)
   ginfo("Route MIXER0 to TCON0\n");
 
   // DE2TCON MUX Register (DE Page 26)
-  // Set DE2TCON_MUX (Bit 0) = 0
+  // Set DE2TCON_MUX (Bit 0) to 0
   // (Route MIXER0 to TCON0; Route MIXER1 to TCON1)
 
   DEBUGASSERT(DE2TCON_MUX == 0x1000010);
@@ -476,7 +476,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 VSU\n");
 
   // Video Scaler Control Register (DE Page 130)
-  // Set EN (Bit 0) = 0 (Disable Video Scaler)
+  // Set EN (Bit 0) to 0 (Disable Video Scaler)
 
   DEBUGASSERT(VS_CTRL_REG == 0x1120000);
   putreg32(0, VS_CTRL_REG);
@@ -495,7 +495,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 UI_SCALER1\n");
 
   // UI Scaler 1 Control Register (DE Page 66)
-  // Set EN (Bit 0) = 0 (Disable UI Scaler)
+  // Set EN (Bit 0) to 0 (Disable UI Scaler)
 
   DEBUGASSERT(UIS_CTRL_REG1 == 0x1140000);
   putreg32(0, UIS_CTRL_REG1);
@@ -505,7 +505,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 UI_SCALER2\n");
 
   // UI Scaler 2 Control Register (DE Page 66)
-  // Set EN (Bit 0) = 0 (Disable UI Scaler)
+  // Set EN (Bit 0) to 0 (Disable UI Scaler)
 
   DEBUGASSERT(UIS_CTRL_REG2 == 0x1150000);
   putreg32(0, UIS_CTRL_REG2);
@@ -518,7 +518,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 FCE\n");
 
   // Fresh and Contrast Enhancement Global Control Register (DE Page 61)
-  // Set EN (Bit 0) = 0 (Disable FCE)
+  // Set EN (Bit 0) to 0 (Disable FCE)
 
   DEBUGASSERT(GCTRL_REG_FCE == 0x11A0000);
   putreg32(0, GCTRL_REG_FCE);
@@ -528,7 +528,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 BWS\n");
 
   // Black and White Stretch Global Control Register (DE Page 42)
-  // Set EN (Bit 0) = 0 (Disable BWS)
+  // Set EN (Bit 0) to 0 (Disable BWS)
 
   DEBUGASSERT(GCTRL_REG_BWS == 0x11A2000);
   putreg32(0, GCTRL_REG_BWS);
@@ -538,7 +538,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 LTI\n");
 
   // Luminance Transient Improvement Global Control Register (DE Page 72)
-  // Set LTI_EN (Bit 0) = 0 (Close LTI)
+  // Set LTI_EN (Bit 0) to 0 (Close LTI)
 
   DEBUGASSERT(LTI_CTL == 0x11A4000);
   putreg32(0, LTI_CTL);
@@ -548,7 +548,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 PEAKING\n");
 
   // Luma Peaking Module Control Register (DE Page 80)
-  // Set EN (Bit 0) = 0 (Disable PEAKING)
+  // Set EN (Bit 0) to 0 (Disable PEAKING)
 
   DEBUGASSERT(LP_CTRL_REG == 0x11A6000);
   putreg32(0, LP_CTRL_REG);
@@ -558,7 +558,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 ASE\n");
 
   // Adaptive Saturation Enhancement Global Control Register (DE Page 40)
-  // Set ASE_EN (Bit 0) = 0 (Disable ASE)
+  // Set ASE_EN (Bit 0) to 0 (Disable ASE)
 
   DEBUGASSERT(ASE_CTL_REG == 0x11A8000);
   putreg32(0, ASE_CTL_REG);
@@ -568,7 +568,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 FCC\n");
 
   // Fancy Color Curvature Change Control Register (DE Page 56)
-  // Set Enable (Bit 0) = 0 (Disable FCC)
+  // Set Enable (Bit 0) to 0 (Disable FCC)
 
   DEBUGASSERT(FCC_CTL_REG == 0x11AA000);
   putreg32(0, FCC_CTL_REG);
@@ -578,7 +578,7 @@ int a64_de_init(void)
   ginfo("Disable MIXER0 DRC\n");
 
   // Dynamic Range Controller Module General Control Register (DE Page 49)
-  // Set BIST_EN (Bit 0) = 0 (Disable BIST)
+  // Set BIST_EN (Bit 0) to 0 (Disable BIST)
 
   DEBUGASSERT(GNECTL_REG == 0x11B0000);
   putreg32(0, GNECTL_REG);
@@ -588,7 +588,7 @@ int a64_de_init(void)
   ginfo("Enable MIXER0\n");
 
   // Mixer 0 Global Control Register (DE Page 92)
-  // Set EN (Bit 0) = 1 (Enable Mixer)
+  // Set EN (Bit 0) to 1 (Enable Mixer)
 
   DEBUGASSERT(GLB_CTL == 0x1100000);
   putreg32(EN_MIXER, GLB_CTL);
@@ -606,10 +606,10 @@ int a64_de_blender_init(void)
 
   // Blender Background Color (DE Page 109)
   // Set to 0xFF00 0000 (Black Background Color)
-  // Set RESERVED (Bits 24 to 31) = 0xFF (Undocumented)
-  // Set RED   (Bits 16 to 23) = 0
-  // Set GREEN (Bits 8  to 15) = 0
-  // Set BLUE  (Bits 0  to 7)  = 0
+  // Set RESERVED (Bits 24 to 31) to 0xFF (Undocumented)
+  // Set RED   (Bits 16 to 23) to 0
+  // Set GREEN (Bits 8  to 15) to 0
+  // Set BLUE  (Bits 0  to 7) to 0
 
   uint32_t color;
   color = BK_RESERVED | BK_RED(0) | BK_GREEN(0) | BK_BLUE(0);
@@ -624,10 +624,10 @@ int a64_de_blender_init(void)
 
   // Blender Pre-Multiply Control (DE Page 109)
   // Set to 0 (No Pre-Multiply for Alpha, Pipes 0 to 3)
-  // Set P3_ALPHA_MODE (Bit 3) = 0 (Pipe 3: No Pre-Multiply)
-  // Set P2_ALPHA_MODE (Bit 2) = 0 (Pipe 2: No Pre-Multiply)
-  // Set P1_ALPHA_MODE (Bit 1) = 0 (Pipe 1: No Pre-Multiply)
-  // Set P0_ALPHA_MODE (Bit 0) = 0 (Pipe 0: No Pre-Multiply)
+  // Set P3_ALPHA_MODE (Bit 3) to 0 (Pipe 3: No Pre-Multiply)
+  // Set P2_ALPHA_MODE (Bit 2) to 0 (Pipe 2: No Pre-Multiply)
+  // Set P1_ALPHA_MODE (Bit 1) to 0 (Pipe 1: No Pre-Multiply)
+  // Set P0_ALPHA_MODE (Bit 0) to 0 (Pipe 0: No Pre-Multiply)
 
   uint32_t premultiply;
   premultiply = P3_ALPHA_MODE(0) |
@@ -672,7 +672,7 @@ int a64_de_ui_channel_init(
       ginfo("Channel %d: Disable Overlay and Pipe\n", channel);
 
       // UI Overlay Attribute Control (DE Page 102)
-      // Set LAY_EN (Bit 0) = 0 (Disable Layer)
+      // Set LAY_EN (Bit 0) to 0 (Disable Layer)
       DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
       putreg32(0, OVL_UI_ATTR_CTL(channel));
 
@@ -681,7 +681,7 @@ int a64_de_ui_channel_init(
       ginfo("Channel %d: Disable Scaler\n", channel);
 
       // UI Scaler Control Register (DE Page 66)
-      // Set EN (Bit 0) = 0 (Disable UI Scaler)
+      // Set EN (Bit 0) to 0 (Disable UI Scaler)
       DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
       putreg32(0, UIS_CTRL_REG(channel));
 
@@ -694,14 +694,14 @@ int a64_de_ui_channel_init(
   ginfo("Channel %d: Set Overlay (%d x %d)\n", channel, xres, yres);
 
   // UI Overlay Attribute Control (DE Page 102)
-  // Set LAY_GLBALPHA (Bits 24 to 31) = 0xFF or 0x7F
+  // Set LAY_GLBALPHA (Bits 24 to 31) to 0xFF or 0x7F
   //   (Global Alpha Value is Opaque or Semi-Transparent)
-  // Set LAY_FBFMT (Bits 8 to 12) = 4 or 0
+  // Set LAY_FBFMT (Bits 8 to 12) to 4 or 0
   //   (Input Data Format is XRGB 8888 or ARGB 8888)
-  // Set LAY_ALPHA_MODE (Bits 1 to 2) = 2
+  // Set LAY_ALPHA_MODE (Bits 1 to 2) to 2
   //   (Global Alpha is mixed with Pixel Alpha)
   //   (Input Alpha Value = Global Alpha Value * Pixel’s Alpha Value)
-  // Set LAY_EN (Bit 0) = 1 (Enable Layer)
+  // Set LAY_EN (Bit 0) to 1 (Enable Layer)
   uint32_t lay_glbalpha;
   lay_glbalpha = (channel == 1) ? 0xff :  // Channel 1: Opaque
                  (channel == 2) ? 0xff :  // Channel 2: Opaque
@@ -789,10 +789,10 @@ int a64_de_ui_channel_init(
 
   // Blender Fill Color (DE Page 107)
   // Set to Opaque Black
-  // Set ALPHA (Bits 24 to 31) = 0xFF (Opaque)
-  // Set RED   (Bits 16 to 23) = 0
-  // Set GREEN (Bits 8  to 15) = 0
-  // Set BLUE  (Bits 0  to 7)  = 0
+  // Set ALPHA (Bits 24 to 31) to 0xFF (Opaque)
+  // Set RED   (Bits 16 to 23) to 0
+  // Set GREEN (Bits 8  to 15) to 0
+  // Set BLUE  (Bits 0  to 7) to 0
   uint32_t color;
   color = FILL_ALPHA(0xff) | FILL_RED(0) | FILL_GREEN(0) | FILL_BLUE(0);
   DEBUGASSERT(color == 0xFF000000);
@@ -810,13 +810,13 @@ int a64_de_ui_channel_init(
   putreg32(offset, BLD_CH_OFFSET(pipe));
 
   // Blender Control (DE Page 110)
-  // Set BLEND_AFD (Bits 24 to 27) = 3
+  // Set BLEND_AFD (Bits 24 to 27) to 3
   //   (Coefficient for destination alpha data Q[d] is 1-A[s])
-  // Set BLEND_AFS (Bits 16 to 19) = 1
+  // Set BLEND_AFS (Bits 16 to 19) to 1
   //   (Coefficient for source alpha data Q[s] is 1)
-  // Set BLEND_PFD (Bits 8 to 11) = 3
+  // Set BLEND_PFD (Bits 8 to 11) to 3
   //   (Coefficient for destination pixel data F[d] is 1-A[s])
-  // Set BLEND_PFS (Bits 0 to 3) = 1
+  // Set BLEND_PFS (Bits 0 to 3) to 1
   //   (Coefficient for source pixel data F[s] is 1)
   uint32_t blend;
   blend = BLEND_AFD(3) | BLEND_AFS(1) | BLEND_PFD(3) | BLEND_PFS(1);
@@ -829,7 +829,7 @@ int a64_de_ui_channel_init(
   ginfo("Channel %d: Disable Scaler\n", channel);
 
   // UI Scaler Control Register (DE Page 66)
-  // Set EN (Bit 0) = 0 (Disable UI Scaler)
+  // Set EN (Bit 0) to 0 (Disable UI Scaler)
   DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
   putreg32(0, UIS_CTRL_REG(channel));
 
@@ -850,11 +850,11 @@ int a64_de_enable(
 
   // Blender Routing Control (DE Page 108)
   // If Rendering 1 UI Channel:
-  //   Set P0_RTCTL (Bits 0 to 3) = 1 (Pipe 0 from Channel 1)
+  //   Set P0_RTCTL (Bits 0 to 3) to 1 (Pipe 0 from Channel 1)
   // If Rendering 3 UI Channels:
-  //   Set P2_RTCTL (Bits 8 to 11) = 3 (Pipe 2 from Channel 3)
-  //   Set P1_RTCTL (Bits 4 to 7)  = 2 (Pipe 1 from Channel 2)
-  //   Set P0_RTCTL (Bits 0 to 3)  = 1 (Pipe 0 from Channel 1)
+  //   Set P2_RTCTL (Bits 8 to 11) to 3 (Pipe 2 from Channel 3)
+  //   Set P1_RTCTL (Bits 4 to 7) to 2 (Pipe 1 from Channel 2)
+  //   Set P0_RTCTL (Bits 0 to 3) to 1 (Pipe 0 from Channel 1)
   uint32_t p2_rtctl;
   p2_rtctl = (channels == 1) ? 0 :  // Unused Pipe 2
              (channels == 3) ? 3 :  // Select Pipe 2 from UI Channel 3
@@ -880,13 +880,13 @@ int a64_de_enable(
 
   // Blender Fill Color Control (DE Page 106)
   // If Rendering 1 UI Channel:
-  //   Set P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
-  //   Set P0_FCEN (Bit 0)  = 1 (Enable Pipe 0 Fill Color)
+  //   Set P0_EN   (Bit 8) to 1 (Enable Pipe 0)
+  //   Set P0_FCEN (Bit 0) to 1 (Enable Pipe 0 Fill Color)
   // If Rendering 3 UI Channels:
-  //   Set P2_EN   (Bit 10) = 1 (Enable Pipe 2)
-  //   Set P1_EN   (Bit 9)  = 1 (Enable Pipe 1)
-  //   Set P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
-  //   Set P0_FCEN (Bit 0)  = 1 (Enable Pipe 0 Fill Color)
+  //   Set P2_EN   (Bit 10) to 1 (Enable Pipe 2)
+  //   Set P1_EN   (Bit 9) to 1 (Enable Pipe 1)
+  //   Set P0_EN   (Bit 8) to 1 (Enable Pipe 0)
+  //   Set P0_FCEN (Bit 0) to 1 (Enable Pipe 0 Fill Color)
   uint32_t p2_en;
   p2_en = (channels == 1) ? 0 :  // 1 UI Channel:  Disable Pipe 2
           (channels == 3) ? 1 :  // 3 UI Channels: Enable Pipe 2
@@ -912,7 +912,7 @@ int a64_de_enable(
   ginfo("Apply Settings\n");
 
   // Global Double Buffer Control (DE Page 93)
-  // Set DOUBLE_BUFFER_RDY (Bit 0) = 1
+  // Set DOUBLE_BUFFER_RDY (Bit 0) to 1
   // (Register Value is ready for update)
 
   DEBUGASSERT(DOUBLE_BUFFER_RDY == 1);
