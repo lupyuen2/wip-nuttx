@@ -68,40 +68,37 @@
 #define A64_UI_SCALER1_CH1_ADDR (A64_MIXER0_ADDR + 0x040000)
 
 // SRAM Registers Base Address is 0x01C0 0000 (A31 Page 191)
-#define SRAM_REGISTERS_BASE_ADDRESS 0x01C00000
-
-// CCU (Clock Control Unit) Base Address is 0x01C2 0000 (A64 Page 81)
-#define CCU_BASE_ADDRESS 0x01C20000
+#define A64_SRAM_REG_ADDR 0x01C00000
 
 // DRC (Dynamic Range Controller) is at Address 0x011B 0000 (DE Page 48, 0x11B 0000)
-#define DRC_BASE_ADDRESS 0x011B0000
+#define A64_DRC_ADDR 0x011B0000
 
 // VIDEO_SCALER(CH0) is at MIXER0 Offset 0x02 0000 (DE Page 90, 0x112 0000)
-#define VIDEO_SCALER_BASE_ADDRESS (A64_MIXER0_ADDR + 0x020000)
+#define A64_VIDEO_SCALER_ADDR (A64_MIXER0_ADDR + 0x020000)
 
 // UI_SCALER1(CH1) is at MIXER0 Offset 0x04 0000 (DE Page 90, 0x114 0000)
-#define UI_SCALER1_BASE_ADDRESS (A64_MIXER0_ADDR + 0x040000)
+#define A64_UI_SCALER1_ADDR (A64_MIXER0_ADDR + 0x040000)
 
 // UI_SCALER2(CH2) is at MIXER0 Offset 0x05 0000 (DE Page 90, 0x115 0000)
-#define UI_SCALER2_BASE_ADDRESS (A64_MIXER0_ADDR + 0x050000)
+#define A64_UI_SCALER2_ADDR (A64_MIXER0_ADDR + 0x050000)
 
 // FCE (Fresh and Contrast Enhancement) is at MIXER0 Offset 0x0A 0000 (DE Page 61, 0x11A 0000)
-#define FCE_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A0000)
+#define A64_FCE_ADDR (A64_MIXER0_ADDR + 0x0A0000)
 
 // BWS (Black and White Stetch) is at MIXER0 Offset 0x0A 2000 (DE Page 42, 0x11A 2000)
-#define BWS_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A2000)
+#define A64_BWS_ADDR (A64_MIXER0_ADDR + 0x0A2000)
 
 // LTI (Luminance Transient Improvement) is at MIXER0 Offset 0x0A 4000 (DE Page 71, 0x11A 4000)
-#define LTI_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A4000)
+#define A64_LTI_ADDR (A64_MIXER0_ADDR + 0x0A4000)
 
 // PEAKING (Luma Peaking) is at MIXER0 Offset 0x0A 6000 (DE Page 80, 0x11A 6000)
-#define PEAKING_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A6000)
+#define A64_PEAKING_ADDR (A64_MIXER0_ADDR + 0x0A6000)
 
 // ASE (Adaptive Saturation Enhancement) is at MIXER0 Offset 0x0A 8000 (DE Page 40, 0x11A 8000)
-#define ASE_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0A8000)
+#define A64_ASE_ADDR (A64_MIXER0_ADDR + 0x0A8000)
 
 // FCC (Fancy Color Curvature Change) is at MIXER0 Offset 0x0A A000 (DE Page 56, 0x11A A000)
-#define FCC_BASE_ADDRESS (A64_MIXER0_ADDR + 0x0AA000)
+#define A64_FCC_ADDR (A64_MIXER0_ADDR + 0x0AA000)
 
 /****************************************************************************
  * Public Functions
@@ -121,7 +118,7 @@ int a64_de_init(void)
   // BIST_DMA_CTRL_SEL (Bist and DMA Control Select) is Bit 0 of SRAM_CTRL_REG1
   // SRAM_CTRL_REG1 (SRAM Control Register 1) is at SRAM Registers Offset 0x4
   
-  #define SRAM_CTRL_REG1 (SRAM_REGISTERS_BASE_ADDRESS + 0x4)
+  #define SRAM_CTRL_REG1 (A64_SRAM_REG_ADDR + 0x4)
   DEBUGASSERT(SRAM_CTRL_REG1 == 0x1C00004);
   putreg32(0x0, SRAM_CTRL_REG1);  
 
@@ -151,7 +148,7 @@ int a64_de_init(void)
       | PLL_PRE_DIV_M;
   DEBUGASSERT(pll == 0x81001701);
 
-  #define PLL_DE_CTRL_REG (CCU_BASE_ADDRESS + 0x0048)
+  #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
   DEBUGASSERT(PLL_DE_CTRL_REG == 0x1C20048);
   putreg32(pll, PLL_DE_CTRL_REG);  
 
@@ -191,7 +188,7 @@ int a64_de_init(void)
   clk_mask = SCLK_GATING_MASK
       | CLK_SRC_SEL_MASK;
 
-  #define DE_CLK_REG (CCU_BASE_ADDRESS + 0x0104)
+  #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
   DEBUGASSERT(DE_CLK_REG == 0x1C20104);
   modreg32(clk, clk_mask, DE_CLK_REG);
 
@@ -206,7 +203,7 @@ int a64_de_init(void)
   // (A64 Page 140, 0x1C2 02C4)
   
   #define DE_RST (1 << 12)
-  #define BUS_SOFT_RST_REG1 (CCU_BASE_ADDRESS + 0x02C4)
+  #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
   DEBUGASSERT(BUS_SOFT_RST_REG1 == 0x1C202C4);
   modreg32(DE_RST, DE_RST, BUS_SOFT_RST_REG1);
 
@@ -221,7 +218,7 @@ int a64_de_init(void)
   // (A64 Page 102, 0x1C2 0064)
   
   #define DE_GATING (1 << 12)
-  #define BUS_CLK_GATING_REG1 (CCU_BASE_ADDRESS + 0x0064)
+  #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
   DEBUGASSERT(BUS_CLK_GATING_REG1 == 0x1C20064);
   modreg32(DE_GATING, DE_GATING, BUS_CLK_GATING_REG1);
 
@@ -315,7 +312,7 @@ int a64_de_init(void)
   // EN (Bit 0) = 0 (Disable Video Scaler)
   // (DE Page 130, 0x112 0000)
   
-  #define VS_CTRL_REG (VIDEO_SCALER_BASE_ADDRESS + 0)
+  #define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
   DEBUGASSERT(VS_CTRL_REG == 0x1120000);
   putreg32(0, VS_CTRL_REG);
 
@@ -338,7 +335,7 @@ int a64_de_init(void)
   // EN (Bit 0) = 0 (Disable UI Scaler)
   // (DE Page 66, 0x114 0000)
   
-  #define UIS_CTRL_REG1 (UI_SCALER1_BASE_ADDRESS + 0)
+  #define UIS_CTRL_REG1 (A64_UI_SCALER1_ADDR + 0)
   DEBUGASSERT(UIS_CTRL_REG1 == 0x1140000);
   putreg32(0, UIS_CTRL_REG1);
 
@@ -351,7 +348,7 @@ int a64_de_init(void)
   // EN (Bit 0) = 0 (Disable UI Scaler)
   // (DE Page 66, 0x115 0000)
   
-  #define UIS_CTRL_REG2 (UI_SCALER2_BASE_ADDRESS + 0)
+  #define UIS_CTRL_REG2 (A64_UI_SCALER2_ADDR + 0)
   DEBUGASSERT(UIS_CTRL_REG2 == 0x1150000);
   putreg32(0, UIS_CTRL_REG2);
 
@@ -367,7 +364,7 @@ int a64_de_init(void)
   // EN (Bit 0) = 0 (Disable FCE)
   // (DE Page 62, 0x11A 0000)
   
-  #define GCTRL_REG_FCE (FCE_BASE_ADDRESS + 0)
+  #define GCTRL_REG_FCE (A64_FCE_ADDR + 0)
   DEBUGASSERT(GCTRL_REG_FCE == 0x11A0000);
   putreg32(0, GCTRL_REG_FCE);
 
@@ -380,7 +377,7 @@ int a64_de_init(void)
   // EN (Bit 0) = 0 (Disable BWS)
   // (DE Page 42, 0x11A 2000)
   
-  #define GCTRL_REG_BWS (BWS_BASE_ADDRESS + 0)
+  #define GCTRL_REG_BWS (A64_BWS_ADDR + 0)
   DEBUGASSERT(GCTRL_REG_BWS == 0x11A2000);
   putreg32(0, GCTRL_REG_BWS);
 
@@ -393,7 +390,7 @@ int a64_de_init(void)
   // LTI_EN (Bit 0) = 0 (Close LTI)
   // (DE Page 72, 0x11A 4000)
   
-  #define LTI_CTL (LTI_BASE_ADDRESS + 0)
+  #define LTI_CTL (A64_LTI_ADDR + 0)
   DEBUGASSERT(LTI_CTL == 0x11A4000);
   putreg32(0, LTI_CTL);
 
@@ -406,7 +403,7 @@ int a64_de_init(void)
   // EN (Bit 0) = 0 (Disable PEAKING)
   // (DE Page 80, 0x11A 6000)
   
-  #define LP_CTRL_REG (PEAKING_BASE_ADDRESS + 0)
+  #define LP_CTRL_REG (A64_PEAKING_ADDR + 0)
   DEBUGASSERT(LP_CTRL_REG == 0x11A6000);
   putreg32(0, LP_CTRL_REG);
 
@@ -419,7 +416,7 @@ int a64_de_init(void)
   // ASE_EN (Bit 0) = 0 (Disable ASE)
   // (DE Page 40, 0x11A 8000)
   
-  #define ASE_CTL_REG (ASE_BASE_ADDRESS + 0)
+  #define ASE_CTL_REG (A64_ASE_ADDR + 0)
   DEBUGASSERT(ASE_CTL_REG == 0x11A8000);
   putreg32(0, ASE_CTL_REG);
 
@@ -432,7 +429,7 @@ int a64_de_init(void)
   // Enable (Bit 0) = 0 (Disable FCC)
   // (DE Page 56, 0x11A A000)
   
-  #define FCC_CTL_REG (FCC_BASE_ADDRESS + 0)
+  #define FCC_CTL_REG (A64_FCC_ADDR + 0)
   DEBUGASSERT(FCC_CTL_REG == 0x11AA000);
   putreg32(0, FCC_CTL_REG);
 
@@ -445,7 +442,7 @@ int a64_de_init(void)
   // BIST_EN (Bit 0) = 0 (Disable BIST)
   // (DE Page 49, 0x11B 0000)
   
-  #define GNECTL_REG (DRC_BASE_ADDRESS + 0)
+  #define GNECTL_REG (A64_DRC_ADDR + 0)
   DEBUGASSERT(GNECTL_REG == 0x11B0000);
   putreg32(0, GNECTL_REG);
 
