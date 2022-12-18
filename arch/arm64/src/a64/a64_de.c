@@ -630,9 +630,9 @@ int a64_de_blender_init(void)
   // Set P0_ALPHA_MODE (Bit 0) = 0 (Pipe 0: No Pre-Multiply)
 
   uint32_t premultiply;
-  premultiply = P3_ALPHA_MODE(0) | 
-                P2_ALPHA_MODE(0) | 
-                P1_ALPHA_MODE(0) | 
+  premultiply = P3_ALPHA_MODE(0) |
+                P2_ALPHA_MODE(0) |
+                P1_ALPHA_MODE(0) |
                 P0_ALPHA_MODE(0);
   DEBUGASSERT(premultiply == 0);
 
@@ -715,9 +715,9 @@ int a64_de_ui_channel_init(
               0;  // Never comes here
 
   uint32_t attr;
-  attr = LAY_GLBALPHA(lay_glbalpha) | 
-         LAY_FBFMT(lay_fbfmt) | 
-         LAY_ALPHA_MODE(2) | 
+  attr = LAY_GLBALPHA(lay_glbalpha) |
+         LAY_FBFMT(lay_fbfmt) |
+         LAY_ALPHA_MODE(2) |
          LAY_EN;
   DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
 
@@ -866,8 +866,8 @@ int a64_de_enable(
              0;  // Never comes here
 
   uint32_t route;
-  route = P2_RTCTL(p2_rtctl) | 
-          P1_RTCTL(p1_rtctl) | 
+  route = P2_RTCTL(p2_rtctl) |
+          P1_RTCTL(p1_rtctl) |
           P0_RTCTL(1);
   DEBUGASSERT(route == 0x321 || route == 1);
 
@@ -898,10 +898,10 @@ int a64_de_enable(
           0;  /* Never comes here */
 
   uint32_t fill;
-  fill = P2_EN(p2_en)
-      | P1_EN(p1_en)
-      | P0_EN(1)
-      | P0_FCEN(1);
+  fill = P2_EN(p2_en) |
+         P1_EN(p1_en) |
+         P0_EN(1) |
+         P0_FCEN(1);
   DEBUGASSERT(fill == 0x701 || fill == 0x101);
 
   DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
