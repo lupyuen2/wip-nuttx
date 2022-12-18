@@ -61,6 +61,9 @@
 
 // Base Addresses
 
+// Dynamic Range Controller (DE Page 48)
+#define A64_DRC_ADDR 0x011b0000 // 64K
+
 /// Mixer 0 (DE Page 24)
 #define A64_MIXER0_ADDR (A64_DE_ADDR + 0x100000)
 
@@ -110,7 +113,7 @@
 // TODO
 
 // SRAM Control Register 1 (A31 Page 191)
-#define SRAM_CTRL_REG1 (A64_SRAM_REG_ADDR + 0x4)
+#define SRAM_CTRL_REG1 (A64_SYSCTL_ADDR + 0x4)
 
 // PLL Display Engine Control Register (A64 Page 96)
 #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
