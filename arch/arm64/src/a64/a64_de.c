@@ -118,10 +118,10 @@
 
 // PLL Display Engine Control Register (A64 Page 96)
 #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
-#define PLL_ENABLE (1  << 31)
-#define PLL_MODE_SEL (1  << 24)
-#define PLL_FACTOR_N(n) ((n) <<  8)
 #define PLL_PRE_DIV_M(n) ((n)  <<  0)
+#define PLL_FACTOR_N(n) ((n) <<  8)
+#define PLL_MODE_SEL (1  << 24)
+#define PLL_ENABLE (1  << 31)
 
 // Bus Clock Gating Register 1 (A64 Page 102)
 #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
@@ -129,10 +129,10 @@
 
 // Display Engine Clock Register (A64 Page 117)
 #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
-#define SCLK_GATING (1 << 31)
 #define CLK_SRC_SEL(n) ((n) << 24)
-#define SCLK_GATING_MASK (0b1   << 31)
+#define SCLK_GATING (1 << 31)
 #define CLK_SRC_SEL_MASK (0b111 << 24)
+#define SCLK_GATING_MASK (0b1   << 31)
 
 // Bus Software Reset Register 1 (A64 Page 140)
 #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
@@ -203,10 +203,10 @@
 
 // Blender Fill Color Control (DE Page 106)
 #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
-#define P2_EN(n) ((n) << 10)
-#define P1_EN(n) ((n) << 9)
-#define P0_EN(n) ((n) << 8)
 #define P0_FCEN(n) ((n) << 0)
+#define P0_EN(n) ((n) << 8)
+#define P1_EN(n) ((n) << 9)
+#define P2_EN(n) ((n) << 10)
 
 // Note: DE Page 91 shows incorrect offset N*0x14 for
 // BLD_FILL_COLOR, BLD_CH_ISIZE and BLD_CH_OFFSET.
@@ -215,10 +215,10 @@
 
 // Blender Fill Color (DE Page 107)
 #define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
-#define FILL_ALPHA(n) ((n) << 24)
-#define FILL_RED(n) ((n)    << 16)
-#define FILL_GREEN(n) ((n)    << 8)
 #define FILL_BLUE(n) ((n)    << 0)
+#define FILL_GREEN(n) ((n)    << 8)
+#define FILL_RED(n) ((n)    << 16)
+#define FILL_ALPHA(n) ((n) << 24)
 
 // Blender Input Memory Size (DE Page 108)
 #define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
@@ -228,40 +228,40 @@
 
 // Blender Routing Control (DE Page 108)
 #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
-#define P2_RTCTL(n) ((n) << 8)
-#define P1_RTCTL(n) ((n) << 4)
 #define P0_RTCTL(n) ((n) << 0)
+#define P1_RTCTL(n) ((n) << 4)
+#define P2_RTCTL(n) ((n) << 8)
 
 // Blender Pre-Multiply Control (DE Page 109)
 #define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x084)
-#define P3_ALPHA_MODE(n) ((n) << 3)
-#define P2_ALPHA_MODE(n) ((n) << 2)
-#define P1_ALPHA_MODE(n) ((n) << 1)
 #define P0_ALPHA_MODE(n) ((n) << 0)
+#define P1_ALPHA_MODE(n) ((n) << 1)
+#define P2_ALPHA_MODE(n) ((n) << 2)
+#define P3_ALPHA_MODE(n) ((n) << 3)
 
 // Blender Background Color (DE Page 109)
 #define BLD_BK_COLOR (A64_BLD_ADDR + 0x088)
-#define BK_RESERVED (0xFF << 24)
-#define BK_RED(n) ((n)    << 16)
-#define BK_GREEN(n) ((n)    << 8)
 #define BK_BLUE(n) ((n)    << 0)
+#define BK_GREEN(n) ((n)    << 8)
+#define BK_RED(n) ((n)    << 16)
+#define BK_RESERVED (0xFF << 24)
 
 // Blender Output Size Setting (DE Page 110)
 #define BLD_SIZE (A64_BLD_ADDR + 0x08C)
 
 // Blender Control (DE Page 110)
 #define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
-#define BLEND_AFD(n) ((n) << 24)
-#define BLEND_AFS(n) ((n) << 16)
-#define BLEND_PFD(n) ((n) << 8)
 #define BLEND_PFS(n) ((n) << 0)
+#define BLEND_PFD(n) ((n) << 8)
+#define BLEND_AFS(n) ((n) << 16)
+#define BLEND_AFD(n) ((n) << 24)
 
 // UI Overlay Attribute Control (DE Page 102)
 #define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
-#define LAY_GLBALPHA(n) ((n) << 24)
-#define LAY_FBFMT(n) ((n) << 8)
-#define LAY_ALPHA_MODE(n) ((n) << 1)
 #define LAY_EN (1 << 0)
+#define LAY_ALPHA_MODE(n) ((n) << 1)
+#define LAY_FBFMT(n) ((n) << 8)
+#define LAY_GLBALPHA(n) ((n) << 24)
 
 // UI Overlay Memory Block Size (DE Page 104)
 #define OVL_UI_MBSIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x04)
