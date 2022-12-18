@@ -487,8 +487,7 @@ int a64_de_blender_init(void)
 
   ginfo("Set Blender Background\n");
 
-  // BLD_BK_COLOR (Blender Background Color) at BLD Offset 0x88
-  // (DE Page 109, 0x110 1088)
+  // Blender Background Color (DE Page 109)
   // Set to 0xFF00 0000 (Black Background Color)
   // Set RESERVED (Bits 24 to 31) = 0xFF (Undocumented)
   // Set RED   (Bits 16 to 23) = 0
@@ -514,8 +513,7 @@ int a64_de_blender_init(void)
 
   ginfo("Set Blender Pre-Multiply\n");
 
-  // BLD_PREMUL_CTL (Blender Pre-Multiply Control) at BLD Offset 0x84
-  // (DE Page 109, 0x110 1084)
+  // Blender Pre-Multiply Control (DE Page 109)
   // Set to 0 (No Pre-Multiply for Alpha, Pipes 0 to 3)
   // Set P3_ALPHA_MODE (Bit 3) = 0 (Pipe 3: No Pre-Multiply)
   // Set P2_ALPHA_MODE (Bit 2) = 0 (Pipe 2: No Pre-Multiply)
@@ -578,9 +576,7 @@ int a64_de_ui_channel_init(
 
       ginfo("Channel %d: Disable Overlay and Pipe\n", channel);
 
-      // OVL_UI_ATTR_CTL (UI Overlay Attribute Control) at OVL_UI Offset 0x00
-      // (DE Page 102)
-      // Set to 0 (Disable UI Overlay Channel)
+      // UI Overlay Attribute Control (DE Page 102)
       // Set LAY_EN (Bit 0) = 0 (Disable Layer)
       #define OVL_UI_ATTR_CTL(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x00)
       DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
@@ -590,9 +586,7 @@ int a64_de_ui_channel_init(
 
       ginfo("Channel %d: Disable Scaler\n", channel);
 
-      // UIS_CTRL_REG at Offset 0 of UI_SCALER1(CH1) or UI_SCALER2(CH2) or UI_SCALER3(CH3)
-      // (DE Page 66)
-      // Set to 0 (Disable UI Scaler)
+      // UI Scaler Control Register (DE Page 66)
       // Set EN (Bit 0) = 0 (Disable UI Scaler)
       #define UIS_CTRL_REG(ch) (UI_SCALER_BASE_ADDRESS(ch) + 0)
       DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
@@ -606,11 +600,7 @@ int a64_de_ui_channel_init(
 
   ginfo("Channel %d: Set Overlay (%d x %d)\n", channel, xres, yres);
 
-  // OVL_UI_ATTR_CTL (UI Overlay Attribute Control) at OVL_UI Offset 0x00
-  // (DE Page 102, 0x110 3000 / 0x110 4000 / 0x110 5000)
-  // For Channel 1: Set to 0xFF00 0405
-  // For Channel 2: Set to 0xFF00 0005
-  // For Channel 3: Set to 0x7F00 0005
+  // UI Overlay Attribute Control (DE Page 102)
   // Set LAY_GLBALPHA (Bits 24 to 31) = 0xFF or 0x7F
   //   (Global Alpha Value is Opaque or Semi-Transparent)
   // Set LAY_FBFMT (Bits 8 to 12) = 4 or 0
@@ -648,23 +638,20 @@ int a64_de_ui_channel_init(
   DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
   putreg32(attr, OVL_UI_ATTR_CTL(channel));
 
-  // OVL_UI_TOP_LADD (UI Overlay Top Field Memory Block Low Address) at OVL_UI Offset 0x10
-  // (DE Page 104, 0x110 3010 / 0x110 4010 / 0x110 5010)
+  // UI Overlay Top Field Memory Block Low Address (DE Page 104)
   // Set to Framebuffer Address
   DEBUGASSERT((((uint64_t)fbmem) & 0xffffffff) == (uint64_t)fbmem);  // 32 bits only
   #define OVL_UI_TOP_LADD(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x10)
   DEBUGASSERT(OVL_UI_TOP_LADD(channel) == 0x1103010 || OVL_UI_TOP_LADD(channel) == 0x1104010 || OVL_UI_TOP_LADD(channel) == 0x1105010);
   putreg32((uint64_t)fbmem, OVL_UI_TOP_LADD(channel));
 
-  // OVL_UI_PITCH (UI Overlay Memory Pitch) at OVL_UI Offset 0x0C
-  // (DE Page 104, 0x110 300C / 0x110 400C / 0x110 500C)
+  // UI Overlay Memory Pitch (DE Page 104)
   // Set to (width * 4), number of bytes per row
   #define OVL_UI_PITCH(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x0C)
   DEBUGASSERT(OVL_UI_PITCH(channel) == 0x110300C || OVL_UI_PITCH(channel) == 0x110400C || OVL_UI_PITCH(channel) == 0x110500C);
   putreg32(xres * 4, OVL_UI_PITCH(channel));
 
-  // OVL_UI_MBSIZE (UI Overlay Memory Block Size) at OVL_UI Offset 0x04
-  // (DE Page 104, 0x110 3004 / 0x110 4004 / 0x110 5004)
+  // UI Overlay Memory Block Size (DE Page 104)
   // Set to (height-1) << 16 + (width-1)
   uint32_t height_width;
   height_width = ((yres - 1) << 16)
@@ -673,15 +660,13 @@ int a64_de_ui_channel_init(
   DEBUGASSERT(OVL_UI_MBSIZE(channel) == 0x1103004 || OVL_UI_MBSIZE(channel) == 0x1104004 || OVL_UI_MBSIZE(channel) == 0x1105004);
   putreg32(height_width, OVL_UI_MBSIZE(channel));
 
-  // OVL_UI_SIZE (UI Overlay Overlay Window Size) at OVL_UI Offset 0x88
-  // (DE Page 106, 0x110 3088 / 0x110 4088 / 0x110 5088)
+  // UI Overlay Overlay Window Size (DE Page 106)
   // Set to (height-1) << 16 + (width-1)
   #define OVL_UI_SIZE(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x88)
   DEBUGASSERT(OVL_UI_SIZE(channel) == 0x1103088 || OVL_UI_SIZE(channel) == 0x1104088 || OVL_UI_SIZE(channel) == 0x1105088);
   putreg32(height_width, OVL_UI_SIZE(channel));
 
-  // OVL_UI_COOR (UI Overlay Memory Block Coordinate) at OVL_UI Offset 0x08
-  // (DE Page 104, 0x110 3008 / 0x110 4008 / 0x110 5008)
+  // UI Overlay Memory Block Coordinate (DE Page 104)
   // Set to 0 (Overlay at X=0, Y=0)
   #define OVL_UI_COOR(ch) (OVL_UI_BASE_ADDRESS(ch) + 0x08)
   DEBUGASSERT(OVL_UI_COOR(channel) == 0x1103008 || OVL_UI_COOR(channel) == 0x1104008 || OVL_UI_COOR(channel) == 0x1105008);
@@ -694,15 +679,13 @@ int a64_de_ui_channel_init(
 
     ginfo("Channel %d: Set Blender Output\n", channel);
 
-    // BLD_SIZE (Blender Output Size Setting) at BLD Offset 0x08C
-    // (DE Page 110, 0x110 108C)
+    // Blender Output Size Setting (DE Page 110)
     // Set to (height-1) << 16 + (width-1)
     #define BLD_SIZE (A64_BLD_ADDR + 0x08C)
     DEBUGASSERT(BLD_SIZE == 0x110108C);
     putreg32(height_width, BLD_SIZE);
 
-    // GLB_SIZE (Global Size) at GLB Offset 0x00C
-    // (DE Page 93, 0x110 000C)
+    // Global Size (DE Page 93)
     // Set to (height-1) << 16 + (width-1)
     #define GLB_SIZE (A64_GLB_ADDR + 0x00C)
     DEBUGASSERT(GLB_SIZE == 0x110000C);
@@ -721,16 +704,14 @@ int a64_de_ui_channel_init(
   // Correct offset is N*0x10, see DE Page 108
   // (N = Pipe Number, from 0 to 2 for Channels 1 to 3)
 
-  // BLD_CH_ISIZE (Blender Input Memory Size) at BLD Offset 0x008 + N*0x10 (N=0,1,2,3,4)
-  // (DE Page 108, 0x110 1008 / 0x110 1018 / 0x110 1028)
+  // Blender Input Memory Size (DE Page 108)
   // Set to (height-1) << 16 + (width-1)
   #define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
   DEBUGASSERT(BLD_CH_ISIZE(pipe) == 0x1101008 || BLD_CH_ISIZE(pipe) == 0x1101018 || BLD_CH_ISIZE(pipe) == 0x1101028);
   putreg32(height_width, BLD_CH_ISIZE(pipe));
 
-  // BLD_FILL_COLOR (Blender Fill Color) at BLD Offset 0x004 + N*0x10 (N=0,1,2,3,4)
-  // (DE Page 107, 0x110 1004 / 0x110 1014 / 0x110 1024)
-  // Set to 0xFF00 0000 (Opaque Black)
+  // Blender Fill Color (DE Page 107)
+  // Set to Opaque Black
   // Set ALPHA (Bits 24 to 31) = 0xFF (Opaque)
   // Set RED   (Bits 16 to 23) = 0
   // Set GREEN (Bits 8  to 15) = 0
@@ -750,12 +731,8 @@ int a64_de_ui_channel_init(
   DEBUGASSERT(BLD_FILL_COLOR(pipe) == 0x1101004 || BLD_FILL_COLOR(pipe) == 0x1101014 || BLD_FILL_COLOR(pipe) == 0x1101024);
   putreg32(color, BLD_FILL_COLOR(pipe));
 
-  // BLD_CH_OFFSET (Blender Input Memory Offset) at BLD Offset 0x00C + N*0x10 (N=0,1,2,3,4)
-  // (DE Page 108, 0x110 100C / 0x110 101C / 0x110 102C)
+  // Blender Input Memory Offset (DE Page 108)
   // Set to y_offset << 16 + x_offset
-  // For Channel 1: Set to 0
-  // For Channel 2: Set to 0x34 0034
-  // For Channel 3: Set to 0
   uint32_t offset;
   offset = ((yoffset) << 16)
       | xoffset;
@@ -765,9 +742,7 @@ int a64_de_ui_channel_init(
   DEBUGASSERT(BLD_CH_OFFSET(pipe) == 0x110100C || BLD_CH_OFFSET(pipe) == 0x110101C || BLD_CH_OFFSET(pipe) == 0x110102C);
   putreg32(offset, BLD_CH_OFFSET(pipe));
 
-  // BLD_CTL (Blender Control) at BLD Offset 0x090 + N*4
-  // (DE Page 110, 0x110 1090 / 0x110 1094 / 0x110 1098)
-  // Set to 0x301 0301
+  // Blender Control (DE Page 110)
   // Set BLEND_AFD (Bits 24 to 27) = 3
   //   (Coefficient for destination alpha data Q[d] is 1-A[s])
   // Set BLEND_AFS (Bits 16 to 19) = 1
@@ -794,10 +769,7 @@ int a64_de_ui_channel_init(
 
   ginfo("Channel %d: Disable Scaler\n", channel);
 
-  // Disable Scaler (Assume we’re not scaling)
-  // (DE Page 66, 0x114 0000 / 0x115 0000 / 0x116 0000)
-  // UIS_CTRL_REG at Offset 0 of UI_SCALER1(CH1) or UI_SCALER2(CH2) or UI_SCALER3(CH3)
-  // Set to 0 (Disable UI Scaler)
+  // UI Scaler Control Register (DE Page 66)
   // Set EN (Bit 0) = 0 (Disable UI Scaler)
   #define UIS_CTRL_REG(ch) (UI_SCALER_BASE_ADDRESS(ch) + 0)
   DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
@@ -818,11 +790,10 @@ int a64_de_enable(
 
   ginfo("Set Blender Route\n");
 
-  // BLD_CH_RTCTL (Blender Routing Control) at BLD Offset 0x080
-  // (DE Page 108, 0x110 1080)
-  // If Rendering 1 UI Channel: Set to 1
+  // Blender Routing Control (DE Page 108)
+  // If Rendering 1 UI Channel:
   //   Set P0_RTCTL (Bits 0 to 3) = 1 (Pipe 0 from Channel 1)
-  // If Rendering 3 UI Channels: Set to 0x321
+  // If Rendering 3 UI Channels:
   //   Set P2_RTCTL (Bits 8 to 11) = 3 (Pipe 2 from Channel 3)
   //   Set P1_RTCTL (Bits 4 to 7)  = 2 (Pipe 1 from Channel 2)
   //   Set P0_RTCTL (Bits 0 to 3)  = 1 (Pipe 0 from Channel 1)
@@ -831,14 +802,14 @@ int a64_de_enable(
       (channels == 1) ? 0 :  // 1 UI Channel:  Unused Pipe 2
       (channels == 3) ? 3 :  // 3 UI Channels: Select Pipe 2 from UI Channel 3
       0
-  ) << 8;  // Bits 8 to 11
+  ) << 8;
 
   uint32_t p1_rtctl;
   p1_rtctl = (
       (channels == 1) ? 0 :  // 1 UI Channel:  Unused Pipe 1
       (channels == 3) ? 2 :  // 3 UI Channels: Select Pipe 1 from UI Channel 2
       0
-   ) << 4;  // Bits 4 to 7
+   ) << 4;
 
   #define P0_RTCTL (1 << 0)
   uint32_t route;
@@ -855,12 +826,11 @@ int a64_de_enable(
 
   ginfo("Enable Blender Pipes\n");
 
-  // BLD_FILL_COLOR_CTL (Blender Fill Color Control) at BLD Offset 0x000
-  // (DE Page 106, 0x110 1000)
-  // If Rendering 1 UI Channel: Set to 0x101
+  // Blender Fill Color Control (DE Page 106)
+  // If Rendering 1 UI Channel:
   //   Set P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
   //   Set P0_FCEN (Bit 0)  = 1 (Enable Pipe 0 Fill Color)
-  // If Rendering 3 UI Channels: Set to 0x701
+  // If Rendering 3 UI Channels:
   //   Set P2_EN   (Bit 10) = 1 (Enable Pipe 2)
   //   Set P1_EN   (Bit 9)  = 1 (Enable Pipe 1)
   //   Set P0_EN   (Bit 8)  = 1 (Enable Pipe 0)
@@ -870,14 +840,14 @@ int a64_de_enable(
       (channels == 1) ? 0 :  // 1 UI Channel:  Disable Pipe 2
       (channels == 3) ? 1 :  // 3 UI Channels: Enable Pipe 2
       0
-   ) << 10;  // Bit 10
+   ) << 10;
 
   uint32_t p1_en;
   p1_en = (
       (channels == 1) ? 0 :  // 1 UI Channel:  Disable Pipe 1
       (channels == 3) ? 1 :  // 3 UI Channels: Enable Pipe 1
       0
-   ) << 9;  // Bit 9
+   ) << 9;
 
   #define P0_EN (1 << 8)
   #define P0_FCEN (1 << 0)
@@ -896,9 +866,7 @@ int a64_de_enable(
 
   ginfo("Apply Settings\n");
 
-  // GLB_DBUFFER (Global Double Buffer Control) at GLB Offset 0x008
-  // (DE Page 93, 0x110 0008)
-  // Set to 1
+  // Global Double Buffer Control (DE Page 93)
   // Set DOUBLE_BUFFER_RDY (Bit 0) = 1
   // (Register Value is ready for update)
 
