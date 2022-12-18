@@ -196,9 +196,17 @@
 
 // Blender Background Color (DE Page 109)
 #define BLD_BK_COLOR (A64_BLD_ADDR + 0x88)
+  #define BK_RESERVED (0xFF << 24)
+  #define BK_RED(n) ((n)    << 16)
+  #define BK_GREEN(n) ((n)    << 8)
+  #define BK_BLUE(n) ((n)    << 0)
 
 // Blender Pre-Multiply Control (DE Page 109)
 #define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x84)
+  #define P3_ALPHA_MODE(n) ((n) << 3)
+  #define P2_ALPHA_MODE(n) ((n) << 2)
+  #define P1_ALPHA_MODE(n) ((n) << 1)
+  #define P0_ALPHA_MODE(n) ((n) << 0)
 
 // UI Overlay Attribute Control (DE Page 102)
 #define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
@@ -588,15 +596,11 @@ int a64_de_blender_init(void)
   // Set GREEN (Bits 8  to 15) = 0
   // Set BLUE  (Bits 0  to 7)  = 0
 
-  #define BK_RESERVED (0xFF << 24)
-  #define BK_RED (0    << 16)
-  #define BK_GREEN (0    << 8)
-  #define BK_BLUE (0    << 0)
   uint32_t color;
   color = BK_RESERVED
-      | BK_RED
-      | BK_GREEN
-      | BK_BLUE;
+      | BK_RED(0)
+      | BK_GREEN(0)
+      | BK_BLUE(0);
   DEBUGASSERT(color == 0xFF000000);
 
   DEBUGASSERT(BLD_BK_COLOR == 0x1101088);
@@ -613,15 +617,11 @@ int a64_de_blender_init(void)
   // Set P1_ALPHA_MODE (Bit 1) = 0 (Pipe 1: No Pre-Multiply)
   // Set P0_ALPHA_MODE (Bit 0) = 0 (Pipe 0: No Pre-Multiply)
 
-  #define P3_ALPHA_MODE (0 << 3)
-  #define P2_ALPHA_MODE (0 << 2)
-  #define P1_ALPHA_MODE (0 << 1)
-  #define P0_ALPHA_MODE (0 << 0)
   uint32_t premultiply;
-  premultiply = P3_ALPHA_MODE
-      | P2_ALPHA_MODE
-      | P1_ALPHA_MODE
-      | P0_ALPHA_MODE;
+  premultiply = P3_ALPHA_MODE(0)
+      | P2_ALPHA_MODE(0)
+      | P1_ALPHA_MODE(0)
+      | P0_ALPHA_MODE(0);
   DEBUGASSERT(premultiply == 0);
 
   DEBUGASSERT(BLD_PREMUL_CTL == 0x1101084);
