@@ -159,7 +159,7 @@
 // Video Scaler Control Register (DE Page 130)
 #define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0)
 
-// TODO: 0x113 0000 is undocumented
+// 0x113 0000 is undocumented
 // Is there a mixup with UI_SCALER3?
 #define UNDOC_1130000 0x1130000
 
@@ -475,7 +475,7 @@ int a64_de_init(void)
 
   ginfo("Disable MIXER0 Undocumented\n");
 
-  // Note: 0x113 0000 is undocumented
+  // 0x113 0000 is undocumented
   // Is there a mixup with UI_SCALER3?
   DEBUGASSERT(UNDOC_1130000 == 0x1130000);
   putreg32(0, UNDOC_1130000);
