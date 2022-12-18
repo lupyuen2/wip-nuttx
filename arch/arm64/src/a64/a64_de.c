@@ -267,7 +267,9 @@
 
 // Blender Routing Control (DE Page 108)
 #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
-#define P0_RTCTL (1 << 0)
+#define P2_RTCTL(n) ((n) << 8)
+#define P1_RTCTL(n) ((n) << 4)
+#define P0_RTCTL(n) ((n) << 0)
 
 // Blender Fill Color Control (DE Page 106)
 #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
@@ -710,14 +712,14 @@ int a64_de_ui_channel_init(
       (channel == 1) ? 0xff :  // Channel 1: Opaque
       (channel == 2) ? 0xff :  // Channel 2: Opaque
       (channel == 3) ? 0x7f :  // Channel 3: Semi-Transparent
-      0xff;
+      0xff;  // Never comes here
 
   uint32_t lay_fbfmt;
   lay_fbfmt =
       (channel == 1) ? 4 :  // Channel 1: XRGB 8888
       (channel == 2) ? 0 :  // Channel 2: ARGB 8888
       (channel == 3) ? 0 :  // Channel 3: ARGB 8888
-      0;
+      0;  // Never comes here
 
   uint32_t attr;
   attr = LAY_GLBALPHA(lay_glbalpha)
@@ -869,23 +871,21 @@ int a64_de_enable(
   //   Set P1_RTCTL (Bits 4 to 7)  = 2 (Pipe 1 from Channel 2)
   //   Set P0_RTCTL (Bits 0 to 3)  = 1 (Pipe 0 from Channel 1)
   uint32_t p2_rtctl;
-  p2_rtctl = (
+  p2_rtctl =
       (channels == 1) ? 0 :  // 1 UI Channel:  Unused Pipe 2
       (channels == 3) ? 3 :  // 3 UI Channels: Select Pipe 2 from UI Channel 3
-      0
-  ) << 8;
+      0;  // Never comes here
 
   uint32_t p1_rtctl;
-  p1_rtctl = (
+  p1_rtctl =
       (channels == 1) ? 0 :  // 1 UI Channel:  Unused Pipe 1
       (channels == 3) ? 2 :  // 3 UI Channels: Select Pipe 1 from UI Channel 2
-      0
-   ) << 4;
+      0;  // Never comes here
 
   uint32_t route;
-  route = p2_rtctl
-      | p1_rtctl
-      | P0_RTCTL;
+  route = P2_RTCTL(p2_rtctl)
+      | P1_RTCTL(p1_rtctl)
+      | P0_RTCTL(1);
   DEBUGASSERT(route == 0x321 || route == 1);
 
   DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
