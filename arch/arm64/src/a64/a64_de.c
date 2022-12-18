@@ -161,7 +161,7 @@
 
 // 0x113 0000 is undocumented
 // Is there a mixup with UI_SCALER3?
-#define UNDOC_1130000 0x1130000
+#define UNDOC_1130000 (A64_DE_ADDR + 0x130000)
 
 // UI Scaler 1 Control Register (DE Page 66)
 #define UIS_CTRL_REG1 (A64_UI_SCALER1_ADDR + 0)
