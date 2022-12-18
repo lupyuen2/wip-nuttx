@@ -61,7 +61,7 @@
 
 // Base Addresses
 
-/// Mixer 0 Base (DE Page 24)
+/// Mixer 0 (DE Page 24)
 #define A64_MIXER0_ADDR (A64_DE_ADDR + 0x100000)
 
 /// Global Registers (DE Page 90)
@@ -105,6 +105,8 @@
 
 // Fancy Color Curvature Change (DE Page 56)
 #define A64_FCC_ADDR (A64_MIXER0_ADDR + 0x0AA000)
+
+// TODO
 
 // PLL Display Engine Control Register (A64 Page 96)
 #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
