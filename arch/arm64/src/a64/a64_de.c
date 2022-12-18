@@ -338,7 +338,6 @@ int a64_de_init(void)
 
   // SRAM Control Register 1 (A31 Page 191)
   // Set BIST_DMA_CTRL_SEL (Bit 31) to 0 (DMA)
-  DEBUGASSERT(SRAM_CTRL_REG1 == 0x1C00004);
   putreg32(0x0, SRAM_CTRL_REG1);
 
   /* Set Display Engine PLL to 297 MHz **************************************/
@@ -354,9 +353,6 @@ int a64_de_init(void)
   // (Slighltly below 297 MHz due to truncation)
   uint32_t pll;
   pll = PLL_ENABLE | PLL_MODE_SEL | PLL_FACTOR_N(23) | PLL_PRE_DIV_M(1);
-  DEBUGASSERT(pll == 0x81001701);
-
-  DEBUGASSERT(PLL_DE_CTRL_REG == 0x1C20048);
   putreg32(pll, PLL_DE_CTRL_REG);
 
   /* Wait for Display Engine PLL to be stable *******************************/
@@ -377,15 +373,10 @@ int a64_de_init(void)
   // Display Engine Clock Register (A64 Page 117)
   // Set SCLK_GATING (Bit 31) to 1 (Enable Special Clock)
   // Set CLK_SRC_SEL (Bits 24 to 26) to 1 (Clock Source is Display Engine PLL)
-
   uint32_t clk;
   clk = SCLK_GATING | CLK_SRC_SEL(1);
-  DEBUGASSERT(clk == 0x81000000);
-
   uint32_t clk_mask;
   clk_mask = SCLK_GATING_MASK | CLK_SRC_SEL_MASK;
-
-  DEBUGASSERT(DE_CLK_REG == 0x1C20104);
   modreg32(clk, clk_mask, DE_CLK_REG);
 
   /* Enable AHB for Display Engine: De-Assert Display Engine ****************/
@@ -395,7 +386,6 @@ int a64_de_init(void)
   // Bus Software Reset Register 1 (A64 Page 140)
   // Set DE_RST (Bit 12) to 1 (De-Assert Display Engine)
 
-  DEBUGASSERT(BUS_SOFT_RST_REG1 == 0x1C202C4);
   modreg32(DE_RST, DE_RST, BUS_SOFT_RST_REG1);
 
   /* Enable AHB for Display Engine: Pass Display Engine *********************/
@@ -405,7 +395,6 @@ int a64_de_init(void)
   // Bus Clock Gating Register 1 (A64 Page 102)
   // Set DE_GATING (Bit 12) to 1 (Pass Display Engine)
 
-  DEBUGASSERT(BUS_CLK_GATING_REG1 == 0x1C20064);
   modreg32(DE_GATING, DE_GATING, BUS_CLK_GATING_REG1);
 
   /* Enable Clock for MIXER0: SCLK Clock Pass *******************************/
@@ -415,7 +404,6 @@ int a64_de_init(void)
   // DE SCLK Gating Register (DE Page 25)
   // Set CORE0_SCLK_GATE (Bit 0) to 1 (Clock Pass)
 
-  DEBUGASSERT(SCLK_GATE == 0x1000000);
   modreg32(CORE0_SCLK_GATE, CORE0_SCLK_GATE, SCLK_GATE);
 
   /* Enable Clock for MIXER0: HCLK Clock Reset Off **************************/
@@ -425,7 +413,6 @@ int a64_de_init(void)
   // DE AHB Reset register (DE Page 25)
   // Set CORE0_HCLK_RESET (Bit 0) to 1 (Reset Off)
 
-  DEBUGASSERT(AHB_RESET == 0x1000008);
   modreg32(CORE0_HCLK_RESET, CORE0_HCLK_RESET, AHB_RESET);
 
   /* Enable Clock for MIXER0: HCLK Clock Pass *******************************/
@@ -435,7 +422,6 @@ int a64_de_init(void)
   // DE HCLK Gating Register (DE Page 25)
   // Set CORE0_HCLK_GATE (Bit 0) to 1 (Clock Pass)
 
-  DEBUGASSERT(HCLK_GATE == 0x1000004);
   modreg32(CORE0_HCLK_GATE, CORE0_HCLK_GATE, HCLK_GATE);
 
   /* Route MIXER0 to TCON0 **************************************************/
@@ -446,7 +432,6 @@ int a64_de_init(void)
   // Set DE2TCON_MUX (Bit 0) to 0
   // (Route MIXER0 to TCON0; Route MIXER1 to TCON1)
 
-  DEBUGASSERT(DE2TCON_MUX == 0x1000010);
   modreg32(0, DE2TCON_MUX_MASK, DE2TCON_MUX);
 
   /* Clear MIXER0 Registers: GLB, BLD, OVL_V, OVL_UI ************************/
@@ -465,16 +450,13 @@ int a64_de_init(void)
   // Video Scaler Control Register (DE Page 130)
   // Set EN (Bit 0) to 0 (Disable Video Scaler)
 
-  DEBUGASSERT(VS_CTRL_REG == 0x1120000);
   putreg32(0, VS_CTRL_REG);
 
   /* Disable MIXER0 Undocumented ********************************************/
 
   ginfo("Disable MIXER0 Undocumented\n");
 
-  // 0x113 0000 is undocumented
-  // Is there a mixup with UI_SCALER3?
-  DEBUGASSERT(UNDOC_1130000 == 0x1130000);
+  // 0x113 0000 is undocumented. Is there a mixup with UI_SCALER3?
   putreg32(0, UNDOC_1130000);
 
   /* Disable MIXER0 UI_SCALER1 **********************************************/
@@ -484,7 +466,6 @@ int a64_de_init(void)
   // UI Scaler 1 Control Register (DE Page 66)
   // Set EN (Bit 0) to 0 (Disable UI Scaler)
 
-  DEBUGASSERT(UIS_CTRL_REG1 == 0x1140000);
   putreg32(0, UIS_CTRL_REG1);
 
   /* Disable MIXER0 UI_SCALER2 **********************************************/
@@ -494,7 +475,6 @@ int a64_de_init(void)
   // UI Scaler 2 Control Register (DE Page 66)
   // Set EN (Bit 0) to 0 (Disable UI Scaler)
 
-  DEBUGASSERT(UIS_CTRL_REG2 == 0x1150000);
   putreg32(0, UIS_CTRL_REG2);
 
   // TODO: Missing UI_SCALER3(CH3) at MIXER0 Offset 0x06 0000 (DE Page 90, 0x116 0000)
@@ -507,7 +487,6 @@ int a64_de_init(void)
   // Fresh and Contrast Enhancement Global Control Register (DE Page 61)
   // Set EN (Bit 0) to 0 (Disable FCE)
 
-  DEBUGASSERT(GCTRL_REG_FCE == 0x11A0000);
   putreg32(0, GCTRL_REG_FCE);
 
   /* Disable MIXER0 BWS *****************************************************/
@@ -527,7 +506,6 @@ int a64_de_init(void)
   // Luminance Transient Improvement Global Control Register (DE Page 72)
   // Set LTI_EN (Bit 0) to 0 (Close LTI)
 
-  DEBUGASSERT(LTI_CTL == 0x11A4000);
   putreg32(0, LTI_CTL);
 
   /* Disable MIXER0 PEAKING *************************************************/
@@ -537,7 +515,6 @@ int a64_de_init(void)
   // Luma Peaking Module Control Register (DE Page 80)
   // Set EN (Bit 0) to 0 (Disable PEAKING)
 
-  DEBUGASSERT(LP_CTRL_REG == 0x11A6000);
   putreg32(0, LP_CTRL_REG);
 
   /* Disable MIXER0 ASE *****************************************************/
@@ -547,7 +524,6 @@ int a64_de_init(void)
   // Adaptive Saturation Enhancement Global Control Register (DE Page 40)
   // Set ASE_EN (Bit 0) to 0 (Disable ASE)
 
-  DEBUGASSERT(ASE_CTL_REG == 0x11A8000);
   putreg32(0, ASE_CTL_REG);
 
   /* Disable MIXER0 FCC *****************************************************/
@@ -557,7 +533,6 @@ int a64_de_init(void)
   // Fancy Color Curvature Change Control Register (DE Page 56)
   // Set Enable (Bit 0) to 0 (Disable FCC)
 
-  DEBUGASSERT(FCC_CTL_REG == 0x11AA000);
   putreg32(0, FCC_CTL_REG);
 
   /* Disable MIXER0 DRC *****************************************************/
@@ -567,7 +542,6 @@ int a64_de_init(void)
   // Dynamic Range Controller Module General Control Register (DE Page 49)
   // Set BIST_EN (Bit 0) to 0 (Disable BIST)
 
-  DEBUGASSERT(GNECTL_REG == 0x11B0000);
   putreg32(0, GNECTL_REG);
 
   /* Enable MIXER0 **********************************************************/
@@ -577,8 +551,35 @@ int a64_de_init(void)
   // Mixer 0 Global Control Register (DE Page 92)
   // Set EN (Bit 0) to 1 (Enable Mixer)
 
-  DEBUGASSERT(GLB_CTL == 0x1100000);
   putreg32(EN_MIXER, GLB_CTL);
+
+  ///
+  DEBUGASSERT(SRAM_CTRL_REG1 == 0x1C00004);
+
+  DEBUGASSERT(pll == 0x81001701);
+  DEBUGASSERT(PLL_DE_CTRL_REG == 0x1C20048);
+
+  DEBUGASSERT(clk == 0x81000000);
+  DEBUGASSERT(DE_CLK_REG == 0x1C20104);
+
+  DEBUGASSERT(BUS_SOFT_RST_REG1 == 0x1C202C4);
+  DEBUGASSERT(BUS_CLK_GATING_REG1 == 0x1C20064);
+  DEBUGASSERT(SCLK_GATE == 0x1000000);
+  DEBUGASSERT(AHB_RESET == 0x1000008);
+  DEBUGASSERT(HCLK_GATE == 0x1000004);
+  DEBUGASSERT(DE2TCON_MUX == 0x1000010);
+  DEBUGASSERT(VS_CTRL_REG == 0x1120000);
+  DEBUGASSERT(UNDOC_1130000 == 0x1130000);
+  DEBUGASSERT(UIS_CTRL_REG1 == 0x1140000);
+  DEBUGASSERT(UIS_CTRL_REG2 == 0x1150000);
+  DEBUGASSERT(GCTRL_REG_FCE == 0x11A0000);
+  DEBUGASSERT(LTI_CTL == 0x11A4000);
+  DEBUGASSERT(LP_CTRL_REG == 0x11A6000);
+  DEBUGASSERT(ASE_CTL_REG == 0x11A8000);
+  DEBUGASSERT(FCC_CTL_REG == 0x11AA000);
+  DEBUGASSERT(GNECTL_REG == 0x11B0000);
+  DEBUGASSERT(GLB_CTL == 0x1100000);
+  ///
 
   return OK;
 }
@@ -600,9 +601,6 @@ int a64_de_blender_init(void)
 
   uint32_t color;
   color = BK_RESERVED | BK_RED(0) | BK_GREEN(0) | BK_BLUE(0);
-  DEBUGASSERT(color == 0xFF000000);
-
-  DEBUGASSERT(BLD_BK_COLOR == 0x1101088);
   putreg32(color, BLD_BK_COLOR);
 
   /* Set Blender Pre-Multiply ***********************************************/
@@ -621,10 +619,15 @@ int a64_de_blender_init(void)
                 P2_ALPHA_MODE(0) |
                 P1_ALPHA_MODE(0) |
                 P0_ALPHA_MODE(0);
-  DEBUGASSERT(premultiply == 0);
-
-  DEBUGASSERT(BLD_PREMUL_CTL == 0x1101084);
   putreg32(premultiply, BLD_PREMUL_CTL);
+
+  ///
+  DEBUGASSERT(color == 0xFF000000);
+  DEBUGASSERT(BLD_BK_COLOR == 0x1101088);
+
+  DEBUGASSERT(premultiply == 0);
+  DEBUGASSERT(BLD_PREMUL_CTL == 0x1101084);
+  ///
 
   return OK;
 }
@@ -648,9 +651,6 @@ int a64_de_ui_channel_init(
   DEBUGASSERT(fblen == xres * yres * 4);
   DEBUGASSERT(stride == xres * 4);
 
-  // UI Overlays 1, 2 and 3 (DE Page 102)
-  DEBUGASSERT(A64_OVL_UI_ADDR(channel) == 0x1103000 || A64_OVL_UI_ADDR(channel) == 0x1104000 || A64_OVL_UI_ADDR(channel) == 0x1105000);
-
   // If UI Channel should be disabled...
   if (fbmem == NULL)
     {
@@ -660,7 +660,6 @@ int a64_de_ui_channel_init(
 
       // UI Overlay Attribute Control (DE Page 102)
       // Set LAY_EN (Bit 0) to 0 (Disable Layer)
-      DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
       putreg32(0, OVL_UI_ATTR_CTL(channel));
 
       /* Disable Scaler *****************************************************/
@@ -669,7 +668,6 @@ int a64_de_ui_channel_init(
 
       // UI Scaler Control Register (DE Page 66)
       // Set EN (Bit 0) to 0 (Disable UI Scaler)
-      DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
       putreg32(0, UIS_CTRL_REG(channel));
 
       // Skip to next UI Channel
@@ -706,37 +704,30 @@ int a64_de_ui_channel_init(
          LAY_FBFMT(lay_fbfmt) |
          LAY_ALPHA_MODE(2) |
          LAY_EN;
-  DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
 
-  DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
   putreg32(attr, OVL_UI_ATTR_CTL(channel));
 
   // UI Overlay Top Field Memory Block Low Address (DE Page 104)
   // Set to Framebuffer Address
   DEBUGASSERT((((uint64_t)fbmem) & 0xffffffff) == (uint64_t)fbmem);  // 32 bits only
-  DEBUGASSERT(OVL_UI_TOP_LADD(channel) == 0x1103010 || OVL_UI_TOP_LADD(channel) == 0x1104010 || OVL_UI_TOP_LADD(channel) == 0x1105010);
   putreg32((uint64_t)fbmem, OVL_UI_TOP_LADD(channel));
 
   // UI Overlay Memory Pitch (DE Page 104)
   // Set to (width * 4), number of bytes per row
-  DEBUGASSERT(OVL_UI_PITCH(channel) == 0x110300C || OVL_UI_PITCH(channel) == 0x110400C || OVL_UI_PITCH(channel) == 0x110500C);
   putreg32(xres * 4, OVL_UI_PITCH(channel));
 
   // UI Overlay Memory Block Size (DE Page 104)
   // Set to (height-1) << 16 + (width-1)
   uint32_t height_width;
   height_width = ((yres - 1) << 16) | (xres - 1);
-  DEBUGASSERT(OVL_UI_MBSIZE(channel) == 0x1103004 || OVL_UI_MBSIZE(channel) == 0x1104004 || OVL_UI_MBSIZE(channel) == 0x1105004);
   putreg32(height_width, OVL_UI_MBSIZE(channel));
 
   // UI Overlay Overlay Window Size (DE Page 106)
   // Set to (height-1) << 16 + (width-1)
-  DEBUGASSERT(OVL_UI_SIZE(channel) == 0x1103088 || OVL_UI_SIZE(channel) == 0x1104088 || OVL_UI_SIZE(channel) == 0x1105088);
   putreg32(height_width, OVL_UI_SIZE(channel));
 
   // UI Overlay Memory Block Coordinate (DE Page 104)
   // Set to 0 (Overlay at X=0, Y=0)
-  DEBUGASSERT(OVL_UI_COOR(channel) == 0x1103008 || OVL_UI_COOR(channel) == 0x1104008 || OVL_UI_COOR(channel) == 0x1105008);
   putreg32(0, OVL_UI_COOR(channel));
 
   // For Channel 1: Set Blender Output
@@ -748,12 +739,10 @@ int a64_de_ui_channel_init(
 
     // Blender Output Size Setting (DE Page 110)
     // Set to (height-1) << 16 + (width-1)
-    DEBUGASSERT(BLD_SIZE == 0x110108C);
     putreg32(height_width, BLD_SIZE);
 
     // Global Size (DE Page 93)
     // Set to (height-1) << 16 + (width-1)
-    DEBUGASSERT(GLB_SIZE == 0x110000C);
     putreg32(height_width, GLB_SIZE);
   }
 
@@ -771,7 +760,6 @@ int a64_de_ui_channel_init(
 
   // Blender Input Memory Size (DE Page 108)
   // Set to (height-1) << 16 + (width-1)
-  DEBUGASSERT(BLD_CH_ISIZE(pipe) == 0x1101008 || BLD_CH_ISIZE(pipe) == 0x1101018 || BLD_CH_ISIZE(pipe) == 0x1101028);
   putreg32(height_width, BLD_CH_ISIZE(pipe));
 
   // Blender Fill Color (DE Page 107)
@@ -784,7 +772,6 @@ int a64_de_ui_channel_init(
   color = FILL_ALPHA(0xff) | FILL_RED(0) | FILL_GREEN(0) | FILL_BLUE(0);
   DEBUGASSERT(color == 0xFF000000);
 
-  DEBUGASSERT(BLD_FILL_COLOR(pipe) == 0x1101004 || BLD_FILL_COLOR(pipe) == 0x1101014 || BLD_FILL_COLOR(pipe) == 0x1101024);
   putreg32(color, BLD_FILL_COLOR(pipe));
 
   // Blender Input Memory Offset (DE Page 108)
@@ -793,7 +780,6 @@ int a64_de_ui_channel_init(
   offset = ((yoffset) << 16) | xoffset;
   DEBUGASSERT(offset == 0 || offset == 0x340034);
 
-  DEBUGASSERT(BLD_CH_OFFSET(pipe) == 0x110100C || BLD_CH_OFFSET(pipe) == 0x110101C || BLD_CH_OFFSET(pipe) == 0x110102C);
   putreg32(offset, BLD_CH_OFFSET(pipe));
 
   // Blender Control (DE Page 110)
@@ -808,7 +794,6 @@ int a64_de_ui_channel_init(
   uint32_t blend;
   blend = BLEND_AFD(3) | BLEND_AFS(1) | BLEND_PFD(3) | BLEND_PFS(1);
 
-  DEBUGASSERT(BLD_CTL(pipe) == 0x1101090 || BLD_CTL(pipe) == 0x1101094 || BLD_CTL(pipe) == 0x1101098);
   putreg32(blend, BLD_CTL(pipe));
 
   /* Disable Scaler *********************************************************/
@@ -817,8 +802,28 @@ int a64_de_ui_channel_init(
 
   // UI Scaler Control Register (DE Page 66)
   // Set EN (Bit 0) to 0 (Disable UI Scaler)
-  DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
   putreg32(0, UIS_CTRL_REG(channel));
+
+  ///
+  DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
+  DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
+  DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
+
+  DEBUGASSERT(OVL_UI_TOP_LADD(channel) == 0x1103010 || OVL_UI_TOP_LADD(channel) == 0x1104010 || OVL_UI_TOP_LADD(channel) == 0x1105010);
+  DEBUGASSERT(OVL_UI_PITCH(channel) == 0x110300C || OVL_UI_PITCH(channel) == 0x110400C || OVL_UI_PITCH(channel) == 0x110500C);
+  DEBUGASSERT(OVL_UI_MBSIZE(channel) == 0x1103004 || OVL_UI_MBSIZE(channel) == 0x1104004 || OVL_UI_MBSIZE(channel) == 0x1105004);
+  DEBUGASSERT(OVL_UI_SIZE(channel) == 0x1103088 || OVL_UI_SIZE(channel) == 0x1104088 || OVL_UI_SIZE(channel) == 0x1105088);
+  DEBUGASSERT(OVL_UI_COOR(channel) == 0x1103008 || OVL_UI_COOR(channel) == 0x1104008 || OVL_UI_COOR(channel) == 0x1105008);
+
+  DEBUGASSERT(BLD_SIZE == 0x110108C);
+  DEBUGASSERT(GLB_SIZE == 0x110000C);
+
+  DEBUGASSERT(BLD_CH_ISIZE(pipe) == 0x1101008 || BLD_CH_ISIZE(pipe) == 0x1101018 || BLD_CH_ISIZE(pipe) == 0x1101028);
+  DEBUGASSERT(BLD_FILL_COLOR(pipe) == 0x1101004 || BLD_FILL_COLOR(pipe) == 0x1101014 || BLD_FILL_COLOR(pipe) == 0x1101024);
+  DEBUGASSERT(BLD_CH_OFFSET(pipe) == 0x110100C || BLD_CH_OFFSET(pipe) == 0x110101C || BLD_CH_OFFSET(pipe) == 0x110102C);
+  DEBUGASSERT(BLD_CTL(pipe) == 0x1101090 || BLD_CTL(pipe) == 0x1101094 || BLD_CTL(pipe) == 0x1101098);
+  DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
+  ///
 
   return OK;
 }
