@@ -122,8 +122,8 @@
 #define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
   #define PLL_ENABLE (1  << 31)
   #define PLL_MODE_SEL (1  << 24)
-  #define PLL_FACTOR_N (23 <<  8)
-  #define PLL_PRE_DIV_M (1  <<  0)
+  #define PLL_FACTOR_N(n) ((n) <<  8)
+  #define PLL_PRE_DIV_M(n) ((n)  <<  0)
 
 // Display Engine Clock Register (A64 Page 117)
 #define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
@@ -330,8 +330,8 @@ int a64_de_init(void)
   uint32_t pll;
   pll = PLL_ENABLE
       | PLL_MODE_SEL
-      | PLL_FACTOR_N
-      | PLL_PRE_DIV_M;
+      | PLL_FACTOR_N(23)
+      | PLL_PRE_DIV_M(1);
   DEBUGASSERT(pll == 0x81001701);
 
   DEBUGASSERT(PLL_DE_CTRL_REG == 0x1C20048);
