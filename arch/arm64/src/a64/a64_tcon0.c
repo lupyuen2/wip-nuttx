@@ -187,14 +187,15 @@
  *   enabling the MIPI DSI Block on the SoC.
  *
  * Input Parameters:
- *   None
+ *   panel_width  - LCD Panel Width (pixels)
+ *   panel_height - LCD Panel Height (pixels)
  *
  * Returned Value:
  *   OK is always returned at present.
  *
  ****************************************************************************/
 
-int a64_tcon0_init(void)
+int a64_tcon0_init(uint16_t panel_width, uint16_t panel_height)
 {
   uint32_t pll_video0_ctrl;
   uint32_t pll_mipi_ctrl1;
@@ -365,8 +366,7 @@ int a64_tcon0_init(void)
    * Set TCON0_Y (Bits 0 to 11) to 1439 (Panel Height - 1)
    */
 
-  tcon0_basic0 = TCON0_X(A64_TCON0_PANEL_WIDTH - 1) |
-                 TCON0_Y(A64_TCON0_PANEL_HEIGHT - 1);
+  tcon0_basic0 = TCON0_X(panel_width - 1) | TCON0_Y(panel_height - 1);
   putreg32(tcon0_basic0, TCON0_BASIC0_REG);
 
   /* TCON0 ECC FIFO Register (Undocumented)
@@ -395,7 +395,7 @@ int a64_tcon0_init(void)
    * Note: Block Space is probably derived from Panel Width
    */
 
-  tcon0_cpu_tri0 = BLOCK_SPACE(47) | BLOCK_SIZE(A64_TCON0_PANEL_WIDTH - 1);
+  tcon0_cpu_tri0 = BLOCK_SPACE(47) | BLOCK_SIZE(panel_width - 1);
   putreg32(tcon0_cpu_tri0, TCON0_CPU_TRI0_REG);
 
   /* TCON0 CPU Panel Trigger Register 1 (A64 Page 522)
@@ -403,8 +403,7 @@ int a64_tcon0_init(void)
    * Set Block_Num (Bits 0 to 15) to 1439 (Panel Height - 1)
    */
 
-  tcon0_cpu_tri1 = BLOCK_CURRENT_NUM(0) |
-                   BLOCK_NUM(A64_TCON0_PANEL_HEIGHT - 1);
+  tcon0_cpu_tri1 = BLOCK_CURRENT_NUM(0) | BLOCK_NUM(panel_height - 1);
   putreg32(tcon0_cpu_tri1, TCON0_CPU_TRI1_REG);
 
   /* TCON0 CPU Panel Trigger Register 2 (A64 Page 522)

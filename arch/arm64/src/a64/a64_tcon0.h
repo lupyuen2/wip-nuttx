@@ -28,15 +28,6 @@
 #include <nuttx/config.h>
 
 /****************************************************************************
- * Pre-processor Definitions
- ****************************************************************************/
-
-/* LCD Panel Width and Height (pixels) */
-
-#define A64_TCON0_PANEL_WIDTH  720
-#define A64_TCON0_PANEL_HEIGHT 1440
-
-/****************************************************************************
  * Public Function Prototypes
  ****************************************************************************/
 
@@ -49,13 +40,14 @@
  *   enabling the MIPI DSI Block on the SoC.
  *
  * Input Parameters:
- *   None
+ *   panel_width  - LCD Panel Width (pixels)
+ *   panel_height - LCD Panel Height (pixels)
  *
  * Returned Value:
  *   OK is always returned at present.
  *
  ****************************************************************************/
 
-int a64_tcon0_init(void);
+int a64_tcon0_init(uint16_t panel_width, uint16_t panel_height);
 
 #endif /* __ARCH_ARM64_SRC_A64_A64_TCON0_H */
