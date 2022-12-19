@@ -448,8 +448,10 @@ int a64_de_init(void)
   ginfo("Set Special Clock to Display Engine PLL\n");
 
   /* Display Engine Clock Register (A64 Page 117)
-   * Set SCLK_GATING (Bit 31) to 1 (Enable Special Clock)
-   * Set CLK_SRC_SEL (Bits 24 to 26) to 1 (Clock Source is Display Engine PLL)
+   * Set SCLK_GATING (Bit 31) to 1
+   *   (Enable Special Clock)
+   * Set CLK_SRC_SEL (Bits 24 to 26) to 1
+   *   (Clock Source is Display Engine PLL)
    */
 
   clk = SCLK_GATING | CLK_SRC_SEL(1);
@@ -803,12 +805,12 @@ int a64_de_ui_channel_init(uint8_t channel,
   lay_glbalpha = (channel == 1) ? 0xff :  /* Channel 1: Opaque */
                  (channel == 2) ? 0xff :  /* Channel 2: Opaque */
                  (channel == 3) ? 0x7f :  /* Channel 3: Semi-Transparent */
-                 0xff;  /* Never comes here */
+                 0xff;                    /* Never comes here */
 
   lay_fbfmt = (channel == 1) ? 4 :  /* Channel 1: XRGB 8888 */
               (channel == 2) ? 0 :  /* Channel 2: ARGB 8888 */
               (channel == 3) ? 0 :  /* Channel 3: ARGB 8888 */
-              0;  /* Never comes here */
+              0;                    /* Never comes here */
 
   attr = LAY_GLBALPHA(lay_glbalpha) |
          LAY_FBFMT(lay_fbfmt) |
@@ -853,19 +855,19 @@ int a64_de_ui_channel_init(uint8_t channel,
 
   if (channel == 1)
     {
-      /* Set Blender Output ***************************************************/
+      /* Set Blender Output *************************************************/
 
       ginfo("Channel %d: Set Blender Output\n", channel);
 
       /* Blender Output Size Setting (DE Page 110)
-      * Set to (height-1) << 16 + (width-1)
-      */
+       * Set to (height-1) << 16 + (width-1)
+       */
 
       putreg32(height_width, BLD_SIZE);
 
       /* Global Size (DE Page 93)
-      * Set to (height-1) << 16 + (width-1)
-      */
+       * Set to (height-1) << 16 + (width-1)
+       */
 
       putreg32(height_width, GLB_SIZE);
     }
@@ -971,11 +973,11 @@ int a64_de_enable(uint8_t channels)
 
   p2_rtctl = (channels == 1) ? 0 :  /* Unused Pipe 2 */
              (channels == 3) ? 3 :  /* Select Pipe 2 from UI Channel 3 */
-             0;  /* Never comes here */
+             0;                     /* Never comes here */
 
   p1_rtctl = (channels == 1) ? 0 :  /* Unused Pipe 1 */
              (channels == 3) ? 2 :  /* Select Pipe 1 from UI Channel 2 */
-             0;  /* Never comes here */
+             0;                     /* Never comes here */
 
   route = P2_RTCTL(p2_rtctl) |
           P1_RTCTL(p1_rtctl) |
@@ -1000,11 +1002,11 @@ int a64_de_enable(uint8_t channels)
 
   p2_en = (channels == 1) ? 0 :  /* 1 UI Channel: Disable Pipe 2 */
           (channels == 3) ? 1 :  /* 3 UI Channels: Enable Pipe 2 */
-          0;  /* Never comes here */
+          0;                     /* Never comes here */
 
   p1_en = (channels == 1) ? 0 :  /* 1 UI Channel: Disable Pipe 1 */
           (channels == 3) ? 1 :  /* 3 UI Channels: Enable Pipe 1 */
-          0;  /* Never comes here */
+          0;                     /* Never comes here */
 
   fill = P2_EN(p2_en) |
          P1_EN(p1_en) |
