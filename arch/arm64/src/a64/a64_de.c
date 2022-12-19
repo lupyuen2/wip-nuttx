@@ -64,6 +64,7 @@
 /* Mixer 0 (DE Page 24) */
 
 #define A64_MIXER0_ADDR         (A64_DE_ADDR + 0x100000)
+#define A64_MIXER0_LEN          0x6000
 
 /* Global Registers (DE Page 90) */
 
@@ -520,10 +521,10 @@ int a64_de_init(void)
 
   ginfo("Clear MIXER0 Registers: GLB, BLD, OVL_V, OVL_UI\n");
 
-  for (i = 0; i < 0x6000; i += 4)
-  {
-    putreg32(0, A64_MIXER0_ADDR + i);
-  }
+  for (i = 0; i < A64_MIXER0_LEN; i += 4)
+    {
+      putreg32(0, A64_MIXER0_ADDR + i);
+    }
 
   /* Disable MIXER0 VSU *****************************************************/
 
