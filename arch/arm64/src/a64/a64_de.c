@@ -57,133 +57,134 @@
 
 /* Timeout for Display Engine PLL in milliseconds */
 
-#define PLL_TIMEOUT_MS      5
+#define PLL_TIMEOUT_MS          5
 
 /* A64 Display Engine Base Addresses ****************************************/
 
 /* Mixer 0 (DE Page 24) */
 
-#define A64_MIXER0_ADDR (A64_DE_ADDR + 0x100000)
+#define A64_MIXER0_ADDR         (A64_DE_ADDR + 0x100000)
 
 /* Global Registers (DE Page 90) */
 
-#define A64_GLB_ADDR (A64_MIXER0_ADDR + 0x0000)
+#define A64_GLB_ADDR            (A64_MIXER0_ADDR + 0x0000)
 
 /* Blender (DE Page 90) */
 
-#define A64_BLD_ADDR (A64_MIXER0_ADDR + 0x1000)
+#define A64_BLD_ADDR            (A64_MIXER0_ADDR + 0x1000)
 
 /* UI Overlay 1 (DE Page 102) */
 
-#define A64_OVL_UI_CH1_ADDR (A64_MIXER0_ADDR + 0x3000)
+#define A64_OVL_UI_CH1_ADDR     (A64_MIXER0_ADDR + 0x3000)
 
 /* Video Scaler (DE Page 90) */
 
-#define A64_VIDEO_SCALER_ADDR (A64_MIXER0_ADDR + 0x020000)
+#define A64_VIDEO_SCALER_ADDR   (A64_MIXER0_ADDR + 0x020000)
 
 /* UI Scaler 1 (DE Page 90) */
 
-#define A64_UI_SCALER1_ADDR (A64_MIXER0_ADDR + 0x040000)
+#define A64_UI_SCALER1_ADDR     (A64_MIXER0_ADDR + 0x040000)
 
 /* UI Scaler 2 (DE Page 90) */
 
-#define A64_UI_SCALER2_ADDR (A64_MIXER0_ADDR + 0x050000)
+#define A64_UI_SCALER2_ADDR     (A64_MIXER0_ADDR + 0x050000)
 
 /* Fresh and Contrast Enhancement (DE Page 61) */
 
-#define A64_FCE_ADDR (A64_MIXER0_ADDR + 0x0A0000)
+#define A64_FCE_ADDR            (A64_MIXER0_ADDR + 0x0a0000)
 
 /* Black and White Stretch (DE Page 42) */
 
-#define A64_BWS_ADDR (A64_MIXER0_ADDR + 0x0A2000)
+#define A64_BWS_ADDR            (A64_MIXER0_ADDR + 0x0a2000)
 
 /* Luminance Transient Improvement (DE Page 71) */
 
-#define A64_LTI_ADDR (A64_MIXER0_ADDR + 0x0A4000)
+#define A64_LTI_ADDR            (A64_MIXER0_ADDR + 0x0a4000)
 
 /* Luma Peaking (DE Page 80) */
 
-#define A64_PEAKING_ADDR (A64_MIXER0_ADDR + 0x0A6000)
+#define A64_PEAKING_ADDR        (A64_MIXER0_ADDR + 0x0a6000)
 
 /* Adaptive Saturation Enhancement (DE Page 40) */
 
-#define A64_ASE_ADDR (A64_MIXER0_ADDR + 0x0A8000)
+#define A64_ASE_ADDR            (A64_MIXER0_ADDR + 0x0a8000)
 
 /* Fancy Color Curvature Change (DE Page 56) */
 
-#define A64_FCC_ADDR (A64_MIXER0_ADDR + 0x0AA000)
+#define A64_FCC_ADDR            (A64_MIXER0_ADDR + 0x0aa000)
 
 /* UI Overlays 1, 2 and 3 (DE Page 102) */
 
-#define A64_OVL_UI_ADDR(ch) (A64_OVL_UI_CH1_ADDR + ((ch) - 1) * 0x1000)
+#define A64_OVL_UI_ADDR(ch)     (A64_OVL_UI_CH1_ADDR + ((ch) - 1) * 0x1000)
 
 /* UI Scalers 1, 2 and 3 (DE Page 90) */
 
-#define A64_UI_SCALER_ADDR(ch) (A64_UI_SCALER1_ADDR + ((ch) - 1) * 0x10000)
+#define A64_UI_SCALER_ADDR(ch)  (A64_UI_SCALER1_ADDR + ((ch) - 1) * 0x10000)
 
 /* Dynamic Range Controller (DE Page 48) */
 
-#define A64_DRC_ADDR (A64_DE_ADDR + 0x1b0000)
+#define A64_DRC_ADDR            (A64_DE_ADDR + 0x1b0000)
 
 /* A64 System Control Registers and Bit Definitions *************************/
 
 /* SRAM Control Register 1 (A31 Page 191) */
 
-#define SRAM_CTRL_REG1 (A64_SYSCTL_ADDR + 0x4)
+#define SRAM_CTRL_REG1          (A64_SYSCTL_ADDR + 0x4)
 
 /* A64 CCU Registers and Bit Definitions ************************************/
 
 /* PLL Display Engine Control Register (A64 Page 96) */
 
-#define PLL_DE_CTRL_REG (A64_CCU_ADDR + 0x0048)
-#define PLL_PRE_DIV_M(n) ((n)  <<  0)
-#define PLL_FACTOR_N(n) ((n) <<  8)
-#define PLL_MODE_SEL (1  << 24)
-#define PLL_ENABLE (1  << 31)
+#define PLL_DE_CTRL_REG  (A64_CCU_ADDR + 0x0048)
+#define PLL_PRE_DIV_M(n) ((n) << 0)
+#define PLL_FACTOR_N(n)  ((n) << 8)
+#define PLL_MODE_SEL     (1 << 24)
+#define PLL_LOCK         (1 << 28)
+#define PLL_ENABLE       (1 << 31)
 
 /* Bus Clock Gating Register 1 (A64 Page 102) */
 
 #define BUS_CLK_GATING_REG1 (A64_CCU_ADDR + 0x0064)
-#define DE_GATING (1 << 12)
+#define DE_GATING           (1 << 12)
 
 /* Display Engine Clock Register (A64 Page 117) */
 
-#define DE_CLK_REG (A64_CCU_ADDR + 0x0104)
-#define CLK_SRC_SEL(n) ((n) << 24)
-#define SCLK_GATING (1 << 31)
+#define DE_CLK_REG       (A64_CCU_ADDR + 0x0104)
+#define CLK_SRC_SEL(n)   ((n) << 24)
 #define CLK_SRC_SEL_MASK (0b111 << 24)
-#define SCLK_GATING_MASK (0b1   << 31)
+#define SCLK_GATING      (1 << 31)
+#define SCLK_GATING_MASK (0b1 << 31)
 
 /* Bus Software Reset Register 1 (A64 Page 140) */
 
-#define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02C4)
+#define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02c4)
 #define DE_RST (1 << 12)
 
 /* A64 Display Engine Registers and Bit Definitions *************************/
 
 /* DE SCLK Gating Register (DE Page 25) */
 
-#define SCLK_GATE (A64_DE_ADDR + 0x000)
-#define CORE0_SCLK_GATE (1 << 0)
+#define SCLK_GATE        (A64_DE_ADDR + 0x000)
+#define CORE0_SCLK_GATE  (1 << 0)
 
 /* DE AHB Reset register (DE Page 25) */
 
-#define AHB_RESET (A64_DE_ADDR + 0x008)
+#define AHB_RESET        (A64_DE_ADDR + 0x008)
 #define CORE0_HCLK_RESET (1 << 0)
 
 /* DE HCLK Gating Register (DE Page 25) */
 
-#define HCLK_GATE (A64_DE_ADDR + 0x004)
-#define CORE0_HCLK_GATE (1 << 0)
+#define HCLK_GATE        (A64_DE_ADDR + 0x004)
+#define CORE0_HCLK_GATE  (1 << 0)
 
 /* DE2TCON MUX Register (DE Page 26) */
 
-#define DE2TCON_MUX (A64_DE_ADDR + 0x010)
+#define DE2TCON_MUX      (A64_DE_ADDR + 0x010)
 #define DE2TCON_MUX_MASK (1 << 0)
 
 /* Video Scaler Control Register (DE Page 130) */
 
-#define VS_CTRL_REG (A64_VIDEO_SCALER_ADDR + 0x00)
+#define VS_CTRL_REG   (A64_VIDEO_SCALER_ADDR + 0x00)
 
 /* 0x113 0000 is undocumented. Might be a mix-up with UI_SCALER3. */
 
@@ -207,45 +208,45 @@
 
 /* Luminance Transient Improvement Global Control Register (DE Page 72) */
 
-#define LTI_CTL (A64_LTI_ADDR + 0x00)
+#define LTI_CTL       (A64_LTI_ADDR + 0x00)
 
 /* Luma Peaking Module Control Register (DE Page 80) */
 
-#define LP_CTRL_REG (A64_PEAKING_ADDR + 0x00)
+#define LP_CTRL_REG   (A64_PEAKING_ADDR + 0x00)
 
 /* Adaptive Saturation Enhancement Global Control Register (DE Page 40) */
 
-#define ASE_CTL_REG (A64_ASE_ADDR + 0x00)
+#define ASE_CTL_REG   (A64_ASE_ADDR + 0x00)
 
 /* Fancy Color Curvature Change Control Register (DE Page 56) */
 
-#define FCC_CTL_REG (A64_FCC_ADDR + 0x00)
+#define FCC_CTL_REG   (A64_FCC_ADDR + 0x00)
 
 /* Dynamic Range Controller Module General Control Register (DE Page 49) */
 
-#define GNECTL_REG (A64_DRC_ADDR + 0x00)
+#define GNECTL_REG    (A64_DRC_ADDR + 0x00)
 
 /* Mixer 0 Global Control Register (DE Page 92) */
 
-#define GLB_CTL (A64_MIXER0_ADDR + 0x00)
+#define GLB_CTL  (A64_MIXER0_ADDR + 0x00)
 #define EN_MIXER (1 << 0)
 
 /* Global Double Buffer Control (DE Page 93) */
 
-#define GLB_DBUFFER (A64_GLB_ADDR + 0x008)
+#define GLB_DBUFFER       (A64_GLB_ADDR + 0x008)
 #define DOUBLE_BUFFER_RDY (1 << 0)
 
 /* Global Size (DE Page 93) */
 
-#define GLB_SIZE (A64_GLB_ADDR + 0x00C)
+#define GLB_SIZE (A64_GLB_ADDR + 0x00c)
 
 /* Blender Fill Color Control (DE Page 106) */
 
 #define BLD_FILL_COLOR_CTL (A64_BLD_ADDR + 0x000)
-#define P0_FCEN(n) ((n) << 0)
-#define P0_EN(n) ((n) << 8)
-#define P1_EN(n) ((n) << 9)
-#define P2_EN(n) ((n) << 10)
+#define P0_FCEN(n)         ((n) << 0)
+#define P0_EN(n)           ((n) << 8)
+#define P1_EN(n)           ((n) << 9)
+#define P2_EN(n)           ((n) << 10)
 
 /* Note: DE Page 91 shows incorrect offset N*0x14 for
  * BLD_FILL_COLOR, BLD_CH_ISIZE and BLD_CH_OFFSET.
@@ -256,29 +257,29 @@
 /* Blender Fill Color (DE Page 107) */
 
 #define BLD_FILL_COLOR(p) (A64_BLD_ADDR + 0x004 + (p) * 0x10)
-#define FILL_BLUE(n) ((n)    << 0)
-#define FILL_GREEN(n) ((n)    << 8)
-#define FILL_RED(n) ((n)    << 16)
-#define FILL_ALPHA(n) ((n) << 24)
+#define FILL_BLUE(n)      ((n) << 0)
+#define FILL_GREEN(n)     ((n) << 8)
+#define FILL_RED(n)       ((n) << 16)
+#define FILL_ALPHA(n)     ((n) << 24)
 
 /* Blender Input Memory Size (DE Page 108) */
 
-#define BLD_CH_ISIZE(p) (A64_BLD_ADDR + 0x008 + (p) * 0x10)
+#define BLD_CH_ISIZE(p)   (A64_BLD_ADDR + 0x008 + (p) * 0x10)
 
 /* Blender Input Memory Offset (DE Page 108) */
 
-#define BLD_CH_OFFSET(p) (A64_BLD_ADDR + 0x00C + (p) * 0x10)
+#define BLD_CH_OFFSET(p)  (A64_BLD_ADDR + 0x00c + (p) * 0x10)
 
 /* Blender Routing Control (DE Page 108) */
 
 #define BLD_CH_RTCTL (A64_BLD_ADDR + 0x080)
-#define P0_RTCTL(n) ((n) << 0)
-#define P1_RTCTL(n) ((n) << 4)
-#define P2_RTCTL(n) ((n) << 8)
+#define P0_RTCTL(n)  ((n) << 0)
+#define P1_RTCTL(n)  ((n) << 4)
+#define P2_RTCTL(n)  ((n) << 8)
 
 /* Blender Pre-Multiply Control (DE Page 109) */
 
-#define BLD_PREMUL_CTL (A64_BLD_ADDR + 0x084)
+#define BLD_PREMUL_CTL   (A64_BLD_ADDR + 0x084)
 #define P0_ALPHA_MODE(n) ((n) << 0)
 #define P1_ALPHA_MODE(n) ((n) << 1)
 #define P2_ALPHA_MODE(n) ((n) << 2)
@@ -287,18 +288,18 @@
 /* Blender Background Color (DE Page 109) */
 
 #define BLD_BK_COLOR (A64_BLD_ADDR + 0x088)
-#define BK_BLUE(n) ((n)    << 0)
-#define BK_GREEN(n) ((n)    << 8)
-#define BK_RED(n) ((n)    << 16)
-#define BK_RESERVED (0xFF << 24)
+#define BK_BLUE(n)   ((n) << 0)
+#define BK_GREEN(n)  ((n) << 8)
+#define BK_RED(n)    ((n) << 16)
+#define BK_RESERVED  (0xff << 24)
 
 /* Blender Output Size Setting (DE Page 110) */
 
-#define BLD_SIZE (A64_BLD_ADDR + 0x08C)
+#define BLD_SIZE (A64_BLD_ADDR + 0x08c)
 
 /* Blender Control (DE Page 110) */
 
-#define BLD_CTL(p) (A64_BLD_ADDR + 0x090 + (p) * 4)
+#define BLD_CTL(p)   (A64_BLD_ADDR + 0x090 + (p) * 4)
 #define BLEND_PFS(n) ((n) << 0)
 #define BLEND_PFD(n) ((n) << 8)
 #define BLEND_AFS(n) ((n) << 16)
@@ -307,22 +308,22 @@
 /* UI Overlay Attribute Control (DE Page 102) */
 
 #define OVL_UI_ATTR_CTL(ch) (A64_OVL_UI_ADDR(ch) + 0x00)
-#define LAY_EN (1 << 0)
-#define LAY_ALPHA_MODE(n) ((n) << 1)
-#define LAY_FBFMT(n) ((n) << 8)
-#define LAY_GLBALPHA(n) ((n) << 24)
+#define LAY_EN              (1 << 0)
+#define LAY_ALPHA_MODE(n)   ((n) << 1)
+#define LAY_FBFMT(n)        ((n) << 8)
+#define LAY_GLBALPHA(n)     ((n) << 24)
 
 /* UI Overlay Memory Block Size (DE Page 104) */
 
-#define OVL_UI_MBSIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x04)
+#define OVL_UI_MBSIZE(ch)   (A64_OVL_UI_ADDR(ch) + 0x04)
 
 /* UI Overlay Memory Block Coordinate (DE Page 104) */
 
-#define OVL_UI_COOR(ch) (A64_OVL_UI_ADDR(ch) + 0x08)
+#define OVL_UI_COOR(ch)     (A64_OVL_UI_ADDR(ch) + 0x08)
 
 /* UI Overlay Memory Pitch (DE Page 104) */
 
-#define OVL_UI_PITCH(ch) (A64_OVL_UI_ADDR(ch) + 0x0C)
+#define OVL_UI_PITCH(ch)    (A64_OVL_UI_ADDR(ch) + 0x0c)
 
 /* UI Overlay Top Field Memory Block Low Address (DE Page 104) */
 
@@ -330,11 +331,11 @@
 
 /* UI Overlay Overlay Window Size (DE Page 106) */
 
-#define OVL_UI_SIZE(ch) (A64_OVL_UI_ADDR(ch) + 0x88)
+#define OVL_UI_SIZE(ch)     (A64_OVL_UI_ADDR(ch) + 0x88)
 
 /* UI Scaler Control Register (DE Page 66) */
 
-#define UIS_CTRL_REG(ch) (A64_UI_SCALER_ADDR(ch) + 0x00)
+#define UIS_CTRL_REG(ch)    (A64_UI_SCALER_ADDR(ch) + 0x00)
 
 /****************************************************************************
  * Private Functions
@@ -362,7 +363,7 @@ static int a64_wait_pll(void)
     {
       /* Poll on LOCK (Bit 28) of PLL Display Engine Control Register */
 
-      if ((getreg32(PLL_DE_CTRL_REG) & (1 << 28)) != 0)
+      if ((getreg32(PLL_DE_CTRL_REG) & PLL_LOCK) != 0)
         {
           /* If LOCK is 1, then Display Engine PLL is stable */
 
