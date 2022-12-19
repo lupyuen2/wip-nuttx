@@ -327,9 +327,22 @@ static int a64_wait_pll(void)
  * Public Functions
  ****************************************************************************/
 
-// Init PinePhone's Allwinner A64 Display Engine.
-// Called by display_init() in p-boot Display Code.
-// Must be called before any DE operations
+/****************************************************************************
+ * Name: a64_de_init
+ *
+ * Description:
+ *   Initialize the Display Engine on the SoC.  Mixer 0 will be configured
+ *   to stream pixel data to Timing Controller TCON0.  Should be called
+ *   before any Display Engine operation.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   Zero (OK) on success; ERROR if timeout.
+ *
+ ****************************************************************************/
+
 int a64_de_init(void)
 {
   int i;
@@ -541,8 +554,21 @@ int a64_de_init(void)
   return OK;
 }
 
-/// Initialize the UI Blender for PinePhone's A64 Display Engine.
-/// Must be called after a64_de_init, and before a64_de_ui_channel_init
+/****************************************************************************
+ * Name: a64_de_blender_init
+ *
+ * Description:
+ *   Initialize the UI Blender for Display Engine.  Should be called after
+ *   a64_de_init() and before a64_de_ui_channel_init().
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   OK is always returned at present.
+ *
+ ****************************************************************************/
+
 int a64_de_blender_init(void)
 {
   uint32_t color;
@@ -582,19 +608,38 @@ int a64_de_blender_init(void)
   return OK;
 }
 
-/// Initialize a UI Channel for PinePhone's A64 Display Engine.
-/// We use 3 UI Channels: Base UI Channel (#1) plus 2 Overlay UI Channels (#2, #3).
-/// Must be called after a64_de_blender_init, and before a64_de_enable
-int a64_de_ui_channel_init(
-  uint8_t channel,   // UI Channel Number: 1, 2 or 3
-  void *fbmem,     // Start of frame buffer memory, or null if this channel should be disabled
-  size_t fblen,           // Length of frame buffer memory in bytes
-  uint16_t stride,  // Length of a line in bytes (4 bytes per pixel)
-  uint16_t xres,  // Horizontal resolution in pixel columns
-  uint16_t yres,  // Vertical resolution in pixel rows
-  uint16_t xoffset,  // Horizontal offset in pixel columns
-  uint16_t yoffset  // Vertical offset in pixel rows
-)
+/****************************************************************************
+ * Name: a64_de_ui_channel_init
+ *
+ * Description:
+ *   Initialize a UI Channel for Display Engine.  Display Engine will
+ *   stream the pixel data from the Frame Buffer Memory (over DMA) to the
+ *   UI Blender.  There are 3 UI Channels: Base UI Channel (Channel 1) and
+ *   2 Overlay UI Channels (Channels 2 and 3).  Should be called after
+ *   a64_de_blender_init() and before a64_de_enable().
+ *
+ * Input Parameters:
+ *   channel - UI Channel Number: 1, 2 or 3
+ *   fbmem   - Start of Frame Buffer Memory (address should be 32-bit),
+ *             or NULL if this UI Channel should be disabled
+ *   fblen   - Length of Frame Buffer Memory in bytes
+ *   xres    - Horizontal resolution in pixel columns
+ *   yres    - Vertical resolution in pixel rows
+ *   xoffset - Horizontal offset in pixel columns
+ *   yoffset - Vertical offset in pixel rows
+ *
+ * Returned Value:
+ *   OK is always returned at present.
+ *
+ ****************************************************************************/
+
+int a64_de_ui_channel_init(uint8_t channel,
+                           void *fbmem,
+                           size_t fblen,
+                           uint16_t xres,
+                           uint16_t yres,
+                           uint16_t xoffset,
+                           uint16_t yoffset)
 {
   uint32_t lay_glbalpha;
   uint32_t lay_fbfmt;
@@ -605,10 +650,8 @@ int a64_de_ui_channel_init(
   uint32_t offset;
   uint32_t blend;
 
-  // Validate Framebuffer Size and Stride at Compile Time
   DEBUGASSERT(channel >= 1 && channel <= 3);
   DEBUGASSERT(fblen == xres * yres * 4);
-  DEBUGASSERT(stride == xres * 4);
 
   // If UI Channel should be disabled...
   if (fbmem == NULL)
@@ -664,7 +707,7 @@ int a64_de_ui_channel_init(
   putreg32(attr, OVL_UI_ATTR_CTL(channel));
 
   // UI Overlay Top Field Memory Block Low Address (DE Page 104)
-  // Set to Framebuffer Address (32 bits only)
+  // Set to Frame Buffer Address (32 bits only)
   DEBUGASSERT((((uint64_t)fbmem) & 0xffffffff) == (uint64_t)fbmem);
   putreg32((uint64_t)fbmem, OVL_UI_TOP_LADD(channel));
 
@@ -750,11 +793,23 @@ int a64_de_ui_channel_init(
   return OK;
 }
 
-/// Set UI Blender Route, enable Blender Pipes and apply the settings for PinePhone's A64 Display Engine.
-/// Must be called after a64_de_ui_channel_init
-int a64_de_enable(
-  uint8_t channels  // Number of enabled UI Channels
-)
+/****************************************************************************
+ * Name: a64_de_enable
+ *
+ * Description:
+ *   Set the UI Blender Route, enable the Blender Pipes and enable the
+ *   Display Engine.  Should be called after all 3 UI Channels have been
+ *   initialized.
+ *
+ * Input Parameters:
+ *   channels - Number of UI Channels to enable: 1 or 3
+ *
+ * Returned Value:
+ *   OK is always returned at present.
+ *
+ ****************************************************************************/
+
+int a64_de_enable(uint8_t channels)
 {
   uint32_t p2_rtctl;
   uint32_t p1_rtctl;
