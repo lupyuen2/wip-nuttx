@@ -536,36 +536,7 @@ int a64_de_init(void)
   // Set EN (Bit 0) to 1 (Enable Mixer)
   putreg32(EN_MIXER, GLB_CTL);
 
-  ///
-  DEBUGASSERT(SRAM_CTRL_REG1 == 0x1C00004);
-
-  DEBUGASSERT(pll == 0x81001701);
-  DEBUGASSERT(PLL_DE_CTRL_REG == 0x1C20048);
-
-  DEBUGASSERT(clk == 0x81000000);
-  DEBUGASSERT(DE_CLK_REG == 0x1C20104);
-
-  DEBUGASSERT(BUS_SOFT_RST_REG1 == 0x1C202C4);
-  DEBUGASSERT(BUS_CLK_GATING_REG1 == 0x1C20064);
-
-  DEBUGASSERT(SCLK_GATE == 0x1000000);
-  DEBUGASSERT(AHB_RESET == 0x1000008);
-  DEBUGASSERT(HCLK_GATE == 0x1000004);
-  DEBUGASSERT(DE2TCON_MUX == 0x1000010);
-
-  DEBUGASSERT(VS_CTRL_REG == 0x1120000);
-  DEBUGASSERT(UNDOC_1130000 == 0x1130000);
-  DEBUGASSERT(UIS_CTRL_REG1 == 0x1140000);
-  DEBUGASSERT(UIS_CTRL_REG2 == 0x1150000);
-  DEBUGASSERT(GCTRL_REG_FCE == 0x11A0000);
-  DEBUGASSERT(GCTRL_REG_BWS == 0x11A2000);
-  DEBUGASSERT(LTI_CTL == 0x11A4000);
-  DEBUGASSERT(LP_CTRL_REG == 0x11A6000);
-  DEBUGASSERT(ASE_CTL_REG == 0x11A8000);
-  DEBUGASSERT(FCC_CTL_REG == 0x11AA000);
-  DEBUGASSERT(GNECTL_REG == 0x11B0000);
-  DEBUGASSERT(GLB_CTL == 0x1100000);
-  ///
+#include "../../pinephone-nuttx/test/test_a64_de2.c" //// TODO: Remove Test Code
 
   return OK;
 }
@@ -606,13 +577,7 @@ int a64_de_blender_init(void)
                 P0_ALPHA_MODE(0);
   putreg32(premultiply, BLD_PREMUL_CTL);
 
-  ///
-  DEBUGASSERT(color == 0xFF000000);
-  DEBUGASSERT(BLD_BK_COLOR == 0x1101088);
-
-  DEBUGASSERT(premultiply == 0);
-  DEBUGASSERT(BLD_PREMUL_CTL == 0x1101084);
-  ///
+#include "../../pinephone-nuttx/test/test_a64_de3.c" //// TODO: Remove Test Code
 
   return OK;
 }
@@ -780,30 +745,7 @@ int a64_de_ui_channel_init(
   // Set EN (Bit 0) to 0 (Disable UI Scaler)
   putreg32(0, UIS_CTRL_REG(channel));
 
-  ///
-  DEBUGASSERT(OVL_UI_ATTR_CTL(channel) == 0x1103000 || OVL_UI_ATTR_CTL(channel) == 0x1104000 || OVL_UI_ATTR_CTL(channel) == 0x1105000);
-  DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
-  DEBUGASSERT(attr == 0xFF000405 || attr == 0xFF000005 || attr == 0x7F000005);
-
-  DEBUGASSERT(OVL_UI_TOP_LADD(channel) == 0x1103010 || OVL_UI_TOP_LADD(channel) == 0x1104010 || OVL_UI_TOP_LADD(channel) == 0x1105010);
-  DEBUGASSERT(OVL_UI_PITCH(channel) == 0x110300C || OVL_UI_PITCH(channel) == 0x110400C || OVL_UI_PITCH(channel) == 0x110500C);
-  DEBUGASSERT(OVL_UI_MBSIZE(channel) == 0x1103004 || OVL_UI_MBSIZE(channel) == 0x1104004 || OVL_UI_MBSIZE(channel) == 0x1105004);
-  DEBUGASSERT(OVL_UI_SIZE(channel) == 0x1103088 || OVL_UI_SIZE(channel) == 0x1104088 || OVL_UI_SIZE(channel) == 0x1105088);
-  DEBUGASSERT(OVL_UI_COOR(channel) == 0x1103008 || OVL_UI_COOR(channel) == 0x1104008 || OVL_UI_COOR(channel) == 0x1105008);
-
-  DEBUGASSERT(BLD_SIZE == 0x110108C);
-  DEBUGASSERT(GLB_SIZE == 0x110000C);
-
-  DEBUGASSERT(BLD_CH_ISIZE(pipe) == 0x1101008 || BLD_CH_ISIZE(pipe) == 0x1101018 || BLD_CH_ISIZE(pipe) == 0x1101028);
-  DEBUGASSERT(BLD_FILL_COLOR(pipe) == 0x1101004 || BLD_FILL_COLOR(pipe) == 0x1101014 || BLD_FILL_COLOR(pipe) == 0x1101024);
-  DEBUGASSERT(color == 0xFF000000);
-
-  DEBUGASSERT(BLD_CH_OFFSET(pipe) == 0x110100C || BLD_CH_OFFSET(pipe) == 0x110101C || BLD_CH_OFFSET(pipe) == 0x110102C);
-  DEBUGASSERT(offset == 0 || offset == 0x340034);
-
-  DEBUGASSERT(BLD_CTL(pipe) == 0x1101090 || BLD_CTL(pipe) == 0x1101094 || BLD_CTL(pipe) == 0x1101098);
-  DEBUGASSERT(UIS_CTRL_REG(channel) == 0x1140000 || UIS_CTRL_REG(channel) == 0x1150000 || UIS_CTRL_REG(channel) == 0x1160000);
-  ///
+#include "../../pinephone-nuttx/test/test_a64_de4.c" //// TODO: Remove Test Code
 
   return OK;
 }
@@ -885,19 +827,9 @@ int a64_de_enable(
 
   putreg32(DOUBLE_BUFFER_RDY, GLB_DBUFFER);
 
-  ///
-  DEBUGASSERT(route == 0x321 || route == 1);
-  DEBUGASSERT(BLD_CH_RTCTL == 0x1101080);
-
-  DEBUGASSERT(fill == 0x701 || fill == 0x101);
-  DEBUGASSERT(BLD_FILL_COLOR_CTL == 0x1101000);
-
-  DEBUGASSERT(DOUBLE_BUFFER_RDY == 1);
-  DEBUGASSERT(GLB_DBUFFER == 0x1100008);
-  ///
+#include "../../pinephone-nuttx/test/test_a64_de5.c" //// TODO: Remove Test Code
 
   return OK;
 }
 
-//// TODO: Remove Test Code
 #include "../../pinephone-nuttx/test/test_a64_de.c" //// TODO: Remove Test Code
