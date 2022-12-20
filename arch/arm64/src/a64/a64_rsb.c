@@ -215,3 +215,5 @@ int a64_rsb_write(
   // Wait for RSB Status
   return rsb_wait_status();
 }
+
+#include "../../pinephone-nuttx/test/test_a64_rsb.c"  //// TODO: Remove Test Code
