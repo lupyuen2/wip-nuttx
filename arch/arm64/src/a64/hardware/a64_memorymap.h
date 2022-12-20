@@ -41,6 +41,7 @@
 #define A64_DSI_ADDR        0x01ca0000 /* MIPI DSI        0x01ca:0000-0x01ca:0fff 4K */
 #define A64_DPHY_ADDR       0x01ca1000 /* MIPI DSI-PHY    0x01ca:1000-0x01ca:1fff 4K */
 #define A64_RPIO_ADDR       0x01f02c00 /* R_PIO           0x01f0:2c00-0x01f0:2fff 1K */
+#define A64_RSB_ADDR        0x01f03400 /* R_RSB           0x01f0:3400-0x01f0:37ff 1K */
 
 /****************************************************************************
  * Public Types

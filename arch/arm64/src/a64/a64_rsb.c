@@ -41,6 +41,7 @@
 #include <debug.h>
 
 #include <nuttx/arch.h>
+#include "hardware/a64_memorymap.h"
 #include "arm64_arch.h"
 #include "a64_rsb.h"
 
@@ -48,28 +49,25 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/// TODO: Reduced Serial Bus Base Address (R_RSB) (A64 Page 75)
-#define R_RSB_BASE_ADDRESS 0x01f03400
-
 /* A64 Reduced Serial Bus Registers and Bit Definitions *********************/
 
 // RSB Control Register (RSB_CTRL) (A80 Page 923)
-#define RSB_CTRL   (R_RSB_BASE_ADDRESS + 0x00)
+#define RSB_CTRL   (A64_RSB_ADDR + 0x00)
 
 // RSB Status Register (RSB_STAT) (A80 Page 924)
-#define RSB_STAT   (R_RSB_BASE_ADDRESS + 0x0c)
+#define RSB_STAT   (A64_RSB_ADDR + 0x0c)
 
 // RSB Address Register (RSB_AR) (A80 Page 926)
-#define RSB_AR     (R_RSB_BASE_ADDRESS + 0x10)
+#define RSB_AR     (A64_RSB_ADDR + 0x10)
 
 // RSB Data Buffer Register (RSB_DATA) (A80 Page 926)
-#define RSB_DATA   (R_RSB_BASE_ADDRESS + 0x1c)
+#define RSB_DATA   (A64_RSB_ADDR + 0x1c)
 
 // RSB Command Register (RSB_CMD) (A80 Page 928)
-#define RSB_CMD    (R_RSB_BASE_ADDRESS + 0x2c)
+#define RSB_CMD    (A64_RSB_ADDR + 0x2c)
 
 // RSB Device Address Register (RSB_DAR) (A80 Page 928)
-#define RSB_DAR    (R_RSB_BASE_ADDRESS + 0x30)
+#define RSB_DAR    (A64_RSB_ADDR + 0x30)
 
 /* A64 Reduced Serial Bus Commands ******************************************/
 
@@ -87,14 +85,17 @@
 /// Returns -1 on error.
 static int rsb_wait_trans(void) 
 {
-    // Wait for transaction to complete
-    int tries = 100000;
-    while (true) {
+  // Wait for transaction to complete
+  #define TRANS_WAIT_COUNT 100000
+  int tries = TRANS_WAIT_COUNT;
+  while (true)
+    {
       // RSB Control Register (RSB_CTRL) (A80 Page 923)
       // At RSB Offset 0x0000
       // Wait for START_TRANS (Bit 7) to be 0 (Transaction Completed or Error)
+      #define START_TRANS (1 << 7)
       uint32_t reg = getreg32(RSB_CTRL); 
-      if ((reg & (1 << 7)) == 0)
+      if ((reg & START_TRANS) == 0)
         { 
           break; 
         }
@@ -107,7 +108,7 @@ static int rsb_wait_trans(void)
           return -1;
         }
     }
-    return 0;
+  return 0;
 }
 
 /// Wait for Reduced Serial Bus and read the status.
@@ -124,8 +125,9 @@ static int rsb_wait_status(void)
   // RSB Status Register (RSB_STAT) (A80 Page 924)
   // At RSB Offset 0x000c
   // If TRANS_OVER (Bit 0) is 1, then RSB Transfer has completed without error
+  #define TRANS_OVER (1 << 0)
   uint32_t reg = getreg32(RSB_STAT);
-  if (reg == 0x01)
+  if (reg == TRANS_OVER)
     {
       return 0;
     }
@@ -154,8 +156,8 @@ int a64_rsb_read(
   // RSB Device Address Register (RSB_DAR) (A80 Page 928)
   // At RSB Offset 0x0030
   // Set RTA (Bits 16 to 23) to the Run-Time Address (0x2D for AXP803 PMIC)
-  uint32_t rta = rt_addr << 16;
-  putreg32(rta, RSB_DAR);   
+  #define RTA(n) ((n) << 16)
+  putreg32(RTA(rt_addr), RSB_DAR);   
 
   // RSB Address Register (RSB_AR) (A80 Page 926)
   // At RSB Offset 0x0010
@@ -165,7 +167,7 @@ int a64_rsb_read(
   // RSB Control Register (RSB_CTRL) (A80 Page 923)
   // At RSB Offset 0x0000
   // Set START_TRANS (Bit 7) to 1 (Start Transaction)
-  putreg32(0x80, RSB_CTRL);  
+  putreg32(START_TRANS, RSB_CTRL);  
 
   // Wait for RSB Status
   int ret = rsb_wait_status();
@@ -194,8 +196,7 @@ int a64_rsb_write(
   // RSB Device Address Register (RSB_DAR) (A80 Page 928)
   // At RSB Offset 0x0030
   // Set RTA (Bits 16 to 23) to the Run-Time Address (0x2D for AXP803 PMIC)
-  uint32_t rta = rt_addr << 16;
-  putreg32(rta, RSB_DAR);   
+  putreg32(RTA(rt_addr), RSB_DAR);   
 
   // RSB Address Register (RSB_AR) (A80 Page 926)
   // At RSB Offset 0x0010
@@ -210,7 +211,7 @@ int a64_rsb_write(
   // RSB Control Register (RSB_CTRL) (A80 Page 923)
   // At RSB Offset 0x0000
   // Set START_TRANS (Bit 7) to 1 (Start Transaction)
-  putreg32(0x80, RSB_CTRL);  
+  putreg32(START_TRANS, RSB_CTRL);  
 
   // Wait for RSB Status
   return rsb_wait_status();
