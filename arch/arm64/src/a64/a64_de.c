@@ -650,6 +650,8 @@ int a64_de_init(void)
 
   putreg32(EN_MIXER, GLB_CTL);
 
+#include "../../pinephone-nuttx/test/test_a64_de2.c" //// TODO: Remove Test Code
+
   return OK;
 }
 
@@ -705,6 +707,8 @@ int a64_de_blender_init(void)
                 P1_ALPHA_MODE(0) |
                 P0_ALPHA_MODE(0);
   putreg32(premultiply, BLD_PREMUL_CTL);
+
+#include "../../pinephone-nuttx/test/test_a64_de3.c" //// TODO: Remove Test Code
 
   return OK;
 }
@@ -922,6 +926,8 @@ int a64_de_ui_channel_init(uint8_t channel,
 
   putreg32(0, UIS_CTRL_REG(channel));
 
+#include "../../pinephone-nuttx/test/test_a64_de4.c" //// TODO: Remove Test Code
+
   return OK;
 }
 
@@ -1019,5 +1025,9 @@ int a64_de_enable(uint8_t channels)
 
   putreg32(DOUBLE_BUFFER_RDY, GLB_DBUFFER);
 
+#include "../../pinephone-nuttx/test/test_a64_de5.c" //// TODO: Remove Test Code
+
   return OK;
 }
+
+#include "../../pinephone-nuttx/test/test_a64_de.c" //// TODO: Remove Test Code
