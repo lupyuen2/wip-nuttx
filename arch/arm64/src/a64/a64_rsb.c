@@ -130,7 +130,7 @@ static int rsb_wait_status(void)
       return 0;
     }
 
-  _err("Transaction Failed");  // TODO
+  _err("Transaction Failed\n");  // TODO
   return -1;
 }
 
