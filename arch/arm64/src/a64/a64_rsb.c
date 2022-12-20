@@ -49,6 +49,10 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+/* Timeout for RSB Transactions in milliseconds */
+
+#define TRANS_TIMEOUT_MS 5
+
 /* A64 Reduced Serial Bus Registers and Bit Definitions *********************/
 
 // RSB Control Register (RSB_CTRL) (A80 Page 923)
@@ -82,42 +86,39 @@
  ****************************************************************************/
 
 /// Wait for Reduced Serial Bus Transaction to complete.
-/// Returns -1 on error.
+/// Returns ERROR on timeout.
 static int rsb_wait_trans(void) 
 {
-  // Wait for transaction to complete
-  #define TRANS_WAIT_COUNT 100000
-  int tries = TRANS_WAIT_COUNT;
-  while (true)
+  int i;
+
+  for (i = 0; i < TRANS_TIMEOUT_MS; i++)
     {
-      // RSB Control Register (RSB_CTRL) (A80 Page 923)
-      // At RSB Offset 0x0000
-      // Wait for START_TRANS (Bit 7) to be 0 (Transaction Completed or Error)
+      /* Poll on START_TRANS (Bit 7) of RSB Control Register */
+
       #define START_TRANS (1 << 7)
-      uint32_t reg = getreg32(RSB_CTRL); 
-      if ((reg & START_TRANS) == 0)
+      if ((getreg32(RSB_CTRL) & START_TRANS) == 0)
         { 
-          break; 
+          /* If START_TRANS is 0, then transaction has completed or failed */
+
+          return OK;
         }
 
-      // Check for transaction timeout
-      tries -= 1;
-      if (tries == 0)
-        {
-          gerr("Transaction Timeout\n");  // TODO
-          return -1;
-        }
+      /* Sleep 1 millisecond and try again */
+
+      up_mdelay(1);
     }
-  return 0;
+
+  gerr("Transaction Timeout");
+  return ERROR;
 }
 
 /// Wait for Reduced Serial Bus and read the status.
-/// Returns -1 on error.
+/// Returns ERROR on timeout or error.
 static int rsb_wait_status(void)
 {
   // Wait for transaction to complete or fail with error
   int ret = rsb_wait_trans();
-  if (ret != 0)
+  if (ret < 0)
     {
       return ret;
     }
@@ -126,14 +127,13 @@ static int rsb_wait_status(void)
   // At RSB Offset 0x000c
   // If TRANS_OVER (Bit 0) is 1, then RSB Transfer has completed without error
   #define TRANS_OVER (1 << 0)
-  uint32_t reg = getreg32(RSB_STAT);
-  if (reg == TRANS_OVER)
+  if (getreg32(RSB_STAT) == TRANS_OVER)
     {
       return 0;
     }
 
-  gerr("Transaction Failed\n");  // TODO
-  return -1;
+  gerr("Transaction Failed\n");
+  return ERROR;
 }
 
 /****************************************************************************
@@ -150,7 +150,7 @@ int a64_rsb_read(
   // RSB Command Register (RSB_CMD) (A80 Page 928)
   // At RSB Offset 0x002C
   // Set to 0x8B (RD8) to read one byte
-  ginfo("rsb_read: rt_addr=0x%x, reg_addr=0x%x\n", rt_addr, reg_addr);  // TODO
+  ginfo("rt_addr=0x%x, reg_addr=0x%x\n", rt_addr, reg_addr);  // TODO
   putreg32(RSBCMD_RD8, RSB_CMD);   
 
   // RSB Device Address Register (RSB_DAR) (A80 Page 928)
@@ -171,7 +171,10 @@ int a64_rsb_read(
 
   // Wait for RSB Status
   int ret = rsb_wait_status();
-  if (ret != 0) { return ret; }
+  if (ret < 0)
+    {
+      return ret;
+    }
 
   // RSB Data Buffer Register (RSB_DATA) (A80 Page 926)
   // At RSB Offset 0x001c
