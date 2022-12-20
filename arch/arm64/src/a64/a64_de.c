@@ -159,7 +159,7 @@
 /* Bus Software Reset Register 1 (A64 Page 140) */
 
 #define BUS_SOFT_RST_REG1 (A64_CCU_ADDR + 0x02c4)
-#define DE_RST (1 << 12)
+#define DE_RST            (1 << 12)
 
 /* A64 Display Engine Registers and Bit Definitions *************************/
 
