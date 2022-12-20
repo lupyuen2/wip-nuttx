@@ -153,11 +153,11 @@ static int rsb_wait_status(void)
  * Public Functions
  ****************************************************************************/
 
-/// Read a byte from Reduced Serial Bus.
+/// Read a byte from a Reduced Serial Bus Device.
 /// Returns -1 on error.
 int a64_rsb_read(
-    uint8_t rt_addr,  // Run-Time Address
-    uint8_t reg_addr  // Register Address
+    uint8_t rt_addr,  // Run-Time Address of RSB Device
+    uint8_t reg_addr  // Register Address of RSB Device
 )
 {
   /* RSB Command Register (RSB_CMD) (A80 Page 928)
@@ -200,11 +200,11 @@ int a64_rsb_read(
   return getreg8(RSB_DATA);
 }
 
-/// Write a byte to Reduced Serial Bus.
+/// Write a byte to a Reduced Serial Bus Device.
 /// Returns -1 on error.
 int a64_rsb_write(
-    uint8_t rt_addr,  // Run-Time Address
-    uint8_t reg_addr,  // Register Address
+    uint8_t rt_addr,  // Run-Time Address of RSB Device
+    uint8_t reg_addr,  // Register Address of RSB Device
     uint8_t value  // Value to be written
 )
 {
