@@ -469,7 +469,5 @@ int a64_tcon0_init(uint16_t panel_width, uint16_t panel_height)
 
   modreg32(TCON_EN, TCON_EN, TCON_GCTL_REG);
 
-#include "../../pinephone-nuttx/test/test_a64_tcon0.c" //// TODO: Remove Test Code
-
   return OK;
 }
