@@ -103,7 +103,7 @@ static int rsb_wait_trans(void)
       tries -= 1;
       if (tries == 0)
         {
-          _err("Transaction Timeout\n");  // TODO
+          gerr("Transaction Timeout\n");  // TODO
           return -1;
         }
     }
@@ -130,7 +130,7 @@ static int rsb_wait_status(void)
       return 0;
     }
 
-  _err("Transaction Failed\n");  // TODO
+  gerr("Transaction Failed\n");  // TODO
   return -1;
 }
 
@@ -148,7 +148,7 @@ int a64_rsb_read(
   // RSB Command Register (RSB_CMD) (A80 Page 928)
   // At RSB Offset 0x002C
   // Set to 0x8B (RD8) to read one byte
-  _info("rsb_read: rt_addr=0x%x, reg_addr=0x%x\n", rt_addr, reg_addr);  // TODO
+  ginfo("rsb_read: rt_addr=0x%x, reg_addr=0x%x\n", rt_addr, reg_addr);  // TODO
   putreg32(RSBCMD_RD8, RSB_CMD);   
 
   // RSB Device Address Register (RSB_DAR) (A80 Page 928)
@@ -188,7 +188,7 @@ int a64_rsb_write(
   // RSB Command Register (RSB_CMD) (A80 Page 928)
   // At RSB Offset 0x002C
   // Set to 0x4E (WR8) to write one byte
-  _info("rt_addr=0x%x, reg_addr=0x%x, value=0x%x\n", rt_addr, reg_addr, value);  // TODO
+  ginfo("rt_addr=0x%x, reg_addr=0x%x, value=0x%x\n", rt_addr, reg_addr, value);  // TODO
   putreg32(RSBCMD_WR8, RSB_CMD);   
 
   // RSB Device Address Register (RSB_DAR) (A80 Page 928)
