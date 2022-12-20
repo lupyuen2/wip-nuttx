@@ -142,7 +142,7 @@ static int rsb_wait_status(void)
 
   if (getreg32(RSB_STAT) == TRANS_OVER)
     {
-      return 0;
+      return OK;
     }
 
   gerr("Transaction Failed\n");
@@ -154,7 +154,7 @@ static int rsb_wait_status(void)
  ****************************************************************************/
 
 /// Read a byte from a Reduced Serial Bus Device.
-/// Returns -1 on error.
+/// Returns ERROR on error.
 int a64_rsb_read(
     uint8_t rt_addr,  // Run-Time Address of RSB Device
     uint8_t reg_addr  // Register Address of RSB Device
@@ -201,7 +201,7 @@ int a64_rsb_read(
 }
 
 /// Write a byte to a Reduced Serial Bus Device.
-/// Returns -1 on error.
+/// Returns ERROR on error.
 int a64_rsb_write(
     uint8_t rt_addr,  // Run-Time Address of RSB Device
     uint8_t reg_addr,  // Register Address of RSB Device
