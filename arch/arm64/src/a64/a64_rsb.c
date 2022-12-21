@@ -20,11 +20,11 @@
 
 /* Reference:
  *
- * "Understanding PinePhone's Display (MIPI DSI)"
- * https://lupyuen.github.io/articles/dsi
+ * "Rendering PinePhone's Display (DE and TCON0)"
+ * https://lupyuen.github.io/articles/de
  *
- * "NuttX RTOS for PinePhone: Display Driver in Zig"
- * https://lupyuen.github.io/articles/dsi2
+ * "NuttX RTOS for PinePhone: Render Graphics in Zig"
+ * https://lupyuen.github.io/articles/de2
  *
  * "A80 Page" refers to Allwinner A80 User Manual
  * https://lupyuen.github.io/images/A80_User_Manual_v1.3.1_20150513.pdf
@@ -130,7 +130,7 @@ static int rsb_wait_trans(void)
       up_mdelay(1);
     }
 
-  gerr("Transaction Timeout");
+  baterr("RSB Transaction Timeout");
   return ERROR;
 }
 
@@ -170,7 +170,7 @@ static int rsb_wait_status(void)
       return OK;
     }
 
-  gerr("Transaction Failed\n");
+  baterr("RSB Transaction Failed\n");
   return ERROR;
 }
 
@@ -201,7 +201,7 @@ int a64_rsb_read(uint8_t rt_addr, uint8_t reg_addr)
    * Set to 0x8B (RD8) to read one byte
    */
 
-  ginfo("rt_addr=0x%x, reg_addr=0x%x\n", rt_addr, reg_addr);
+  batinfo("rt_addr=0x%x, reg_addr=0x%x\n", rt_addr, reg_addr);
   putreg32(RSBCMD_RD8, RSB_CMD);
 
   /* RSB Device Address Register (A80 Page 928)
@@ -259,7 +259,7 @@ int a64_rsb_write(uint8_t rt_addr, uint8_t reg_addr, uint8_t value)
    * Set to 0x4E (WR8) to write one byte
    */
 
-  ginfo("rt_addr=0x%x, reg_addr=0x%x, value=0x%x\n",
+  batinfo("rt_addr=0x%x, reg_addr=0x%x, value=0x%x\n",
         rt_addr, reg_addr, value);
   putreg32(RSBCMD_WR8, RSB_CMD);
 
