@@ -98,7 +98,7 @@
 
 /// Wait for Reduced Serial Bus Transaction to complete.
 /// Returns ERROR on timeout.
-static int rsb_wait_trans(void) 
+static int rsb_wait_trans(void)
 {
   int i;
 
@@ -107,7 +107,7 @@ static int rsb_wait_trans(void)
       /* Poll on START_TRANS (Bit 7) of RSB Control Register */
 
       if ((getreg32(RSB_CTRL) & START_TRANS) == 0)
-        { 
+        {
           /* If START_TRANS is 0, then transaction has completed or failed */
 
           return OK;
@@ -136,7 +136,7 @@ static int rsb_wait_status(void)
       return ret;
     }
 
-  /* RSB Status Register (RSB_STAT) (A80 Page 924)
+  /* RSB Status Register (A80 Page 924)
    * If TRANS_OVER (Bit 0) is 1, then RSB Transfer has completed without error
    */
 
@@ -160,30 +160,30 @@ int a64_rsb_read(
     uint8_t reg_addr  // Register Address of RSB Device
 )
 {
-  /* RSB Command Register (RSB_CMD) (A80 Page 928)
+  /* RSB Command Register (A80 Page 928)
    * Set to 0x8B (RD8) to read one byte
    */
 
   ginfo("rt_addr=0x%x, reg_addr=0x%x\n", rt_addr, reg_addr);
-  putreg32(RSBCMD_RD8, RSB_CMD);   
+  putreg32(RSBCMD_RD8, RSB_CMD);
 
-  /* RSB Device Address Register (RSB_DAR) (A80 Page 928)
+  /* RSB Device Address Register (A80 Page 928)
    * Set RTA (Bits 16 to 23) to the Run-Time Address of RSB Device
    */
 
-  putreg32(RTA(rt_addr), RSB_DAR);   
+  putreg32(RTA(rt_addr), RSB_DAR);
 
-  /* RSB Address Register (RSB_AR) (A80 Page 926)
+  /* RSB Address Register (A80 Page 926)
    * Set to the Register Address that will be read from RSB Device
    */
 
-  putreg32(reg_addr, RSB_AR);    
+  putreg32(reg_addr, RSB_AR);
 
-  /* RSB Control Register (RSB_CTRL) (A80 Page 923)
+  /* RSB Control Register (A80 Page 923)
    * Set START_TRANS (Bit 7) to 1 (Start Transaction)
    */
 
-  putreg32(START_TRANS, RSB_CTRL);  
+  putreg32(START_TRANS, RSB_CTRL);
 
   /* Wait for RSB Transaction to complete and read the RSB Status */
 
@@ -193,7 +193,7 @@ int a64_rsb_read(
       return ret;
     }
 
-  /* RSB Data Buffer Register (RSB_DATA) (A80 Page 926)
+  /* RSB Data Buffer Register (A80 Page 926)
    * Contains the Register Value read from RSB Device
    */
 
@@ -208,36 +208,36 @@ int a64_rsb_write(
     uint8_t value  // Value to be written
 )
 {
-  /* RSB Command Register (RSB_CMD) (A80 Page 928)
+  /* RSB Command Register (A80 Page 928)
    * Set to 0x4E (WR8) to write one byte
    */
 
   ginfo("rt_addr=0x%x, reg_addr=0x%x, value=0x%x\n", rt_addr, reg_addr, value);
-  putreg32(RSBCMD_WR8, RSB_CMD);   
+  putreg32(RSBCMD_WR8, RSB_CMD);
 
-  /* RSB Device Address Register (RSB_DAR) (A80 Page 928)
+  /* RSB Device Address Register (A80 Page 928)
    * Set RTA (Bits 16 to 23) to the Run-Time Address of RSB Device
    */
 
-  putreg32(RTA(rt_addr), RSB_DAR);   
+  putreg32(RTA(rt_addr), RSB_DAR);
 
-  /* RSB Address Register (RSB_AR) (A80 Page 926)
+  /* RSB Address Register (A80 Page 926)
    * Set to the Register Address that will be written to RSB Device
    */
 
-  putreg32(reg_addr, RSB_AR);    
+  putreg32(reg_addr, RSB_AR);
 
-  /* RSB Data Buffer Register (RSB_DATA) (A80 Page 926)
+  /* RSB Data Buffer Register (A80 Page 926)
    * Set to the Register Value that will be written to RSB Device
    */
 
-  putreg32(value, RSB_DATA);  
+  putreg32(value, RSB_DATA);
 
-  /* RSB Control Register (RSB_CTRL) (A80 Page 923)
+  /* RSB Control Register (A80 Page 923)
    * Set START_TRANS (Bit 7) to 1 (Start Transaction)
    */
 
-  putreg32(START_TRANS, RSB_CTRL);  
+  putreg32(START_TRANS, RSB_CTRL);
 
   /* Wait for RSB Transaction to complete and return the RSB Status */
 
