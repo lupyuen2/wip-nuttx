@@ -259,7 +259,8 @@ int a64_rsb_write(uint8_t rt_addr, uint8_t reg_addr, uint8_t value)
    * Set to 0x4E (WR8) to write one byte
    */
 
-  ginfo("rt_addr=0x%x, reg_addr=0x%x, value=0x%x\n", rt_addr, reg_addr, value);
+  ginfo("rt_addr=0x%x, reg_addr=0x%x, value=0x%x\n",
+        rt_addr, reg_addr, value);
   putreg32(RSBCMD_WR8, RSB_CMD);
 
   /* RSB Device Address Register (A80 Page 928)
