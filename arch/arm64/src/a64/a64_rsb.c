@@ -96,8 +96,20 @@
  * Private Functions
  ****************************************************************************/
 
-/// Wait for Reduced Serial Bus Transaction to complete.
-/// Returns ERROR on timeout.
+/****************************************************************************
+ * Name: rsb_wait_trans
+ *
+ * Description:
+ *   Wait for Reduced Serial Bus Transaction to complete or fail with error.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   Zero (OK) on success; ERROR if timeout.
+ *
+ ****************************************************************************/
+
 static int rsb_wait_trans(void)
 {
   int i;
@@ -122,8 +134,21 @@ static int rsb_wait_trans(void)
   return ERROR;
 }
 
-/// Wait for Reduced Serial Bus and read the status.
-/// Returns ERROR on timeout or error.
+/****************************************************************************
+ * Name: rsb_wait_status
+ *
+ * Description:
+ *   Wait for Reduced Serial Bus Transaction to complete or fail with error.
+ *   Return the Transaction Status.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   Zero (OK) on success; ERROR if status is error or timeout.
+ *
+ ****************************************************************************/
+
 static int rsb_wait_status(void)
 {
   int ret;
@@ -137,7 +162,7 @@ static int rsb_wait_status(void)
     }
 
   /* RSB Status Register (A80 Page 924)
-   * If TRANS_OVER (Bit 0) is 1, then RSB Transfer has completed without error
+   * If TRANS_OVER (Bit 0) is 1, RSB Transfer has completed without error
    */
 
   if (getreg32(RSB_STAT) == TRANS_OVER)
@@ -153,13 +178,25 @@ static int rsb_wait_status(void)
  * Public Functions
  ****************************************************************************/
 
-/// Read a byte from a Reduced Serial Bus Device.
-/// Returns ERROR on error.
-int a64_rsb_read(
-    uint8_t rt_addr,  // Run-Time Address of RSB Device
-    uint8_t reg_addr  // Register Address of RSB Device
-)
+/****************************************************************************
+ * Name: a64_rsb_read
+ *
+ * Description:
+ *   Read a byte from a device on the Reduced Serial Bus.
+ *
+ * Input Parameters:
+ *   rt_addr  - Run-Time Address of RSB Device
+ *   reg_addr - Register Address of RSB Device
+ *
+ * Returned Value:
+ *   Byte read from the RSB Device; ERROR if the read failed or timed out.
+ *
+ ****************************************************************************/
+
+int a64_rsb_read(uint8_t rt_addr, uint8_t reg_addr)
 {
+  int ret;
+
   /* RSB Command Register (A80 Page 928)
    * Set to 0x8B (RD8) to read one byte
    */
@@ -187,7 +224,7 @@ int a64_rsb_read(
 
   /* Wait for RSB Transaction to complete and read the RSB Status */
 
-  int ret = rsb_wait_status();
+  ret = rsb_wait_status();
   if (ret < 0)
     {
       return ret;
@@ -200,13 +237,23 @@ int a64_rsb_read(
   return getreg8(RSB_DATA);
 }
 
-/// Write a byte to a Reduced Serial Bus Device.
-/// Returns ERROR on error.
-int a64_rsb_write(
-    uint8_t rt_addr,  // Run-Time Address of RSB Device
-    uint8_t reg_addr,  // Register Address of RSB Device
-    uint8_t value  // Value to be written
-)
+/****************************************************************************
+ * Name: a64_rsb_write
+ *
+ * Description:
+ *   Write a byte to a device on the Reduced Serial Bus.
+ *
+ * Input Parameters:
+ *   rt_addr  - Run-Time Address of RSB Device
+ *   reg_addr - Register Address of RSB Device
+ *   value    - Byte to be written
+ *
+ * Returned Value:
+ *   Zero (OK) on success; ERROR if the write failed or timed out.
+ *
+ ****************************************************************************/
+
+int a64_rsb_write(uint8_t rt_addr, uint8_t reg_addr, uint8_t value)
 {
   /* RSB Command Register (A80 Page 928)
    * Set to 0x4E (WR8) to write one byte

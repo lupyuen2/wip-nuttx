@@ -31,15 +31,39 @@
  * Public Function Prototypes
  ****************************************************************************/
 
-int a64_rsb_read(
-    uint8_t rt_addr,  // Run-Time Address
-    uint8_t reg_addr  // Register Address
-);
+/****************************************************************************
+ * Name: a64_rsb_read
+ *
+ * Description:
+ *   Read a byte from a device on the Reduced Serial Bus.
+ *
+ * Input Parameters:
+ *   rt_addr  - Run-Time Address of RSB Device
+ *   reg_addr - Register Address of RSB Device
+ *
+ * Returned Value:
+ *   Byte read from the RSB Device; ERROR if the read failed or timed out.
+ *
+ ****************************************************************************/
 
-int a64_rsb_write(
-    uint8_t rt_addr,  // Run-Time Address
-    uint8_t reg_addr,  // Register Address
-    uint8_t value  // Value to be written
-);
+int a64_rsb_read(uint8_t rt_addr, uint8_t reg_addr);
+
+/****************************************************************************
+ * Name: a64_rsb_write
+ *
+ * Description:
+ *   Write a byte to a device on the Reduced Serial Bus.
+ *
+ * Input Parameters:
+ *   rt_addr  - Run-Time Address of RSB Device
+ *   reg_addr - Register Address of RSB Device
+ *   value    - Byte to be written
+ *
+ * Returned Value:
+ *   Zero (OK) on success; ERROR if the write failed or timed out.
+ *
+ ****************************************************************************/
+
+int a64_rsb_write(uint8_t rt_addr, uint8_t reg_addr, uint8_t value);
 
 #endif /* __ARCH_ARM64_SRC_A64_A64_RSB_H */
