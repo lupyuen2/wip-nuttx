@@ -979,10 +979,7 @@ int a64_de_enable(uint8_t channels)
              (channels == 3) ? 2 :  /* Select Pipe 1 from UI Channel 2 */
              0;                     /* Never comes here */
 
-  route = P2_RTCTL(p2_rtctl) |
-          P1_RTCTL(p1_rtctl) |
-          P0_RTCTL(1);
-
+  route = P2_RTCTL(p2_rtctl) | P1_RTCTL(p1_rtctl) | P0_RTCTL(1);
   putreg32(route, BLD_CH_RTCTL);
 
   /* Enable Blender Pipes ***************************************************/
@@ -1008,10 +1005,7 @@ int a64_de_enable(uint8_t channels)
           (channels == 3) ? 1 :  /* 3 UI Channels: Enable Pipe 1 */
           0;                     /* Never comes here */
 
-  fill = P2_EN(p2_en) |
-         P1_EN(p1_en) |
-         P0_EN(1) |
-         P0_FCEN(1);
+  fill = P2_EN(p2_en) | P1_EN(p1_en) | P0_EN(1) | P0_FCEN(1);
   putreg32(fill, BLD_FILL_COLOR_CTL);
 
   /* Apply Settings *********************************************************/
