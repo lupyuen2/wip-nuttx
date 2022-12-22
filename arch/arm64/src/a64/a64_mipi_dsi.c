@@ -991,3 +991,5 @@ int a64_mipi_dsi_start(void)
 
   return OK;
 }
+
+#include "../../pinephone-nuttx/test/test_a64_mipi_dsi.c" //// TODO: Remove Test Code

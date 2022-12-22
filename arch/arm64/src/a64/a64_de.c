@@ -1015,3 +1015,5 @@ int a64_de_enable(uint8_t channels)
 
   return OK;
 }
+
+#include "../../pinephone-nuttx/test/test_a64_de.c" //// TODO: Remove Test Code
