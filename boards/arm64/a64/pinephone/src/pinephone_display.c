@@ -18,12 +18,26 @@
 #include "pinephone_pmic.h"
 
 #define CHANNELS 3
+
 #define PANEL_WIDTH  720
 #define PANEL_HEIGHT 1440
 
-static void test_pattern(void);
+#define FB1_WIDTH  600
+#define FB1_HEIGHT 600
 
-/// NuttX Video Controller for PinePhone (3 UI Channels)
+// Framebuffer 0: (Base UI Channel)
+// Fullscreen 720 x 1440 (4 bytes per XRGB 8888 pixel)
+static uint32_t fb0[PANEL_WIDTH * PANEL_HEIGHT];
+
+// Framebuffer 1: (First Overlay UI Channel)
+// Square 600 x 600 (4 bytes per ARGB 8888 pixel)
+static uint32_t fb1[FB1_WIDTH * FB1_HEIGHT];
+
+// Framebuffer 2: (Second Overlay UI Channel)
+// Fullscreen 720 x 1440 (4 bytes per ARGB 8888 pixel)
+static uint32_t fb2[PANEL_WIDTH * PANEL_HEIGHT];
+
+/// Video Controller for PinePhone (3 UI Channels)
 static struct fb_videoinfo_s videoInfo =
 {
   .fmt       = FB_FMT_RGBA32,  // Pixel format (XRGB 8888)
@@ -33,21 +47,7 @@ static struct fb_videoinfo_s videoInfo =
   .noverlays = 2      // Number of overlays supported (2 Overlay UI Channels)
 };
 
-// Framebuffer 0: (Base UI Channel)
-// Fullscreen 720 x 1440 (4 bytes per XRGB 8888 pixel)
-static uint32_t fb0[PANEL_WIDTH * PANEL_HEIGHT];
-
-// Framebuffer 1: (First Overlay UI Channel)
-// Square 600 x 600 (4 bytes per ARGB 8888 pixel)
-#define FB1_WIDTH  600
-#define FB1_HEIGHT 600
-static uint32_t fb1[FB1_WIDTH * FB1_HEIGHT];
-
-// Framebuffer 2: (Second Overlay UI Channel)
-// Fullscreen 720 x 1440 (4 bytes per ARGB 8888 pixel)
-static uint32_t fb2[PANEL_WIDTH * PANEL_HEIGHT];
-
-/// NuttX Color Plane for PinePhone (Base UI Channel):
+/// Color Plane for PinePhone (Base UI Channel):
 /// Fullscreen 720 x 1440 (4 bytes per XRGB 8888 pixel)
 static struct fb_planeinfo_s planeInfo =
 {
@@ -62,7 +62,7 @@ static struct fb_planeinfo_s planeInfo =
   .yoffset      = 0      // Offset from virtual to visible resolution
 };
 
-/// NuttX Overlays for PinePhone (2 Overlay UI Channels)
+/// Overlays for PinePhone (2 Overlay UI Channels)
 static struct fb_overlayinfo_s overlayInfo[2] =
 {
   // First Overlay UI Channel:
@@ -97,76 +97,12 @@ static struct fb_overlayinfo_s overlayInfo[2] =
   },
 };
 
-int pinephone_render_graphics(void)
-{
-  // Validate the Framebuffer Sizes at Compile Time
-  // ginfo("fb0=%p, fb1=%p, fb2=%p\n", fb0, fb1, fb2);
-  DEBUGASSERT(CHANNELS == 1 || CHANNELS == 3);
-  DEBUGASSERT(planeInfo.xres_virtual == videoInfo.xres);
-  DEBUGASSERT(planeInfo.yres_virtual == videoInfo.yres);
-  DEBUGASSERT(planeInfo.fblen  == planeInfo.xres_virtual * planeInfo.yres_virtual * 4);
-  DEBUGASSERT(planeInfo.stride == planeInfo.xres_virtual * 4);
-  DEBUGASSERT(overlayInfo[0].fblen  == (overlayInfo[0].sarea.w) * overlayInfo[0].sarea.h * 4);
-  DEBUGASSERT(overlayInfo[0].stride == overlayInfo[0].sarea.w * 4);
-  DEBUGASSERT(overlayInfo[1].fblen  == (overlayInfo[1].sarea.w) * overlayInfo[1].sarea.h * 4);
-  DEBUGASSERT(overlayInfo[1].stride == overlayInfo[1].sarea.w * 4);
+/****************************************************************************
+ * Private Functions
+ ****************************************************************************/
 
-  // Init the UI Blender for PinePhone's A64 Display Engine
-  int ret = a64_de_blender_init();
-  DEBUGASSERT(ret == OK);
-
-#ifndef __NuttX__
-  // For Local Testing: Only 32-bit addresses allowed
-  planeInfo.fbmem = (void *)0x12345678;
-  overlayInfo[0].fbmem = (void *)0x23456789;
-  overlayInfo[1].fbmem = (void *)0x34567890;
-#endif // !__NuttX__
-
-  // Init the Base UI Channel
-  // https://github.com/lupyuen2/wip-pinephone-nuttx/blob/tcon2/arch/arm64/src/a64/a64_de.c
-  ret = a64_de_ui_channel_init(
-    1,  // UI Channel Number (1 for Base UI Channel)
-    planeInfo.fbmem,    // Start of Frame Buffer Memory (address should be 32-bit)
-    planeInfo.fblen,    // Length of Frame Buffer Memory in bytes
-    planeInfo.xres_virtual,  // Horizontal resolution in pixel columns
-    planeInfo.yres_virtual,  // Vertical resolution in pixel rows
-    planeInfo.xoffset,  // Horizontal offset in pixel columns
-    planeInfo.yoffset  // Vertical offset in pixel rows
-  );
-  DEBUGASSERT(ret == OK);
-
-  // Init the 2 Overlay UI Channels
-  // https://github.com/lupyuen2/wip-pinephone-nuttx/blob/tcon2/arch/arm64/src/a64/a64_de.c
-  int i;
-  for (i = 0; i < sizeof(overlayInfo) / sizeof(overlayInfo[0]); i++)
-  {
-    const struct fb_overlayinfo_s *ov = &overlayInfo[i];
-    ret = a64_de_ui_channel_init(
-      i + 2,  // UI Channel Number (2 and 3 for Overlay UI Channels)
-      (CHANNELS == 3) ? ov->fbmem : NULL,  // Start of Frame Buffer Memory (address should be 32-bit)
-      ov->fblen,    // Length of Frame Buffer Memory in bytes
-      ov->sarea.w,  // Horizontal resolution in pixel columns
-      ov->sarea.h,  // Vertical resolution in pixel rows
-      ov->sarea.x,  // Horizontal offset in pixel columns
-      ov->sarea.y  // Vertical offset in pixel rows
-    );
-    DEBUGASSERT(ret == OK);
-  }
-
-  // Set UI Blender Route, enable Blender Pipes and apply the settings
-  // https://github.com/lupyuen2/wip-pinephone-nuttx/blob/tcon2/arch/arm64/src/a64/a64_de.c
-  ret = a64_de_enable(CHANNELS);
-  DEBUGASSERT(ret == OK);    
-
-  // Fill Framebuffer with Test Pattern.
-  // Must be called after Display Engine is Enabled, or black rows will appear.
-  test_pattern();
-
-  return OK;
-}
-
-// Fill the Framebuffers with a Test Pattern.
-// Must be called after Display Engine is Enabled, or black rows will appear.
+// Fill the Frame Buffers with a Test Pattern.
+// Must be called after Display Engine is Enabled, or the rendered image will have missing rows.
 static void test_pattern(void)
 {
   // Zero the Framebuffers
@@ -197,7 +133,7 @@ static void test_pattern(void)
           fb0[i] = 0x80800000;
         }
 
-      // Needed to fix black rows, not sure why
+      // Needed to fix missing rows, not sure why
       ARM64_DMB();
       ARM64_DSB();
       ARM64_ISB();
@@ -211,7 +147,7 @@ static void test_pattern(void)
       // Colours are in ARGB 8888 format
       fb1[i] = 0x40FFFFFF;
 
-      // Needed to fix black rows, not sure why
+      // Needed to fix missing rows, not sure why
       ARM64_DMB();
       ARM64_DSB();
       ARM64_ISB();
@@ -243,7 +179,7 @@ static void test_pattern(void)
               fb2[p] = 0x00000000;  // Transparent Black in ARGB 8888 Format
           }
 
-          // Needed to fix black rows, not sure why
+          // Needed to fix missing rows, not sure why
           ARM64_DMB();
           ARM64_DSB();
           ARM64_ISB();
@@ -251,7 +187,81 @@ static void test_pattern(void)
     }
 }
 
-///////////////////////////////////////// Frame Buffer
+static int render_framebuffers(void)
+{
+  int i;
+  int ret;
+
+  // Validate the Frame Buffer Sizes at Compile Time
+  DEBUGASSERT(CHANNELS == 1 || CHANNELS == 3);
+  DEBUGASSERT(planeInfo.xres_virtual == videoInfo.xres);
+  DEBUGASSERT(planeInfo.yres_virtual == videoInfo.yres);
+  DEBUGASSERT(planeInfo.fblen  == planeInfo.xres_virtual * planeInfo.yres_virtual * 4);
+  DEBUGASSERT(planeInfo.stride == planeInfo.xres_virtual * 4);
+  DEBUGASSERT(overlayInfo[0].fblen  == (overlayInfo[0].sarea.w) * overlayInfo[0].sarea.h * 4);
+  DEBUGASSERT(overlayInfo[0].stride == overlayInfo[0].sarea.w * 4);
+  DEBUGASSERT(overlayInfo[1].fblen  == (overlayInfo[1].sarea.w) * overlayInfo[1].sarea.h * 4);
+  DEBUGASSERT(overlayInfo[1].stride == overlayInfo[1].sarea.w * 4);
+
+  // Init the UI Blender for PinePhone's A64 Display Engine
+  ret = a64_de_blender_init();
+  if (ret < 0)
+    {
+      gerr("Init UI Blender failed: %d\n", ret);
+      return ret;
+    }
+
+  // Init the Base UI Channel
+  ret = a64_de_ui_channel_init(
+    1,  // UI Channel Number (1 for Base UI Channel)
+    planeInfo.fbmem,    // Start of Frame Buffer Memory (address should be 32-bit)
+    planeInfo.fblen,    // Length of Frame Buffer Memory in bytes
+    planeInfo.xres_virtual,  // Horizontal resolution in pixel columns
+    planeInfo.yres_virtual,  // Vertical resolution in pixel rows
+    planeInfo.xoffset,  // Horizontal offset in pixel columns
+    planeInfo.yoffset  // Vertical offset in pixel rows
+  );
+  if (ret < 0)
+    {
+      gerr("Init UI Channel 1 failed: %d\n", ret);
+      return ret;
+    }
+
+  // Init the 2 Overlay UI Channels
+  for (i = 0; i < sizeof(overlayInfo) / sizeof(overlayInfo[0]); i++)
+  {
+    const struct fb_overlayinfo_s *ov = &overlayInfo[i];
+
+    ret = a64_de_ui_channel_init(
+      i + 2,  // UI Channel Number (2 and 3 for Overlay UI Channels)
+      (CHANNELS == 3) ? ov->fbmem : NULL,  // Start of Frame Buffer Memory (address should be 32-bit)
+      ov->fblen,    // Length of Frame Buffer Memory in bytes
+      ov->sarea.w,  // Horizontal resolution in pixel columns
+      ov->sarea.h,  // Vertical resolution in pixel rows
+      ov->sarea.x,  // Horizontal offset in pixel columns
+      ov->sarea.y   // Vertical offset in pixel rows
+    );
+    if (ret < 0)
+      {
+        gerr("Init UI Channel %d failed: %d\n", i + 2, ret);
+        return ret;
+      }
+  }
+
+  // Set UI Blender Route, enable Blender Pipes and apply the settings
+  ret = a64_de_enable(CHANNELS);
+  if (ret < 0)
+    {
+      gerr("Enable Display Engine failed: %d\n", ret);
+      return ret;
+    }
+
+  // Fill Frame Buffers with Test Pattern.
+  // Must be called after Display Engine is Enabled, or the rendered image will have missing rows.
+  test_pattern();
+
+  return OK;
+}
 
 /****************************************************************************
  * Public Functions
@@ -279,64 +289,114 @@ static void test_pattern(void)
 
 int up_fbinitialize(int display)
 {
-  DEBUGASSERT(display == 0);
-
-  // TODO: Handle multiple calls
-
   int ret;
+  static bool initialized = false;
+
+  /* Allow multiple calls */
+
+  DEBUGASSERT(display == 0);
+  if (initialized)
+    {
+      return OK;
+    }
+  initialized = true;
 
   // Turn on Display Backlight at 90% brightness
   ret = pinephone_lcd_backlight_enable(90);
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Enable Backlight failed: %d\n", ret);
+      return ret;
+    }
 
   // Init Timing Controller TCON0
   ret = a64_tcon0_init(PANEL_WIDTH, PANEL_HEIGHT);
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Init Timing Controller TCON0 failed: %d\n", ret);
+      return ret;
+    }
   
   // Reset LCD Panel to Low
   ret = pinephone_lcd_panel_reset(false);
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Reset LCD Panel failed: %d\n", ret);
+      return ret;
+    }
 
   // Init PMIC
   ret = pinephone_pmic_init();
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Init PMIC failed: %d\n", ret);
+      return ret;
+    }
 
   // Wait 15 milliseconds for power supply and power-on init
   up_mdelay(15);
 
-  // Enable MIPI DSI Block
+  // Enable MIPI DSI
   ret = a64_mipi_dsi_enable();
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Enable MIPI DSI failed: %d\n", ret);
+      return ret;
+    }
 
-  // Enable MIPI Display Physical Layer (DPHY)
+  // Enable MIPI D-PHY
   ret = a64_mipi_dphy_enable();
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Enable MIPI D-PHY failed: %d\n", ret);
+      return ret;
+    }
 
   // Reset LCD Panel to High
   ret = pinephone_lcd_panel_reset(true);
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Reset LCD Panel failed: %d\n", ret);
+      return ret;
+    }
 
   // Wait 15 milliseconds for LCD Panel
   up_mdelay(15);
 
   // Initialise LCD Controller (ST7703)
   ret = pinephone_lcd_panel_init();
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Init ST7703 LCD Controller failed: %d\n", ret);
+      return ret;
+    }
 
   // Start MIPI DSI HSC and HSD
   ret = a64_mipi_dsi_start();
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Start MIPI DSI failed: %d\n", ret);
+      return ret;
+    }
 
   // Init Display Engine
   ret = a64_de_init();
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Init Display Engine failed: %d\n", ret);
+      return ret;
+    }
 
   // Wait 160 milliseconds for Display Engine
   up_mdelay(160);
 
-  // Render Graphics with Display Engine (in C)
-  ret = pinephone_render_graphics();
-  DEBUGASSERT(ret == OK);
+  // Render Frame Buffers with Display Engine
+  ret = render_framebuffers();
+  if (ret < 0)
+    {
+      gerr("Display Engine Frame Buffers failed: %d\n", ret);
+      return ret;
+    }
 
   return OK;
 }
@@ -362,8 +422,11 @@ int up_fbinitialize(int display)
 
 struct fb_vtable_s *up_fbgetvplane(int display, int vplane)
 {
+  /* TODO: Implement up_fbgetvplane */
+
   DEBUGASSERT(display == 0);
-  _err("Not implemented\n");////
+  _err("up_fbgetvplane not implemented\n");
+
   return NULL;
 }
 
