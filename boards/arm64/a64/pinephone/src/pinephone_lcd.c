@@ -14,14 +14,8 @@
 #include "a64_pio.h"
 #include "pinephone_lcd.h"
 
-/// PIO Base Address (CPUx-PORT) (A64 Page 376)
-#define PIO_BASE_ADDRESS 0x01C20800
-
 /// PWM Base Address (CPUx-PWM?) (A64 Page 194)
 #define PWM_BASE_ADDRESS 0x01C21400
-
-/// R_PIO Base Address (CPUs-PORT) (A64 Page 410)
-#define R_PIO_BASE_ADDRESS 0x01F02C00
 
 /// R_PWM Base Address (CPUs-PWM?) (CPUs Domain, A64 Page 256)
 #define R_PWM_BASE_ADDRESS 0x01F03800
@@ -32,6 +26,18 @@
                    PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOD | \
                    PIO_PIN23)
 
+/* LCD Backlight PWM on PL10 */
+
+#define LCD_PWM (PIO_PWM | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
+                 PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOL | \
+                 PIO_PIN10)
+
+/* LCD Backlight Enable on PH10 */
+
+#define LCD_BL_EN (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
+                   PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOH | \
+                   PIO_PIN10)
+
 /// Reset LCD Panel.
 /// Based on https://lupyuen.github.io/articles/de#appendix-reset-lcd-panel
 int pinephone_lcd_panel_reset(bool val)
@@ -40,10 +46,12 @@ int pinephone_lcd_panel_reset(bool val)
 
   // Reset LCD Panel at PD23 (Active Low)
   // Configure PD23 for Output
+  ginfo("Configure PD23 for Output\n");
   ret = a64_pio_config(LCD_RESET);
   DEBUGASSERT(ret == OK);
 
   // Set PD23 to High or Low
+  ginfo("Set PD23 to %d\n", val);
   a64_pio_write(LCD_RESET, val);
 
   return OK;
@@ -55,14 +63,12 @@ int pinephone_lcd_backlight_enable(
     uint32_t percent  // Percent brightness
 )
 {
+  int ret;
+
   // Configure PL10 for PWM
-  // Register PL_CFG1_REG (Port L Configure Register 1)
-  // At R_PIO Offset 4 (A64 Page 412)
-  // Set PL10_SELECT (Bits 8 to 10) to 2 (S_PWM)
   ginfo("Configure PL10 for PWM\n");
-  #define PL_CFG1_REG (R_PIO_BASE_ADDRESS + 4)
-  DEBUGASSERT(PL_CFG1_REG == 0x1f02c04);
-  modreg32(2 << 8, 0b111 << 8, PL_CFG1_REG);
+  ret = a64_pio_config(LCD_PWM);
+  DEBUGASSERT(ret == OK);
 
   // Disable R_PWM (Undocumented)
   // Register R_PWM_CTRL_REG? (R_PWM Control Register?)
@@ -109,27 +115,13 @@ int pinephone_lcd_backlight_enable(
   putreg32(ctrl, R_PWM_CTRL_REG);
 
   // Configure PH10 for Output
-  // Register PH_CFG1_REG (PH Configure Register 1)
-  // At PIO Offset 0x100 (A64 Page 401)
-  // Set PH10_SELECT (Bits 8 to 10) to 1 (Output)
   ginfo("Configure PH10 for Output\n");
-  #define PH_CFG1_REG (PIO_BASE_ADDRESS + 0x100)
-  DEBUGASSERT(PH_CFG1_REG == 0x1c20900);
-  #define PH10_SELECT (0b001 << 8)
-  #define PH10_MASK (0b111 << 8)
-  DEBUGASSERT(PH10_SELECT == 0x100);
-  DEBUGASSERT(PH10_MASK   == 0x700);
-  modreg32(PH10_SELECT, PH10_MASK, PH_CFG1_REG);
+  ret = a64_pio_config(LCD_BL_EN);
+  DEBUGASSERT(ret == OK);
 
   // Set PH10 to High
-  // Register PH_DATA_REG (PH Data Register)
-  // At PIO Offset 0x10C (A64 Page 403)
-  // Set PH10 (Bit 10) to 1 (High)
   ginfo("Set PH10 to High\n");
-  #define PH_DATA_REG (PIO_BASE_ADDRESS + 0x10C)
-  DEBUGASSERT(PH_DATA_REG == 0x1c2090c);
-  #define PH10 (1 << 10)
-  modreg32(PH10, PH10, PH_DATA_REG);
+  a64_pio_write(LCD_BL_EN, val);
 
   return OK;
 }
