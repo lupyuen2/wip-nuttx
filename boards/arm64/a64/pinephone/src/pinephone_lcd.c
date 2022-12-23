@@ -1,3 +1,5 @@
+// "ST7703 Page" refers to ???
+
 #include <nuttx/config.h>
 
 #include <stdint.h>
@@ -40,21 +42,25 @@
  * Private Types
  ****************************************************************************/
 
-// ST7703 Initialisation Command
+/* Initialization Command for ST7703 LCD Controller ************************/
+
 struct pinephone_cmd_s
 {
-  const uint8_t *cmd;
-  uint8_t len;
+  const uint8_t *cmd;  /* ST7703 Command and Parameters */
+  uint8_t len;         /* Length of Command and Parameters */
 };
 
 /****************************************************************************
  * Private Data
  ****************************************************************************/
 
+/* Initialization Commands for ST7703 LCD Controller ************************/
+
 // Most of these commands are documented in the ST7703 Datasheet:
 // https://files.pine64.org/doc/datasheet/pinephone/ST7703_DS_v01_20160128.pdf
 
-// Command #1
+// Command #1: SETEXTC (ST7703 Page 131)
+// Enable USER Command
 static const uint8_t g_pinephone_setextc[] = 
 { 
   0xB9,  // SETEXTC (ST7703 Page 131): Enable USER Command
@@ -63,7 +69,8 @@ static const uint8_t g_pinephone_setextc[] =
   0x83   // (Continued)
 };
 
-// Command #2
+// Command #2: SETMIPI (ST7703 Page 144)
+// Set MIPI related register
 static const uint8_t g_pinephone_setmipi[] = 
 { 
   0xBA,  // SETMIPI (ST7703 Page 144): Set MIPI related register
@@ -97,7 +104,8 @@ static const uint8_t g_pinephone_setmipi[] =
 };
 
 
-// Command #3
+// Command #3: SETPOWER_EXT (ST7703 Page 142)
+// Set display related register
 static const uint8_t g_pinephone_setpower_ext[] =
 { 
   0xB8,  // SETPOWER_EXT (ST7703 Page 142): Set display related register
@@ -107,7 +115,8 @@ static const uint8_t g_pinephone_setpower_ext[] =
   0x03   // Enable power IC pumping frequency synchronization = Synchronize with external Hsync (ECP_SYNC_EN = 1) ; Enable VGH/VGL pumping frequency synchronization = Synchronize with external Hsync (VGX_SYNC_EN = 1)
 };
 
-// Command #4
+// Command #4: SETRGBIF (ST7703 Page 134)
+// Control RGB I/F porch timing for internal use
 static const uint8_t g_pinephone_setrgbif[] =
 { 
   0xB3,  // SETRGBIF (ST7703 Page 134): Control RGB I/F porch timing for internal use
@@ -123,7 +132,8 @@ static const uint8_t g_pinephone_setrgbif[] =
   0x00   // Undocumented
 };
 
-// Command #5
+// Command #5: SETSCR (ST7703 Page 147)
+// Set related setting of Source driving
 static const uint8_t g_pinephone_setscr[] =
 { 
   0xC0,  // SETSCR (ST7703 Page 147): Set related setting of Source driving
@@ -138,28 +148,32 @@ static const uint8_t g_pinephone_setscr[] =
   0x00   // Undocumented
 };
 
-// Command #6
+// Command #6: SETVDC (ST7703 Page 146)
+// Control NVDDD/VDDD Voltage
 static const uint8_t g_pinephone_setvdc[] =
 { 
   0xBC,  // SETVDC (ST7703 Page 146): Control NVDDD/VDDD Voltage
   0x4E   // NVDDD voltage = -1.8 V (NVDDD_SEL = 4) ; VDDD voltage = 1.9 V (VDDD_SEL = 6)
 };
 
-// Command #7
+// Command #7: SETPANEL (ST7703 Page 154)
+// Set display related register
 static const uint8_t g_pinephone_setpanel[] =
 { 
   0xCC,  // SETPANEL (ST7703 Page 154): Set display related register
   0x0B   // Enable reverse the source scan direction (SS_PANEL = 1) ; Normal vertical scan direction (GS_PANEL = 0) ; Normally black panel (REV_PANEL = 1) ; S1:S2:S3 = B:G:R (BGR_PANEL = 1)
 };
 
-// Command #8
+// Command #8: SETCYC (ST7703 Page 135)
+// Control display inversion type
 static const uint8_t g_pinephone_setcyc[] =
 { 
   0xB4,  // SETCYC (ST7703 Page 135): Control display inversion type
   0x80   // Extra source for Zig-Zag Inversion = S2401 (ZINV_S2401_EN = 1) ; Row source data dislocates = Even row (ZINV_G_EVEN_EN = 0) ; Disable Zig-Zag Inversion (ZINV_EN = 0) ; Enable Zig-Zag1 Inversion (ZINV2_EN = 0) ; Normal mode inversion type = Column inversion (N_NW = 0)
 };
 
-// Command #9
+// Command #9: SETDISP (ST7703 Page 132)
+// Control the display resolution
 static const uint8_t g_pinephone_setdisp[] =
 { 
   0xB2,  // SETDISP (ST7703 Page 132): Control the display resolution
@@ -168,7 +182,8 @@ static const uint8_t g_pinephone_setdisp[] =
   0xF0   // Source voltage during Blanking Time when accessing Sleep-Out / Sleep-In command = GND (WHITE_GND_EN = 1) ; Blank timing control when access sleep out command: Blank Frame Period = 7 Frames (WHITE_FRAME_SEL = 7) ; Source output refresh control: Refresh Period = 0 Frames (ISC = 0)
 };
 
-// Command #10
+// Command #10: SETEQ (ST7703 Page 159)
+// Set EQ related register
 static const uint8_t g_pinephone_seteq[] =
 { 
   0xE3,  // SETEQ (ST7703 Page 159): Set EQ related register
@@ -188,7 +203,7 @@ static const uint8_t g_pinephone_seteq[] =
   0x10   // No Need VSYNC (additional frame) after Sleep-In command to display sleep-in blanking frame then into Sleep-In State (SLPIN_OPTION = 1) ; Enable video function detection (VEDIO_NO_CHECK_EN = 0) ; Disable ESD white pattern scanning voltage pull ground (ESD_WHITE_GND_EN = 0) ; ESD detection function period = 0 Frames (ESD_DET_TIME_SEL = 0)
 };
 
-// Command #11
+// Command #11: Undocumented
 static const uint8_t g_pinephone_c6[] =
 { 
   0xC6,  // Undocumented
@@ -199,7 +214,8 @@ static const uint8_t g_pinephone_c6[] =
   0x00   // Undocumented
 };
 
-// Command #12
+// Command #12: SETPOWER (ST7703 Page 149)
+// Set related setting of power
 static const uint8_t g_pinephone_setpower[] =
 { 
   0xC1,  // SETPOWER (ST7703 Page 149): Set related setting of power
@@ -217,7 +233,8 @@ static const uint8_t g_pinephone_setpower[] =
   0x77   // Right side VGH stage 3 pumping frequency = 4.5 MHz (VGH3_R_DIV = 7)  ; Right side VGL stage 3 pumping frequency = 4.5 MHz (VGL3_R_DIV = 7)
 };
 
-// Command #13
+// Command #13: SETBGP (ST7703 Page 136)
+// Internal reference voltage setting
 static const uint8_t g_pinephone_setbgp[] =
 { 
   0xB5,  // SETBGP (ST7703 Page 136): Internal reference voltage setting
@@ -225,7 +242,8 @@ static const uint8_t g_pinephone_setbgp[] =
   0x07   // NVREF Voltage: 4.2 V (NVREF_SEL = 7)
 };
 
-// Command #14
+// Command #14: SETVCOM (ST7703 Page 137)
+// Set VCOM Voltage
 static const uint8_t g_pinephone_setvcom[] =
 { 
   0xB6,  // SETVCOM (ST7703 Page 137): Set VCOM Voltage
@@ -233,7 +251,7 @@ static const uint8_t g_pinephone_setvcom[] =
   0x2C   // VCOMDC voltage at "GS_PANEL=1" = -0.67 V (VCOMDC_B = 0x2C)
 };
 
-// Command #15
+// Command #15: Undocumented
 static const uint8_t g_pinephone_bf[] =
 { 
   0xBF,  // Undocumented
@@ -242,7 +260,8 @@ static const uint8_t g_pinephone_bf[] =
   0x00   // Undocumented
 };
 
-// Command #16
+// Command #16: SETGIP1 (ST7703 Page 163)
+// Set forward GIP timing
 static const uint8_t g_pinephone_setgip1[] =
 { 
   0xE9,  // SETGIP1 (ST7703 Page 163): Set forward GIP timing
@@ -311,7 +330,8 @@ static const uint8_t g_pinephone_setgip1[] =
   0x00   // (COFF2 Bits 8-9 = 0) ; (CON2 Bits 8-9 = 0)
 };
 
-// Command #17
+// Command #17: SETGIP2 (ST7703 Page 170)
+// Set backward GIP timing
 static const uint8_t g_pinephone_setgip2[] =
 { 
   0xEA,  // SETGIP2 (ST7703 Page 170): Set backward GIP timing
@@ -378,7 +398,9 @@ static const uint8_t g_pinephone_setgip2[] =
   0x00   // Undocumented (Parameter 61)
 };
 
-// Command #18
+// Command #18: SETGAMMA (ST7703 Page 158)
+// Set the gray scale voltage to adjust the gamma characteristics of the
+// TFT panel
 static const uint8_t g_pinephone_setgamma[] =
 { 
   0xE0,  // SETGAMMA (ST7703 Page 158): Set the gray scale voltage to adjust the gamma characteristics of the TFT panel
@@ -418,19 +440,25 @@ static const uint8_t g_pinephone_setgamma[] =
   0x18   // (NPK8 = 0x18)
 };
 
-// Command #19    
+// Command #19: SLPOUT (ST7703 Page 89)
+// Turn off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE)
 static const uint8_t g_pinephone_slpout[] =
 { 
-  0x11  // SLPOUT (ST7703 Page 89): Turns off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE)
+  0x11  // SLPOUT (ST7703 Page 89): Turn off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE)
 };
 
-// Command #20
+/* Wait 120 milliseconds */
+
+// Command #20: Display On (ST7703 Page 97)
+// Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON)
 static const uint8_t g_pinephone_displayon[] =
 { 
   0x29  // Display On (ST7703 Page 97): Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON)
 };
 
-// 20 Initialisation Commands to be sent to ST7703 LCD Controller
+/* Consolidate Initialization Commands **************************************/
+
+// 20 Initialization Commands to be sent to ST7703 LCD Controller
 static const struct pinephone_cmd_s g_pinephone_commands[] =
 {
   {
@@ -657,7 +685,7 @@ int pinephone_lcd_panel_reset(bool val)
   return OK;
 }
 
-/// Initialise the ST7703 LCD Controller in Xingbangda XBD599 LCD Panel.
+/// Initialize the ST7703 LCD Controller in Xingbangda XBD599 LCD Panel.
 int pinephone_lcd_panel_init(void)
 {
   int i;
