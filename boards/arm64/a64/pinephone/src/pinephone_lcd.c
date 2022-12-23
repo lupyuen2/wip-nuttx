@@ -703,3 +703,85 @@ static void test_pattern(void)
         }
     }
 }
+
+///////////////////////////////////////// Frame Buffer
+
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Name: up_fbinitialize
+ *
+ * Description:
+ *   Initialize the framebuffer video hardware associated with the display.
+ *
+ *   There are multiple logic paths that may call up_fbinitialize() so any
+ *   implementation of up_fbinitialize() should be tolerant of being called
+ *   multiple times.
+ *
+ * Input Parameters:
+ *   display - In the case of hardware with multiple displays, this
+ *             specifies the display.  Normally this is zero.
+ *
+ * Returned Value:
+ *   Zero is returned on success; a negated errno value is returned on any
+ *   failure.
+ *
+ ****************************************************************************/
+
+int up_fbinitialize(int display)
+{
+  DEBUGASSERT(display == 0);
+
+  // TODO: Handle multiple calls
+  return OK;
+}
+
+/****************************************************************************
+ * Name: up_fbgetvplane
+ *
+ * Description:
+ *   Return a a reference to the framebuffer object for the specified video
+ *   plane of the specified plane.  Many OSDs support multiple planes of
+ *   video.
+ *
+ * Input Parameters:
+ *   display - In the case of hardware with multiple displays, this
+ *             specifies the display.  Normally this is zero.
+ *   vplane  - Identifies the plane being queried.
+ *
+ * Returned Value:
+ *   A non-NULL pointer to the frame buffer access structure is returned on
+ *   success; NULL is returned on any failure.
+ *
+ ****************************************************************************/
+
+struct fb_vtable_s *up_fbgetvplane(int display, int vplane)
+{
+  DEBUGASSERT(display == 0);
+  _err("Not implemented\n");////
+  return NULL;
+}
+
+/****************************************************************************
+ * Name: up_fbuninitialize
+ *
+ * Description:
+ *   Uninitialize the framebuffer support for the specified display.
+ *
+ * Input Parameters:
+ *   display - In the case of hardware with multiple displays, this
+ *             specifies the display.  Normally this is zero.
+ *
+ * Returned Value:
+ *   None
+ *
+ ****************************************************************************/
+
+void up_fbuninitialize(int display)
+{
+    /* Uninitialize is not supported */
+
+    UNUSED(display);
+}
