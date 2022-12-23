@@ -28,7 +28,7 @@ static int write_dcs(const uint8_t *buf, size_t len)
   int ret = -1;
   ginfo("writeDcs: len=%d\n", (int) len);
   ginfodumpbuffer("buf", buf, len);
-  assert(len > 0);
+  DEBUGASSERT(len > 0);
 
   // Do DCS Short Write or Long Write depending on command length
   // https://github.com/apache/nuttx/blob/master/arch/arm64/src/a64/a64_mipi_dsi.c#L366-L526
@@ -78,7 +78,7 @@ int pinephone_panel_init(void) {
       0x83   // (Continued)
   };
   ret = write_dcs(cmd1, sizeof(cmd1));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #2
   const uint8_t cmd2[] = { 
@@ -112,7 +112,7 @@ int pinephone_panel_init(void) {
       0x37   // Undocumented
   };
   ret = write_dcs(cmd2, sizeof(cmd2));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #3
   const uint8_t cmd3[] = { 
@@ -123,7 +123,7 @@ int pinephone_panel_init(void) {
       0x03   // Enable power IC pumping frequency synchronization = Synchronize with external Hsync (ECP_SYNC_EN = 1) ; Enable VGH/VGL pumping frequency synchronization = Synchronize with external Hsync (VGX_SYNC_EN = 1)
   };
   ret = write_dcs(cmd3, sizeof(cmd3));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #4
   const uint8_t cmd4[] = { 
@@ -140,7 +140,7 @@ int pinephone_panel_init(void) {
       0x00   // Undocumented
   };
   ret = write_dcs(cmd4, sizeof(cmd4));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #5
   const uint8_t cmd5[] = { 
@@ -156,7 +156,7 @@ int pinephone_panel_init(void) {
       0x00   // Undocumented
   };
   ret = write_dcs(cmd5, sizeof(cmd5));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #6
   const uint8_t cmd6[] = { 
@@ -164,7 +164,7 @@ int pinephone_panel_init(void) {
       0x4E   // NVDDD voltage = -1.8 V (NVDDD_SEL = 4) ; VDDD voltage = 1.9 V (VDDD_SEL = 6)
   };
   ret = write_dcs(cmd6, sizeof(cmd6));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #7
   const uint8_t cmd7[] = { 
@@ -172,7 +172,7 @@ int pinephone_panel_init(void) {
       0x0B   // Enable reverse the source scan direction (SS_PANEL = 1) ; Normal vertical scan direction (GS_PANEL = 0) ; Normally black panel (REV_PANEL = 1) ; S1:S2:S3 = B:G:R (BGR_PANEL = 1)
   };
   ret = write_dcs(cmd7, sizeof(cmd7));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #8
   const uint8_t cmd8[] = { 
@@ -180,7 +180,7 @@ int pinephone_panel_init(void) {
       0x80   // Extra source for Zig-Zag Inversion = S2401 (ZINV_S2401_EN = 1) ; Row source data dislocates = Even row (ZINV_G_EVEN_EN = 0) ; Disable Zig-Zag Inversion (ZINV_EN = 0) ; Enable Zig-Zag1 Inversion (ZINV2_EN = 0) ; Normal mode inversion type = Column inversion (N_NW = 0)
   };
   ret = write_dcs(cmd8, sizeof(cmd8));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #9
   const uint8_t cmd9[] = { 
@@ -190,7 +190,7 @@ int pinephone_panel_init(void) {
       0xF0   // Source voltage during Blanking Time when accessing Sleep-Out / Sleep-In command = GND (WHITE_GND_EN = 1) ; Blank timing control when access sleep out command: Blank Frame Period = 7 Frames (WHITE_FRAME_SEL = 7) ; Source output refresh control: Refresh Period = 0 Frames (ISC = 0)
   };
   ret = write_dcs(cmd9, sizeof(cmd9));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #10
   const uint8_t cmd10[] = { 
@@ -211,7 +211,7 @@ int pinephone_panel_init(void) {
       0x10   // No Need VSYNC (additional frame) after Sleep-In command to display sleep-in blanking frame then into Sleep-In State (SLPIN_OPTION = 1) ; Enable video function detection (VEDIO_NO_CHECK_EN = 0) ; Disable ESD white pattern scanning voltage pull ground (ESD_WHITE_GND_EN = 0) ; ESD detection function period = 0 Frames (ESD_DET_TIME_SEL = 0)
   };
   ret = write_dcs(cmd10, sizeof(cmd10));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #11
   const uint8_t cmd11[] = { 
@@ -223,7 +223,7 @@ int pinephone_panel_init(void) {
       0x00   // Undocumented
   };
   ret = write_dcs(cmd11, sizeof(cmd11));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #12
   const uint8_t cmd12[] = { 
@@ -242,7 +242,7 @@ int pinephone_panel_init(void) {
       0x77   // Right side VGH stage 3 pumping frequency = 4.5 MHz (VGH3_R_DIV = 7)  ; Right side VGL stage 3 pumping frequency = 4.5 MHz (VGL3_R_DIV = 7)
   };
   ret = write_dcs(cmd12, sizeof(cmd12));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #13
   const uint8_t cmd13[] = { 
@@ -251,7 +251,7 @@ int pinephone_panel_init(void) {
       0x07   // NVREF Voltage: 4.2 V (NVREF_SEL = 7)
   };
   ret = write_dcs(cmd13, sizeof(cmd13));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #14
   const uint8_t cmd14[] = { 
@@ -260,7 +260,7 @@ int pinephone_panel_init(void) {
       0x2C   // VCOMDC voltage at "GS_PANEL=1" = -0.67 V (VCOMDC_B = 0x2C)
   };
   ret = write_dcs(cmd14, sizeof(cmd14));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #15
   const uint8_t cmd15[] = { 
@@ -270,7 +270,7 @@ int pinephone_panel_init(void) {
       0x00   // Undocumented
   };
   ret = write_dcs(cmd15, sizeof(cmd15));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #16
   const uint8_t cmd16[] = { 
@@ -340,7 +340,7 @@ int pinephone_panel_init(void) {
       0x00   // (COFF2 Bits 8-9 = 0) ; (CON2 Bits 8-9 = 0)
   };
   ret = write_dcs(cmd16, sizeof(cmd16));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #17
   const uint8_t cmd17[] = { 
@@ -408,7 +408,7 @@ int pinephone_panel_init(void) {
       0x00   // Undocumented (Parameter 61)
   };
   ret = write_dcs(cmd17, sizeof(cmd17));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #18
   const uint8_t cmd18[] = { 
@@ -449,14 +449,14 @@ int pinephone_panel_init(void) {
       0x18   // (NPK8 = 0x18)
   };
   ret = write_dcs(cmd18, sizeof(cmd18));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Command #19    
   const uint8_t cmd19[] = { 
       0x11  // SLPOUT (Page 89): Turns off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE)
   };
   ret = write_dcs(cmd19, sizeof(cmd19));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   // Wait 120 milliseconds
   up_mdelay(120);
@@ -466,7 +466,7 @@ int pinephone_panel_init(void) {
       0x29  // Display On (Page 97): Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON)
   };    
   ret = write_dcs(cmd20, sizeof(cmd20));
-  assert(ret == OK);
+  DEBUGASSERT(ret == OK);
 
   ginfo("panel_init: end\n");
   return OK;
@@ -735,6 +735,53 @@ int up_fbinitialize(int display)
   DEBUGASSERT(display == 0);
 
   // TODO: Handle multiple calls
+
+  int ret;
+
+  // Turn on Display Backlight
+  #warning TODO: Turn on Display Backlight
+
+  // Init Timing Controller TCON0
+  ret = a64_tcon0_init(PANEL_WIDTH, PANEL_HEIGHT);
+  DEBUGASSERT(ret == OK);
+  
+  // Init PMIC
+  ret = pinephone_pmic_init();
+  DEBUGASSERT(ret == OK);
+
+  // Wait 15 milliseconds for power supply and power-on init
+  up_mdelay(15);
+
+  // Enable MIPI DSI Block
+  ret = a64_mipi_dsi_enable();
+  DEBUGASSERT(ret == OK);
+
+  // Enable MIPI Display Physical Layer (DPHY)
+  ret = a64_mipi_dphy_enable();
+  DEBUGASSERT(ret == OK);
+
+  // Reset LCD Panel
+  #warning TODO: Reset LCD Panel
+
+  // Initialise LCD Controller (ST7703)
+  ret = pinephone_panel_init();
+  DEBUGASSERT(ret == OK);
+
+  // Start MIPI DSI HSC and HSD
+  ret = a64_mipi_dsi_start();
+  DEBUGASSERT(ret == OK);
+
+  // Init Display Engine
+  ret = a64_de_init();
+  DEBUGASSERT(ret == OK);
+
+  // Wait 160 milliseconds
+  up_mdelay(160);
+
+  // Render Graphics with Display Engine (in C)
+  ret = pinephone_render_graphics();
+  DEBUGASSERT(ret == OK);
+
   return OK;
 }
 
