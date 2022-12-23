@@ -32,6 +32,69 @@
                    PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOH | \
                    PIO_PIN10)
 
+// Most of these commands are documented in the ST7703 Datasheet:
+// https://files.pine64.org/doc/datasheet/pinephone/ST7703_DS_v01_20160128.pdf
+
+// Command #1
+static const uint8_t g_pinephone_setextc[] = 
+{ 
+  0xB9,  // SETEXTC (ST7703 Page 131): Enable USER Command
+  0xF1,  // Enable User command
+  0x12,  // (Continued)
+  0x83   // (Continued)
+};
+
+// Command #2
+static const uint8_t g_pinephone_setmipi[] = 
+{ 
+  0xBA,  // SETMIPI (ST7703 Page 144): Set MIPI related register
+  0x33,  // Virtual Channel = 0 (VC_Main = 0) ; Number of Lanes = 4 (Lane_Number = 3)
+  0x81,  // LDO = 1.7 V (DSI_LDO_SEL = 4) ; Terminal Resistance = 90 Ohm (RTERM = 1)
+  0x05,  // MIPI Low High Speed driving ability = x6 (IHSRX = 5)
+  0xF9,  // TXCLK speed in DSI LP mode = fDSICLK / 16 (Tx_clk_sel = 2)
+  0x0E,  // Min HFP number in DSI mode = 14 (HFP_OSC = 14)
+  0x0E,  // Min HBP number in DSI mode = 14 (HBP_OSC = 14)
+  0x20,  // Undocumented
+  0x00,  // Undocumented
+  0x00,  // Undocumented
+  0x00,  // Undocumented
+  0x00,  // Undocumented
+  0x00,  // Undocumented
+  0x00,  // Undocumented
+  0x00,  // Undocumented
+  0x44,  // Undocumented
+  0x25,  // Undocumented
+  0x00,  // Undocumented
+  0x91,  // Undocumented
+  0x0a,  // Undocumented
+  0x00,  // Undocumented
+  0x00,  // Undocumented
+  0x02,  // Undocumented
+  0x4F,  // Undocumented
+  0x11,  // Undocumented
+  0x00,  // Undocumented
+  0x00,  // Undocumented
+  0x37   // Undocumented
+};
+
+struct pinephone_cmd_s
+{
+  const uint8_t *cmd;
+  uint8_t len;
+};
+
+static const struct pinephone_cmd_s g_pinephone_commands[] =
+{
+  {
+    g_pinephone_setextc,
+    sizeof(g_pinephone_setextc)
+  },
+  {
+    g_pinephone_setmipi,
+    sizeof(g_pinephone_setmipi)
+  }
+};
+
 /// Reset LCD Panel.
 /// Based on https://lupyuen.github.io/articles/de#appendix-reset-lcd-panel
 int pinephone_lcd_panel_reset(bool val)
@@ -124,38 +187,43 @@ int pinephone_lcd_backlight_enable(
 static int write_dcs(const uint8_t *buf, size_t len)
 {
   int ret = -1;
-  ginfo("writeDcs: len=%d\n", (int) len);
+  ginfo("len=%ld\n", len);
   ginfodumpbuffer("buf", buf, len);
   DEBUGASSERT(len > 0);
 
   // Do DCS Short Write or Long Write depending on command length
   // https://github.com/apache/nuttx/blob/master/arch/arm64/src/a64/a64_mipi_dsi.c#L366-L526
   switch (len)
-  {
-    // DCS Short Write (without parameter)
-    case 1:
-      ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
-        MIPI_DSI_DCS_SHORT_WRITE, 
-        buf, len);
-      break;
+    {
+      // DCS Short Write (without parameter)
+      case 1:
+        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
+          MIPI_DSI_DCS_SHORT_WRITE, 
+          buf, len);
+        break;
 
-    // DCS Short Write (with parameter)
-    case 2:
-      ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
-        MIPI_DSI_DCS_SHORT_WRITE_PARAM, 
-        buf, len);
-      break;
+      // DCS Short Write (with parameter)
+      case 2:
+        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
+          MIPI_DSI_DCS_SHORT_WRITE_PARAM, 
+          buf, len);
+        break;
 
-    // DCS Long Write
-    default:
-      ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
-        MIPI_DSI_DCS_LONG_WRITE, 
-        buf, len);
-      break;
-  };
-  ginfo("ret=%d\n", ret);
+      // DCS Long Write
+      default:
+        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
+          MIPI_DSI_DCS_LONG_WRITE, 
+          buf, len);
+        break;
+    }
+
+  if (ret < 0)
+    {
+      gerr("MIPI DSI Write failed: %d\n", ret);
+      return ret;
+    }
+
   DEBUGASSERT(ret == len);
-
   return OK;
 }
 
@@ -163,57 +231,21 @@ static int write_dcs(const uint8_t *buf, size_t len)
 /// See https://lupyuen.github.io/articles/dsi#initialise-lcd-controller
 int pinephone_lcd_panel_init(void)
 {
+  int i;
   int ret;
+  const int len = sizeof(g_pinephone_commands) / sizeof(g_pinephone_commands[0]);
+
   ginfo("Init ST7703 LCD Controller\n");
-
-  // Most of these commands are documented in the ST7703 Datasheet:
-  // https://files.pine64.org/doc/datasheet/pinephone/ST7703_DS_v01_20160128.pdf
-
-  // Command #1
-  const uint8_t cmd1[] = { 
-      0xB9,  // SETEXTC (ST7703 Page 131): Enable USER Command
-      0xF1,  // Enable User command
-      0x12,  // (Continued)
-      0x83   // (Continued)
-  };
-  ret = write_dcs(cmd1, sizeof(cmd1));
-
-  // TODO: Return error
-  DEBUGASSERT(ret == OK);
-
-  // Command #2
-  const uint8_t cmd2[] = { 
-      0xBA,  // SETMIPI (ST7703 Page 144): Set MIPI related register
-      0x33,  // Virtual Channel = 0 (VC_Main = 0) ; Number of Lanes = 4 (Lane_Number = 3)
-      0x81,  // LDO = 1.7 V (DSI_LDO_SEL = 4) ; Terminal Resistance = 90 Ohm (RTERM = 1)
-      0x05,  // MIPI Low High Speed driving ability = x6 (IHSRX = 5)
-      0xF9,  // TXCLK speed in DSI LP mode = fDSICLK / 16 (Tx_clk_sel = 2)
-      0x0E,  // Min HFP number in DSI mode = 14 (HFP_OSC = 14)
-      0x0E,  // Min HBP number in DSI mode = 14 (HBP_OSC = 14)
-      0x20,  // Undocumented
-      0x00,  // Undocumented
-      0x00,  // Undocumented
-      0x00,  // Undocumented
-      0x00,  // Undocumented
-      0x00,  // Undocumented
-      0x00,  // Undocumented
-      0x00,  // Undocumented
-      0x44,  // Undocumented
-      0x25,  // Undocumented
-      0x00,  // Undocumented
-      0x91,  // Undocumented
-      0x0a,  // Undocumented
-      0x00,  // Undocumented
-      0x00,  // Undocumented
-      0x02,  // Undocumented
-      0x4F,  // Undocumented
-      0x11,  // Undocumented
-      0x00,  // Undocumented
-      0x00,  // Undocumented
-      0x37   // Undocumented
-  };
-  ret = write_dcs(cmd2, sizeof(cmd2));
-  DEBUGASSERT(ret == OK);
+  for (i = 0; i < len; i++)
+    {
+      ret = write_dcs(g_pinephone_commands[i].cmd,
+                      g_pinephone_commands[i].len);
+      if (ret < 0)
+        {
+          gerr("Write DCS failed: %d\n", ret);
+          return ret;
+        }
+    }
 
   // Command #3
   const uint8_t cmd3[] = { 
