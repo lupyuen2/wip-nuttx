@@ -462,87 +462,87 @@ static const uint8_t g_pinephone_displayon[] =
 static const struct pinephone_cmd_s g_pinephone_commands[] =
 {
   {
-    g_pinephone_setextc,
+    g_pinephone_setextc,   // Command #1: SETEXTC (ST7703 Page 131)
     sizeof(g_pinephone_setextc)
   },
   {
-    g_pinephone_setmipi,
+    g_pinephone_setmipi,   // Command #2: SETMIPI (ST7703 Page 144)
     sizeof(g_pinephone_setmipi)
   },
   {
-    g_pinephone_setpower_ext,
+    g_pinephone_setpower_ext, /* Command #3: SETPOWER_EXT (ST7703 Pg 142) */
     sizeof(g_pinephone_setpower_ext)
   },
   {
-    g_pinephone_setrgbif,
+    g_pinephone_setrgbif,  // Command #4: SETRGBIF (ST7703 Page 134)
     sizeof(g_pinephone_setrgbif)
   },
   {
-    g_pinephone_setscr,
+    g_pinephone_setscr,    // Command #5: SETSCR (ST7703 Page 147)
     sizeof(g_pinephone_setscr)
   },
   {
-    g_pinephone_setvdc,
+    g_pinephone_setvdc,    // Command #6: SETVDC (ST7703 Page 146)
     sizeof(g_pinephone_setvdc)
   },
   {
-    g_pinephone_setpanel,
+    g_pinephone_setpanel,  // Command #7: SETPANEL (ST7703 Page 154)
     sizeof(g_pinephone_setpanel)
   },
   {
-    g_pinephone_setcyc,
+    g_pinephone_setcyc,    // Command #8: SETCYC (ST7703 Page 135)
     sizeof(g_pinephone_setcyc)
   },
   {
-    g_pinephone_setdisp,
+    g_pinephone_setdisp,   // Command #9: SETDISP (ST7703 Page 132)
     sizeof(g_pinephone_setdisp)
   },
   {
-    g_pinephone_seteq,
+    g_pinephone_seteq,     // Command #10: SETEQ (ST7703 Page 159)
     sizeof(g_pinephone_seteq)
   },
   {
-    g_pinephone_c6,
+    g_pinephone_c6,        // Command #11: Undocumented
     sizeof(g_pinephone_c6)
   },
   {
-    g_pinephone_setpower,
+    g_pinephone_setpower,  // Command #12: SETPOWER (ST7703 Page 149)
     sizeof(g_pinephone_setpower)
   },
   {
-    g_pinephone_setbgp,
+    g_pinephone_setbgp,    // Command #13: SETBGP (ST7703 Page 136)
     sizeof(g_pinephone_setbgp)
   },
   {
-    g_pinephone_setvcom,
+    g_pinephone_setvcom,   // Command #14: SETVCOM (ST7703 Page 137)
     sizeof(g_pinephone_setvcom)
   },
   {
-    g_pinephone_bf,
+    g_pinephone_bf,        // Command #15: Undocumented
     sizeof(g_pinephone_bf)
   },
   {
-    g_pinephone_setgip1,
+    g_pinephone_setgip1,   // Command #16: SETGIP1 (ST7703 Page 163)
     sizeof(g_pinephone_setgip1)
   },
   {
-    g_pinephone_setgip2,
+    g_pinephone_setgip2,   // Command #17: SETGIP2 (ST7703 Page 170)
     sizeof(g_pinephone_setgip2)
   },
   {
-    g_pinephone_setgamma,
+    g_pinephone_setgamma,  // Command #18: SETGAMMA (ST7703 Page 158)
     sizeof(g_pinephone_setgamma)
   },
   {
-    g_pinephone_slpout,
+    g_pinephone_slpout,    // Command #19: SLPOUT (ST7703 Page 89)
     sizeof(g_pinephone_slpout)
   },
   {
-    NULL, /* Wait 120 milliseconds */
+    NULL,                  /* Wait 120 milliseconds */
     0
   },
   {
-    g_pinephone_displayon,
+    g_pinephone_displayon, // Command #20: Display On (ST7703 Page 97)
     sizeof(g_pinephone_displayon)
   }
 };
@@ -560,7 +560,6 @@ static int write_dcs(const uint8_t *buf, size_t len)
   DEBUGASSERT(len > 0);
 
   // Do DCS Short Write or Long Write depending on command length
-  // https://github.com/apache/nuttx/blob/master/arch/arm64/src/a64/a64_mipi_dsi.c#L366-L526
   switch (len)
     {
       // DCS Short Write (without parameter)
