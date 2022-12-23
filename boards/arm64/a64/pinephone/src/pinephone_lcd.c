@@ -171,17 +171,19 @@ int pinephone_lcd_panel_init(void)
 
   // Command #1
   const uint8_t cmd1[] = { 
-      0xB9,  // SETEXTC (Page 131): Enable USER Command
+      0xB9,  // SETEXTC (ST7703 Page 131): Enable USER Command
       0xF1,  // Enable User command
       0x12,  // (Continued)
       0x83   // (Continued)
   };
   ret = write_dcs(cmd1, sizeof(cmd1));
+
+  // TODO: Return error
   DEBUGASSERT(ret == OK);
 
   // Command #2
   const uint8_t cmd2[] = { 
-      0xBA,  // SETMIPI (Page 144): Set MIPI related register
+      0xBA,  // SETMIPI (ST7703 Page 144): Set MIPI related register
       0x33,  // Virtual Channel = 0 (VC_Main = 0) ; Number of Lanes = 4 (Lane_Number = 3)
       0x81,  // LDO = 1.7 V (DSI_LDO_SEL = 4) ; Terminal Resistance = 90 Ohm (RTERM = 1)
       0x05,  // MIPI Low High Speed driving ability = x6 (IHSRX = 5)
@@ -215,7 +217,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #3
   const uint8_t cmd3[] = { 
-      0xB8,  // SETPOWER_EXT (Page 142): Set display related register
+      0xB8,  // SETPOWER_EXT (ST7703 Page 142): Set display related register
       0x25,  // External power IC or PFM: VSP = FL1002, VSN = FL1002 (PCCS = 2) ; VCSW1 / VCSW2 Frequency for Pumping VSP / VSN = 1/4 Hsync (ECP_DC_DIV = 5)
       0x22,  // VCSW1/VCSW2 soft start time = 15 ms (DT = 2) ; Pumping ratio of VSP / VSN with VCI = x2 (XDK_ECP = 1)
       0x20,  // PFM operation frequency FoscD = Fosc/1 (PFM_DC_DIV = 0)
@@ -226,7 +228,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #4
   const uint8_t cmd4[] = { 
-      0xB3,  // SETRGBIF (Page 134): Control RGB I/F porch timing for internal use
+      0xB3,  // SETRGBIF (ST7703 Page 134): Control RGB I/F porch timing for internal use
       0x10,  // Vertical back porch HS number in Blank Frame Period  = Hsync number 16 (VBP_RGB_GEN = 16)
       0x10,  // Vertical front porch HS number in Blank Frame Period = Hsync number 16 (VFP_RGB_GEN = 16)
       0x05,  // HBP OSC number in Blank Frame Period = OSC number 5 (DE_BP_RGB_GEN = 5)
@@ -243,7 +245,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #5
   const uint8_t cmd5[] = { 
-      0xC0,  // SETSCR (Page 147): Set related setting of Source driving
+      0xC0,  // SETSCR (ST7703 Page 147): Set related setting of Source driving
       0x73,  // Source OP Amp driving period for positive polarity in Normal Mode: Source OP Period = 115*4/Fosc (N_POPON = 115)
       0x73,  // Source OP Amp driving period for negative polarity in Normal Mode: Source OP Period = 115*4/Fosc (N_NOPON = 115)
       0x50,  // Source OP Amp driving period for positive polarity in Idle mode: Source OP Period   = 80*4/Fosc (I_POPON = 80)
@@ -259,7 +261,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #6
   const uint8_t cmd6[] = { 
-      0xBC,  // SETVDC (Page 146): Control NVDDD/VDDD Voltage
+      0xBC,  // SETVDC (ST7703 Page 146): Control NVDDD/VDDD Voltage
       0x4E   // NVDDD voltage = -1.8 V (NVDDD_SEL = 4) ; VDDD voltage = 1.9 V (VDDD_SEL = 6)
   };
   ret = write_dcs(cmd6, sizeof(cmd6));
@@ -267,7 +269,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #7
   const uint8_t cmd7[] = { 
-      0xCC,  // SETPANEL (Page 154): Set display related register
+      0xCC,  // SETPANEL (ST7703 Page 154): Set display related register
       0x0B   // Enable reverse the source scan direction (SS_PANEL = 1) ; Normal vertical scan direction (GS_PANEL = 0) ; Normally black panel (REV_PANEL = 1) ; S1:S2:S3 = B:G:R (BGR_PANEL = 1)
   };
   ret = write_dcs(cmd7, sizeof(cmd7));
@@ -275,7 +277,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #8
   const uint8_t cmd8[] = { 
-      0xB4,  // SETCYC (Page 135): Control display inversion type
+      0xB4,  // SETCYC (ST7703 Page 135): Control display inversion type
       0x80   // Extra source for Zig-Zag Inversion = S2401 (ZINV_S2401_EN = 1) ; Row source data dislocates = Even row (ZINV_G_EVEN_EN = 0) ; Disable Zig-Zag Inversion (ZINV_EN = 0) ; Enable Zig-Zag1 Inversion (ZINV2_EN = 0) ; Normal mode inversion type = Column inversion (N_NW = 0)
   };
   ret = write_dcs(cmd8, sizeof(cmd8));
@@ -283,7 +285,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #9
   const uint8_t cmd9[] = { 
-      0xB2,  // SETDISP (Page 132): Control the display resolution
+      0xB2,  // SETDISP (ST7703 Page 132): Control the display resolution
       0xF0,  // Gate number of vertical direction = 480 + (240*4) (NL = 240)
       0x12,  // (RES_V_LSB = 0) ; Non-display area source output control: Source output = VSSD (BLK_CON = 1) ; Channel number of source direction = 720RGB (RESO_SEL = 2)
       0xF0   // Source voltage during Blanking Time when accessing Sleep-Out / Sleep-In command = GND (WHITE_GND_EN = 1) ; Blank timing control when access sleep out command: Blank Frame Period = 7 Frames (WHITE_FRAME_SEL = 7) ; Source output refresh control: Refresh Period = 0 Frames (ISC = 0)
@@ -293,7 +295,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #10
   const uint8_t cmd10[] = { 
-      0xE3,  // SETEQ (Page 159): Set EQ related register
+      0xE3,  // SETEQ (ST7703 Page 159): Set EQ related register
       0x00,  // Temporal spacing between HSYNC and PEQGND = 0*4/Fosc (PNOEQ = 0)
       0x00,  // Temporal spacing between HSYNC and NEQGND = 0*4/Fosc (NNOEQ = 0)
       0x0B,  // Source EQ GND period when Source up to positive voltage   = 11*4/Fosc (PEQGND = 11)
@@ -326,7 +328,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #12
   const uint8_t cmd12[] = { 
-      0xC1,  // SETPOWER (Page 149): Set related setting of power
+      0xC1,  // SETPOWER (ST7703 Page 149): Set related setting of power
       0x74,  // VGH Voltage Adjustment = 17 V (VBTHS = 7) ; VGL Voltage Adjustment = -11 V (VBTLS = 4)
       0x00,  // Enable VGH feedback voltage detection. Output voltage = VBTHS (FBOFF_VGH = 0) ; Enable VGL feedback voltage detection. Output voltage = VBTLS (FBOFF_VGL = 0)
       0x32,  // VSPROUT Voltage = (VRH[5:0] x 0.05 + 3.3) x (VREF/4.8) if VREF [4]=0 (VRP = 50)
@@ -345,7 +347,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #13
   const uint8_t cmd13[] = { 
-      0xB5,  // SETBGP (Page 136): Internal reference voltage setting
+      0xB5,  // SETBGP (ST7703 Page 136): Internal reference voltage setting
       0x07,  // VREF Voltage: 4.2 V (VREF_SEL = 7)
       0x07   // NVREF Voltage: 4.2 V (NVREF_SEL = 7)
   };
@@ -354,7 +356,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #14
   const uint8_t cmd14[] = { 
-      0xB6,  // SETVCOM (Page 137): Set VCOM Voltage
+      0xB6,  // SETVCOM (ST7703 Page 137): Set VCOM Voltage
       0x2C,  // VCOMDC voltage at "GS_PANEL=0" = -0.67 V (VCOMDC_F = 0x2C)
       0x2C   // VCOMDC voltage at "GS_PANEL=1" = -0.67 V (VCOMDC_B = 0x2C)
   };
@@ -373,7 +375,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #16
   const uint8_t cmd16[] = { 
-      0xE9,  // SETGIP1 (Page 163): Set forward GIP timing
+      0xE9,  // SETGIP1 (ST7703 Page 163): Set forward GIP timing
       0x82,  // SHR0, SHR1, CHR, CHR2 refer to Internal DE (REF_EN = 1) ; (PANEL_SEL = 2)
       0x10,  // Starting position of GIP STV group 0 = 4102 HSYNC (SHR0 Bits 8-12 = 0x10)
       0x06,  // (SHR0 Bits 0-7  = 0x06)
@@ -443,7 +445,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #17
   const uint8_t cmd17[] = { 
-      0xEA,  // SETGIP2 (Page 170): Set backward GIP timing
+      0xEA,  // SETGIP2 (ST7703 Page 170): Set backward GIP timing
       0x02,  // YS2 Signal Mode = INYS1/INYS2 (YS2_SEL = 0) ; YS2 Signal Mode = INYS1/INYS2 (YS1_SEL = 0) ; Don't reverse YS2 signal (YS2_XOR = 0) ; Don't reverse YS1 signal (YS1_XOR = 0) ; Enable YS signal function (YS_FLAG_EN = 1) ; Disable ALL ON function (ALL_ON_EN = 0)
       0x21,  // (GATE = 0x21)
       0x00,  // (CK_ALL_ON_EN = 0) ; (STV_ALL_ON_EN = 0) ; Timing of YS1 and YS2 signal = ??? (CK_ALL_ON_WIDTH1 = 0)
@@ -511,7 +513,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #18
   const uint8_t cmd18[] = { 
-      0xE0,  // SETGAMMA (Page 158): Set the gray scale voltage to adjust the gamma characteristics of the TFT panel
+      0xE0,  // SETGAMMA (ST7703 Page 158): Set the gray scale voltage to adjust the gamma characteristics of the TFT panel
       0x00,  // (PVR0 = 0x00)
       0x09,  // (PVR1 = 0x09)
       0x0D,  // (PVR2 = 0x0D)
@@ -552,7 +554,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #19    
   const uint8_t cmd19[] = { 
-      0x11  // SLPOUT (Page 89): Turns off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE)
+      0x11  // SLPOUT (ST7703 Page 89): Turns off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE)
   };
   ret = write_dcs(cmd19, sizeof(cmd19));
   DEBUGASSERT(ret == OK);
@@ -562,7 +564,7 @@ int pinephone_lcd_panel_init(void)
 
   // Command #20
   const uint8_t cmd20[] = { 
-      0x29  // Display On (Page 97): Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON)
+      0x29  // Display On (ST7703 Page 97): Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON)
   };    
   ret = write_dcs(cmd20, sizeof(cmd20));
   DEBUGASSERT(ret == OK);

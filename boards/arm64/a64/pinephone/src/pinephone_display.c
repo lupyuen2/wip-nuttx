@@ -192,7 +192,7 @@ static int render_framebuffers(void)
   int i;
   int ret;
 
-  // Validate the Frame Buffer Sizes at Compile Time
+  // Validate the Frame Buffer Sizes
   DEBUGASSERT(CHANNELS == 1 || CHANNELS == 3);
   DEBUGASSERT(planeInfo.xres_virtual == videoInfo.xres);
   DEBUGASSERT(planeInfo.yres_virtual == videoInfo.yres);
