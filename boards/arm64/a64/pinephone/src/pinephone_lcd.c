@@ -32,6 +32,13 @@
                    PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOH | \
                    PIO_PIN10)
 
+// ST7703 Initialisation Command
+struct pinephone_cmd_s
+{
+  const uint8_t *cmd;
+  uint8_t len;
+};
+
 // Most of these commands are documented in the ST7703 Datasheet:
 // https://files.pine64.org/doc/datasheet/pinephone/ST7703_DS_v01_20160128.pdf
 
@@ -79,7 +86,7 @@ static const uint8_t g_pinephone_setmipi[] =
 
 
 // Command #3
-static const uint8_t cmd3[] =
+static const uint8_t g_pinephone_setpower_ext[] =
 { 
   0xB8,  // SETPOWER_EXT (ST7703 Page 142): Set display related register
   0x25,  // External power IC or PFM: VSP = FL1002, VSN = FL1002 (PCCS = 2) ; VCSW1 / VCSW2 Frequency for Pumping VSP / VSN = 1/4 Hsync (ECP_DC_DIV = 5)
@@ -89,7 +96,7 @@ static const uint8_t cmd3[] =
 };
 
 // Command #4
-static const uint8_t cmd4[] =
+static const uint8_t g_pinephone_setrgbif[] =
 { 
   0xB3,  // SETRGBIF (ST7703 Page 134): Control RGB I/F porch timing for internal use
   0x10,  // Vertical back porch HS number in Blank Frame Period  = Hsync number 16 (VBP_RGB_GEN = 16)
@@ -105,7 +112,7 @@ static const uint8_t cmd4[] =
 };
 
 // Command #5
-static const uint8_t cmd5[] =
+static const uint8_t g_pinephone_setscr[] =
 { 
   0xC0,  // SETSCR (ST7703 Page 147): Set related setting of Source driving
   0x73,  // Source OP Amp driving period for positive polarity in Normal Mode: Source OP Period = 115*4/Fosc (N_POPON = 115)
@@ -120,28 +127,28 @@ static const uint8_t cmd5[] =
 };
 
 // Command #6
-static const uint8_t cmd6[] =
+static const uint8_t g_pinephone_setvdc[] =
 { 
   0xBC,  // SETVDC (ST7703 Page 146): Control NVDDD/VDDD Voltage
   0x4E   // NVDDD voltage = -1.8 V (NVDDD_SEL = 4) ; VDDD voltage = 1.9 V (VDDD_SEL = 6)
 };
 
 // Command #7
-static const uint8_t cmd7[] =
+static const uint8_t g_pinephone_setpanel[] =
 { 
   0xCC,  // SETPANEL (ST7703 Page 154): Set display related register
   0x0B   // Enable reverse the source scan direction (SS_PANEL = 1) ; Normal vertical scan direction (GS_PANEL = 0) ; Normally black panel (REV_PANEL = 1) ; S1:S2:S3 = B:G:R (BGR_PANEL = 1)
 };
 
 // Command #8
-static const uint8_t cmd8[] =
+static const uint8_t g_pinephone_setcyc[] =
 { 
   0xB4,  // SETCYC (ST7703 Page 135): Control display inversion type
   0x80   // Extra source for Zig-Zag Inversion = S2401 (ZINV_S2401_EN = 1) ; Row source data dislocates = Even row (ZINV_G_EVEN_EN = 0) ; Disable Zig-Zag Inversion (ZINV_EN = 0) ; Enable Zig-Zag1 Inversion (ZINV2_EN = 0) ; Normal mode inversion type = Column inversion (N_NW = 0)
 };
 
 // Command #9
-static const uint8_t cmd9[] =
+static const uint8_t g_pinephone_setdisp[] =
 { 
   0xB2,  // SETDISP (ST7703 Page 132): Control the display resolution
   0xF0,  // Gate number of vertical direction = 480 + (240*4) (NL = 240)
@@ -150,7 +157,7 @@ static const uint8_t cmd9[] =
 };
 
 // Command #10
-static const uint8_t cmd10[] =
+static const uint8_t g_pinephone_seteq[] =
 { 
   0xE3,  // SETEQ (ST7703 Page 159): Set EQ related register
   0x00,  // Temporal spacing between HSYNC and PEQGND = 0*4/Fosc (PNOEQ = 0)
@@ -170,7 +177,7 @@ static const uint8_t cmd10[] =
 };
 
 // Command #11
-static const uint8_t cmd11[] =
+static const uint8_t g_pinephone_c6[] =
 { 
   0xC6,  // Undocumented
   0x01,  // Undocumented
@@ -181,7 +188,7 @@ static const uint8_t cmd11[] =
 };
 
 // Command #12
-static const uint8_t cmd12[] =
+static const uint8_t g_pinephone_setpower[] =
 { 
   0xC1,  // SETPOWER (ST7703 Page 149): Set related setting of power
   0x74,  // VGH Voltage Adjustment = 17 V (VBTHS = 7) ; VGL Voltage Adjustment = -11 V (VBTLS = 4)
@@ -199,7 +206,7 @@ static const uint8_t cmd12[] =
 };
 
 // Command #13
-static const uint8_t cmd13[] =
+static const uint8_t g_pinephone_setbgp[] =
 { 
   0xB5,  // SETBGP (ST7703 Page 136): Internal reference voltage setting
   0x07,  // VREF Voltage: 4.2 V (VREF_SEL = 7)
@@ -207,7 +214,7 @@ static const uint8_t cmd13[] =
 };
 
 // Command #14
-static const uint8_t cmd14[] =
+static const uint8_t g_pinephone_setvcom[] =
 { 
   0xB6,  // SETVCOM (ST7703 Page 137): Set VCOM Voltage
   0x2C,  // VCOMDC voltage at "GS_PANEL=0" = -0.67 V (VCOMDC_F = 0x2C)
@@ -215,7 +222,7 @@ static const uint8_t cmd14[] =
 };
 
 // Command #15
-static const uint8_t cmd15[] =
+static const uint8_t g_pinephone_bf[] =
 { 
   0xBF,  // Undocumented
   0x02,  // Undocumented
@@ -224,7 +231,7 @@ static const uint8_t cmd15[] =
 };
 
 // Command #16
-static const uint8_t cmd16[] =
+static const uint8_t g_pinephone_setgip1[] =
 { 
   0xE9,  // SETGIP1 (ST7703 Page 163): Set forward GIP timing
   0x82,  // SHR0, SHR1, CHR, CHR2 refer to Internal DE (REF_EN = 1) ; (PANEL_SEL = 2)
@@ -293,7 +300,7 @@ static const uint8_t cmd16[] =
 };
 
 // Command #17
-static const uint8_t cmd17[] =
+static const uint8_t g_pinephone_setgip2[] =
 { 
   0xEA,  // SETGIP2 (ST7703 Page 170): Set backward GIP timing
   0x02,  // YS2 Signal Mode = INYS1/INYS2 (YS2_SEL = 0) ; YS2 Signal Mode = INYS1/INYS2 (YS1_SEL = 0) ; Don't reverse YS2 signal (YS2_XOR = 0) ; Don't reverse YS1 signal (YS1_XOR = 0) ; Enable YS signal function (YS_FLAG_EN = 1) ; Disable ALL ON function (ALL_ON_EN = 0)
@@ -360,7 +367,7 @@ static const uint8_t cmd17[] =
 };
 
 // Command #18
-static const uint8_t cmd18[] =
+static const uint8_t g_pinephone_setgamma[] =
 { 
   0xE0,  // SETGAMMA (ST7703 Page 158): Set the gray scale voltage to adjust the gamma characteristics of the TFT panel
   0x00,  // (PVR0 = 0x00)
@@ -400,21 +407,15 @@ static const uint8_t cmd18[] =
 };
 
 // Command #19    
-static const uint8_t cmd19[] =
+static const uint8_t g_pinephone_slpout[] =
 { 
   0x11  // SLPOUT (ST7703 Page 89): Turns off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE)
 };
 
 // Command #20
-static const uint8_t cmd20[] =
+static const uint8_t g_pinephone_displayon[] =
 { 
   0x29  // Display On (ST7703 Page 97): Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON)
-};
-
-struct pinephone_cmd_s
-{
-  const uint8_t *cmd;
-  uint8_t len;
 };
 
 static const struct pinephone_cmd_s g_pinephone_commands[] =
@@ -428,80 +429,80 @@ static const struct pinephone_cmd_s g_pinephone_commands[] =
     sizeof(g_pinephone_setmipi)
   },
   {
-    cmd3,
-    sizeof(cmd3)
+    g_pinephone_setpower_ext,
+    sizeof(g_pinephone_setpower_ext)
   },
   {
-    cmd4,
-    sizeof(cmd4)
+    g_pinephone_setrgbif,
+    sizeof(g_pinephone_setrgbif)
   },
   {
-    cmd5,
-    sizeof(cmd5)
+    g_pinephone_setscr,
+    sizeof(g_pinephone_setscr)
   },
   {
-    cmd6,
-    sizeof(cmd6)
+    g_pinephone_setvdc,
+    sizeof(g_pinephone_setvdc)
   },
   {
-    cmd7,
-    sizeof(cmd7)
+    g_pinephone_setpanel,
+    sizeof(g_pinephone_setpanel)
   },
   {
-    cmd8,
-    sizeof(cmd8)
+    g_pinephone_setcyc,
+    sizeof(g_pinephone_setcyc)
   },
   {
-    cmd9,
-    sizeof(cmd9)
+    g_pinephone_setdisp,
+    sizeof(g_pinephone_setdisp)
   },
   {
-    cmd10,
-    sizeof(cmd10)
+    g_pinephone_seteq,
+    sizeof(g_pinephone_seteq)
   },
   {
-    cmd11,
-    sizeof(cmd11)
+    g_pinephone_c6,
+    sizeof(g_pinephone_c6)
   },
   {
-    cmd12,
-    sizeof(cmd12)
+    g_pinephone_setpower,
+    sizeof(g_pinephone_setpower)
   },
   {
-    cmd13,
-    sizeof(cmd13)
+    g_pinephone_setbgp,
+    sizeof(g_pinephone_setbgp)
   },
   {
-    cmd14,
-    sizeof(cmd14)
+    g_pinephone_setvcom,
+    sizeof(g_pinephone_setvcom)
   },
   {
-    cmd15,
-    sizeof(cmd15)
+    g_pinephone_bf,
+    sizeof(g_pinephone_bf)
   },
   {
-    cmd16,
-    sizeof(cmd16)
+    g_pinephone_setgip1,
+    sizeof(g_pinephone_setgip1)
   },
   {
-    cmd17,
-    sizeof(cmd17)
+    g_pinephone_setgip2,
+    sizeof(g_pinephone_setgip2)
   },
   {
-    cmd18,
-    sizeof(cmd18)
+    g_pinephone_setgamma,
+    sizeof(g_pinephone_setgamma)
   },
   {
-    cmd19,
-    sizeof(cmd19)
+    g_pinephone_slpout,
+    sizeof(g_pinephone_slpout)
   },
   {
     NULL, /* Wait 120 milliseconds */
     0
   },
   {
-    cmd20,
-    sizeof(cmd20)
+    g_pinephone_displayon,
+    sizeof(g_pinephone_displayon)
   }
 };
 
