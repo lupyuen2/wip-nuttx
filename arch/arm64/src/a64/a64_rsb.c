@@ -291,5 +291,3 @@ int a64_rsb_write(uint8_t rt_addr, uint8_t reg_addr, uint8_t value)
 
   return rsb_wait_status();
 }
-
-#include "../../pinephone-nuttx/test/test_a64_rsb.c" //// TODO: Remove Test Code
