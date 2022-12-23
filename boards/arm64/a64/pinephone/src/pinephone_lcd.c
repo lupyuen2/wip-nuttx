@@ -11,6 +11,7 @@
 #include "chip.h"
 #include "arm64_internal.h"
 #include "a64_mipi_dsi.h"
+#include "a64_pio.h"
 #include "pinephone_lcd.h"
 
 /// PIO Base Address (CPUx-PORT) (A64 Page 376)
@@ -25,12 +26,25 @@
 /// R_PWM Base Address (CPUs-PWM?) (CPUs Domain, A64 Page 256)
 #define R_PWM_BASE_ADDRESS 0x01F03800
 
+/* LCD Panel Reset on PD23 */
+
+#define LCD_RESET (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
+                   PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOD | \
+                   PIO_PIN23)
+
 /// Reset LCD Panel.
 /// Based on https://lupyuen.github.io/articles/de#appendix-reset-lcd-panel
 int pinephone_lcd_panel_reset(bool val)
 {
-  // Reset LCD Panel at PD23 (Active Low)
+  int ret;
 
+  // Reset LCD Panel at PD23 (Active Low)
+  ret = a64_pio_config(LCD_RESET);
+  DEBUGASSERT(ret == OK);
+
+  a64_pio_write(LCD_RESET, val);
+
+#ifdef NOTUSED
   // Configure PD23 for Output
   // Register PD_CFG2_REG (PD Configure Register 2)
   // At PIO Offset 0x74 (A64 Page 387)
@@ -60,6 +74,7 @@ int pinephone_lcd_panel_reset(bool val)
   DEBUGASSERT(PD_DATA_REG == 0x1c2087c);
   #define PD23(n) ((n) << 23)
   modreg32(PD23(val), PD23(1), PD_DATA_REG);  // TODO: DMB
+#endif
 
   return OK;
 }
