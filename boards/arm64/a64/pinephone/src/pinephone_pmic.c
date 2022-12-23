@@ -32,39 +32,6 @@ static int pmic_clrsetbits(
 /// Based on https://lupyuen.github.io/articles/de#appendix-power-management-integrated-circuit
 int pinephone_pmic_init(void)
 {
-  // Reset LCD Panel at PD23 (Active Low)
-  // assert reset: GPD(23), 0  // PD23 - LCD-RST (active low)
-
-  // Configure PD23 for Output
-  // Register PD_CFG2_REG (PD Configure Register 2)
-  // At PIO Offset 0x74 (A64 Page 387)
-  // Set PD23_SELECT (Bits 28 to 30) to 1 (Output)
-  // sunxi_gpio_set_cfgpin: pin=0x77, val=1
-  // sunxi_gpio_set_cfgbank: bank_offset=119, val=1
-  //   clrsetbits 0x1c20874, 0xf0000000, 0x10000000
-  // TODO: Should 0xf0000000 be 0x70000000 instead?
-  batinfo("Configure PD23 for Output\n");
-  #define PD_CFG2_REG (PIO_BASE_ADDRESS + 0x74)
-  DEBUGASSERT(PD_CFG2_REG == 0x1c20874);
-  #define PD23_SELECT (0b001 << 28)
-  #define PD23_MASK (0b111 << 28)
-  DEBUGASSERT(PD23_SELECT == 0x10000000);
-  DEBUGASSERT(PD23_MASK   == 0x70000000);
-  modreg32(PD23_SELECT, PD23_MASK, PD_CFG2_REG);  // TODO: DMB
-
-  // Set PD23 to Low
-  // Register PD_DATA_REG (PD Data Register)
-  // At PIO Offset 0x7C (A64 Page 388)
-  // Set PD23 (Bit 23) to 0 (Low)
-  // sunxi_gpio_output: pin=0x77, val=0
-  //   before: 0x1c2087c = 0x1c0000
-  //   after: 0x1c2087c = 0x1c0000 (DMB)
-  batinfo("Set PD23 to Low\n");
-  #define PD_DATA_REG (PIO_BASE_ADDRESS + 0x7C)
-  DEBUGASSERT(PD_DATA_REG == 0x1c2087c);
-  #define PD23 (1 << 23)
-  modreg32(0, PD23, PD_DATA_REG);  // TODO: DMB
-
   // Set DLDO1 Voltage to 3.3V
   // DLDO1 powers the Front Camera / USB HSIC / I2C Sensors
   // Register 0x15: DLDO1 Voltage Control (AXP803 Page 52)

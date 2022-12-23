@@ -293,6 +293,10 @@ int up_fbinitialize(int display)
   ret = a64_tcon0_init(PANEL_WIDTH, PANEL_HEIGHT);
   DEBUGASSERT(ret == OK);
   
+  // Reset LCD Panel to Low
+  ret = pinephone_lcd_panel_reset(false);
+  DEBUGASSERT(ret == OK);
+
   // Init PMIC
   ret = pinephone_pmic_init();
   DEBUGASSERT(ret == OK);
@@ -308,8 +312,8 @@ int up_fbinitialize(int display)
   ret = a64_mipi_dphy_enable();
   DEBUGASSERT(ret == OK);
 
-  // Reset LCD Panel
-  ret = pinephone_lcd_panel_reset();
+  // Reset LCD Panel to High
+  ret = pinephone_lcd_panel_reset(true);
   DEBUGASSERT(ret == OK);
 
   // Wait 15 milliseconds for LCD Panel

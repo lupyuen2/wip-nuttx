@@ -27,10 +27,9 @@
 
 /// Reset LCD Panel.
 /// Based on https://lupyuen.github.io/articles/de#appendix-reset-lcd-panel
-int pinephone_lcd_panel_reset(void)
+int pinephone_lcd_panel_reset(bool val)
 {
   // Reset LCD Panel at PD23 (Active Low)
-  // deassert reset: GPD(23), 1  // PD23 - LCD-RST (active low)
 
   // Configure PD23 for Output
   // Register PD_CFG2_REG (PD Configure Register 2)
@@ -49,18 +48,18 @@ int pinephone_lcd_panel_reset(void)
   DEBUGASSERT(PD23_MASK   == 0x70000000);
   modreg32(PD23_SELECT, PD23_MASK, PD_CFG2_REG);  // TODO: DMB
 
-  // Set PD23 to High
+  // Set PD23 to High or Low
   // Register PD_DATA_REG (PD Data Register)
   // At PIO Offset 0x7C (A64 Page 388)
-  // Set PD23 (Bit 23) to 1 (High)
+  // Set PD23 (Bit 23) to 1 (High) or 0 (Low)
   // sunxi_gpio_output: pin=0x77, val=1
   //   before: 0x1c2087c = 0x1c0000
   //   after: 0x1c2087c = 0x9c0000 (DMB)
-  ginfo("Set PD23 to High\n");
+  ginfo("Set PD23 to %d\n", val);
   #define PD_DATA_REG (PIO_BASE_ADDRESS + 0x7C)
   DEBUGASSERT(PD_DATA_REG == 0x1c2087c);
-  #define PD23 (1 << 23)
-  modreg32(PD23, PD23, PD_DATA_REG);  // TODO: DMB
+  #define PD23(n) ((n) << 23)
+  modreg32(PD23(val), PD23(1), PD_DATA_REG);  // TODO: DMB
 
   return OK;
 }
