@@ -38,7 +38,7 @@ CSRCS += pinephone_userleds.c
 endif
 
 ifeq ($(CONFIG_VIDEO_FB),y)
-CSRCS += pinephone_lcd.c pinephone_pmic.c
+CSRCS += pinephone_display.c pinephone_lcd.c pinephone_pmic.c
 endif
 
 include $(TOPDIR)/boards/Board.mk
