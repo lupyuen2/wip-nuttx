@@ -13,6 +13,143 @@
 #include "a64_mipi_dsi.h"
 #include "pinephone_lcd.h"
 
+/// PIO Base Address (CPUx-PORT) (A64 Page 376)
+#define PIO_BASE_ADDRESS 0x01C20800
+
+/// PWM Base Address (CPUx-PWM?) (A64 Page 194)
+#define PWM_BASE_ADDRESS 0x01C21400
+
+/// R_PIO Base Address (CPUs-PORT) (A64 Page 410)
+#define R_PIO_BASE_ADDRESS 0x01F02C00
+
+/// R_PWM Base Address (CPUs-PWM?) (CPUs Domain, A64 Page 256)
+#define R_PWM_BASE_ADDRESS 0x01F03800
+
+/// Reset LCD Panel.
+/// Based on https://lupyuen.github.io/articles/de#appendix-reset-lcd-panel
+int pinephone_lcd_panel_reset(void)
+{
+  // Reset LCD Panel at PD23 (Active Low)
+  // deassert reset: GPD(23), 1  // PD23 - LCD-RST (active low)
+
+  // Configure PD23 for Output
+  // Register PD_CFG2_REG (PD Configure Register 2)
+  // At PIO Offset 0x74 (A64 Page 387)
+  // Set PD23_SELECT (Bits 28 to 30) to 1 (Output)
+  // sunxi_gpio_set_cfgpin: pin=0x77, val=1
+  // sunxi_gpio_set_cfgbank: bank_offset=119, val=1
+  //   clrsetbits 0x1c20874, 0xf0000000, 0x10000000
+  // TODO: Should 0xf0000000 be 0x70000000 instead?
+  ginfo("Configure PD23 for Output\n");
+  #define PD_CFG2_REG (PIO_BASE_ADDRESS + 0x74)
+  DEBUGASSERT(PD_CFG2_REG == 0x1c20874);
+  #define PD23_SELECT (0b001 << 28)
+  #define PD23_MASK (0b111 << 28)
+  DEBUGASSERT(PD23_SELECT == 0x10000000);
+  DEBUGASSERT(PD23_MASK   == 0x70000000);
+  modreg32(PD23_SELECT, PD23_MASK, PD_CFG2_REG);  // TODO: DMB
+
+  // Set PD23 to High
+  // Register PD_DATA_REG (PD Data Register)
+  // At PIO Offset 0x7C (A64 Page 388)
+  // Set PD23 (Bit 23) to 1 (High)
+  // sunxi_gpio_output: pin=0x77, val=1
+  //   before: 0x1c2087c = 0x1c0000
+  //   after: 0x1c2087c = 0x9c0000 (DMB)
+  ginfo("Set PD23 to High\n");
+  #define PD_DATA_REG (PIO_BASE_ADDRESS + 0x7C)
+  DEBUGASSERT(PD_DATA_REG == 0x1c2087c);
+  #define PD23 (1 << 23)
+  modreg32(PD23, PD23, PD_DATA_REG);  // TODO: DMB
+
+  return OK;
+}
+
+/// Turn on PinePhone Display Backlight.
+/// Based on https://lupyuen.github.io/articles/de#appendix-display-backlight
+int pinephone_lcd_backlight_enable(
+    uint32_t percent  // Percent brightness
+)
+{
+  // Configure PL10 for PWM
+  // Register PL_CFG1_REG (Port L Configure Register 1)
+  // At R_PIO Offset 4 (A64 Page 412)
+  // Set PL10_SELECT (Bits 8 to 10) to 2 (S_PWM)
+  ginfo("Configure PL10 for PWM\n");
+  #define PL_CFG1_REG (R_PIO_BASE_ADDRESS + 4)
+  DEBUGASSERT(PL_CFG1_REG == 0x1f02c04);
+  modreg32(2 << 8, 0b111 << 8, PL_CFG1_REG);
+
+  // Disable R_PWM (Undocumented)
+  // Register R_PWM_CTRL_REG? (R_PWM Control Register?)
+  // At R_PWM Offset 0 (A64 Page 194)
+  // Set SCLK_CH0_GATING (Bit 6) to 0 (Mask)
+  ginfo("Disable R_PWM\n");
+  #define R_PWM_CTRL_REG (R_PWM_BASE_ADDRESS + 0)
+  DEBUGASSERT(R_PWM_CTRL_REG == 0x1f03800);
+  modreg32(0, 1 << 6, R_PWM_CTRL_REG);
+
+  // Configure R_PWM Period (Undocumented)
+  // Register R_PWM_CH0_PERIOD? (R_PWM Channel 0 Period Register?)
+  // At R_PWM Offset 4 (A64 Page 195)
+  // PWM_CH0_ENTIRE_CYS (Upper 16 Bits) = Period (0x4af)
+  // PWM_CH0_ENTIRE_ACT_CYS (Lower 16 Bits) = Period * Percent / 100 (0x0437)
+  // Period = 1199 (Cycles of PWM Clock)
+  // Percent = 90 (90% Brightness)
+  ginfo("Configure R_PWM Period\n");
+  #define R_PWM_CH0_PERIOD (R_PWM_BASE_ADDRESS + 4)
+  DEBUGASSERT(R_PWM_CH0_PERIOD == 0x1f03804);
+  #define PERIOD 1199
+  #define PWM_CH0_ENTIRE_CYS (PERIOD << 16)
+  #define PWM_CH0_ENTIRE_ACT_CYS (PERIOD * percent / 100)
+  uint32_t val = PWM_CH0_ENTIRE_CYS
+      | PWM_CH0_ENTIRE_ACT_CYS;
+  DEBUGASSERT(val == 0x4af0437);
+  putreg32(val, R_PWM_CH0_PERIOD);
+
+  // Enable R_PWM (Undocumented)
+  // Register R_PWM_CTRL_REG? (R_PWM Control Register?)
+  // At R_PWM Offset 0 (A64 Page 194)
+  // Set SCLK_CH0_GATING (Bit 6) to 1 (Pass)
+  // Set PWM_CH0_EN (Bit 4) to 1 (Enable)
+  // Set PWM_CH0_PRESCAL (Bits 0 to 3) to 0b1111 (Prescalar 1)
+  ginfo("Enable R_PWM\n");
+  DEBUGASSERT(R_PWM_CTRL_REG == 0x1f03800);
+  #define SCLK_CH0_GATING (1 << 6)
+  #define PWM_CH0_EN (1 << 4)
+  #define PWM_CH0_PRESCAL (0b1111 << 0)
+  uint32_t ctrl = SCLK_CH0_GATING
+      | PWM_CH0_EN
+      | PWM_CH0_PRESCAL;
+  DEBUGASSERT(ctrl == 0x5f);
+  putreg32(ctrl, R_PWM_CTRL_REG);
+
+  // Configure PH10 for Output
+  // Register PH_CFG1_REG (PH Configure Register 1)
+  // At PIO Offset 0x100 (A64 Page 401)
+  // Set PH10_SELECT (Bits 8 to 10) to 1 (Output)
+  ginfo("Configure PH10 for Output\n");
+  #define PH_CFG1_REG (PIO_BASE_ADDRESS + 0x100)
+  DEBUGASSERT(PH_CFG1_REG == 0x1c20900);
+  #define PH10_SELECT (0b001 << 8)
+  #define PH10_MASK (0b111 << 8)
+  DEBUGASSERT(PH10_SELECT == 0x100);
+  DEBUGASSERT(PH10_MASK   == 0x700);
+  modreg32(PH10_SELECT, PH10_MASK, PH_CFG1_REG);
+
+  // Set PH10 to High
+  // Register PH_DATA_REG (PH Data Register)
+  // At PIO Offset 0x10C (A64 Page 403)
+  // Set PH10 (Bit 10) to 1 (High)
+  ginfo("Set PH10 to High\n");
+  #define PH_DATA_REG (PIO_BASE_ADDRESS + 0x10C)
+  DEBUGASSERT(PH_DATA_REG == 0x1c2090c);
+  #define PH10 (1 << 10)
+  modreg32(PH10, PH10, PH_DATA_REG);
+
+  return OK;
+}
+
 /// Write the DCS Command to MIPI DSI
 static int write_dcs(const uint8_t *buf, size_t len)
 {
@@ -54,9 +191,10 @@ static int write_dcs(const uint8_t *buf, size_t len)
 
 /// Initialise the ST7703 LCD Controller in Xingbangda XBD599 LCD Panel.
 /// See https://lupyuen.github.io/articles/dsi#initialise-lcd-controller
-int pinephone_panel_init(void) {
+int pinephone_lcd_panel_init(void)
+{
   int ret;
-  ginfo("panel_init: start\n");
+  ginfo("Init ST7703 LCD Controller\n");
 
   // Most of these commands are documented in the ST7703 Datasheet:
   // https://files.pine64.org/doc/datasheet/pinephone/ST7703_DS_v01_20160128.pdf
@@ -459,6 +597,5 @@ int pinephone_panel_init(void) {
   ret = write_dcs(cmd20, sizeof(cmd20));
   DEBUGASSERT(ret == OK);
 
-  ginfo("panel_init: end\n");
   return OK;
 }

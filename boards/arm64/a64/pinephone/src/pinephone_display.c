@@ -285,8 +285,9 @@ int up_fbinitialize(int display)
 
   int ret;
 
-  // Turn on Display Backlight
-  #warning TODO: Turn on Display Backlight
+  // Turn on Display Backlight at 90% brightness
+  ret = pinephone_lcd_backlight_enable(90);
+  DEBUGASSERT(ret == OK);
 
   // Init Timing Controller TCON0
   ret = a64_tcon0_init(PANEL_WIDTH, PANEL_HEIGHT);
@@ -308,10 +309,14 @@ int up_fbinitialize(int display)
   DEBUGASSERT(ret == OK);
 
   // Reset LCD Panel
-  #warning TODO: Reset LCD Panel
+  ret = pinephone_lcd_panel_reset();
+  DEBUGASSERT(ret == OK);
+
+  // Wait 15 milliseconds for LCD Panel
+  up_mdelay(15);
 
   // Initialise LCD Controller (ST7703)
-  ret = pinephone_panel_init();
+  ret = pinephone_lcd_panel_init();
   DEBUGASSERT(ret == OK);
 
   // Start MIPI DSI HSC and HSD
@@ -322,7 +327,7 @@ int up_fbinitialize(int display)
   ret = a64_de_init();
   DEBUGASSERT(ret == OK);
 
-  // Wait 160 milliseconds
+  // Wait 160 milliseconds for Display Engine
   up_mdelay(160);
 
   // Render Graphics with Display Engine (in C)
