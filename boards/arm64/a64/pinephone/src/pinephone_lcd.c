@@ -14,6 +14,10 @@
 #include "a64_pio.h"
 #include "pinephone_lcd.h"
 
+/****************************************************************************
+ * Pre-processor Definitions
+ ****************************************************************************/
+
 /* LCD Panel Reset on PD23 */
 
 #define LCD_RESET (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
@@ -32,12 +36,20 @@
                    PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOH | \
                    PIO_PIN10)
 
+/****************************************************************************
+ * Private Types
+ ****************************************************************************/
+
 // ST7703 Initialisation Command
 struct pinephone_cmd_s
 {
   const uint8_t *cmd;
   uint8_t len;
 };
+
+/****************************************************************************
+ * Private Data
+ ****************************************************************************/
 
 // Most of these commands are documented in the ST7703 Datasheet:
 // https://files.pine64.org/doc/datasheet/pinephone/ST7703_DS_v01_20160128.pdf
@@ -418,6 +430,7 @@ static const uint8_t g_pinephone_displayon[] =
   0x29  // Display On (ST7703 Page 97): Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON)
 };
 
+// 20 Initialisation Commands to be sent to ST7703 LCD Controller
 static const struct pinephone_cmd_s g_pinephone_commands[] =
 {
   {
@@ -506,27 +519,59 @@ static const struct pinephone_cmd_s g_pinephone_commands[] =
   }
 };
 
-/// Reset LCD Panel.
-/// Based on https://lupyuen.github.io/articles/de#appendix-reset-lcd-panel
-int pinephone_lcd_panel_reset(bool val)
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+/// Write the DCS Command to MIPI DSI
+static int write_dcs(const uint8_t *buf, size_t len)
 {
-  int ret;
+  int ret = -1;
+  ginfo("len=%ld\n", len);
+  ginfodumpbuffer("buf", buf, len);
+  DEBUGASSERT(len > 0);
 
-  // Reset LCD Panel at PD23 (Active Low)
-  // Configure PD23 for Output
-  ginfo("Configure PD23 for Output\n");
-  ret = a64_pio_config(LCD_RESET);
-  DEBUGASSERT(ret == OK);
+  // Do DCS Short Write or Long Write depending on command length
+  // https://github.com/apache/nuttx/blob/master/arch/arm64/src/a64/a64_mipi_dsi.c#L366-L526
+  switch (len)
+    {
+      // DCS Short Write (without parameter)
+      case 1:
+        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
+          MIPI_DSI_DCS_SHORT_WRITE, 
+          buf, len);
+        break;
 
-  // Set PD23 to High or Low
-  ginfo("Set PD23 to %d\n", val);
-  a64_pio_write(LCD_RESET, val);
+      // DCS Short Write (with parameter)
+      case 2:
+        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
+          MIPI_DSI_DCS_SHORT_WRITE_PARAM, 
+          buf, len);
+        break;
 
+      // DCS Long Write
+      default:
+        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
+          MIPI_DSI_DCS_LONG_WRITE, 
+          buf, len);
+        break;
+    }
+
+  if (ret < 0)
+    {
+      gerr("MIPI DSI Write failed: %d\n", ret);
+      return ret;
+    }
+
+  DEBUGASSERT(ret == len);
   return OK;
 }
 
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
 /// Turn on PinePhone Display Backlight.
-/// Based on https://lupyuen.github.io/articles/de#appendix-display-backlight
 int pinephone_lcd_backlight_enable(
     uint32_t percent  // Percent brightness
 )
@@ -594,52 +639,25 @@ int pinephone_lcd_backlight_enable(
   return OK;
 }
 
-/// Write the DCS Command to MIPI DSI
-static int write_dcs(const uint8_t *buf, size_t len)
+/// Reset LCD Panel.
+int pinephone_lcd_panel_reset(bool val)
 {
-  int ret = -1;
-  ginfo("len=%ld\n", len);
-  ginfodumpbuffer("buf", buf, len);
-  DEBUGASSERT(len > 0);
+  int ret;
 
-  // Do DCS Short Write or Long Write depending on command length
-  // https://github.com/apache/nuttx/blob/master/arch/arm64/src/a64/a64_mipi_dsi.c#L366-L526
-  switch (len)
-    {
-      // DCS Short Write (without parameter)
-      case 1:
-        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
-          MIPI_DSI_DCS_SHORT_WRITE, 
-          buf, len);
-        break;
+  // Reset LCD Panel at PD23 (Active Low)
+  // Configure PD23 for Output
+  ginfo("Configure PD23 for Output\n");
+  ret = a64_pio_config(LCD_RESET);
+  DEBUGASSERT(ret == OK);
 
-      // DCS Short Write (with parameter)
-      case 2:
-        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
-          MIPI_DSI_DCS_SHORT_WRITE_PARAM, 
-          buf, len);
-        break;
+  // Set PD23 to High or Low
+  ginfo("Set PD23 to %d\n", val);
+  a64_pio_write(LCD_RESET, val);
 
-      // DCS Long Write
-      default:
-        ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL, 
-          MIPI_DSI_DCS_LONG_WRITE, 
-          buf, len);
-        break;
-    }
-
-  if (ret < 0)
-    {
-      gerr("MIPI DSI Write failed: %d\n", ret);
-      return ret;
-    }
-
-  DEBUGASSERT(ret == len);
   return OK;
 }
 
 /// Initialise the ST7703 LCD Controller in Xingbangda XBD599 LCD Panel.
-/// See https://lupyuen.github.io/articles/dsi#initialise-lcd-controller
 int pinephone_lcd_panel_init(void)
 {
   int i;
