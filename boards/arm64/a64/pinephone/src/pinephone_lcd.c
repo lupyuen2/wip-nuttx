@@ -39,42 +39,12 @@ int pinephone_lcd_panel_reset(bool val)
   int ret;
 
   // Reset LCD Panel at PD23 (Active Low)
+  // Configure PD23 for Output
   ret = a64_pio_config(LCD_RESET);
   DEBUGASSERT(ret == OK);
 
-  a64_pio_write(LCD_RESET, val);
-
-#ifdef NOTUSED
-  // Configure PD23 for Output
-  // Register PD_CFG2_REG (PD Configure Register 2)
-  // At PIO Offset 0x74 (A64 Page 387)
-  // Set PD23_SELECT (Bits 28 to 30) to 1 (Output)
-  // sunxi_gpio_set_cfgpin: pin=0x77, val=1
-  // sunxi_gpio_set_cfgbank: bank_offset=119, val=1
-  //   clrsetbits 0x1c20874, 0xf0000000, 0x10000000
-  // TODO: Should 0xf0000000 be 0x70000000 instead?
-  ginfo("Configure PD23 for Output\n");
-  #define PD_CFG2_REG (PIO_BASE_ADDRESS + 0x74)
-  DEBUGASSERT(PD_CFG2_REG == 0x1c20874);
-  #define PD23_SELECT (0b001 << 28)
-  #define PD23_MASK (0b111 << 28)
-  DEBUGASSERT(PD23_SELECT == 0x10000000);
-  DEBUGASSERT(PD23_MASK   == 0x70000000);
-  modreg32(PD23_SELECT, PD23_MASK, PD_CFG2_REG);  // TODO: DMB
-
   // Set PD23 to High or Low
-  // Register PD_DATA_REG (PD Data Register)
-  // At PIO Offset 0x7C (A64 Page 388)
-  // Set PD23 (Bit 23) to 1 (High) or 0 (Low)
-  // sunxi_gpio_output: pin=0x77, val=1
-  //   before: 0x1c2087c = 0x1c0000
-  //   after: 0x1c2087c = 0x9c0000 (DMB)
-  ginfo("Set PD23 to %d\n", val);
-  #define PD_DATA_REG (PIO_BASE_ADDRESS + 0x7C)
-  DEBUGASSERT(PD_DATA_REG == 0x1c2087c);
-  #define PD23(n) ((n) << 23)
-  modreg32(PD23(val), PD23(1), PD_DATA_REG);  // TODO: DMB
-#endif
+  a64_pio_write(LCD_RESET, val);
 
   return OK;
 }
