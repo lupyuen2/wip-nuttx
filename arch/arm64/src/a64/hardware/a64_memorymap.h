@@ -43,6 +43,12 @@
 #define A64_RPIO_ADDR       0x01f02c00 /* R_PIO           0x01f0:2c00-0x01f0:2fff 1K */
 #define A64_RSB_ADDR        0x01f03400 /* R_RSB           0x01f0:3400-0x01f0:37ff 1K */
 
+// PWM Base Address (CPUx-PWM?) (A64 Page 194)
+#define PWM_BASE_ADDRESS 0x01c21400
+
+// R_PWM Base Address (CPUs-PWM?) (CPUs Domain, A64 Page 256)
+#define R_PWM_BASE_ADDRESS 0x01f03800
+
 /****************************************************************************
  * Public Types
  ****************************************************************************/

@@ -14,12 +14,6 @@
 #include "a64_pio.h"
 #include "pinephone_lcd.h"
 
-/// PWM Base Address (CPUx-PWM?) (A64 Page 194)
-#define PWM_BASE_ADDRESS 0x01C21400
-
-/// R_PWM Base Address (CPUs-PWM?) (CPUs Domain, A64 Page 256)
-#define R_PWM_BASE_ADDRESS 0x01F03800
-
 /* LCD Panel Reset on PD23 */
 
 #define LCD_RESET (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
