@@ -69,7 +69,7 @@ int pinephone_lcd_backlight_enable(
   // At R_PWM Offset 0 (A64 Page 194)
   // Set SCLK_CH0_GATING (Bit 6) to 0 (Mask)
   ginfo("Disable R_PWM\n");
-  #define R_PWM_CTRL_REG (R_PWM_BASE_ADDRESS + 0)
+  #define R_PWM_CTRL_REG (A64_RPWM_ADDR + 0)
   DEBUGASSERT(R_PWM_CTRL_REG == 0x1f03800);
   modreg32(0, 1 << 6, R_PWM_CTRL_REG);
 
@@ -81,7 +81,7 @@ int pinephone_lcd_backlight_enable(
   // Period = 1199 (Cycles of PWM Clock)
   // Percent = 90 (90% Brightness)
   ginfo("Configure R_PWM Period\n");
-  #define R_PWM_CH0_PERIOD (R_PWM_BASE_ADDRESS + 4)
+  #define R_PWM_CH0_PERIOD (A64_RPWM_ADDR + 4)
   DEBUGASSERT(R_PWM_CH0_PERIOD == 0x1f03804);
   #define PERIOD 1199
   #define PWM_CH0_ENTIRE_CYS (PERIOD << 16)
