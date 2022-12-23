@@ -37,4 +37,8 @@ ifeq ($(CONFIG_USERLED),y)
 CSRCS += pinephone_userleds.c
 endif
 
+ifeq ($(CONFIG_PINEPHONE_LCD),y)
+CSRCS += pinephone_lcd.c pinephone_pmic.c
+endif
+
 include $(TOPDIR)/boards/Board.mk
