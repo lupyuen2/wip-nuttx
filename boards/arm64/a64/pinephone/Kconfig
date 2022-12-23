@@ -10,6 +10,8 @@ config PINEPHONE_LCD
 	default n
 	select A64_DE
     select A64_RSB
+	select DRIVERS_VIDEO
+	select VIDEO_FB
 	select FB_OVERLAY
 	---help---
 		Select to enable support for LCD Display.

@@ -37,7 +37,7 @@ ifeq ($(CONFIG_USERLED),y)
 CSRCS += pinephone_userleds.c
 endif
 
-ifeq ($(CONFIG_PINEPHONE_LCD),y)
+ifeq ($(CONFIG_VIDEO_FB),y)
 CSRCS += pinephone_lcd.c pinephone_pmic.c
 endif
 
