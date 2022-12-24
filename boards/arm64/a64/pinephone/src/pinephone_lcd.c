@@ -832,7 +832,7 @@ static int write_dcs(const uint8_t *buf, size_t len)
 
 /// Turn on the Backlight in Xingbangda XBD599 LCD Panel.
 int pinephone_lcd_backlight_enable(
-    uint32_t percent  // Percent brightness
+    uint32_t percent  // Percent Brightness
 )
 {
   int ret;
@@ -905,6 +905,7 @@ int pinephone_lcd_backlight_enable(
 }
 
 /// Reset the Xingbangda XBD599 LCD Panel.
+/// val - True if Reset should be set to High; False if Reset should be set to Low
 int pinephone_lcd_panel_reset(bool val)
 {
   int ret;
@@ -928,6 +929,11 @@ int pinephone_lcd_panel_reset(bool val)
 }
 
 /// Initialize the Sitronix ST7703 LCD Controller in Xingbangda XBD599 LCD Panel.
+/// Send 20 Initialization Commands to ST7703 over MIPI DSI.
+/// Assumes that the LCD Panel has been powered on (via AXP803 PMIC),
+/// MIPI DSI and D-PHY have been enabled on the SoC, and LCD Panel has been Reset (to Low then High).
+/// After the LCD Panel has been initialized, we may start MIPI DSI (in HSC and HSD modes)
+/// and Display Engine.
 int pinephone_lcd_panel_init(void)
 {
   int i;
