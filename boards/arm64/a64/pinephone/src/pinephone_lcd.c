@@ -61,45 +61,52 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-// Period = 1199 (Cycles of PWM Clock)
+/* Period of LCD Backlight PWM (Number of cycles of PWM Clock) */
+
 #define BACKLIGHT_PWM_PERIOD 1199
 
-/* LCD Panel Reset on PD23 */
+/* LCD Panel Reset connected on PD23 */
 
 #define LCD_RESET (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
                    PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOD | \
                    PIO_PIN23)
 
-/* LCD Backlight PWM on PL10 */
+/* LCD Backlight PWM connected on PL10 */
 
-#define LCD_PWM (PIO_PWM | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
-                 PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOL | \
-                 PIO_PIN10)
+#define LCD_PWM   (PIO_PWM | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
+                   PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOL | \
+                   PIO_PIN10)
 
-/* LCD Backlight Enable on PH10 */
+/* LCD Backlight Enable connected on PH10 */
 
 #define LCD_BL_EN (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
                    PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOH | \
                    PIO_PIN10)
 
-  // Register R_PWM_CTRL_REG? (R_PWM Control Register?)
-  // At R_PWM Offset 0 (A64 Page 194)
-  #define R_PWM_CTRL_REG (A64_RPWM_ADDR + 0)
-  #define SCLK_CH0_GATING (1 << 6)
-  #define PWM_CH0_EN (1 << 4)
-  #define PWM_CH0_PRESCAL(n) ((n) << 0)
+/* A64 R_PWM Registers and Bit Definitions **********************************/
 
-  // Register R_PWM_CH0_PERIOD? (R_PWM Channel 0 Period Register?)
-  // At R_PWM Offset 4 (A64 Page 195)
-  #define R_PWM_CH0_PERIOD (A64_RPWM_ADDR + 4)
-  #define PWM_CH0_ENTIRE_CYS(n) ((n) << 16)
-  #define PWM_CH0_ENTIRE_ACT_CYS(n) ((n) << 0)
+/* R_PWM Control Register (Undocumented)
+ * Assume same as PWM Control Register (A64 Page 194)
+ */
+
+#define R_PWM_CTRL_REG            (A64_RPWM_ADDR + 0)
+#define PWM_CH0_PRESCAL(n)        ((n) << 0)
+#define PWM_CH0_EN                (1 << 4)
+#define SCLK_CH0_GATING           (1 << 6)
+
+/* R_PWM Channel 0 Period Register (Undocumented)
+ * Assume same as PWM Channel 0 Period Register (A64 Page 195)
+ */
+
+#define R_PWM_CH0_PERIOD          (A64_RPWM_ADDR + 4)
+#define PWM_CH0_ENTIRE_ACT_CYS(n) ((n) << 0)
+#define PWM_CH0_ENTIRE_CYS(n)     ((n) << 16)
 
 /****************************************************************************
  * Private Types
  ****************************************************************************/
 
-/* Initialization Command for ST7703 LCD Controller *************************/
+/* Initialization Command for Sitronix ST7703 LCD Controller ****************/
 
 struct pinephone_cmd_s
 {
@@ -111,7 +118,7 @@ struct pinephone_cmd_s
  * Private Data
  ****************************************************************************/
 
-/* Initialization Commands for ST7703 LCD Controller ************************/
+/* Initialization Commands for Sitronix ST7703 LCD Controller ***************/
 
 /* Command #1: SETEXTC (ST7703 Page 131)
  * Enable USER Command
@@ -823,14 +830,16 @@ static int write_dcs(const uint8_t *buf, size_t len)
  * Public Functions
  ****************************************************************************/
 
-/// Turn on PinePhone Display Backlight.
+/// Turn on the Backlight in Xingbangda XBD599 LCD Panel.
 int pinephone_lcd_backlight_enable(
     uint32_t percent  // Percent brightness
 )
 {
   int ret;
+  uint32_t period;
 
-  // Configure PL10 for PWM
+  /* Configure PL10 for PWM */
+
   ginfo("Configure PL10 for PWM\n");
   ret = a64_pio_config(LCD_PWM);
   if (ret < 0)
@@ -839,34 +848,38 @@ int pinephone_lcd_backlight_enable(
       return ret;
     }
 
-  // Disable R_PWM (Undocumented)
-  // Register R_PWM_CTRL_REG? (R_PWM Control Register?)
-  // At R_PWM Offset 0 (A64 Page 194)
-  // Set SCLK_CH0_GATING (Bit 6) to 0 (Mask)
+  /* R_PWM Control Register (Undocumented)
+   * Assume same as PWM Control Register (A64 Page 194)
+   * Set SCLK_CH0_GATING (Bit 6) to 0 (Mask)
+   */
+
   ginfo("Disable R_PWM\n");
-  modreg32(0, 1 << 6, R_PWM_CTRL_REG);
+  modreg32(0, SCLK_CH0_GATING, R_PWM_CTRL_REG);
 
-  // Configure R_PWM Period (Undocumented)
-  // Register R_PWM_CH0_PERIOD? (R_PWM Channel 0 Period Register?)
-  // At R_PWM Offset 4 (A64 Page 195)
-  // Set PWM_CH0_ENTIRE_CYS (Bits 16 to 31) to PWM Period
-  // Set PWM_CH0_ENTIRE_ACT_CYS (Bits 0 to 15) to PWM Period * Percent / 100
+  /* R_PWM Channel 0 Period Register (Undocumented)
+   * Assume same as PWM Channel 0 Period Register (A64 Page 195)
+   * Set PWM_CH0_ENTIRE_CYS (Bits 16 to 31) to PWM Period
+   * Set PWM_CH0_ENTIRE_ACT_CYS (Bits 0 to 15) to PWM Period * Percent / 100
+   */
+
   ginfo("Configure R_PWM Period\n");
-  uint32_t val = PWM_CH0_ENTIRE_CYS(BACKLIGHT_PWM_PERIOD)
-      | PWM_CH0_ENTIRE_ACT_CYS(BACKLIGHT_PWM_PERIOD * percent / 100);
-  putreg32(val, R_PWM_CH0_PERIOD);
+  period = PWM_CH0_ENTIRE_CYS(BACKLIGHT_PWM_PERIOD) |
+           PWM_CH0_ENTIRE_ACT_CYS(BACKLIGHT_PWM_PERIOD * percent / 100);
+  putreg32(period, R_PWM_CH0_PERIOD);
 
-  // Enable R_PWM (Undocumented)
-  // Register R_PWM_CTRL_REG? (R_PWM Control Register?)
-  // At R_PWM Offset 0 (A64 Page 194)
-  // Set SCLK_CH0_GATING (Bit 6) to 1 (Pass)
-  // Set PWM_CH0_EN (Bit 4) to 1 (Enable)
-  // Set PWM_CH0_PRESCAL (Bits 0 to 3) to 0b1111 (Prescalar 1)
+  /* R_PWM Control Register (Undocumented)
+   * Assume same as PWM Control Register (A64 Page 194)
+   * Set SCLK_CH0_GATING (Bit 6) to 1 (Pass)
+   * Set PWM_CH0_EN (Bit 4) to 1 (Enable)
+   * Set PWM_CH0_PRESCAL (Bits 0 to 3) to 0b1111 (Prescaler 1)
+   */
+
   ginfo("Enable R_PWM\n");
   uint32_t ctrl = SCLK_CH0_GATING | PWM_CH0_EN | PWM_CH0_PRESCAL(0b1111);
   putreg32(ctrl, R_PWM_CTRL_REG);
 
-  // Configure PH10 for Output
+  /* Configure PH10 for Output */
+
   ginfo("Configure PH10 for Output\n");
   ret = a64_pio_config(LCD_BL_EN);
   if (ret < 0)
@@ -875,28 +888,29 @@ int pinephone_lcd_backlight_enable(
       return ret;
     }
 
-  // Set PH10 to High
+  /* Set PH10 to High */
+
   ginfo("Set PH10 to High\n");
-  a64_pio_write(LCD_BL_EN, val);
+  a64_pio_write(LCD_BL_EN, true);
 
   ////
   DEBUGASSERT(percent == 90);
   DEBUGASSERT(R_PWM_CTRL_REG == 0x1f03800);
   DEBUGASSERT(R_PWM_CH0_PERIOD == 0x1f03804);
-  DEBUGASSERT(val == 0x4af0437);
+  DEBUGASSERT(period == 0x4af0437);
   DEBUGASSERT(ctrl == 0x5f);
   ////
 
   return OK;
 }
 
-/// Reset LCD Panel.
+/// Reset the Xingbangda XBD599 LCD Panel.
 int pinephone_lcd_panel_reset(bool val)
 {
   int ret;
 
-  // Reset LCD Panel at PD23 (Active Low)
-  // Configure PD23 for Output
+  /* Reset LCD Panel at PD23 (Active Low), configure PD23 for Output */
+
   ginfo("Configure PD23 for Output\n");
   ret = a64_pio_config(LCD_RESET);
   if (ret < 0)
@@ -905,14 +919,15 @@ int pinephone_lcd_panel_reset(bool val)
       return ret;
     }
 
-  // Set PD23 to High or Low
+  /* Set PD23 to High or Low */
+
   ginfo("Set PD23 to %d\n", val);
   a64_pio_write(LCD_RESET, val);
 
   return OK;
 }
 
-/// Initialize the ST7703 LCD Controller in Xingbangda XBD599 LCD Panel.
+/// Initialize the Sitronix ST7703 LCD Controller in Xingbangda XBD599 LCD Panel.
 int pinephone_lcd_panel_init(void)
 {
   int i;
