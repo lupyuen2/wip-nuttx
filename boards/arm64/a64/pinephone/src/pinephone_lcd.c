@@ -261,8 +261,15 @@ static const uint8_t g_pinephone_setdisp[] =
 {
   0xb2,  /* SETDISP: Control the display resolution */
   0xf0,  /* Gate number of vertical direction = 480 + (240*4) (NL = 240) */
-  0x12,  /* (RES_V_LSB = 0) ; Non-display area source output control: Source output = VSSD (BLK_CON = 1) ; Channel number of source direction = 720RGB (RESO_SEL = 2) */
-  0xf0   /* Source voltage during Blanking Time when accessing Sleep-Out / Sleep-In command = GND (WHITE_GND_EN = 1) ; Blank timing control when access sleep out command: Blank Frame Period = 7 Frames (WHITE_FRAME_SEL = 7) ; Source output refresh control: Refresh Period = 0 Frames (ISC = 0) */
+  0x12,  /* (RES_V_LSB = 0) ; Non-display area source output control:
+          * Source output = VSSD (BLK_CON = 1);
+          * Channel number of source direction = 720RGB (RESO_SEL = 2) */
+  0xf0   /* Source voltage during Blanking Time when accessing Sleep-Out /
+          * Sleep-In command = GND (WHITE_GND_EN = 1);
+          * Blank timing control when access sleep out command:
+          *   Blank Frame Period = 7 Frames (WHITE_FRAME_SEL = 7);
+          * Source output refresh control:
+          *   Refresh Period = 0 Frames (ISC = 0) */
 };
 
 /* Command #10: SETEQ (ST7703 Page 159)
@@ -272,20 +279,35 @@ static const uint8_t g_pinephone_setdisp[] =
 static const uint8_t g_pinephone_seteq[] =
 {
   0xe3,  /* SETEQ: Set EQ related register */
-  0x00,  /* Temporal spacing between HSYNC and PEQGND = 0*4/Fosc (PNOEQ = 0) */
-  0x00,  /* Temporal spacing between HSYNC and NEQGND = 0*4/Fosc (NNOEQ = 0) */
-  0x0b,  /* Source EQ GND period when Source up to positive voltage   = 11*4/Fosc (PEQGND = 11) */
-  0x0b,  /* Source EQ GND period when Source down to negative voltage = 11*4/Fosc (NEQGND = 11) */
-  0x10,  /* Source EQ VCI period when Source up to positive voltage   = 16*4/Fosc (PEQVCI = 16) */
-  0x10,  /* Source EQ VCI period when Source down to negative voltage = 16*4/Fosc (NEQVCI = 16) */
+  0x00,  /* Temporal spacing between HSYNC and PEQGND = 0*4/Fosc
+          *   (PNOEQ = 0) */
+  0x00,  /* Temporal spacing between HSYNC and NEQGND = 0*4/Fosc
+          *   (NNOEQ = 0) */
+  0x0b,  /* Source EQ GND period when Source up to positive voltage =
+          *   11*4/Fosc (PEQGND = 11) */
+  0x0b,  /* Source EQ GND period when Source down to negative voltage =
+          *   11*4/Fosc (NEQGND = 11) */
+  0x10,  /* Source EQ VCI period when Source up to positive voltage =
+          *   16*4/Fosc (PEQVCI = 16) */
+  0x10,  /* Source EQ VCI period when Source down to negative voltage =
+          *   16*4/Fosc (NEQVCI = 16) */
   0x00,  /* Temporal period of PEQVCI1 = 0*4/Fosc (PEQVCI1 = 0) */
   0x00,  /* Temporal period of NEQVCI1 = 0*4/Fosc (NEQVCI1 = 0) */
   0x00,  /* (Reserved) */
   0x00,  /* (Reserved) */
   0xff,  /* (Undocumented) */
   0x00,  /* (Reserved) */
-  0xc0,  /* White pattern to protect GOA glass (ESD_DET_DATA_WHITE = 1) ; Enable ESD detection function to protect GOA glass (ESD_WHITE_EN = 1) */
-  0x10   /* No Need VSYNC (additional frame) after Sleep-In command to display sleep-in blanking frame then into Sleep-In State (SLPIN_OPTION = 1) ; Enable video function detection (VEDIO_NO_CHECK_EN = 0) ; Disable ESD white pattern scanning voltage pull ground (ESD_WHITE_GND_EN = 0) ; ESD detection function period = 0 Frames (ESD_DET_TIME_SEL = 0) */
+  0xc0,  /* White pattern to protect GOA glass (ESD_DET_DATA_WHITE = 1);
+          * Enable ESD detection function to protect GOA glass
+          * (ESD_WHITE_EN = 1) */
+  0x10   /* No Need VSYNC (additional frame) after Sleep-In command
+          * to display sleep-in blanking frame then into Sleep-In State
+          *   (SLPIN_OPTION = 1);
+          * Enable video function detection (VEDIO_NO_CHECK_EN = 0);
+          * Disable ESD white pattern scanning voltage pull ground
+          *   (ESD_WHITE_GND_EN = 0);
+          * ESD detection function period = 0 Frames
+          *   (ESD_DET_TIME_SEL = 0) */
 };
 
 /* Command #11: Undocumented */
@@ -307,18 +329,49 @@ static const uint8_t g_pinephone_c6[] =
 static const uint8_t g_pinephone_setpower[] =
 {
   0xc1,  /* SETPOWER: Set related setting of power */
-  0x74,  /* VGH Voltage Adjustment = 17 V (VBTHS = 7) ; VGL Voltage Adjustment = -11 V (VBTLS = 4) */
-  0x00,  /* Enable VGH feedback voltage detection. Output voltage = VBTHS (FBOFF_VGH = 0) ; Enable VGL feedback voltage detection. Output voltage = VBTLS (FBOFF_VGL = 0) */
-  0x32,  /* VSPROUT Voltage = (VRH[5:0] x 0.05 + 3.3) x (VREF/4.8) if VREF [4]=0 (VRP = 50) */
-  0x32,  /* VSNROUT Voltage = (VRH[5:0] x 0.05 + 3.3) x (VREF/5.6) if VREF [4]=1 (VRN = 50) */
+  0x74,  /* VGH Voltage Adjustment = 17 V (VBTHS = 7);
+          * VGL Voltage Adjustment = -11 V (VBTLS = 4) */
+  0x00,  /* Enable VGH feedback voltage detection.
+          *   Output voltage = VBTHS (FBOFF_VGH = 0);
+          * Enable VGL feedback voltage detection.
+          *   Output voltage = VBTLS (FBOFF_VGL = 0) */
+  0x32,  /* VSPROUT Voltage = (VRH[5:0] x 0.05 + 3.3) x (VREF/4.8)
+          *   if VREF [4]=0 (VRP = 50) */
+  0x32,  /* VSNROUT Voltage = (VRH[5:0] x 0.05 + 3.3) x (VREF/5.6)
+          *   if VREF [4]=1 (VRN = 50) */
   0x77,  /* Undocumented */
-  0xf1,  /* Enable VGL voltage Detect Function = VGL voltage Abnormal (VGL_DET_EN = 1) ; Enable VGH voltage Detect Function = VGH voltage Abnormal (VGH_DET_EN = 1) ; Enlarge VGL Voltage at "FBOFF_VGL=1" = "VGL=-15V" (VGL_TURBO = 1) ; Enlarge VGH Voltage at "FBOFF_VGH=1" = "VGH=20V" (VGH_TURBO = 1) ; (APS = 1) */
-  0xff,  /* Left side VGH stage 1 pumping frequency  = 1.5 MHz (VGH1_L_DIV = 15) ; Left side VGL stage 1 pumping frequency  = 1.5 MHz (VGL1_L_DIV = 15) */
-  0xff,  /* Right side VGH stage 1 pumping frequency = 1.5 MHz (VGH1_R_DIV = 15) ; Right side VGL stage 1 pumping frequency = 1.5 MHz (VGL1_R_DIV = 15) */
-  0xcc,  /* Left side VGH stage 2 pumping frequency  = 2.6 MHz (VGH2_L_DIV = 12) ; Left side VGL stage 2 pumping frequency  = 2.6 MHz (VGL2_L_DIV = 12) */
-  0xcc,  /* Right side VGH stage 2 pumping frequency = 2.6 MHz (VGH2_R_DIV = 12) ; Right side VGL stage 2 pumping frequency = 2.6 MHz (VGL2_R_DIV = 12) */
-  0x77,  /* Left side VGH stage 3 pumping frequency  = 4.5 MHz (VGH3_L_DIV = 7)  ; Left side VGL stage 3 pumping frequency  = 4.5 MHz (VGL3_L_DIV = 7) */
-  0x77   /* Right side VGH stage 3 pumping frequency = 4.5 MHz (VGH3_R_DIV = 7)  ; Right side VGL stage 3 pumping frequency = 4.5 MHz (VGL3_R_DIV = 7) */
+  0xf1,  /* Enable VGL voltage Detect Function =
+          *   VGL voltage Abnormal (VGL_DET_EN = 1);
+          * Enable VGH voltage Detect Function =
+          *   VGH voltage Abnormal (VGH_DET_EN = 1);
+          * Enlarge VGL Voltage at "FBOFF_VGL=1" =
+          *   "VGL=-15V" (VGL_TURBO = 1);
+          * Enlarge VGH Voltage at "FBOFF_VGH=1" =
+          *   "VGH=20V" (VGH_TURBO = 1); (APS = 1) */
+  0xff,  /* Left side VGH stage 1 pumping frequency =
+          *   1.5 MHz (VGH1_L_DIV = 15);
+          * Left side VGL stage 1 pumping frequency =
+          *   1.5 MHz (VGL1_L_DIV = 15) */
+  0xff,  /* Right side VGH stage 1 pumping frequency =
+          *   1.5 MHz (VGH1_R_DIV = 15);
+          * Right side VGL stage 1 pumping frequency =
+          *   1.5 MHz (VGL1_R_DIV = 15) */
+  0xcc,  /* Left side VGH stage 2 pumping frequency =
+          *   2.6 MHz (VGH2_L_DIV = 12);
+          * Left side VGL stage 2 pumping frequency =
+          *   2.6 MHz (VGL2_L_DIV = 12) */
+  0xcc,  /* Right side VGH stage 2 pumping frequency =
+          *   2.6 MHz (VGH2_R_DIV = 12);
+          * Right side VGL stage 2 pumping frequency =
+          *   2.6 MHz (VGL2_R_DIV = 12) */
+  0x77,  /* Left side VGH stage 3 pumping frequency =
+          *   4.5 MHz (VGH3_L_DIV = 7);
+          * Left side VGL stage 3 pumping frequency =
+          *   4.5 MHz (VGL3_L_DIV = 7) */
+  0x77   /* Right side VGH stage 3 pumping frequency =
+          *   4.5 MHz (VGH3_R_DIV = 7);
+          * Right side VGL stage 3 pumping frequency =
+          *   4.5 MHz (VGL3_R_DIV = 7) */
 };
 
 /* Command #13: SETBGP (ST7703 Page 136)
