@@ -1,3 +1,42 @@
+/****************************************************************************
+ * boards/arm64/a64/pinephone/src/pinephone_display.c
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.  The
+ * ASF licenses this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the
+ * License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ ****************************************************************************/
+
+/* Reference:
+ *
+ * "Understanding PinePhone's Display (MIPI DSI)"
+ * https://lupyuen.github.io/articles/dsi
+ *
+ * "NuttX RTOS for PinePhone: Display Driver in Zig"
+ * https://lupyuen.github.io/articles/dsi2
+ *
+ * "Rendering PinePhone's Display (DE and TCON0)"
+ * https://lupyuen.github.io/articles/de
+ *
+ * "NuttX RTOS for PinePhone: Render Graphics in Zig"
+ * https://lupyuen.github.io/articles/de2
+ */
+
+/****************************************************************************
+ * Included Files
+ ****************************************************************************/
+
 #include <nuttx/config.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -15,120 +54,171 @@
 #include "pinephone_lcd.h"
 #include "pinephone_pmic.h"
 
-#define CHANNELS 3
+/****************************************************************************
+ * Pre-processor Definitions
+ ****************************************************************************/
 
-#define PANEL_WIDTH  720
-#define PANEL_HEIGHT 1440
+/* Number of UI Channels to render: 1 or 3 */
 
-#define FB1_WIDTH  600
-#define FB1_HEIGHT 600
+#define UI_CHANNELS  3
 
-// Framebuffer 0: (Base UI Channel)
-// Fullscreen 720 x 1440 (4 bytes per XRGB 8888 pixel)
-static uint32_t fb0[PANEL_WIDTH * PANEL_HEIGHT];
+/* LCD Panel Width and Height (pixels) */
 
-// Framebuffer 1: (First Overlay UI Channel)
-// Square 600 x 600 (4 bytes per ARGB 8888 pixel)
-static uint32_t fb1[FB1_WIDTH * FB1_HEIGHT];
+#define PANEL_WIDTH  PINEPHONE_LCD_PANEL_WIDTH   /* 720 pixels */
+#define PANEL_HEIGHT PINEPHONE_LCD_PANEL_HEIGHT  /* 1440 pixels */
 
-// Framebuffer 2: (Second Overlay UI Channel)
-// Fullscreen 720 x 1440 (4 bytes per ARGB 8888 pixel)
-static uint32_t fb2[PANEL_WIDTH * PANEL_HEIGHT];
+/* Framebuffer 1 Width and Height (pixels) */
 
-/// Video Controller for PinePhone (3 UI Channels)
-static struct fb_videoinfo_s videoInfo =
+#define FB1_WIDTH    600
+#define FB1_HEIGHT   600
+
+/****************************************************************************
+ * Private Data
+ ****************************************************************************/
+
+/* Frame Buffers for Display Engine *****************************************/
+
+/* Frame Buffer 0: (Base UI Channel)
+ * Fullscreen 720 x 1440 (4 bytes per XRGB 8888 pixel)
+ */
+
+static uint32_t g_pinephone_fb0[PANEL_WIDTH * PANEL_HEIGHT];
+
+/* Frame Buffer 1: (First Overlay UI Channel)
+ * Square 600 x 600 (4 bytes per ARGB 8888 pixel)
+ */
+
+static uint32_t g_pinephone_fb1[FB1_WIDTH * FB1_HEIGHT];
+
+/* Frame Buffer 2: (Second Overlay UI Channel)
+ * Fullscreen 720 x 1440 (4 bytes per ARGB 8888 pixel)
+ */
+
+static uint32_t g_pinephone_fb2[PANEL_WIDTH * PANEL_HEIGHT];
+
+/* Video Controller for 3 UI Channels */
+
+static struct fb_videoinfo_s g_pinephone_video =
 {
-  .fmt       = FB_FMT_RGBA32,  // Pixel format (XRGB 8888)
-  .xres      = PANEL_WIDTH,      // Horizontal resolution in pixel columns
-  .yres      = PANEL_HEIGHT,     // Vertical resolution in pixel rows
-  .nplanes   = 1,     // Number of color planes supported (Base UI Channel)
-  .noverlays = 2      // Number of overlays supported (2 Overlay UI Channels)
+  .fmt       = FB_FMT_RGBA32,  /* Pixel format (XRGB 8888) */
+  .xres      = PANEL_WIDTH,    /* Horizontal resolution in pixel columns */
+  .yres      = PANEL_HEIGHT,   /* Vertical resolution in pixel rows */
+  .nplanes   = 1,              /* Color planes: Base UI Channel */
+  .noverlays = 2               /* Overlays: 2 Overlay UI Channels) */
 };
 
-/// Color Plane for PinePhone (Base UI Channel):
-/// Fullscreen 720 x 1440 (4 bytes per XRGB 8888 pixel)
-static struct fb_planeinfo_s planeInfo =
+/* Color Plane for Base UI Channel:
+ * Fullscreen 720 x 1440 (4 bytes per XRGB 8888 pixel)
+ */
+
+static struct fb_planeinfo_s g_pinephone_plane =
 {
-  .fbmem   = &fb0,     // Start of frame buffer memory
-  .fblen   = sizeof(fb0),  // Length of frame buffer memory in bytes
-  .stride  = PANEL_WIDTH * 4,  // Length of a line in bytes (4 bytes per pixel)
-  .display = 0,        // Display number (Unused)
-  .bpp     = 32,       // Bits per pixel (XRGB 8888)
-  .xres_virtual = PANEL_WIDTH,   // Virtual Horizontal resolution in pixel columns
-  .yres_virtual = PANEL_HEIGHT,  // Virtual Vertical resolution in pixel rows
-  .xoffset      = 0,     // Offset from virtual to visible resolution
-  .yoffset      = 0      // Offset from virtual to visible resolution
+  .fbmem        = &g_pinephone_fb0,         /* Start of frame buffer */
+  .fblen        = sizeof(g_pinephone_fb0),  /* Length of frame buffer */
+  .stride       = PANEL_WIDTH * 4,  /* Length of a line (4-byte pixel) */
+  .display      = 0,                /* Display number (Unused) */
+  .bpp          = 32,               /* Bits per pixel (XRGB 8888) */
+  .xres_virtual = PANEL_WIDTH,      /* Virtual Horizontal resolution */
+  .yres_virtual = PANEL_HEIGHT,     /* Virtual Vertical resolution */
+  .xoffset      = 0,  /* Offset from virtual to visible resolution */
+  .yoffset      = 0   /* Offset from virtual to visible resolution */
 };
 
-/// Overlays for PinePhone (2 Overlay UI Channels)
-static struct fb_overlayinfo_s overlayInfo[2] =
+/* Overlays for 2 Overlay UI Channels */
+
+static struct fb_overlayinfo_s g_pinephone_overlays[2] =
 {
-  // First Overlay UI Channel:
-  // Square 600 x 600 (4 bytes per ARGB 8888 pixel)
+  /* First Overlay UI Channel:
+   * Square 600 x 600 (4 bytes per ARGB 8888 pixel)
+   */
+
   {
-    .fbmem     = &fb1,     // Start of frame buffer memory
-    .fblen     = sizeof(fb1),  // Length of frame buffer memory in bytes
-    .stride    = FB1_WIDTH * 4,  // Length of a line in bytes
-    .overlay   = 0,        // Overlay number (First Overlay)
-    .bpp       = 32,       // Bits per pixel (ARGB 8888)
-    .blank     = 0,        // TODO: Blank or unblank
-    .chromakey = 0,        // TODO: Chroma key argb8888 formatted
-    .color     = 0,        // TODO: Color argb8888 formatted
-    .transp    = { .transp = 0, .transp_mode = 0 },  // TODO: Transparency
-    .sarea     = { .x = 52, .y = 52, .w = FB1_WIDTH, .h = FB1_HEIGHT },  // Selected area within the overlay
-    .accl      = 0         // TODO: Supported hardware acceleration
+    .fbmem     = &g_pinephone_fb1,         /* Start of frame buffer */
+    .fblen     = sizeof(g_pinephone_fb1),  /* Length of frame buffer */
+    .stride    = FB1_WIDTH * 4,    /* Length of a line (4-byte pixel) */
+    .overlay   = 0,                /* Overlay number (First Overlay) */
+    .bpp       = 32,               /* Bits per pixel (ARGB 8888) */
+    .blank     = 0,                /* TODO: Blank or unblank */
+    .chromakey = 0,                /* TODO: Chroma key argb8888 formatted */
+    .color     = 0,                /* TODO: Color argb8888 formatted */
+    .transp    =                   /* TODO: Transparency */
+    {
+      .transp      = 0,
+      .transp_mode = 0
+    },
+    .sarea     =                   /* Selected area within the overlay */
+    {
+      .x = 52,
+      .y = 52,
+      .w = FB1_WIDTH,
+      .h = FB1_HEIGHT
+    },
+    .accl      = 0                 /* TODO: Supported hardware acceleration */
   },
-  // Second Overlay UI Channel:
-  // Fullscreen 720 x 1440 (4 bytes per ARGB 8888 pixel)
+
+  /* Second Overlay UI Channel:
+   * Fullscreen 720 x 1440 (4 bytes per ARGB 8888 pixel)
+   */
+
   {
-    .fbmem     = &fb2,     // Start of frame buffer memory
-    .fblen     = sizeof(fb2),  // Length of frame buffer memory in bytes
-    .stride    = PANEL_WIDTH * 4,  // Length of a line in bytes
-    .overlay   = 1,        // Overlay number (Second Overlay)
-    .bpp       = 32,       // Bits per pixel (ARGB 8888)
-    .blank     = 0,        // TODO: Blank or unblank
-    .chromakey = 0,        // TODO: Chroma key argb8888 formatted
-    .color     = 0,        // TODO: Color argb8888 formatted
-    .transp    = { .transp = 0, .transp_mode = 0 },  // TODO: Transparency
-    .sarea     = { .x = 0, .y = 0, .w = PANEL_WIDTH, .h = PANEL_HEIGHT },  // Selected area within the overlay
-    .accl      = 0         // TODO: Supported hardware acceleration
-  },
+    .fbmem     = &g_pinephone_fb2,         /* Start of frame buffer */
+    .fblen     = sizeof(g_pinephone_fb2),  /* Length of frame buffer */
+    .stride    = PANEL_WIDTH * 4,  /* Length of a line (4-byte pixel) */
+    .overlay   = 1,                /* Overlay number (First Overlay) */
+    .bpp       = 32,               /* Bits per pixel (ARGB 8888) */
+    .blank     = 0,                /* TODO: Blank or unblank */
+    .chromakey = 0,                /* TODO: Chroma key argb8888 formatted */
+    .color     = 0,                /* TODO: Color argb8888 formatted */
+    .transp    =                   /* TODO: Transparency */
+    {
+      .transp      = 0,
+      .transp_mode = 0
+    },
+    .sarea     =                   /* Selected area within the overlay */
+    {
+      .x = 0,
+      .y = 0,
+      .w = PANEL_WIDTH,
+      .h = PANEL_HEIGHT
+    },
+    .accl      = 0                 /* TODO: Supported hardware acceleration */
+  }
 };
 
 /****************************************************************************
  * Private Functions
  ****************************************************************************/
 
-// Fill the Frame Buffers with a Test Pattern.
+// Fill the 3 Frame Buffers with a Test Pattern.
 // Must be called after Display Engine is Enabled, or the rendered image will have missing rows.
 static void test_pattern(void)
 {
   // Zero the Framebuffers
-  memset(fb0, 0, sizeof(fb0));
-  memset(fb1, 0, sizeof(fb1));
-  memset(fb2, 0, sizeof(fb2));
+  memset(g_pinephone_fb0, 0, sizeof(g_pinephone_fb0));
+  memset(g_pinephone_fb1, 0, sizeof(g_pinephone_fb1));
+  memset(g_pinephone_fb2, 0, sizeof(g_pinephone_fb2));
 
   // Init Framebuffer 0:
   // Fill with Blue, Green and Red
   int i;
-  const int fb0_len = sizeof(fb0) / sizeof(fb0[0]);
+  const int fb0_len = sizeof(g_pinephone_fb0) / sizeof(g_pinephone_fb0[0]);
   for (i = 0; i < fb0_len; i++)
     {
       // Colours are in XRGB 8888 format
       if (i < fb0_len / 4)
         {
           // Blue for top quarter
-          fb0[i] = 0x80000080;
+          g_pinephone_fb0[i] = 0x80000080;
         }
       else if (i < fb0_len / 2)
         {
           // Green for next quarter
-          fb0[i] = 0x80008000;
+          g_pinephone_fb0[i] = 0x80008000;
         }
       else
         {
           // Red for lower half
-          fb0[i] = 0x80800000;
+          g_pinephone_fb0[i] = 0x80800000;
         }
 
       // Needed to fix missing rows, not sure why
@@ -139,11 +229,11 @@ static void test_pattern(void)
 
   // Init Framebuffer 1:
   // Fill with Semi-Transparent White
-  const int fb1_len = sizeof(fb1) / sizeof(fb1[0]);
+  const int fb1_len = sizeof(g_pinephone_fb1) / sizeof(g_pinephone_fb1[0]);
   for (i = 0; i < fb1_len; i++)
     {
       // Colours are in ARGB 8888 format
-      fb1[i] = 0x40FFFFFF;
+      g_pinephone_fb1[i] = 0x40FFFFFF;
 
       // Needed to fix missing rows, not sure why
       ARM64_DMB();
@@ -153,7 +243,7 @@ static void test_pattern(void)
 
   // Init Framebuffer 2:
   // Fill with Semi-Transparent Green Circle
-  const int fb2_len = sizeof(fb2) / sizeof(fb2[0]);
+  const int fb2_len = sizeof(g_pinephone_fb2) / sizeof(g_pinephone_fb2[0]);
   int y;
   for (y = 0; y < PANEL_HEIGHT; y++)
     {
@@ -172,9 +262,9 @@ static void test_pattern(void)
 
           // If x^2 + y^2 < radius^2, set the pixel to Semi-Transparent Green
           if (x_shift*x_shift + y_shift*y_shift < half_width*half_width) {
-              fb2[p] = 0x80008000;  // Semi-Transparent Green in ARGB 8888 Format
+              g_pinephone_fb2[p] = 0x80008000;  // Semi-Transparent Green in ARGB 8888 Format
           } else {  // Otherwise set to Transparent Black
-              fb2[p] = 0x00000000;  // Transparent Black in ARGB 8888 Format
+              g_pinephone_fb2[p] = 0x00000000;  // Transparent Black in ARGB 8888 Format
           }
 
           // Needed to fix missing rows, not sure why
@@ -185,23 +275,24 @@ static void test_pattern(void)
     }
 }
 
+// Render the 3 Frame Buffers with the Display Engine.
 static int render_framebuffers(void)
 {
   int i;
   int ret;
 
   // Validate the Frame Buffer Sizes
-  DEBUGASSERT(CHANNELS == 1 || CHANNELS == 3);
-  DEBUGASSERT(planeInfo.xres_virtual == videoInfo.xres);
-  DEBUGASSERT(planeInfo.yres_virtual == videoInfo.yres);
-  DEBUGASSERT(planeInfo.fblen  == planeInfo.xres_virtual * planeInfo.yres_virtual * 4);
-  DEBUGASSERT(planeInfo.stride == planeInfo.xres_virtual * 4);
-  DEBUGASSERT(overlayInfo[0].fblen  == (overlayInfo[0].sarea.w) * overlayInfo[0].sarea.h * 4);
-  DEBUGASSERT(overlayInfo[0].stride == overlayInfo[0].sarea.w * 4);
-  DEBUGASSERT(overlayInfo[1].fblen  == (overlayInfo[1].sarea.w) * overlayInfo[1].sarea.h * 4);
-  DEBUGASSERT(overlayInfo[1].stride == overlayInfo[1].sarea.w * 4);
+  DEBUGASSERT(UI_CHANNELS == 1 || UI_CHANNELS == 3);
+  DEBUGASSERT(g_pinephone_plane.xres_virtual == g_pinephone_video.xres);
+  DEBUGASSERT(g_pinephone_plane.yres_virtual == g_pinephone_video.yres);
+  DEBUGASSERT(g_pinephone_plane.fblen  == g_pinephone_plane.xres_virtual * g_pinephone_plane.yres_virtual * 4);
+  DEBUGASSERT(g_pinephone_plane.stride == g_pinephone_plane.xres_virtual * 4);
+  DEBUGASSERT(g_pinephone_overlays[0].fblen  == (g_pinephone_overlays[0].sarea.w) * g_pinephone_overlays[0].sarea.h * 4);
+  DEBUGASSERT(g_pinephone_overlays[0].stride == g_pinephone_overlays[0].sarea.w * 4);
+  DEBUGASSERT(g_pinephone_overlays[1].fblen  == (g_pinephone_overlays[1].sarea.w) * g_pinephone_overlays[1].sarea.h * 4);
+  DEBUGASSERT(g_pinephone_overlays[1].stride == g_pinephone_overlays[1].sarea.w * 4);
 
-  // Init the UI Blender for PinePhone's A64 Display Engine
+  // Init the UI Blender for Display Engine
   ret = a64_de_blender_init();
   if (ret < 0)
     {
@@ -212,12 +303,12 @@ static int render_framebuffers(void)
   // Init the Base UI Channel
   ret = a64_de_ui_channel_init(
     1,  // UI Channel Number (1 for Base UI Channel)
-    planeInfo.fbmem,    // Start of Frame Buffer Memory (address should be 32-bit)
-    planeInfo.fblen,    // Length of Frame Buffer Memory in bytes
-    planeInfo.xres_virtual,  // Horizontal resolution in pixel columns
-    planeInfo.yres_virtual,  // Vertical resolution in pixel rows
-    planeInfo.xoffset,  // Horizontal offset in pixel columns
-    planeInfo.yoffset  // Vertical offset in pixel rows
+    g_pinephone_plane.fbmem,    // Start of Frame Buffer Memory (address should be 32-bit)
+    g_pinephone_plane.fblen,    // Length of Frame Buffer Memory in bytes
+    g_pinephone_plane.xres_virtual,  // Horizontal resolution in pixel columns
+    g_pinephone_plane.yres_virtual,  // Vertical resolution in pixel rows
+    g_pinephone_plane.xoffset,  // Horizontal offset in pixel columns
+    g_pinephone_plane.yoffset  // Vertical offset in pixel rows
   );
   if (ret < 0)
     {
@@ -226,13 +317,13 @@ static int render_framebuffers(void)
     }
 
   // Init the 2 Overlay UI Channels
-  for (i = 0; i < sizeof(overlayInfo) / sizeof(overlayInfo[0]); i++)
+  for (i = 0; i < sizeof(g_pinephone_overlays) / sizeof(g_pinephone_overlays[0]); i++)
   {
-    const struct fb_overlayinfo_s *ov = &overlayInfo[i];
+    const struct fb_overlayinfo_s *ov = &g_pinephone_overlays[i];
 
     ret = a64_de_ui_channel_init(
       i + 2,  // UI Channel Number (2 and 3 for Overlay UI Channels)
-      (CHANNELS == 3) ? ov->fbmem : NULL,  // Start of Frame Buffer Memory (address should be 32-bit)
+      (UI_CHANNELS == 3) ? ov->fbmem : NULL,  // Start of Frame Buffer Memory (address should be 32-bit)
       ov->fblen,    // Length of Frame Buffer Memory in bytes
       ov->sarea.w,  // Horizontal resolution in pixel columns
       ov->sarea.h,  // Vertical resolution in pixel rows
@@ -247,7 +338,7 @@ static int render_framebuffers(void)
   }
 
   // Set UI Blender Route, enable Blender Pipes and apply the settings
-  ret = a64_de_enable(CHANNELS);
+  ret = a64_de_enable(UI_CHANNELS);
   if (ret < 0)
     {
       gerr("Enable Display Engine failed: %d\n", ret);
@@ -314,7 +405,7 @@ int up_fbinitialize(int display)
       gerr("Init Timing Controller TCON0 failed: %d\n", ret);
       return ret;
     }
-  
+
   // Reset LCD Panel to Low
   ret = pinephone_lcd_panel_reset(false);
   if (ret < 0)

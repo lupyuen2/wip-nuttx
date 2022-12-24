@@ -28,6 +28,15 @@
 #include <nuttx/config.h>
 
 /****************************************************************************
+ * Pre-processor Definitions
+ ****************************************************************************/
+
+/* Xingbangda XBD599 LCD Panel Width and Height (pixels) */
+
+#define PINEPHONE_LCD_PANEL_WIDTH  720
+#define PINEPHONE_LCD_PANEL_HEIGHT 1440
+
+/****************************************************************************
  * Public Function Prototypes
  ****************************************************************************/
 
