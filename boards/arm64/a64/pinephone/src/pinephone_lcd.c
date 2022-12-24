@@ -116,8 +116,10 @@ static const uint8_t g_pinephone_setextc[] =
 static const uint8_t g_pinephone_setmipi[] =
 {
   0xba,  /* SETMIPI (ST7703 Page 144): Set MIPI related register */
-  0x33,  /* Virtual Channel = 0 (VC_Main = 0) ; Number of Lanes = 4 (Lane_Number = 3) */
-  0x81,  /* LDO = 1.7 V (DSI_LDO_SEL = 4) ; Terminal Resistance = 90 Ohm (RTERM = 1) */
+  0x33,  /* Virtual Channel = 0 (VC_Main = 0) ; Number of Lanes = 4 
+          * (Lane_Number = 3) */
+  0x81,  /* LDO = 1.7 V (DSI_LDO_SEL = 4) ; Terminal Resistance = 90 Ohm
+          * (RTERM = 1) */
   0x05,  /* MIPI Low High Speed driving ability = x6 (IHSRX = 5) */
   0xf9,  /* TXCLK speed in DSI LP mode = fDSICLK / 16 (Tx_clk_sel = 2) */
   0x0e,  /* Min HFP number in DSI mode = 14 (HFP_OSC = 14) */
@@ -151,11 +153,17 @@ static const uint8_t g_pinephone_setmipi[] =
 
 static const uint8_t g_pinephone_setpower_ext[] =
 {
-  0xb8,  /* SETPOWER_EXT (ST7703 Page 142): Set display related register */
-  0x25,  /* External power IC or PFM: VSP = FL1002, VSN = FL1002 (PCCS = 2) ; VCSW1 / VCSW2 Frequency for Pumping VSP / VSN = 1/4 Hsync (ECP_DC_DIV = 5) */
-  0x22,  /* VCSW1/VCSW2 soft start time = 15 ms (DT = 2) ; Pumping ratio of VSP / VSN with VCI = x2 (XDK_ECP = 1) */
+  0xb8,  /* SETPOWER_EXT: Set display related register */
+  0x25,  /* External power IC or PFM: VSP = FL1002, VSN = FL1002 (PCCS = 2);
+          * VCSW1 / VCSW2 Frequency for Pumping VSP / VSN = 1/4 Hsync
+          * (ECP_DC_DIV = 5) */
+  0x22,  /* VCSW1/VCSW2 soft start time = 15 ms (DT = 2) ; Pumping ratio of
+          * VSP / VSN with VCI = x2 (XDK_ECP = 1) */
   0x20,  /* PFM operation frequency FoscD = Fosc/1 (PFM_DC_DIV = 0) */
-  0x03   /* Enable power IC pumping frequency synchronization = Synchronize with external Hsync (ECP_SYNC_EN = 1) ; Enable VGH/VGL pumping frequency synchronization = Synchronize with external Hsync (VGX_SYNC_EN = 1) */
+  0x03   /* Enable power IC pumping frequency synchronization =
+          * Synchronize with external Hsync (ECP_SYNC_EN = 1);
+          * Enable VGH/VGL pumping frequency synchronization =
+          * Synchronize with external Hsync (VGX_SYNC_EN = 1) */
 };
 
 /* Command #4: SETRGBIF (ST7703 Page 134)
@@ -164,11 +172,15 @@ static const uint8_t g_pinephone_setpower_ext[] =
 
 static const uint8_t g_pinephone_setrgbif[] =
 {
-  0xb3,  /* SETRGBIF (ST7703 Page 134): Control RGB I/F porch timing for internal use */
-  0x10,  /* Vertical back porch HS number in Blank Frame Period  = Hsync number 16 (VBP_RGB_GEN = 16) */
-  0x10,  /* Vertical front porch HS number in Blank Frame Period = Hsync number 16 (VFP_RGB_GEN = 16) */
-  0x05,  /* HBP OSC number in Blank Frame Period = OSC number 5 (DE_BP_RGB_GEN = 5) */
-  0x05,  /* HFP OSC number in Blank Frame Period = OSC number 5 (DE_FP_RGB_GEN = 5) */
+  0xb3,  /* SETRGBIF: Control RGB I/F porch timing for internal use */
+  0x10,  /* Vertical back porch HS number in Blank Frame Period =
+          * Hsync number 16 (VBP_RGB_GEN = 16) */
+  0x10,  /* Vertical front porch HS number in Blank Frame Period =
+          * Hsync number 16 (VFP_RGB_GEN = 16) */
+  0x05,  /* HBP OSC number in Blank Frame Period = OSC number 5
+          * (DE_BP_RGB_GEN = 5) */
+  0x05,  /* HFP OSC number in Blank Frame Period = OSC number 5
+          * (DE_FP_RGB_GEN = 5) */
   0x03,  /* Undocumented */
   0xff,  /* Undocumented */
   0x00,  /* Undocumented */
@@ -183,7 +195,7 @@ static const uint8_t g_pinephone_setrgbif[] =
 
 static const uint8_t g_pinephone_setscr[] =
 {
-  0xc0,  /* SETSCR (ST7703 Page 147): Set related setting of Source driving */
+  0xc0,  /* SETSCR: Set related setting of Source driving */
   0x73,  /* Source OP Amp driving period for positive polarity in Normal Mode: Source OP Period = 115*4/Fosc (N_POPON = 115) */
   0x73,  /* Source OP Amp driving period for negative polarity in Normal Mode: Source OP Period = 115*4/Fosc (N_NOPON = 115) */
   0x50,  /* Source OP Amp driving period for positive polarity in Idle mode: Source OP Period   = 80*4/Fosc (I_POPON = 80) */
@@ -201,7 +213,7 @@ static const uint8_t g_pinephone_setscr[] =
 
 static const uint8_t g_pinephone_setvdc[] =
 {
-  0xbc,  /* SETVDC (ST7703 Page 146): Control NVDDD/VDDD Voltage */
+  0xbc,  /* SETVDC: Control NVDDD/VDDD Voltage */
   0x4e   /* NVDDD voltage = -1.8 V (NVDDD_SEL = 4) ; VDDD voltage = 1.9 V (VDDD_SEL = 6) */
 };
 
@@ -211,7 +223,7 @@ static const uint8_t g_pinephone_setvdc[] =
 
 static const uint8_t g_pinephone_setpanel[] =
 {
-  0xcc,  /* SETPANEL (ST7703 Page 154): Set display related register */
+  0xcc,  /* SETPANEL: Set display related register */
   0x0b   /* Enable reverse the source scan direction (SS_PANEL = 1) ; Normal vertical scan direction (GS_PANEL = 0) ; Normally black panel (REV_PANEL = 1) ; S1:S2:S3 = B:G:R (BGR_PANEL = 1) */
 };
 
@@ -221,7 +233,7 @@ static const uint8_t g_pinephone_setpanel[] =
 
 static const uint8_t g_pinephone_setcyc[] =
 {
-  0xb4,  /* SETCYC (ST7703 Page 135): Control display inversion type */
+  0xb4,  /* SETCYC: Control display inversion type */
   0x80   /* Extra source for Zig-Zag Inversion = S2401 (ZINV_S2401_EN = 1) ; Row source data dislocates = Even row (ZINV_G_EVEN_EN = 0) ; Disable Zig-Zag Inversion (ZINV_EN = 0) ; Enable Zig-Zag1 Inversion (ZINV2_EN = 0) ; Normal mode inversion type = Column inversion (N_NW = 0) */
 };
 
@@ -231,7 +243,7 @@ static const uint8_t g_pinephone_setcyc[] =
 
 static const uint8_t g_pinephone_setdisp[] =
 {
-  0xb2,  /* SETDISP (ST7703 Page 132): Control the display resolution */
+  0xb2,  /* SETDISP: Control the display resolution */
   0xf0,  /* Gate number of vertical direction = 480 + (240*4) (NL = 240) */
   0x12,  /* (RES_V_LSB = 0) ; Non-display area source output control: Source output = VSSD (BLK_CON = 1) ; Channel number of source direction = 720RGB (RESO_SEL = 2) */
   0xf0   /* Source voltage during Blanking Time when accessing Sleep-Out / Sleep-In command = GND (WHITE_GND_EN = 1) ; Blank timing control when access sleep out command: Blank Frame Period = 7 Frames (WHITE_FRAME_SEL = 7) ; Source output refresh control: Refresh Period = 0 Frames (ISC = 0) */
@@ -243,7 +255,7 @@ static const uint8_t g_pinephone_setdisp[] =
 
 static const uint8_t g_pinephone_seteq[] =
 {
-  0xe3,  /* SETEQ (ST7703 Page 159): Set EQ related register */
+  0xe3,  /* SETEQ: Set EQ related register */
   0x00,  /* Temporal spacing between HSYNC and PEQGND = 0*4/Fosc (PNOEQ = 0) */
   0x00,  /* Temporal spacing between HSYNC and NEQGND = 0*4/Fosc (NNOEQ = 0) */
   0x0b,  /* Source EQ GND period when Source up to positive voltage   = 11*4/Fosc (PEQGND = 11) */
@@ -278,7 +290,7 @@ static const uint8_t g_pinephone_c6[] =
 
 static const uint8_t g_pinephone_setpower[] =
 {
-  0xc1,  /* SETPOWER (ST7703 Page 149): Set related setting of power */
+  0xc1,  /* SETPOWER: Set related setting of power */
   0x74,  /* VGH Voltage Adjustment = 17 V (VBTHS = 7) ; VGL Voltage Adjustment = -11 V (VBTLS = 4) */
   0x00,  /* Enable VGH feedback voltage detection. Output voltage = VBTHS (FBOFF_VGH = 0) ; Enable VGL feedback voltage detection. Output voltage = VBTLS (FBOFF_VGL = 0) */
   0x32,  /* VSPROUT Voltage = (VRH[5:0] x 0.05 + 3.3) x (VREF/4.8) if VREF [4]=0 (VRP = 50) */
@@ -299,7 +311,7 @@ static const uint8_t g_pinephone_setpower[] =
 
 static const uint8_t g_pinephone_setbgp[] =
 {
-  0xb5,  /* SETBGP (ST7703 Page 136): Internal reference voltage setting */
+  0xb5,  /* SETBGP: Internal reference voltage setting */
   0x07,  /* VREF Voltage: 4.2 V (VREF_SEL = 7) */
   0x07   /* NVREF Voltage: 4.2 V (NVREF_SEL = 7) */
 };
@@ -310,7 +322,7 @@ static const uint8_t g_pinephone_setbgp[] =
 
 static const uint8_t g_pinephone_setvcom[] =
 {
-  0xb6,  /* SETVCOM (ST7703 Page 137): Set VCOM Voltage */
+  0xb6,  /* SETVCOM: Set VCOM Voltage */
   0x2c,  /* VCOMDC voltage at "GS_PANEL=0" = -0.67 V (VCOMDC_F = 0x2C) */
   0x2c   /* VCOMDC voltage at "GS_PANEL=1" = -0.67 V (VCOMDC_B = 0x2C) */
 };
@@ -331,7 +343,7 @@ static const uint8_t g_pinephone_bf[] =
 
 static const uint8_t g_pinephone_setgip1[] =
 {
-  0xe9,  /* SETGIP1 (ST7703 Page 163): Set forward GIP timing */
+  0xe9,  /* SETGIP1: Set forward GIP timing */
   0x82,  /* SHR0, SHR1, CHR, CHR2 refer to Internal DE (REF_EN = 1) ; (PANEL_SEL = 2) */
   0x10,  /* Starting position of GIP STV group 0 = 4102 HSYNC (SHR0 Bits 8-12 = 0x10) */
   0x06,  /* (SHR0 Bits 0-7  = 0x06) */
@@ -348,40 +360,40 @@ static const uint8_t g_pinephone_setgip1[] =
   0xbc,  /* Distance of CKV falling edge and HYSNC = 188*2 Fosc (COFF Bits 0-7 = 0xBC) */
   0x27,  /* CKV signal high pulse width = 2 HSYNC (CHP = 2) ; Total period cycle of CKV signal = 7 HSYNC (CCP = 7) */
   0x38,  /* Extra gate counter at blanking area: Gate number = 56 (USER_GIP_GATE = 0x38) */
-  0x0c,  /* Left side GIP output pad signal = ??? (CGTS_L Bits 16-21 = 0x0C) */
+  0x0c,  /* Left side GIP output pad signal = ? (CGTS_L Bits 16-21 = 0x0C) */
   0x00,  /* (CGTS_L Bits  8-15 = 0x00) */
   0x03,  /* (CGTS_L Bits  0-7  = 0x03) */
   0x00,  /* Normal polarity of Left side GIP output pad signal (CGTS_INV_L Bits 16-21 = 0x00) */
   0x00,  /* (CGTS_INV_L Bits  8-15 = 0x00) */
   0x00,  /* (CGTS_INV_L Bits  0-7  = 0x00) */
-  0x0c,  /* Right side GIP output pad signal = ??? (CGTS_R Bits 16-21 = 0x0C) */
+  0x0c,  /* Right side GIP output pad signal = ? (CGTS_R Bits 16-21 = 0x0C) */
   0x00,  /* (CGTS_R Bits  8-15 = 0x00) */
   0x03,  /* (CGTS_R Bits  0-7  = 0x03) */
   0x00,  /* Normal polarity of Right side GIP output pad signal (CGTS_INV_R Bits 16-21 = 0x00) */
   0x00,  /* (CGTS_INV_R Bits  8-15 = 0x00) */
   0x00,  /* (CGTS_INV_R Bits  0-7  = 0x00) */
-  0x75,  /* Left side GIP output pad signal = ??? (COS1_L = 7) ; Left side GIP output pad signal = ??? (COS2_L = 5) */
-  0x75,  /* Left side GIP output pad signal = ??? (COS3_L = 7) ; (COS4_L = 5) */
-  0x31,  /* Left side GIP output pad signal = ??? (COS5_L = 3) ; (COS6_L = 1) */
+  0x75,  /* Left side GIP output pad signal = ? (COS1_L = 7) ; Left side GIP output pad signal = ? (COS2_L = 5) */
+  0x75,  /* Left side GIP output pad signal = ? (COS3_L = 7) ; (COS4_L = 5) */
+  0x31,  /* Left side GIP output pad signal = ? (COS5_L = 3) ; (COS6_L = 1) */
   0x88,  /* Reserved (Parameter 32) */
   0x88,  /* Reserved (Parameter 33) */
   0x88,  /* Reserved (Parameter 34) */
   0x88,  /* Reserved (Parameter 35) */
   0x88,  /* Reserved (Parameter 36) */
-  0x88,  /* Left side GIP output pad signal  = ??? (COS17_L = 8) ; Left side GIP output pad signal  = ??? (COS18_L = 8) */
-  0x13,  /* Left side GIP output pad signal  = ??? (COS19_L = 1) ; Left side GIP output pad signal  = ??? (COS20_L = 3) */
-  0x88,  /* Left side GIP output pad signal  = ??? (COS21_L = 8) ; Left side GIP output pad signal  = ??? (COS22_L = 8) */
-  0x64,  /* Right side GIP output pad signal = ??? (COS1_R  = 6) ; Right side GIP output pad signal = ??? (COS2_R  = 4) */
-  0x64,  /* Right side GIP output pad signal = ??? (COS3_R  = 6) ; Right side GIP output pad signal = ??? (COS4_R  = 4) */
-  0x20,  /* Right side GIP output pad signal = ??? (COS5_R  = 2) ; Right side GIP output pad signal = ??? (COS6_R  = 0) */
+  0x88,  /* Left side GIP output pad signal  = ? (COS17_L = 8) ; Left side GIP output pad signal  = ? (COS18_L = 8) */
+  0x13,  /* Left side GIP output pad signal  = ? (COS19_L = 1) ; Left side GIP output pad signal  = ? (COS20_L = 3) */
+  0x88,  /* Left side GIP output pad signal  = ? (COS21_L = 8) ; Left side GIP output pad signal  = ? (COS22_L = 8) */
+  0x64,  /* Right side GIP output pad signal = ? (COS1_R  = 6) ; Right side GIP output pad signal = ? (COS2_R  = 4) */
+  0x64,  /* Right side GIP output pad signal = ? (COS3_R  = 6) ; Right side GIP output pad signal = ? (COS4_R  = 4) */
+  0x20,  /* Right side GIP output pad signal = ? (COS5_R  = 2) ; Right side GIP output pad signal = ? (COS6_R  = 0) */
   0x88,  /* Reserved (Parameter 43) */
   0x88,  /* Reserved (Parameter 44) */
   0x88,  /* Reserved (Parameter 45) */
   0x88,  /* Reserved (Parameter 46) */
   0x88,  /* Reserved (Parameter 47) */
-  0x88,  /* Right side GIP output pad signal = ??? (COS17_R = 8) ; Right side GIP output pad signal = ??? (COS18_R = 8) */
-  0x02,  /* Right side GIP output pad signal = ??? (COS19_R = 0) ; Right side GIP output pad signal = ??? (COS20_R = 2) */
-  0x88,  /* Right side GIP output pad signal = ??? (COS21_R = 8) ; Right side GIP output pad signal = ??? (COS22_R = 8) */
+  0x88,  /* Right side GIP output pad signal = ? (COS17_R = 8) ; Right side GIP output pad signal = ? (COS18_R = 8) */
+  0x02,  /* Right side GIP output pad signal = ? (COS19_R = 0) ; Right side GIP output pad signal = ? (COS20_R = 2) */
+  0x88,  /* Right side GIP output pad signal = ? (COS21_R = 8) ; Right side GIP output pad signal = ? (COS22_R = 8) */
   0x00,  /* (TCON_OPT = 0x00) */
   0x00,  /* (GIP_OPT Bits 16-22 = 0x00) */
   0x00,  /* (GIP_OPT Bits  8-15 = 0x00) */
@@ -403,15 +415,15 @@ static const uint8_t g_pinephone_setgip1[] =
 
 static const uint8_t g_pinephone_setgip2[] =
 {
-  0xea,  /* SETGIP2 (ST7703 Page 170): Set backward GIP timing */
+  0xea,  /* SETGIP2: Set backward GIP timing */
   0x02,  /* YS2 Signal Mode = INYS1/INYS2 (YS2_SEL = 0) ; YS2 Signal Mode = INYS1/INYS2 (YS1_SEL = 0) ; Don't reverse YS2 signal (YS2_XOR = 0) ; Don't reverse YS1 signal (YS1_XOR = 0) ; Enable YS signal function (YS_FLAG_EN = 1) ; Disable ALL ON function (ALL_ON_EN = 0) */
   0x21,  /* (GATE = 0x21) */
-  0x00,  /* (CK_ALL_ON_EN = 0) ; (STV_ALL_ON_EN = 0) ; Timing of YS1 and YS2 signal = ??? (CK_ALL_ON_WIDTH1 = 0) */
-  0x00,  /* Timing of YS1 and YS2 signal = ??? (CK_ALL_ON_WIDTH2 = 0) */
-  0x00,  /* Timing of YS1 and YS2 signal = ??? (CK_ALL_ON_WIDTH3 = 0) */
+  0x00,  /* (CK_ALL_ON_EN = 0) ; (STV_ALL_ON_EN = 0) ; Timing of YS1 and YS2 signal = ? (CK_ALL_ON_WIDTH1 = 0) */
+  0x00,  /* Timing of YS1 and YS2 signal = ? (CK_ALL_ON_WIDTH2 = 0) */
+  0x00,  /* Timing of YS1 and YS2 signal = ? (CK_ALL_ON_WIDTH3 = 0) */
   0x00,  /* (YS_FLAG_PERIOD = 0) */
   0x00,  /* (YS2_SEL_2 = 0) ; (YS1_SEL_2 = 0) ; (YS2_XOR_2 = 0) ; (YS_FLAG_EN_2 = 0) ; (ALL_ON_EN_2 = 0) */
-  0x00,  /* Distance of GIP ALL On rising edge and DE = ??? (USER_GIP_GATE1_2 = 0) */
+  0x00,  /* Distance of GIP ALL On rising edge and DE = ? (USER_GIP_GATE1_2 = 0) */
   0x00,  /* (CK_ALL_ON_EN_2 = 0) ; (STV_ALL_ON_EN_2 = 0) ; (CK_ALL_ON_WIDTH1_2 = 0) */
   0x00,  /* (CK_ALL_ON_WIDTH2_2 = 0) */
   0x00,  /* (CK_ALL_ON_WIDTH3_2 = 0) */
@@ -474,7 +486,7 @@ static const uint8_t g_pinephone_setgip2[] =
 
 static const uint8_t g_pinephone_setgamma[] =
 {
-  0xe0,  /* SETGAMMA (ST7703 Page 158): Set the gray scale voltage to adjust the gamma characteristics of the TFT panel */
+  0xe0,  /* SETGAMMA: Set the gray scale voltage to adjust the gamma characteristics of the TFT panel */
   0x00,  /* (PVR0 = 0x00) */
   0x09,  /* (PVR1 = 0x09) */
   0x0d,  /* (PVR2 = 0x0D) */
@@ -517,7 +529,7 @@ static const uint8_t g_pinephone_setgamma[] =
 
 static const uint8_t g_pinephone_slpout[] =
 {
-  0x11  /* SLPOUT (ST7703 Page 89): Turn off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE) */
+  0x11  /* SLPOUT: Turn off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE) */
 };
 
 /* Wait 120 milliseconds */
@@ -528,7 +540,7 @@ static const uint8_t g_pinephone_slpout[] =
 
 static const uint8_t g_pinephone_displayon[] =
 {
-  0x29  /* Display On (ST7703 Page 97): Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON) */
+  0x29  /* Display On: Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON) */
 };
 
 /* Consolidate Initialization Commands **************************************/
