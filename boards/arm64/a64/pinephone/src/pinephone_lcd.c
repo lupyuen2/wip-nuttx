@@ -518,45 +518,59 @@ static const uint8_t g_pinephone_setgip1[] =
 static const uint8_t g_pinephone_setgip2[] =
 {
   0xea,  /* SETGIP2: Set backward GIP timing */
-  0x02,  /* YS2 Signal Mode = INYS1/INYS2 (YS2_SEL = 0) ; YS2 Signal Mode = INYS1/INYS2 (YS1_SEL = 0) ; Don't reverse YS2 signal (YS2_XOR = 0) ; Don't reverse YS1 signal (YS1_XOR = 0) ; Enable YS signal function (YS_FLAG_EN = 1) ; Disable ALL ON function (ALL_ON_EN = 0) */
+  0x02,  /* YS2 Signal Mode = INYS1/INYS2 (YS2_SEL = 0);
+          * YS2 Signal Mode = INYS1/INYS2 (YS1_SEL = 0);
+          * Don't reverse YS2 signal (YS2_XOR = 0);
+          * Don't reverse YS1 signal (YS1_XOR = 0);
+          * Enable YS signal function (YS_FLAG_EN = 1);
+          * Disable ALL ON function (ALL_ON_EN = 0) */
   0x21,  /* (GATE = 0x21) */
-  0x00,  /* (CK_ALL_ON_EN = 0) ; (STV_ALL_ON_EN = 0) ; Timing of YS1 and YS2 signal = ? (CK_ALL_ON_WIDTH1 = 0) */
+  0x00,  /* (CK_ALL_ON_EN = 0); (STV_ALL_ON_EN = 0);
+          * Timing of YS1 and YS2 signal = ? (CK_ALL_ON_WIDTH1 = 0) */
   0x00,  /* Timing of YS1 and YS2 signal = ? (CK_ALL_ON_WIDTH2 = 0) */
   0x00,  /* Timing of YS1 and YS2 signal = ? (CK_ALL_ON_WIDTH3 = 0) */
   0x00,  /* (YS_FLAG_PERIOD = 0) */
-  0x00,  /* (YS2_SEL_2 = 0) ; (YS1_SEL_2 = 0) ; (YS2_XOR_2 = 0) ; (YS_FLAG_EN_2 = 0) ; (ALL_ON_EN_2 = 0) */
-  0x00,  /* Distance of GIP ALL On rising edge and DE = ? (USER_GIP_GATE1_2 = 0) */
-  0x00,  /* (CK_ALL_ON_EN_2 = 0) ; (STV_ALL_ON_EN_2 = 0) ; (CK_ALL_ON_WIDTH1_2 = 0) */
+  0x00,  /* (YS2_SEL_2 = 0); (YS1_SEL_2 = 0); (YS2_XOR_2 = 0);
+          * (YS_FLAG_EN_2 = 0); (ALL_ON_EN_2 = 0) */
+  0x00,  /* Distance of GIP ALL On rising edge and DE = ?
+          *   (USER_GIP_GATE1_2 = 0) */
+  0x00,  /* (CK_ALL_ON_EN_2 = 0); (STV_ALL_ON_EN_2 = 0);
+          * (CK_ALL_ON_WIDTH1_2 = 0) */
   0x00,  /* (CK_ALL_ON_WIDTH2_2 = 0) */
   0x00,  /* (CK_ALL_ON_WIDTH3_2 = 0) */
   0x00,  /* (YS_FLAG_PERIOD_2 = 0) */
-  0x02,  /* (COS1_L_GS = 0) ; (COS2_L_GS = 2) */
-  0x46,  /* (COS3_L_GS = 4) ; (COS4_L_GS = 6) */
-  0x02,  /* (COS5_L_GS = 0) ; (COS6_L_GS = 2) */
+  0x02,  /* (COS1_L_GS = 0); (COS2_L_GS = 2) */
+  0x46,  /* (COS3_L_GS = 4); (COS4_L_GS = 6) */
+  0x02,  /* (COS5_L_GS = 0); (COS6_L_GS = 2) */
   0x88,  /* Reserved (Parameter 16) */
   0x88,  /* Reserved (Parameter 17) */
   0x88,  /* Reserved (Parameter 18) */
   0x88,  /* Reserved (Parameter 19) */
   0x88,  /* Reserved (Parameter 20) */
-  0x88,  /* (COS17_L_GS = 8) ; (COS18_L_GS = 8) */
-  0x64,  /* (COS19_L_GS = 6) ; (COS20_L_GS = 4) */
-  0x88,  /* (COS21_L_GS = 8) ; (COS22_L_GS = 8) */
-  0x13,  /* (COS1_R_GS = 1) ; (COS2_R_GS = 3) */
-  0x57,  /* (COS3_R_GS = 5) ; (COS4_R_GS = 7) */
-  0x13,  /* (COS5_R_GS = 1) ; (COS6_R_GS = 3) */
+  0x88,  /* (COS17_L_GS = 8); (COS18_L_GS = 8) */
+  0x64,  /* (COS19_L_GS = 6); (COS20_L_GS = 4) */
+  0x88,  /* (COS21_L_GS = 8); (COS22_L_GS = 8) */
+  0x13,  /* (COS1_R_GS  = 1); (COS2_R_GS  = 3) */
+  0x57,  /* (COS3_R_GS  = 5); (COS4_R_GS  = 7) */
+  0x13,  /* (COS5_R_GS  = 1); (COS6_R_GS  = 3) */
   0x88,  /* Reserved (Parameter 27) */
   0x88,  /* Reserved (Parameter 28) */
   0x88,  /* Reserved (Parameter 29) */
   0x88,  /* Reserved (Parameter 30) */
   0x88,  /* Reserved (Parameter 31) */
-  0x88,  /* (COS17_R_GS = 8) ; (COS18_R_GS = 8) */
-  0x75,  /* (COS19_R_GS = 7) ; (COS20_R_GS = 5) */
-  0x88,  /* (COS21_R_GS = 8) ; (COS22_R_GS = 8) */
-  0x23,  /* GIP output EQ signal: P_EQ = Yes, N_EQ = No (EQOPT = 2) ;  GIP output EQ signal level: P_EQ = GND, N_EQ = GND (EQ_SEL = 3) */
-  0x14,  /* Distance of EQ rising edge and HYSNC = 20 Fosc (EQ_DELAY = 0x14) */
-  0x00,  /* Distance of EQ rising edge and HYSNC = 0 HSYNC (EQ_DELAY_HSYNC = 0) */
+  0x88,  /* (COS17_R_GS = 8); (COS18_R_GS = 8) */
+  0x75,  /* (COS19_R_GS = 7); (COS20_R_GS = 5) */
+  0x88,  /* (COS21_R_GS = 8); (COS22_R_GS = 8) */
+  0x23,  /* GIP output EQ signal: P_EQ = Yes, N_EQ = No (EQOPT = 2);
+          * GIP output EQ signal level: P_EQ = GND, N_EQ = GND
+          *   (EQ_SEL = 3) */
+  0x14,  /* Distance of EQ rising edge and HYSNC = 20 Fosc
+          *   (EQ_DELAY = 0x14) */
+  0x00,  /* Distance of EQ rising edge and HYSNC = 0 HSYNC
+          *   (EQ_DELAY_HSYNC = 0) */
   0x00,  /* (HSYNC_TO_CL1_CNT10 Bits 8-9 = 0) */
-  0x02,  /* GIP reference HSYNC between external HSYNC = 2 Fosc (HSYNC_TO_CL1_CNT10 Bits 0-7 = 2) */
+  0x02,  /* GIP reference HSYNC between external HSYNC = 2 Fosc
+          * (HSYNC_TO_CL1_CNT10 Bits 0-7 = 2) */
   0x00,  /* Undocumented (Parameter 40) */
   0x00,  /* Undocumented (Parameter 41) */
   0x00,  /* Undocumented (Parameter 42) */
@@ -588,7 +602,7 @@ static const uint8_t g_pinephone_setgip2[] =
 
 static const uint8_t g_pinephone_setgamma[] =
 {
-  0xe0,  /* SETGAMMA: Set the gray scale voltage to adjust the gamma characteristics of the TFT panel */
+  0xe0,  /* SETGAMMA: Set the gray scale voltage to adjust the gamma */
   0x00,  /* (PVR0 = 0x00) */
   0x09,  /* (PVR1 = 0x09) */
   0x0d,  /* (PVR2 = 0x0D) */
@@ -631,7 +645,7 @@ static const uint8_t g_pinephone_setgamma[] =
 
 static const uint8_t g_pinephone_slpout[] =
 {
-  0x11  /* SLPOUT: Turn off sleep mode (MIPI_DCS_EXIT_SLEEP_MODE) */
+  0x11  /* SLPOUT: Turn off sleep mode */
 };
 
 /* Wait 120 milliseconds */
@@ -642,7 +656,7 @@ static const uint8_t g_pinephone_slpout[] =
 
 static const uint8_t g_pinephone_displayon[] =
 {
-  0x29  /* Display On: Recover from DISPLAY OFF mode (MIPI_DCS_SET_DISPLAY_ON) */
+  0x29  /* Display On: Recover from DISPLAY OFF mode */
 };
 
 /* Consolidate Initialization Commands **************************************/
