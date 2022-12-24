@@ -1,8 +1,43 @@
-// "ST7703 Page" refers to ???
-// https://files.pine64.org/doc/datasheet/pinephone/ST7703_DS_v01_20160128.pdf
+/****************************************************************************
+ * boards/arm64/a64/pinephone/src/pinephone_lcd.c
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.  The
+ * ASF licenses this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the
+ * License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ ****************************************************************************/
+
+/* Reference:
+ *
+ * "Understanding PinePhone's Display (MIPI DSI)"
+ * https://lupyuen.github.io/articles/dsi
+ *
+ * "NuttX RTOS for PinePhone: Display Driver in Zig"
+ * https://lupyuen.github.io/articles/dsi2
+ *
+ * "A64 Page" refers to Allwinner A64 User Manual
+ * https://lupyuen.github.io/images/Allwinner_A64_User_Manual_V1.1.pdf
+ *
+ * "ST7703 Page" refers to Sitronix ST7703 Data Sheet
+ * https://lupyuen.github.io/images/ST7703_DS_v01_20160128.pdf
+ */
+
+/****************************************************************************
+ * Included Files
+ ****************************************************************************/
 
 #include <nuttx/config.h>
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <debug.h>
@@ -10,7 +45,6 @@
 #include <nuttx/board.h>
 #include <arch/board/board.h>
 #include <nuttx/video/fb.h>
-
 #include "chip.h"
 #include "arm64_internal.h"
 #include "a64_mipi_dsi.h"
@@ -43,7 +77,7 @@
  * Private Types
  ****************************************************************************/
 
-/* Initialization Command for ST7703 LCD Controller ************************/
+/* Initialization Command for ST7703 LCD Controller *************************/
 
 struct pinephone_cmd_s
 {
@@ -271,8 +305,8 @@ static const uint8_t g_pinephone_setbgp[] =
 static const uint8_t g_pinephone_setvcom[] =
 {
   0xb6,  /* SETVCOM (ST7703 Page 137): Set VCOM Voltage */
-  0x2C,  /* VCOMDC voltage at "GS_PANEL=0" = -0.67 V (VCOMDC_F = 0x2C) */
-  0x2C   /* VCOMDC voltage at "GS_PANEL=1" = -0.67 V (VCOMDC_B = 0x2C) */
+  0x2c,  /* VCOMDC voltage at "GS_PANEL=0" = -0.67 V (VCOMDC_F = 0x2C) */
+  0x2c   /* VCOMDC voltage at "GS_PANEL=1" = -0.67 V (VCOMDC_B = 0x2C) */
 };
 
 /* Command #15: Undocumented */
@@ -591,6 +625,7 @@ static const struct pinephone_cmd_s g_pinephone_commands[] =
 static int write_dcs(const uint8_t *buf, size_t len)
 {
   int ret = -1;
+
   ginfo("len=%ld\n", len);
   ginfodumpbuffer("buf", buf, len);
   DEBUGASSERT(len > 0);
