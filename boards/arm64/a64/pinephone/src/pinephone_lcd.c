@@ -26,6 +26,12 @@
  * "NuttX RTOS for PinePhone: Display Driver in Zig"
  * https://lupyuen.github.io/articles/dsi2
  *
+ * "Rendering PinePhone's Display (DE and TCON0)"
+ * https://lupyuen.github.io/articles/de
+ *
+ * "NuttX RTOS for PinePhone: Render Graphics in Zig"
+ * https://lupyuen.github.io/articles/de2
+ *
  * "A64 Page" refers to Allwinner A64 User Manual
  * https://lupyuen.github.io/images/Allwinner_A64_User_Manual_V1.1.pdf
  *
