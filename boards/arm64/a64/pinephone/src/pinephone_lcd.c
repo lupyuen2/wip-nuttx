@@ -817,7 +817,11 @@ int pinephone_lcd_backlight_enable(
   // Configure PL10 for PWM
   ginfo("Configure PL10 for PWM\n");
   ret = a64_pio_config(LCD_PWM);
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Configure PL10 failed: %d\n", ret);
+      return ret;
+    }
 
   // Disable R_PWM (Undocumented)
   // Register R_PWM_CTRL_REG? (R_PWM Control Register?)
@@ -866,7 +870,11 @@ int pinephone_lcd_backlight_enable(
   // Configure PH10 for Output
   ginfo("Configure PH10 for Output\n");
   ret = a64_pio_config(LCD_BL_EN);
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Configure PH10 failed: %d\n", ret);
+      return ret;
+    }
 
   // Set PH10 to High
   ginfo("Set PH10 to High\n");
@@ -884,7 +892,11 @@ int pinephone_lcd_panel_reset(bool val)
   // Configure PD23 for Output
   ginfo("Configure PD23 for Output\n");
   ret = a64_pio_config(LCD_RESET);
-  DEBUGASSERT(ret == OK);
+  if (ret < 0)
+    {
+      gerr("Configure PD23 failed: %d\n", ret);
+      return ret;
+    }
 
   // Set PD23 to High or Low
   ginfo("Set PD23 to %d\n", val);
@@ -910,6 +922,7 @@ int pinephone_lcd_panel_init(void)
       const uint8_t len = g_pinephone_commands[i].len;
 
       /* If command is NULL, wait 120 milliseconds */
+
       if (cmd == NULL)
         {
           up_mdelay(120);
