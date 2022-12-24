@@ -778,7 +778,20 @@ static const struct pinephone_cmd_s g_pinephone_commands[] =
  * Public Functions
  ****************************************************************************/
 
-/// Write the DCS Command to MIPI DSI
+/****************************************************************************
+ * Name: write_dcs
+ *
+ * Description:
+ *   Write the DCS Command to MIPI DSI Bus.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static int write_dcs(const uint8_t *buf, size_t len)
 {
   int ret = -1;
@@ -830,10 +843,21 @@ static int write_dcs(const uint8_t *buf, size_t len)
  * Public Functions
  ****************************************************************************/
 
-/// Turn on the Backlight in Xingbangda XBD599 LCD Panel.
-int pinephone_lcd_backlight_enable(
-    uint32_t percent  // Percent Brightness
-)
+/****************************************************************************
+ * Name: pinephone_lcd_backlight_enable
+ *
+ * Description:
+ *   Turn on the Backlight in Xingbangda XBD599 LCD Panel.
+ *
+ * Input Parameters:
+ *   percent - Percent Brightness
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
+int pinephone_lcd_backlight_enable(uint32_t percent)
 {
   int ret;
   uint32_t period;
@@ -904,8 +928,21 @@ int pinephone_lcd_backlight_enable(
   return OK;
 }
 
-/// Reset the Xingbangda XBD599 LCD Panel.
-/// val - True if Reset should be set to High; False if Reset should be set to Low
+/****************************************************************************
+ * Name: pinephone_lcd_panel_reset
+ *
+ * Description:
+ *   Reset the Xingbangda XBD599 LCD Panel.
+ *
+ * Input Parameters:
+ *   val - True if Reset should be set to High; False if Reset should be
+ *         set to Low
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 int pinephone_lcd_panel_reset(bool val)
 {
   int ret;
@@ -928,12 +965,26 @@ int pinephone_lcd_panel_reset(bool val)
   return OK;
 }
 
-/// Initialize the Sitronix ST7703 LCD Controller in Xingbangda XBD599 LCD Panel.
-/// Send 20 Initialization Commands to ST7703 over MIPI DSI.
-/// Assumes that the LCD Panel has been powered on (via AXP803 PMIC),
-/// MIPI DSI and D-PHY have been enabled on the SoC, and LCD Panel has been Reset (to Low then High).
-/// After the LCD Panel has been initialized, we may start MIPI DSI (in HSC and HSD modes)
-/// and Display Engine.
+/****************************************************************************
+ * Name: pinephone_lcd_panel_init
+ *
+ * Description:
+ *   Initialize the Sitronix ST7703 LCD Controller in Xingbangda XBD599
+ *   LCD Panel.  Send 20 Initialization Commands to ST7703 over MIPI DSI.
+ *   Assumes that the LCD Panel has been powered on (via AXP803 PMIC),
+ *   MIPI DSI and D-PHY have been enabled on the SoC, and LCD Panel has
+ *   been Reset (to Low then High).  After the LCD Panel has been
+ *   initialized, we may start MIPI DSI (in HSC and HSD modes) and
+ *   Display Engine.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 int pinephone_lcd_panel_init(void)
 {
   int i;
@@ -946,7 +997,7 @@ int pinephone_lcd_panel_init(void)
   ginfo("Init ST7703 LCD Controller\n");
   for (i = 0; i < cmd_len; i++)
     {
-      /* Get the ST7703 Command and length */
+      /* Get the ST7703 command and length */
 
       const uint8_t *cmd = g_pinephone_commands[i].cmd;
       const uint8_t len = g_pinephone_commands[i].len;
