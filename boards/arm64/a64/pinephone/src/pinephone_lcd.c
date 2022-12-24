@@ -261,8 +261,9 @@ static const uint8_t g_pinephone_setdisp[] =
 {
   0xb2,  /* SETDISP: Control the display resolution */
   0xf0,  /* Gate number of vertical direction = 480 + (240*4) (NL = 240) */
-  0x12,  /* (RES_V_LSB = 0) ; Non-display area source output control:
-          * Source output = VSSD (BLK_CON = 1);
+  0x12,  /* (RES_V_LSB = 0);
+          * Non-display area source output control:
+          *   Source output = VSSD (BLK_CON = 1);
           * Channel number of source direction = 720RGB (RESO_SEL = 2) */
   0xf0   /* Source voltage during Blanking Time when accessing Sleep-Out /
           * Sleep-In command = GND (WHITE_GND_EN = 1);
@@ -413,69 +414,101 @@ static const uint8_t g_pinephone_bf[] =
 static const uint8_t g_pinephone_setgip1[] =
 {
   0xe9,  /* SETGIP1: Set forward GIP timing */
-  0x82,  /* SHR0, SHR1, CHR, CHR2 refer to Internal DE (REF_EN = 1) ; (PANEL_SEL = 2) */
-  0x10,  /* Starting position of GIP STV group 0 = 4102 HSYNC (SHR0 Bits 8-12 = 0x10) */
-  0x06,  /* (SHR0 Bits 0-7  = 0x06) */
-  0x05,  /* Starting position of GIP STV group 1 = 1442 HSYNC (SHR1 Bits 8-12 = 0x05) */
-  0xa2,  /* (SHR1 Bits 0-7  = 0xA2) */
-  0x0a,  /* Distance of STV rising edge and HYSNC  = 10*2  Fosc (SPON  Bits 0-7 = 0x0A) */
-  0xa5,  /* Distance of STV falling edge and HYSNC = 165*2 Fosc (SPOFF Bits 0-7 = 0xA5) */
-  0x12,  /* STV0_1 distance with STV0_0 = 1 HSYNC (SHR0_1 = 1) ; STV0_2 distance with STV0_0 = 2 HSYNC (SHR0_2 = 2) */
-  0x31,  /* STV0_3 distance with STV0_0 = 3 HSYNC (SHR0_3 = 3) ; STV1_1 distance with STV1_0 = 1 HSYNC (SHR1_1 = 1) */
-  0x23,  /* STV1_2 distance with STV1_0 = 2 HSYNC (SHR1_2 = 2) ; STV1_3 distance with STV1_0 = 3 HSYNC (SHR1_3 = 3) */
-  0x37,  /* STV signal high pulse width = 3 HSYNC (SHP = 3) ; Total number of STV signal = 7 (SCP = 7) */
-  0x83,  /* Starting position of GIP CKV group 0 (CKV0_0) = 131 HSYNC (CHR = 0x83) */
-  0x04,  /* Distance of CKV rising edge and HYSNC  = 4*2   Fosc (CON  Bits 0-7 = 0x04) */
-  0xbc,  /* Distance of CKV falling edge and HYSNC = 188*2 Fosc (COFF Bits 0-7 = 0xBC) */
-  0x27,  /* CKV signal high pulse width = 2 HSYNC (CHP = 2) ; Total period cycle of CKV signal = 7 HSYNC (CCP = 7) */
-  0x38,  /* Extra gate counter at blanking area: Gate number = 56 (USER_GIP_GATE = 0x38) */
+  0x82,  /* SHR0, SHR1, CHR, CHR2 refer to Internal DE (REF_EN = 1);
+          *   (PANEL_SEL = 2) */
+  0x10,  /* Starting position of GIP STV group 0 = 4102 HSYNC
+          *   (SHR0 Bits 8-12 = 0x10) */
+  0x06,  /*   (SHR0 Bits 0-7 = 0x06) */
+  0x05,  /* Starting position of GIP STV group 1 = 1442 HSYNC
+          *   (SHR1 Bits 8-12 = 0x05) */
+  0xa2,  /* (SHR1 Bits 0-7 = 0xA2) */
+  0x0a,  /* Distance of STV rising edge and HYSNC = 10*2 Fosc
+          *   (SPON  Bits 0-7 = 0x0A) */
+  0xa5,  /* Distance of STV falling edge and HYSNC = 165*2 Fosc
+          *   (SPOFF Bits 0-7 = 0xA5) */
+  0x12,  /* STV0_1 distance with STV0_0 = 1 HSYNC (SHR0_1 = 1);
+          * STV0_2 distance with STV0_0 = 2 HSYNC (SHR0_2 = 2) */
+  0x31,  /* STV0_3 distance with STV0_0 = 3 HSYNC (SHR0_3 = 3);
+          * STV1_1 distance with STV1_0 = 1 HSYNC (SHR1_1 = 1) */
+  0x23,  /* STV1_2 distance with STV1_0 = 2 HSYNC (SHR1_2 = 2);
+          * STV1_3 distance with STV1_0 = 3 HSYNC (SHR1_3 = 3) */
+  0x37,  /* STV signal high pulse width = 3 HSYNC (SHP = 3);
+          * Total number of STV signal = 7 (SCP = 7) */
+  0x83,  /* Starting position of GIP CKV group 0 (CKV0_0) = 131 HSYNC
+          *   (CHR = 0x83) */
+  0x04,  /* Distance of CKV rising edge and HYSNC  = 4*2   Fosc
+          *   (CON  Bits 0-7 = 0x04) */
+  0xbc,  /* Distance of CKV falling edge and HYSNC = 188*2 Fosc
+          *   (COFF Bits 0-7 = 0xBC) */
+  0x27,  /* CKV signal high pulse width = 2 HSYNC (CHP = 2);
+          * Total period cycle of CKV signal = 7 HSYNC (CCP = 7) */
+  0x38,  /* Extra gate counter at blanking area: Gate number = 56
+          *   (USER_GIP_GATE = 0x38) */
   0x0c,  /* Left side GIP output pad signal = ? (CGTS_L Bits 16-21 = 0x0C) */
   0x00,  /* (CGTS_L Bits  8-15 = 0x00) */
   0x03,  /* (CGTS_L Bits  0-7  = 0x03) */
-  0x00,  /* Normal polarity of Left side GIP output pad signal (CGTS_INV_L Bits 16-21 = 0x00) */
+  0x00,  /* Normal polarity of Left side GIP output pad signal
+          *   (CGTS_INV_L Bits 16-21 = 0x00) */
   0x00,  /* (CGTS_INV_L Bits  8-15 = 0x00) */
   0x00,  /* (CGTS_INV_L Bits  0-7  = 0x00) */
-  0x0c,  /* Right side GIP output pad signal = ? (CGTS_R Bits 16-21 = 0x0C) */
+  0x0c,  /* Right side GIP output pad signal = ?
+          *   (CGTS_R Bits 16-21 = 0x0C) */
   0x00,  /* (CGTS_R Bits  8-15 = 0x00) */
   0x03,  /* (CGTS_R Bits  0-7  = 0x03) */
-  0x00,  /* Normal polarity of Right side GIP output pad signal (CGTS_INV_R Bits 16-21 = 0x00) */
+  0x00,  /* Normal polarity of Right side GIP output pad signal
+          *   (CGTS_INV_R Bits 16-21 = 0x00) */
   0x00,  /* (CGTS_INV_R Bits  8-15 = 0x00) */
   0x00,  /* (CGTS_INV_R Bits  0-7  = 0x00) */
-  0x75,  /* Left side GIP output pad signal = ? (COS1_L = 7) ; Left side GIP output pad signal = ? (COS2_L = 5) */
-  0x75,  /* Left side GIP output pad signal = ? (COS3_L = 7) ; (COS4_L = 5) */
-  0x31,  /* Left side GIP output pad signal = ? (COS5_L = 3) ; (COS6_L = 1) */
+  0x75,  /* Left side GIP output pad signal = ? (COS1_L = 7);
+          * Left side GIP output pad signal = ? (COS2_L = 5) */
+  0x75,  /* Left side GIP output pad signal = ? (COS3_L = 7); (COS4_L = 5) */
+  0x31,  /* Left side GIP output pad signal = ? (COS5_L = 3); (COS6_L = 1) */
   0x88,  /* Reserved (Parameter 32) */
   0x88,  /* Reserved (Parameter 33) */
   0x88,  /* Reserved (Parameter 34) */
   0x88,  /* Reserved (Parameter 35) */
   0x88,  /* Reserved (Parameter 36) */
-  0x88,  /* Left side GIP output pad signal  = ? (COS17_L = 8) ; Left side GIP output pad signal  = ? (COS18_L = 8) */
-  0x13,  /* Left side GIP output pad signal  = ? (COS19_L = 1) ; Left side GIP output pad signal  = ? (COS20_L = 3) */
-  0x88,  /* Left side GIP output pad signal  = ? (COS21_L = 8) ; Left side GIP output pad signal  = ? (COS22_L = 8) */
-  0x64,  /* Right side GIP output pad signal = ? (COS1_R  = 6) ; Right side GIP output pad signal = ? (COS2_R  = 4) */
-  0x64,  /* Right side GIP output pad signal = ? (COS3_R  = 6) ; Right side GIP output pad signal = ? (COS4_R  = 4) */
-  0x20,  /* Right side GIP output pad signal = ? (COS5_R  = 2) ; Right side GIP output pad signal = ? (COS6_R  = 0) */
+  0x88,  /* Left side GIP output pad signal  = ? (COS17_L = 8);
+          * Left side GIP output pad signal  = ? (COS18_L = 8) */
+  0x13,  /* Left side GIP output pad signal  = ? (COS19_L = 1);
+          * Left side GIP output pad signal  = ? (COS20_L = 3) */
+  0x88,  /* Left side GIP output pad signal  = ? (COS21_L = 8);
+          * Left side GIP output pad signal  = ? (COS22_L = 8) */
+  0x64,  /* Right side GIP output pad signal = ? (COS1_R  = 6);
+          * Right side GIP output pad signal = ? (COS2_R  = 4) */
+  0x64,  /* Right side GIP output pad signal = ? (COS3_R  = 6);
+          * Right side GIP output pad signal = ? (COS4_R  = 4) */
+  0x20,  /* Right side GIP output pad signal = ? (COS5_R  = 2);
+          * Right side GIP output pad signal = ? (COS6_R  = 0) */
   0x88,  /* Reserved (Parameter 43) */
   0x88,  /* Reserved (Parameter 44) */
   0x88,  /* Reserved (Parameter 45) */
   0x88,  /* Reserved (Parameter 46) */
   0x88,  /* Reserved (Parameter 47) */
-  0x88,  /* Right side GIP output pad signal = ? (COS17_R = 8) ; Right side GIP output pad signal = ? (COS18_R = 8) */
-  0x02,  /* Right side GIP output pad signal = ? (COS19_R = 0) ; Right side GIP output pad signal = ? (COS20_R = 2) */
-  0x88,  /* Right side GIP output pad signal = ? (COS21_R = 8) ; Right side GIP output pad signal = ? (COS22_R = 8) */
+  0x88,  /* Right side GIP output pad signal = ? (COS17_R = 8);
+          * Right side GIP output pad signal = ? (COS18_R = 8) */
+  0x02,  /* Right side GIP output pad signal = ? (COS19_R = 0);
+          * Right side GIP output pad signal = ? (COS20_R = 2) */
+  0x88,  /* Right side GIP output pad signal = ? (COS21_R = 8);
+          * Right side GIP output pad signal = ? (COS22_R = 8) */
   0x00,  /* (TCON_OPT = 0x00) */
   0x00,  /* (GIP_OPT Bits 16-22 = 0x00) */
   0x00,  /* (GIP_OPT Bits  8-15 = 0x00) */
   0x00,  /* (GIP_OPT Bits  0-7  = 0x00) */
-  0x00,  /* Starting position of GIP CKV group 1 (CKV1_0) = 0 HSYNC (CHR2 = 0x00) */
-  0x00,  /* Distance of CKV1 rising edge and HYSNC  = 0*2 Fosc (CON2  Bits 0-7 = 0x00) */
-  0x00,  /* Distance of CKV1 falling edge and HYSNC = 0*2 Fosc (COFF2 Bits 0-7 = 0x00) */
-  0x00,  /* CKV1 signal high pulse width = 0 HSYNC (CHP2 = 0) ; Total period cycle of CKV1 signal = 0 HSYNC (CCP2 = 0) */
+  0x00,  /* Starting position of GIP CKV group 1 (CKV1_0) = 0 HSYNC
+          *   (CHR2 = 0x00) */
+  0x00,  /* Distance of CKV1 rising edge and HYSNC  = 0*2 Fosc
+          *   (CON2  Bits 0-7 = 0x00) */
+  0x00,  /* Distance of CKV1 falling edge and HYSNC = 0*2 Fosc
+          *   (COFF2 Bits 0-7 = 0x00) */
+  0x00,  /* CKV1 signal high pulse width = 0 HSYNC (CHP2 = 0);
+          *   Total period cycle of CKV1 signal = 0 HSYNC (CCP2 = 0) */
   0x00,  /* (CKS Bits 16-21 = 0x00) */
   0x00,  /* (CKS Bits  8-15 = 0x00) */
   0x00,  /* (CKS Bits  0-7  = 0x00) */
-  0x00,  /* (COFF Bits 8-9 = 0) ; (CON Bits 8-9 = 0) ; (SPOFF Bits 8-9 = 0) ; (SPON Bits 8-9 = 0) */
-  0x00   /* (COFF2 Bits 8-9 = 0) ; (CON2 Bits 8-9 = 0) */
+  0x00,  /* (COFF  Bits 8-9 = 0); (CON  Bits 8-9 = 0);
+          * (SPOFF Bits 8-9 = 0); (SPON Bits 8-9 = 0) */
+  0x00   /* (COFF2 Bits 8-9 = 0); (CON2 Bits 8-9 = 0) */
 };
 
 /* Command #17: SETGIP2 (ST7703 Page 170)
