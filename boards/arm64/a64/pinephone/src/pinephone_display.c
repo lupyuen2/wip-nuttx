@@ -192,7 +192,7 @@ static struct fb_overlayinfo_s g_pinephone_overlays[2] =
  ****************************************************************************/
 
 // Fill the 3 Frame Buffers with a Test Pattern.
-// Must be called after Display Engine is Enabled, or the rendered image will have missing rows.
+// Should be called after Display Engine is Enabled, or the rendered image will have missing rows.
 static void test_pattern(void)
 {
   // Zero the Framebuffers
@@ -348,7 +348,7 @@ static int render_framebuffers(void)
     }
 
   // Fill Frame Buffers with Test Pattern.
-  // Must be called after Display Engine is Enabled, or the rendered image will have missing rows.
+  // Should be called after Display Engine is Enabled, or the rendered image will have missing rows.
   test_pattern();
 
   return OK;
