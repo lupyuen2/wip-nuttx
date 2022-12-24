@@ -116,10 +116,10 @@ static const uint8_t g_pinephone_setextc[] =
 static const uint8_t g_pinephone_setmipi[] =
 {
   0xba,  /* SETMIPI (ST7703 Page 144): Set MIPI related register */
-  0x33,  /* Virtual Channel = 0 (VC_Main = 0) ; Number of Lanes = 4 
-          * (Lane_Number = 3) */
-  0x81,  /* LDO = 1.7 V (DSI_LDO_SEL = 4) ; Terminal Resistance = 90 Ohm
-          * (RTERM = 1) */
+  0x33,  /* Virtual Channel = 0 (VC_Main = 0);
+          * Number of Lanes = 4 (Lane_Number = 3) */
+  0x81,  /* LDO = 1.7 V (DSI_LDO_SEL = 4);
+          * Terminal Resistance = 90 Ohm (RTERM = 1) */
   0x05,  /* MIPI Low High Speed driving ability = x6 (IHSRX = 5) */
   0xf9,  /* TXCLK speed in DSI LP mode = fDSICLK / 16 (Tx_clk_sel = 2) */
   0x0e,  /* Min HFP number in DSI mode = 14 (HFP_OSC = 14) */
@@ -196,14 +196,22 @@ static const uint8_t g_pinephone_setrgbif[] =
 static const uint8_t g_pinephone_setscr[] =
 {
   0xc0,  /* SETSCR: Set related setting of Source driving */
-  0x73,  /* Source OP Amp driving period for positive polarity in Normal Mode: Source OP Period = 115*4/Fosc (N_POPON = 115) */
-  0x73,  /* Source OP Amp driving period for negative polarity in Normal Mode: Source OP Period = 115*4/Fosc (N_NOPON = 115) */
-  0x50,  /* Source OP Amp driving period for positive polarity in Idle mode: Source OP Period   = 80*4/Fosc (I_POPON = 80) */
-  0x50,  /* Source OP Amp dirivng period for negative polarity in Idle Mode: Source OP Period   = 80*4/Fosc (I_NOPON = 80) */
+  0x73,  /* Source OP Amp driving period for positive polarity in
+          * Normal Mode: Source OP Period = 115*4/Fosc (N_POPON = 115) */
+  0x73,  /* Source OP Amp driving period for negative polarity in
+          * Normal Mode: Source OP Period = 115*4/Fosc (N_NOPON = 115) */
+  0x50,  /* Source OP Amp driving period for positive polarity in
+          * Idle mode: Source OP Period   = 80*4/Fosc (I_POPON = 80) */
+  0x50,  /* Source OP Amp dirivng period for negative polarity in
+          * Idle Mode: Source OP Period   = 80*4/Fosc (I_NOPON = 80) */
   0x00,  /* (SCR Bits 24-31 = 0x00) */
   0xc0,  /* (SCR Bits 16-23 = 0xC0) */
-  0x08,  /* Gamma bias current fine tune: Current xIbias   = 4 (SCR Bits 9-13 = 4) ; (SCR Bits  8-15 = 0x08) */
-  0x70,  /* Source and Gamma bias current core tune: Ibias = 1 (SCR Bits 0-3 = 0) ; Source bias current fine tune: Current xIbias = 7 (SCR Bits 4-8 = 7) ; (SCR Bits  0-7  = 0x70) */
+  0x08,  /* Gamma bias current fine tune: Current xIbias = 4
+          * (SCR Bits 9-13 = 4) ; (SCR Bits 8-15 = 0x08) */
+  0x70,  /* Source and Gamma bias current core tune: Ibias = 1
+          * (SCR Bits 0-3 = 0) ; Source bias current fine tune:
+          * Current xIbias = 7 (SCR Bits 4-8 = 7) ;
+          * (SCR Bits 0-7 = 0x70) */
   0x00   /* Undocumented */
 };
 
@@ -214,7 +222,8 @@ static const uint8_t g_pinephone_setscr[] =
 static const uint8_t g_pinephone_setvdc[] =
 {
   0xbc,  /* SETVDC: Control NVDDD/VDDD Voltage */
-  0x4e   /* NVDDD voltage = -1.8 V (NVDDD_SEL = 4) ; VDDD voltage = 1.9 V (VDDD_SEL = 6) */
+  0x4e   /* NVDDD voltage = -1.8 V (NVDDD_SEL = 4);
+          * VDDD voltage = 1.9 V (VDDD_SEL = 6) */
 };
 
 /* Command #7: SETPANEL (ST7703 Page 154)
@@ -224,7 +233,10 @@ static const uint8_t g_pinephone_setvdc[] =
 static const uint8_t g_pinephone_setpanel[] =
 {
   0xcc,  /* SETPANEL: Set display related register */
-  0x0b   /* Enable reverse the source scan direction (SS_PANEL = 1) ; Normal vertical scan direction (GS_PANEL = 0) ; Normally black panel (REV_PANEL = 1) ; S1:S2:S3 = B:G:R (BGR_PANEL = 1) */
+  0x0b   /* Enable reverse the source scan direction (SS_PANEL = 1);
+          * Normal vertical scan direction (GS_PANEL = 0);
+          * Normally black panel (REV_PANEL = 1);
+          * S1:S2:S3 = B:G:R (BGR_PANEL = 1) */
 };
 
 /* Command #8: SETCYC (ST7703 Page 135)
@@ -234,7 +246,11 @@ static const uint8_t g_pinephone_setpanel[] =
 static const uint8_t g_pinephone_setcyc[] =
 {
   0xb4,  /* SETCYC: Control display inversion type */
-  0x80   /* Extra source for Zig-Zag Inversion = S2401 (ZINV_S2401_EN = 1) ; Row source data dislocates = Even row (ZINV_G_EVEN_EN = 0) ; Disable Zig-Zag Inversion (ZINV_EN = 0) ; Enable Zig-Zag1 Inversion (ZINV2_EN = 0) ; Normal mode inversion type = Column inversion (N_NW = 0) */
+  0x80   /* Extra source for Zig-Zag Inversion = S2401 (ZINV_S2401_EN = 1);
+          * Row source data dislocates = Even row (ZINV_G_EVEN_EN = 0);
+          * Disable Zig-Zag Inversion (ZINV_EN = 0);
+          * Enable Zig-Zag1 Inversion (ZINV2_EN = 0);
+          * Normal mode inversion type = Column inversion (N_NW = 0) */
 };
 
 /* Command #9: SETDISP (ST7703 Page 132)
