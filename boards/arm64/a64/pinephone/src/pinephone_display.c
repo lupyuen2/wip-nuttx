@@ -96,7 +96,9 @@ static uint32_t g_pinephone_fb1[FB1_WIDTH * FB1_HEIGHT];
 
 static uint32_t g_pinephone_fb2[PANEL_WIDTH * PANEL_HEIGHT];
 
-/* Video Controller for 3 UI Channels */
+/* Video Controller for 3 UI Channels:
+ * Fullscreen 720 x 1440 (4 bytes per ARGB 8888 pixel)
+ */
 
 static struct fb_videoinfo_s g_pinephone_video =
 {
@@ -113,15 +115,15 @@ static struct fb_videoinfo_s g_pinephone_video =
 
 static struct fb_planeinfo_s g_pinephone_plane =
 {
-  .fbmem        = &g_pinephone_fb0,         /* Start of frame buffer */
-  .fblen        = sizeof(g_pinephone_fb0),  /* Length of frame buffer */
+  .fbmem        = &g_pinephone_fb0,
+  .fblen        = sizeof(g_pinephone_fb0),
   .stride       = PANEL_WIDTH * 4,  /* Length of a line (4-byte pixel) */
   .display      = 0,                /* Display number (Unused) */
   .bpp          = 32,               /* Bits per pixel (XRGB 8888) */
   .xres_virtual = PANEL_WIDTH,      /* Virtual Horizontal resolution */
   .yres_virtual = PANEL_HEIGHT,     /* Virtual Vertical resolution */
-  .xoffset      = 0,  /* Offset from virtual to visible resolution */
-  .yoffset      = 0   /* Offset from virtual to visible resolution */
+  .xoffset      = 0,                /* Offset from virtual to visible */
+  .yoffset      = 0                 /* Offset from virtual to visible */
 };
 
 /* Overlays for 2 Overlay UI Channels */
@@ -133,8 +135,8 @@ static struct fb_overlayinfo_s g_pinephone_overlays[2] =
    */
 
   {
-    .fbmem     = &g_pinephone_fb1,         /* Start of frame buffer */
-    .fblen     = sizeof(g_pinephone_fb1),  /* Length of frame buffer */
+    .fbmem     = &g_pinephone_fb1,
+    .fblen     = sizeof(g_pinephone_fb1),
     .stride    = FB1_WIDTH * 4,    /* Length of a line (4-byte pixel) */
     .overlay   = 0,                /* Overlay number (First Overlay) */
     .bpp       = 32,               /* Bits per pixel (ARGB 8888) */
@@ -161,8 +163,8 @@ static struct fb_overlayinfo_s g_pinephone_overlays[2] =
    */
 
   {
-    .fbmem     = &g_pinephone_fb2,         /* Start of frame buffer */
-    .fblen     = sizeof(g_pinephone_fb2),  /* Length of frame buffer */
+    .fbmem     = &g_pinephone_fb2,
+    .fblen     = sizeof(g_pinephone_fb2),
     .stride    = PANEL_WIDTH * 4,  /* Length of a line (4-byte pixel) */
     .overlay   = 1,                /* Overlay number (First Overlay) */
     .bpp       = 32,               /* Bits per pixel (ARGB 8888) */
