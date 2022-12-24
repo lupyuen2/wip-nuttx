@@ -61,6 +61,9 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+// Period = 1199 (Cycles of PWM Clock)
+#define BACKLIGHT_PWM_PERIOD 1199
+
 /* LCD Panel Reset on PD23 */
 
 #define LCD_RESET (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
@@ -78,6 +81,19 @@
 #define LCD_BL_EN (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
                    PIO_INT_NONE | PIO_OUTPUT_SET | PIO_PORT_PIOH | \
                    PIO_PIN10)
+
+  // Register R_PWM_CTRL_REG? (R_PWM Control Register?)
+  // At R_PWM Offset 0 (A64 Page 194)
+  #define R_PWM_CTRL_REG (A64_RPWM_ADDR + 0)
+  #define SCLK_CH0_GATING (1 << 6)
+  #define PWM_CH0_EN (1 << 4)
+  #define PWM_CH0_PRESCAL(n) ((n) << 0)
+
+  // Register R_PWM_CH0_PERIOD? (R_PWM Channel 0 Period Register?)
+  // At R_PWM Offset 4 (A64 Page 195)
+  #define R_PWM_CH0_PERIOD (A64_RPWM_ADDR + 4)
+  #define PWM_CH0_ENTIRE_CYS(n) ((n) << 16)
+  #define PWM_CH0_ENTIRE_ACT_CYS(n) ((n) << 0)
 
 /****************************************************************************
  * Private Types
@@ -828,26 +844,16 @@ int pinephone_lcd_backlight_enable(
   // At R_PWM Offset 0 (A64 Page 194)
   // Set SCLK_CH0_GATING (Bit 6) to 0 (Mask)
   ginfo("Disable R_PWM\n");
-  #define R_PWM_CTRL_REG (A64_RPWM_ADDR + 0)
-  DEBUGASSERT(R_PWM_CTRL_REG == 0x1f03800);
   modreg32(0, 1 << 6, R_PWM_CTRL_REG);
 
   // Configure R_PWM Period (Undocumented)
   // Register R_PWM_CH0_PERIOD? (R_PWM Channel 0 Period Register?)
   // At R_PWM Offset 4 (A64 Page 195)
-  // PWM_CH0_ENTIRE_CYS (Upper 16 Bits) = Period (0x4af)
-  // PWM_CH0_ENTIRE_ACT_CYS (Lower 16 Bits) = Period * Percent / 100 (0x0437)
-  // Period = 1199 (Cycles of PWM Clock)
-  // Percent = 90 (90% Brightness)
+  // Set PWM_CH0_ENTIRE_CYS (Bits 16 to 31) to PWM Period
+  // Set PWM_CH0_ENTIRE_ACT_CYS (Bits 0 to 15) to PWM Period * Percent / 100
   ginfo("Configure R_PWM Period\n");
-  #define R_PWM_CH0_PERIOD (A64_RPWM_ADDR + 4)
-  DEBUGASSERT(R_PWM_CH0_PERIOD == 0x1f03804);
-  #define PERIOD 1199
-  #define PWM_CH0_ENTIRE_CYS (PERIOD << 16)
-  #define PWM_CH0_ENTIRE_ACT_CYS (PERIOD * percent / 100)
-  uint32_t val = PWM_CH0_ENTIRE_CYS
-      | PWM_CH0_ENTIRE_ACT_CYS;
-  DEBUGASSERT(val == 0x4af0437);
+  uint32_t val = PWM_CH0_ENTIRE_CYS(BACKLIGHT_PWM_PERIOD)
+      | PWM_CH0_ENTIRE_ACT_CYS(BACKLIGHT_PWM_PERIOD * percent / 100);
   putreg32(val, R_PWM_CH0_PERIOD);
 
   // Enable R_PWM (Undocumented)
@@ -857,14 +863,7 @@ int pinephone_lcd_backlight_enable(
   // Set PWM_CH0_EN (Bit 4) to 1 (Enable)
   // Set PWM_CH0_PRESCAL (Bits 0 to 3) to 0b1111 (Prescalar 1)
   ginfo("Enable R_PWM\n");
-  DEBUGASSERT(R_PWM_CTRL_REG == 0x1f03800);
-  #define SCLK_CH0_GATING (1 << 6)
-  #define PWM_CH0_EN (1 << 4)
-  #define PWM_CH0_PRESCAL (0b1111 << 0)
-  uint32_t ctrl = SCLK_CH0_GATING
-      | PWM_CH0_EN
-      | PWM_CH0_PRESCAL;
-  DEBUGASSERT(ctrl == 0x5f);
+  uint32_t ctrl = SCLK_CH0_GATING | PWM_CH0_EN | PWM_CH0_PRESCAL(0b1111);
   putreg32(ctrl, R_PWM_CTRL_REG);
 
   // Configure PH10 for Output
@@ -879,6 +878,14 @@ int pinephone_lcd_backlight_enable(
   // Set PH10 to High
   ginfo("Set PH10 to High\n");
   a64_pio_write(LCD_BL_EN, val);
+
+  ////
+  DEBUGASSERT(percent == 90);
+  DEBUGASSERT(R_PWM_CTRL_REG == 0x1f03800);
+  DEBUGASSERT(R_PWM_CH0_PERIOD == 0x1f03804);
+  DEBUGASSERT(val == 0x4af0437);
+  DEBUGASSERT(ctrl == 0x5f);
+  ////
 
   return OK;
 }
@@ -913,6 +920,8 @@ int pinephone_lcd_panel_init(void)
   const int cmd_len = sizeof(g_pinephone_commands) /
                       sizeof(g_pinephone_commands[0]);
 
+  /* For every ST7703 Initialization Command */
+
   ginfo("Init ST7703 LCD Controller\n");
   for (i = 0; i < cmd_len; i++)
     {
@@ -921,7 +930,7 @@ int pinephone_lcd_panel_init(void)
       const uint8_t *cmd = g_pinephone_commands[i].cmd;
       const uint8_t len = g_pinephone_commands[i].len;
 
-      /* If command is NULL, wait 120 milliseconds */
+      /* If command is null, wait 120 milliseconds */
 
       if (cmd == NULL)
         {
