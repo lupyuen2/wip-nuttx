@@ -764,24 +764,28 @@ static int write_dcs(const uint8_t *buf, size_t len)
   ginfodumpbuffer("buf", buf, len);
   DEBUGASSERT(len > 0);
 
-  // Do DCS Short Write or Long Write depending on command length
+  /* Do DCS Short Write or Long Write depending on command length */
+
   switch (len)
     {
-      // DCS Short Write (without parameter)
+      /* DCS Short Write (without parameter) */
+
       case 1:
         ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL,
           MIPI_DSI_DCS_SHORT_WRITE,
           buf, len);
         break;
 
-      // DCS Short Write (with parameter)
+      /* DCS Short Write (with parameter) */
+
       case 2:
         ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL,
           MIPI_DSI_DCS_SHORT_WRITE_PARAM,
           buf, len);
         break;
 
-      // DCS Long Write
+      /* DCS Long Write */
+
       default:
         ret = a64_mipi_dsi_write(A64_MIPI_DSI_VIRTUAL_CHANNEL,
           MIPI_DSI_DCS_LONG_WRITE,
