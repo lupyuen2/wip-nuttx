@@ -917,14 +917,6 @@ int pinephone_lcd_backlight_enable(uint32_t percent)
   ginfo("Set PH10 to High\n");
   a64_pio_write(LCD_BL_EN, true);
 
-  ////
-  DEBUGASSERT(percent == 90);
-  DEBUGASSERT(R_PWM_CTRL_REG == 0x1f03800);
-  DEBUGASSERT(R_PWM_CH0_PERIOD == 0x1f03804);
-  DEBUGASSERT(period == 0x4af0437);
-  DEBUGASSERT(ctrl == 0x5f);
-  ////
-
   return OK;
 }
 
