@@ -73,7 +73,7 @@ Configure the NuttX project and build the project:
 .. code:: console
 
    $ cd nuttx
-   $ tools/configure.sh pinephone:nsh
+   $ tools/configure.sh pinephone:lcd
    $ make
    $ cp nuttx.bin Image
    $ rm -f Image.gz
@@ -129,6 +129,15 @@ LED3  Blue LED  PD20
 Configurations
 ==============
 
+lcd
+___
+
+Supports LCD Display (XBD599) with LCD Controller (ST7703),
+Display Engine 2.0, MIPI Display Serial Interface (DSI),
+Power Management Integrated Circuit (AXP803) and
+Reduced Serial Bus (RSB).
+Serial Console is enabled on UART0 at 115.2 kbps.
+
 nsh
 ---
 
@@ -142,14 +151,18 @@ Peripheral Support
 
 NuttX for PinePhone supports these peripherals:
 
-============== ======= =====
-Peripheral     Support NOTES
-============== ======= =====
-Display Engine  Yes
-MIPI D-PHY      Yes
-MIPI DSI        Yes
-PIO             Yes
-RSB             Yes
-TCON0           Yes
-UART            Yes    Only UART0 is supported
-============== ======= =====
+======================= ======= =====
+Peripheral              Support NOTES
+======================= ======= =====
+Backlight                Yes
+Display Engine           Yes
+LCD Controller (ST7703)  Yes
+LCD Panel (XBD599)       Yes
+MIPI D-PHY               Yes
+MIPI DSI                 Yes
+PIO                      Yes
+PMIC (AXP803)            Yes
+RSB                      Yes
+TCON0                    Yes
+UART                     Yes    Only UART0 is supported
+======================= ======= =====
