@@ -54,6 +54,7 @@
 #include "a64_tcon0.h"
 #include "pinephone_lcd.h"
 #include "pinephone_pmic.h"
+#include "pinephone_display.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -240,131 +241,6 @@ static struct fb_vtable_s g_pinephone_vtable =
  ****************************************************************************/
 
 /****************************************************************************
- * Name: test_pattern
- *
- * Description:
- *   Fill the 3 Frame Buffers with a Test Pattern.  Should be called after
- *   Display Engine is Enabled, or the rendered image will have missing
- *   rows.
- *
- * Input Parameters:
- *   None
- *
- * Returned Value:
- *   None
- *
- ****************************************************************************/
-
-////TODO: static
-void test_pattern(void)
-{
-  int i;
-  int x;
-  int y;
-  const int fb0_len = sizeof(g_pinephone_fb0) / sizeof(g_pinephone_fb0[0]);
-  const int fb1_len = sizeof(g_pinephone_fb1) / sizeof(g_pinephone_fb1[0]);
-
-  /* Zero the Framebuffers */
-
-  memset(g_pinephone_fb0, 0, sizeof(g_pinephone_fb0));
-  memset(g_pinephone_fb1, 0, sizeof(g_pinephone_fb1));
-  memset(g_pinephone_fb2, 0, sizeof(g_pinephone_fb2));
-
-  /* Init Framebuffer 0:
-   * Fill with Blue, Green and Red
-   */
-
-  for (i = 0; i < fb0_len; i++)
-    {
-      /* Colours are in XRGB 8888 format */
-
-      if (i < fb0_len / 4)
-        {
-          /* Blue for top quarter */
-
-          g_pinephone_fb0[i] = 0x80000080;
-        }
-      else if (i < fb0_len / 2)
-        {
-          /* Green for next quarter */
-
-          g_pinephone_fb0[i] = 0x80008000;
-        }
-      else
-        {
-          /* Red for lower half */
-
-          g_pinephone_fb0[i] = 0x80800000;
-        }
-
-      /* Fixes missing rows in the rendered image, not sure why */
-
-      ARM64_DMB();
-      ARM64_DSB();
-      ARM64_ISB();
-    }
-
-  /* Init Framebuffer 1:
-   * Fill with Semi-Transparent White
-   */
-
-  for (i = 0; i < fb1_len; i++)
-    {
-      /* Semi-Transparent White in ARGB 8888 format */
-
-      g_pinephone_fb1[i] = 0x40ffffff;
-
-      /* Fixes missing rows in the rendered image, not sure why */
-
-      ARM64_DMB();
-      ARM64_DSB();
-      ARM64_ISB();
-    }
-
-  /* Init Framebuffer 2:
-   * Fill with Semi-Transparent Green Circle
-   */
-
-  for (y = 0; y < PANEL_HEIGHT; y++)
-    {
-      for (x = 0; x < PANEL_WIDTH; x++)
-        {
-          /* Get pixel index */
-
-          const int p = (y * PANEL_WIDTH) + x;
-
-          /* Shift coordinates so that centre of screen is (0,0) */
-
-          const int half_width  = PANEL_WIDTH  / 2;
-          const int half_height = PANEL_HEIGHT / 2;
-          const int x_shift = x - half_width;
-          const int y_shift = y - half_height;
-
-          /* If x^2 + y^2 < radius^2, set to Semi-Transparent Green */
-
-          if (x_shift*x_shift + y_shift*y_shift < half_width*half_width)
-            {
-              /* Semi-Transparent Green in ARGB 8888 Format */
-
-              g_pinephone_fb2[p] = 0x80008000;
-            }
-          else  /* Otherwise set to Transparent Black */
-            {
-              /* Transparent Black in ARGB 8888 Format */
-
-              g_pinephone_fb2[p] = 0x00000000;
-            }
-
-          /* Fixes missing rows in the rendered image, not sure why */
-
-          ARM64_DMB();
-          ARM64_DSB();
-          ARM64_ISB();
-        }
-    }
-}
-
-/****************************************************************************
  * Name: render_framebuffers
  *
  * Description:
@@ -463,13 +339,6 @@ static int render_framebuffers(void)
       return ret;
     }
 
-  /* Fill Frame Buffers with Test Pattern. Should be called after
-   * Display Engine is Enabled, or the rendered image will have
-   * missing rows.
-   */
-
-  test_pattern();
-
   return OK;
 }
 
@@ -492,6 +361,8 @@ static int render_framebuffers(void)
 static int pinephone_getvideoinfo(struct fb_vtable_s *vtable,
                                   struct fb_videoinfo_s *vinfo)
 {
+  static int stage = 0;
+
   ginfo("vtable=%p vinfo=%p\n", vtable, vinfo);
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
               vinfo != NULL);
@@ -499,10 +370,14 @@ static int pinephone_getvideoinfo(struct fb_vtable_s *vtable,
   memcpy(vinfo, &g_pinephone_video, sizeof(struct fb_videoinfo_s));
 
   //// TODO
-  static int count = 0;
-  if (count < 2)
+  // Stage 0: Initialize driver at startup
+  // Stage 1: First call by apps
+  // Stage 2: Subsequent calls by apps
+  // We erase the framebuffers at stages 0 and 1.
+  // This allows the Test Pattern to be displayed for as long as possible.
+  if (stage < 2)
     {
-      count++;
+      stage++;
       memset(g_pinephone_fb0, 0, sizeof(g_pinephone_fb0));
       memset(g_pinephone_fb1, 0, sizeof(g_pinephone_fb1));
       memset(g_pinephone_fb2, 0, sizeof(g_pinephone_fb2));
@@ -867,13 +742,6 @@ int up_fbinitialize(int display)
       return ret;
     }
 
-  // /* Show Test Pattern for 2 seconds before erasing */
-
-  // up_mdelay(2000);
-  // memset(g_pinephone_fb0, 0, sizeof(g_pinephone_fb0));
-  // memset(g_pinephone_fb1, 0, sizeof(g_pinephone_fb1));
-  // memset(g_pinephone_fb2, 0, sizeof(g_pinephone_fb2));
-
   return OK;
 }
 
@@ -929,4 +797,128 @@ void up_fbuninitialize(int display)
   /* Uninitialize is not supported */
 
   UNUSED(display);
+}
+
+/****************************************************************************
+ * Name: pinephone_display_test_pattern
+ *
+ * Description:
+ *   Fill the 3 Frame Buffers with a Test Pattern.  Should be called after
+ *   Display Engine is Enabled, or the rendered image will have missing
+ *   rows.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   None
+ *
+ ****************************************************************************/
+
+void pinephone_display_test_pattern(void)
+{
+  int i;
+  int x;
+  int y;
+  const int fb0_len = sizeof(g_pinephone_fb0) / sizeof(g_pinephone_fb0[0]);
+  const int fb1_len = sizeof(g_pinephone_fb1) / sizeof(g_pinephone_fb1[0]);
+
+  /* Zero the Framebuffers */
+
+  memset(g_pinephone_fb0, 0, sizeof(g_pinephone_fb0));
+  memset(g_pinephone_fb1, 0, sizeof(g_pinephone_fb1));
+  memset(g_pinephone_fb2, 0, sizeof(g_pinephone_fb2));
+
+  /* Init Framebuffer 0:
+   * Fill with Blue, Green and Red
+   */
+
+  for (i = 0; i < fb0_len; i++)
+    {
+      /* Colours are in XRGB 8888 format */
+
+      if (i < fb0_len / 4)
+        {
+          /* Blue for top quarter */
+
+          g_pinephone_fb0[i] = 0x80000080;
+        }
+      else if (i < fb0_len / 2)
+        {
+          /* Green for next quarter */
+
+          g_pinephone_fb0[i] = 0x80008000;
+        }
+      else
+        {
+          /* Red for lower half */
+
+          g_pinephone_fb0[i] = 0x80800000;
+        }
+
+      /* Fixes missing rows in the rendered image, not sure why */
+
+      ARM64_DMB();
+      ARM64_DSB();
+      ARM64_ISB();
+    }
+
+  /* Init Framebuffer 1:
+   * Fill with Semi-Transparent White
+   */
+
+  for (i = 0; i < fb1_len; i++)
+    {
+      /* Semi-Transparent White in ARGB 8888 format */
+
+      g_pinephone_fb1[i] = 0x40ffffff;
+
+      /* Fixes missing rows in the rendered image, not sure why */
+
+      ARM64_DMB();
+      ARM64_DSB();
+      ARM64_ISB();
+    }
+
+  /* Init Framebuffer 2:
+   * Fill with Semi-Transparent Green Circle
+   */
+
+  for (y = 0; y < PANEL_HEIGHT; y++)
+    {
+      for (x = 0; x < PANEL_WIDTH; x++)
+        {
+          /* Get pixel index */
+
+          const int p = (y * PANEL_WIDTH) + x;
+
+          /* Shift coordinates so that centre of screen is (0,0) */
+
+          const int half_width  = PANEL_WIDTH  / 2;
+          const int half_height = PANEL_HEIGHT / 2;
+          const int x_shift = x - half_width;
+          const int y_shift = y - half_height;
+
+          /* If x^2 + y^2 < radius^2, set to Semi-Transparent Green */
+
+          if (x_shift*x_shift + y_shift*y_shift < half_width*half_width)
+            {
+              /* Semi-Transparent Green in ARGB 8888 Format */
+
+              g_pinephone_fb2[p] = 0x80008000;
+            }
+          else  /* Otherwise set to Transparent Black */
+            {
+              /* Transparent Black in ARGB 8888 Format */
+
+              g_pinephone_fb2[p] = 0x00000000;
+            }
+
+          /* Fixes missing rows in the rendered image, not sure why */
+
+          ARM64_DMB();
+          ARM64_DSB();
+          ARM64_ISB();
+        }
+    }
 }
