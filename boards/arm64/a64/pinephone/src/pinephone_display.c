@@ -367,14 +367,18 @@ static int pinephone_getvideoinfo(struct fb_vtable_s *vtable,
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
               vinfo != NULL);
 
+  /* Copy and return the videoinfo object */
+
   memcpy(vinfo, &g_pinephone_video, sizeof(struct fb_videoinfo_s));
 
-  //// TODO
-  // Stage 0: Initialize driver at startup
-  // Stage 1: First call by apps
-  // Stage 2: Subsequent calls by apps
-  // We erase the framebuffers at stages 0 and 1.
-  // This allows the Test Pattern to be displayed for as long as possible.
+  /* Keep track of the stages during startup:
+   * Stage 0: Initialize driver at startup
+   * Stage 1: First call by apps
+   * Stage 2: Subsequent calls by apps
+   * We erase the framebuffers at stages 0 and 1. This allows the
+   * Test Pattern to be displayed for as long as possible before erasure.
+   */
+
   if (stage < 2)
     {
       stage++;
@@ -407,6 +411,8 @@ static int pinephone_getplaneinfo(struct fb_vtable_s *vtable, int planeno,
 {
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable);
   ginfo("vtable=%p planeno=%d pinfo=%p\n", vtable, planeno, pinfo);
+
+  /* Copy and return the planeinfo object */
 
   if (planeno == 0)
     {
@@ -444,6 +450,8 @@ static int pinephone_getoverlayinfo(struct fb_vtable_s *vtable,
 
   ginfo("vtable=%p overlay=%d oinfo=%p\n", vtable, overlayno, oinfo);
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable);
+
+  /* Copy and return the overlayinfo object */
 
   if (overlayno >= 0 && overlayno < overlay_len)
     {
