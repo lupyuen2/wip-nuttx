@@ -221,7 +221,8 @@ static struct fb_overlayinfo_s g_pinephone_overlays[2] =
   }
 };
 
-// TODO: Move to Private Data
+/* Vtable for Frame Buffer Operations */
+
 static struct fb_vtable_s g_pinephone_vtable =
 {
   .getvideoinfo    = pinephone_getvideoinfo,
@@ -471,7 +472,6 @@ static int render_framebuffers(void)
   return OK;
 }
 
-// TODO: Move to Private Functions
 /****************************************************************************
  * Name: pinephone_getvideoinfo
  *
@@ -484,8 +484,7 @@ static int render_framebuffers(void)
  *   vinfo  - the videoinfo object
  *
  * Returned Value:
- *   On success - OK
- *   On error   - -EINVAL
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
  *
  ****************************************************************************/
 
@@ -493,27 +492,26 @@ static int pinephone_getvideoinfo(struct fb_vtable_s *vtable,
                                   struct fb_videoinfo_s *vinfo)
 {
   ginfo("vtable=%p vinfo=%p\n", vtable, vinfo);
-  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable && vinfo != NULL);
+  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
+              vinfo != NULL);
 
   memcpy(vinfo, &g_pinephone_video, sizeof(struct fb_videoinfo_s));
   return OK;
 }
 
-// TODO: Move to Private Functions
 /****************************************************************************
  * Name: pinephone_getplaneinfo
  *
  * Description:
- *   Entrypoint ioctl FBIOGET_PLANEINFO
- *   Get the planeinfo for the framebuffer
+ *   Get the planeinfo for the framebuffer. (ioctl Entrypoint:
+ *   FBIOGET_PLANEINFO)
  *
  * Input Parameters:
- *   vtable - The framebuffer driver object
- *   pinfo  - the planeinfo object
+ *   vtable - Framebuffer driver object
+ *   pinfo  - Returned planeinfo object
  *
  * Returned Value:
- *   On success - OK
- *   On error   - -EINVAL
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
  *
  ****************************************************************************/
 
@@ -533,11 +531,21 @@ static int pinephone_getplaneinfo(struct fb_vtable_s *vtable, int planeno,
   return -EINVAL;
 }
 
-// TODO: Move to Private Functions
 /****************************************************************************
  * Name: pinephone_getoverlayinfo
+ *
  * Description:
- *   Entrypoint ioctl FBIOGET_OVERLAYINFO
+ *   Get the overlayinfo for the framebuffer. (ioctl Entrypoint:
+ *   FBIOGET_OVERLAYINFO)
+ *
+ * Input Parameters:
+ *   vtable    - Framebuffer driver object
+ *   overlayno - Overlay number
+ *   oinfo     - Returned overlayinfo object
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 static int pinephone_getoverlayinfo(struct fb_vtable_s *vtable,
@@ -562,93 +570,138 @@ static int pinephone_getoverlayinfo(struct fb_vtable_s *vtable,
   return -EINVAL;
 }
 
-// TODO: Move to Private Functions
 /****************************************************************************
  * Name: pinephone_settransp
+ *
  * Description:
- *   Entrypoint ioctl FBIOSET_TRANSP
+ *   Set the overlay transparency for the framebuffer. (ioctl Entrypoint:
+ *   FBIOSET_TRANSP)
+ *
+ * Input Parameters:
+ *   vtable    - Framebuffer driver object
+ *   oinfo     - overlayinfo object
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 static int pinephone_settransp(struct fb_vtable_s *vtable,
                                const struct fb_overlayinfo_s *oinfo)
 {
-  //// TODO
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable);
   ginfo("vtable=%p, overlay=%d, transp=%02x, transp_mode=%02x\n", vtable,
         oinfo->overlay, oinfo->transp.transp, oinfo->transp.transp_mode);
+  gerr("Not implemented");
   return OK;
 }
 
-// TODO: Move to Private Functions
 /****************************************************************************
  * Name: pinephone_setchromakey
+ *
  * Description:
- *   Entrypoint ioctl FBIOSET_CHROMAKEY
+ *   Set the overlay chroma key for the framebuffer. (ioctl Entrypoint:
+ *   FBIOSET_CHROMAKEY)
+ *
+ * Input Parameters:
+ *   vtable    - Framebuffer driver object
+ *   oinfo     - overlayinfo object
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 static int pinephone_setchromakey(struct fb_vtable_s *vtable,
                                   const struct fb_overlayinfo_s *oinfo)
 {
-  //// TODO
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
               oinfo != NULL);
   ginfo("vtable=%p, overlay=%d, chromakey=%08x\n", vtable,
         oinfo->overlay, oinfo->chromakey);
+  gerr("Not implemented");
   return OK;
 }
 
-// TODO: Move to Private Functions
 /****************************************************************************
  * Name: pinephone_setcolor
+ *
  * Description:
- *   Entrypoint ioctl FBIOSET_COLOR
+ *   Set the overlay color for the framebuffer. (ioctl Entrypoint:
+ *   FBIOSET_COLOR)
+ *
+ * Input Parameters:
+ *   vtable    - Framebuffer driver object
+ *   oinfo     - overlayinfo object
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 static int pinephone_setcolor(struct fb_vtable_s *vtable,
                               const struct fb_overlayinfo_s *oinfo)
 {
-  //// TODO
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
               oinfo != NULL);
   ginfo("vtable=%p, overlay=%d, color=%08x\n",
         vtable, oinfo->overlay, oinfo->color);
+  gerr("Not implemented");
   return OK;
 }
 
-// TODO: Move to Private Functions
 /****************************************************************************
  * Name: pinephone_setblank
+ *
  * Description:
- *   Entrypoint ioctl FBIOSET_BLANK
+ *   Set the framebuffer overlay to blank. (ioctl Entrypoint:
+ *   FBIOSET_BLANK)
+ *
+ * Input Parameters:
+ *   vtable    - Framebuffer driver object
+ *   oinfo     - overlayinfo object
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 static int pinephone_setblank(struct fb_vtable_s *vtable,
                               const struct fb_overlayinfo_s *oinfo)
 {
-  //// TODO
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
               oinfo != NULL);
-  ginfo("vtable=%p, overlay=%d, blank=%02x\n", 
+  ginfo("vtable=%p, overlay=%d, blank=%02x\n",
         vtable, oinfo->overlay, oinfo->blank);
+  gerr("Not implemented");
   return OK;
 }
 
-// TODO: Move to Private Functions
 /****************************************************************************
  * Name: pinephone_setarea
+ *
  * Description:
- *   Entrypoint ioctl FBIOSET_AREA
+ *   Set the overlay area for the framebuffer. (ioctl Entrypoint:
+ *   FBIOSET_AREA)
+ *
+ * Input Parameters:
+ *   vtable    - Framebuffer driver object
+ *   oinfo     - overlayinfo object
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 static int pinephone_setarea(struct fb_vtable_s *vtable,
                              const struct fb_overlayinfo_s *oinfo)
 {
-  //// TODO
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
               oinfo != NULL);
   ginfo("vtable=%p, overlay=%d, x=%d, y=%d, w=%d, h=%d\n", vtable,
         oinfo->overlay, oinfo->sarea.x, oinfo->sarea.y, oinfo->sarea.w,
         oinfo->sarea.h);
+  gerr("Not implemented");
   return OK;
 }
 
