@@ -84,6 +84,9 @@ int pinephone_bringup(void)
     {
       syslog(LOG_ERR, "ERROR: fb_register() failed: %d\n", ret);
     }
+  ////TODO
+  void test_pattern(void);
+  test_pattern();
 #endif
 
   UNUSED(ret);

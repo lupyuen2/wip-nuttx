@@ -255,7 +255,8 @@ static struct fb_vtable_s g_pinephone_vtable =
  *
  ****************************************************************************/
 
-static void test_pattern(void)
+////TODO: static
+void test_pattern(void)
 {
   int i;
   int x;
@@ -476,8 +477,8 @@ static int render_framebuffers(void)
  * Name: pinephone_getvideoinfo
  *
  * Description:
- *   Entrypoint ioctl FBIOGET_VIDEOINFO
- *   Get the videoinfo for the framebuffer
+ *   Get the videoinfo for the framebuffer. (ioctl Entrypoint:
+ *   FBIOGET_VIDEOINFO)
  *
  * Input Parameters:
  *   vtable - The framebuffer driver object
@@ -496,6 +497,17 @@ static int pinephone_getvideoinfo(struct fb_vtable_s *vtable,
               vinfo != NULL);
 
   memcpy(vinfo, &g_pinephone_video, sizeof(struct fb_videoinfo_s));
+
+  //// TODO
+  static int count = 0;
+  if (count < 2)
+    {
+      count++;
+      memset(g_pinephone_fb0, 0, sizeof(g_pinephone_fb0));
+      memset(g_pinephone_fb1, 0, sizeof(g_pinephone_fb1));
+      memset(g_pinephone_fb2, 0, sizeof(g_pinephone_fb2));
+    }
+
   return OK;
 }
 
@@ -855,12 +867,12 @@ int up_fbinitialize(int display)
       return ret;
     }
 
-  /* Show Test Pattern for 2 seconds before erasing */
+  // /* Show Test Pattern for 2 seconds before erasing */
 
-  up_mdelay(2000);
-  memset(g_pinephone_fb0, 0, sizeof(g_pinephone_fb0));
-  memset(g_pinephone_fb1, 0, sizeof(g_pinephone_fb1));
-  memset(g_pinephone_fb2, 0, sizeof(g_pinephone_fb2));
+  // up_mdelay(2000);
+  // memset(g_pinephone_fb0, 0, sizeof(g_pinephone_fb0));
+  // memset(g_pinephone_fb1, 0, sizeof(g_pinephone_fb1));
+  // memset(g_pinephone_fb2, 0, sizeof(g_pinephone_fb2));
 
   return OK;
 }
