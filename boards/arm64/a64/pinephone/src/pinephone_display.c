@@ -590,7 +590,8 @@ static int pinephone_setchromakey(struct fb_vtable_s *vtable,
                                   const struct fb_overlayinfo_s *oinfo)
 {
   //// TODO
-  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable && oinfo != NULL);
+  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
+              oinfo != NULL);
   ginfo("vtable=%p, overlay=%d, chromakey=%08x\n", vtable,
         oinfo->overlay, oinfo->chromakey);
   return OK;
@@ -607,8 +608,10 @@ static int pinephone_setcolor(struct fb_vtable_s *vtable,
                               const struct fb_overlayinfo_s *oinfo)
 {
   //// TODO
-  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable && oinfo != NULL);
-  ginfo("vtable=%p, overlay=%d, color=%08x\n", vtable, oinfo->color);
+  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
+              oinfo != NULL);
+  ginfo("vtable=%p, overlay=%d, color=%08x\n",
+        vtable, oinfo->overlay, oinfo->color);
   return OK;
 }
 
@@ -623,8 +626,10 @@ static int pinephone_setblank(struct fb_vtable_s *vtable,
                               const struct fb_overlayinfo_s *oinfo)
 {
   //// TODO
-  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable && oinfo != NULL);
-  ginfo("vtable=%p, overlay=%d, blank=%02x\n", vtable, oinfo->blank);
+  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
+              oinfo != NULL);
+  ginfo("vtable=%p, overlay=%d, blank=%02x\n", 
+        vtable, oinfo->overlay, oinfo->blank);
   return OK;
 }
 
@@ -639,7 +644,8 @@ static int pinephone_setarea(struct fb_vtable_s *vtable,
                              const struct fb_overlayinfo_s *oinfo)
 {
   //// TODO
-  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable && oinfo != NULL);
+  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
+              oinfo != NULL);
   ginfo("vtable=%p, overlay=%d, x=%d, y=%d, w=%d, h=%d\n", vtable,
         oinfo->overlay, oinfo->sarea.x, oinfo->sarea.y, oinfo->sarea.w,
         oinfo->sarea.h);
