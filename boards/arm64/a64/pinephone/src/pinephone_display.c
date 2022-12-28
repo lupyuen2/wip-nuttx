@@ -496,11 +496,16 @@ static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
               area != NULL);
   ginfo("vtable=%p, area=%p\n", vtable, area);
 
-  /* Copy the entire framebuffer to itself, to fix the missing pixels */
+  /* Copy the entire framebuffer to itself, to fix the missing pixels.
+   * Not sure why this works.
+   */
 
   for (i = 0; i < fbsize; i++)
     {
+      /* Declare as volatile to prevent compiler optimization */
+
       volatile uint8_t v = fb[i];
+
       fb[i] = v;
     }
 
