@@ -92,6 +92,9 @@ static int pinephone_getoverlayinfo(struct fb_vtable_s *vtable,
                                     int overlayno,
                                     struct fb_overlayinfo_s *oinfo);
 
+static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
+                                FAR const struct fb_area_s *area);
+
 static int pinephone_settransp(struct fb_vtable_s *vtable,
                                const struct fb_overlayinfo_s *oinfo);
 
@@ -117,6 +120,7 @@ static struct fb_vtable_s g_pinephone_vtable =
 {
   .getvideoinfo    = pinephone_getvideoinfo,
   .getplaneinfo    = pinephone_getplaneinfo,
+  .updatearea      = pinephone_updatearea,
   .getoverlayinfo  = pinephone_getoverlayinfo,
   .settransp       = pinephone_settransp,
   .setchromakey    = pinephone_setchromakey,
@@ -463,6 +467,37 @@ static int pinephone_getoverlayinfo(struct fb_vtable_s *vtable,
 
   gerr("ERROR: Returning EINVAL\n");
   return -EINVAL;
+}
+
+//// TODO
+/****************************************************************************
+ * Name: pinephone_updatearea
+ *
+ * Description:
+ * Update the LCD when there is a change to the framebuffer.
+ *
+ ****************************************************************************/
+
+static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
+                                FAR const struct fb_area_s *area)
+{
+  int i;
+  const int fb0_len = sizeof(g_pinephone_fb0) / sizeof(g_pinephone_fb0[0]);
+
+  DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
+              area != NULL);
+  ginfo("vtable=%p, area=%p\n", vtable, area);
+
+  // Copy the entire framebuffer to itself.
+  // This fixes the missing pixels.
+  // TODO: Copy only the selected pixels
+  for (i = 0; i < fb0_len; i++)
+    {
+      volatile uint32_t v = g_pinephone_fb0[i];
+      g_pinephone_fb0[i] = v;
+    }
+
+  return OK;
 }
 
 /****************************************************************************
