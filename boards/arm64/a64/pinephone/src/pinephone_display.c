@@ -469,12 +469,19 @@ static int pinephone_getoverlayinfo(struct fb_vtable_s *vtable,
   return -EINVAL;
 }
 
-//// TODO
 /****************************************************************************
  * Name: pinephone_updatearea
  *
  * Description:
- * Update the LCD when there is a change to the framebuffer.
+ *   Update the display when there is a change to the framebuffer. (ioctl
+ *   Entrypoint: FBIO_UPDATE)
+ *
+ * Input Parameters:
+ *   vtable - Framebuffer driver object
+ *   area   - Updated area of framebuffer
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
  *
  ****************************************************************************/
 
@@ -489,9 +496,8 @@ static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
               area != NULL);
   ginfo("vtable=%p, area=%p\n", vtable, area);
 
-  // Copy the entire framebuffer to itself.
-  // This fixes the missing pixels.
-  // TODO: Copy only the selected pixels
+  /* Copy the entire framebuffer to itself, to fix the missing pixels */
+
   for (i = 0; i < fbsize; i++)
     {
       volatile uint8_t v = fb[i];
