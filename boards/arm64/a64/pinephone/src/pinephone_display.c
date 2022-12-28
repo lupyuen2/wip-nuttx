@@ -489,7 +489,7 @@ static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
                                 FAR const struct fb_area_s *area)
 {
   int i;
-  uint8_t *fb = (uint8_t *) g_pinephone_fb0;
+  uint8_t *fb = (uint8_t *)g_pinephone_fb0;
   const size_t fbsize = sizeof(g_pinephone_fb0);
 
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
