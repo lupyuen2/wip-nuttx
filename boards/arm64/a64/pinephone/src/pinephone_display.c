@@ -482,7 +482,8 @@ static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
                                 FAR const struct fb_area_s *area)
 {
   int i;
-  const int fb0_len = sizeof(g_pinephone_fb0) / sizeof(g_pinephone_fb0[0]);
+  uint8_t *fb = (uint8_t *) g_pinephone_fb0;
+  const size_t fbsize = sizeof(g_pinephone_fb0);
 
   DEBUGASSERT(vtable != NULL && vtable == &g_pinephone_vtable &&
               area != NULL);
@@ -491,10 +492,10 @@ static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
   // Copy the entire framebuffer to itself.
   // This fixes the missing pixels.
   // TODO: Copy only the selected pixels
-  for (i = 0; i < fb0_len; i++)
+  for (i = 0; i < fbsize; i++)
     {
-      volatile uint32_t v = g_pinephone_fb0[i];
-      g_pinephone_fb0[i] = v;
+      volatile uint8_t v = fb[i];
+      fb[i] = v;
     }
 
   return OK;
