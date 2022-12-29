@@ -92,8 +92,8 @@ static int pinephone_getoverlayinfo(struct fb_vtable_s *vtable,
                                     int overlayno,
                                     struct fb_overlayinfo_s *oinfo);
 
-static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
-                                FAR const struct fb_area_s *area);
+static int pinephone_updatearea(struct fb_vtable_s *vtable,
+                                const struct fb_area_s *area);
 
 static int pinephone_settransp(struct fb_vtable_s *vtable,
                                const struct fb_overlayinfo_s *oinfo);
@@ -485,8 +485,8 @@ static int pinephone_getoverlayinfo(struct fb_vtable_s *vtable,
  *
  ****************************************************************************/
 
-static int pinephone_updatearea(FAR struct fb_vtable_s *vtable,
-                                FAR const struct fb_area_s *area)
+static int pinephone_updatearea(struct fb_vtable_s *vtable,
+                                const struct fb_area_s *area)
 {
   int i;
   uint8_t *fb = (uint8_t *)g_pinephone_fb0;
