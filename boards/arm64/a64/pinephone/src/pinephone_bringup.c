@@ -91,6 +91,52 @@ int pinephone_bringup(void)
   pinephone_display_test_pattern();
 #endif
 
+  //
+  void touch_panel_initialize(void);
+  touch_panel_initialize();
+  //
+
   UNUSED(ret);
   return OK;
+}
+
+/* Testing Touch Panel */
+
+#include <nuttx/arch.h>
+#include <debug.h>
+#define PH_EINT 53
+
+/* Touch Panel Interrupt (CTP-INT) is at PH4 */
+
+#define CTP_INT (PIO_EINT | PIO_PORT_PIOH | PIO_PIN4)
+
+static int touch_panel_interrupt(int irq, void *context, void *arg)
+{
+  up_putc('.');
+  return OK;
+}
+
+void touch_panel_initialize(void)
+{
+  int ret;
+
+  // Configure Touch Panel Interrupt
+  ret = a64_pio_config(CTP_INT);
+  DEBUGASSERT(ret == 0);
+
+  /* Disable all external PIO interrupts */
+
+  /* TODO: putreg32(0, A1X_PIO_INT_CTL); */
+
+  /* Attach the PIO interrupt handler */
+
+  if (irq_attach(PH_EINT, touch_panel_interrupt, NULL) < 0)
+    {
+      _err("irq_attach failed\n");
+      return;
+    }
+
+  /* And enable the PIO interrupt */
+
+  up_enable_irq(PH_EINT);
 }

@@ -182,6 +182,11 @@ int a64_pio_config(pio_pinset_t cfgset)
     {
       value = (cfgset & PIO_INT_MASK) >> PIO_INT_SHIFT;
 
+      //// TODO: PH_EINT_CFG0_REG at offset 0x240
+      intaddr = 0x1c20800 + 0x240; //// Previously 0x1c20a00
+      _info("cfgaddr=%p, intaddr=%p, value=0x%x, shift=%d\n", cfgaddr, intaddr, value, shift); ////
+      //// Shows: a64_pio_config: cfgaddr=0x1c208fc, intaddr=0x1c20a40, value=0x0, shift=16
+
       regval = getreg32(intaddr);
       regval &= ~(7 << shift);
       regval |= (value << shift);
