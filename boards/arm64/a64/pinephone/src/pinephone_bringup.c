@@ -137,6 +137,7 @@ void touch_panel_initialize(void)
   // Offset: 0x250 Register Name: PH_EINT_CTL_REG
   #define PH_EINT_CTL_REG (0x1c20800 + 0x250)
   _info("v=0x%x, m=0x%x, a=0x%x\n", PIO_INT_CTL(pin), PIO_INT_CTL(pin), PH_EINT_CTL_REG);
+  // Shows touch_panel_initialize: v=0x10, m=0x10, a=0x1c20a50
 
   irqstate_t flags;
   flags = enter_critical_section();
