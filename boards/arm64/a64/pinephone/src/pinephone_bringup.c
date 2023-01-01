@@ -140,3 +140,28 @@ void touch_panel_initialize(void)
 
   up_enable_irq(PH_EINT);
 }
+
+#ifdef NOTUSED
+void a1x_pio_irqenable(int irq)
+{
+  irqstate_t flags;
+  uint32_t regval;
+  int pin;
+
+  if (irq >= A1X_PIO_EINT0 && irq <= A1X_PIO_EINT31)
+    {
+      /* Convert the IRQ number to a bit position */
+
+      pin = irq - A1X_PIO_EINT0;
+
+      /* Un-mask the interrupt be setting the corresponding bit in the
+       * PIO INT CTL register.
+       */
+
+      flags   = enter_critical_section();
+      regval  = getreg32(A1X_PIO_INT_CTL);
+      regval |= PIO_INT_CTL(pin);
+      leave_critical_section(flags);
+    }
+}
+#endif
