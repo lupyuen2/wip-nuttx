@@ -104,11 +104,16 @@ int pinephone_bringup(void)
 
 #include <nuttx/arch.h>
 #include <debug.h>
+#include "arm64_arch.h"
+
+/* PH IRQ */
+
 #define PH_EINT 53
 
 /* Touch Panel Interrupt (CTP-INT) is at PH4 */
 
 #define CTP_INT (PIO_EINT | PIO_PORT_PIOH | PIO_PIN4)
+#define CTP_INT_PIN 4
 
 static int touch_panel_interrupt(int irq, void *context, void *arg)
 {
@@ -123,6 +128,29 @@ void touch_panel_initialize(void)
   // Configure Touch Panel Interrupt
   ret = a64_pio_config(CTP_INT);
   DEBUGASSERT(ret == 0);
+
+  /* Un-mask the interrupt be setting the corresponding bit in the
+    * PIO INT CTL register.
+    */
+  int pin = CTP_INT_PIN;
+
+  // Offset: 0x250 Register Name: PH_EINT_CTL_REG
+  #define PH_EINT_CTL_REG (0x1c20800 + 0x250)
+  _info("v=0x%x, m=0x%x, a=0x%x\n", PIO_INT_CTL(pin), PIO_INT_CTL(pin), PH_EINT_CTL_REG);
+
+  irqstate_t flags;
+  flags = enter_critical_section();
+
+  modreg32(
+    PIO_INT_CTL(pin),
+    PIO_INT_CTL(pin),
+    PH_EINT_CTL_REG
+  );
+
+  // Previously:
+  // regval  = getreg32(A1X_PIO_INT_CTL);
+  // regval |= PIO_INT_CTL(pin);
+  leave_critical_section(flags);
 
   /* Disable all external PIO interrupts */
 
@@ -140,28 +168,3 @@ void touch_panel_initialize(void)
 
   up_enable_irq(PH_EINT);
 }
-
-#ifdef NOTUSED
-void a1x_pio_irqenable(int irq)
-{
-  irqstate_t flags;
-  uint32_t regval;
-  int pin;
-
-  if (irq >= A1X_PIO_EINT0 && irq <= A1X_PIO_EINT31)
-    {
-      /* Convert the IRQ number to a bit position */
-
-      pin = irq - A1X_PIO_EINT0;
-
-      /* Un-mask the interrupt be setting the corresponding bit in the
-       * PIO INT CTL register.
-       */
-
-      flags   = enter_critical_section();
-      regval  = getreg32(A1X_PIO_INT_CTL);
-      regval |= PIO_INT_CTL(pin);
-      leave_critical_section(flags);
-    }
-}
-#endif
