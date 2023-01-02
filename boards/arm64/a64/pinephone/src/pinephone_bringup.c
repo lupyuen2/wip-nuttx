@@ -132,7 +132,7 @@ void touch_panel_initialize(void)
   // Un-mask the interrupt by setting the corresponding bit in the PIO INT CTL register.
   int pin = CTP_INT_PIN;
 
-  // PH_EINT_CTL_REG (Interrupt Control Register for PH4) at Offset
+  // PH_EINT_CTL_REG (Interrupt Control Register for PH4) at Offset 0x250
   #define PH_EINT_CTL_REG (0x1c20800 + 0x250)
   _info("v=0x%x, m=0x%x, a=0x%x\n", PIO_INT_CTL(pin), PIO_INT_CTL(pin), PH_EINT_CTL_REG);
   // Shows touch_panel_initialize: v=0x10, m=0x10, a=0x1c20a50
