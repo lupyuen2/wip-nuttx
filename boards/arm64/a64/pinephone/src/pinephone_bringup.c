@@ -100,72 +100,67 @@ int pinephone_bringup(void)
   return OK;
 }
 
-/* Testing Touch Panel */
-
+// Testing Touch Panel
 #include <nuttx/arch.h>
 #include <debug.h>
 #include "arm64_arch.h"
 
-/* PH IRQ */
-
-#define PH_EINT 53
-
-/* Touch Panel Interrupt (CTP-INT) is at PH4 */
-
+// Touch Panel Interrupt (CTP-INT) is at PH4
 #define CTP_INT (PIO_EINT | PIO_PORT_PIOH | PIO_PIN4)
 #define CTP_INT_PIN 4
 
+// IRQ for Touch Panel Interrupt (PH)
+#define PH_EINT 53
+
+// Interrupt Handler for Touch Panel
 static int touch_panel_interrupt(int irq, void *context, void *arg)
 {
+  // Print something
   up_putc('.');
   return OK;
 }
 
+// Register the Interrupt Handler for Touch Panel
 void touch_panel_initialize(void)
 {
   int ret;
 
-  // Configure Touch Panel Interrupt
+  // Configure the Touch Panel Interrupt
   ret = a64_pio_config(CTP_INT);
   DEBUGASSERT(ret == 0);
 
-  /* Un-mask the interrupt be setting the corresponding bit in the
-    * PIO INT CTL register.
-    */
+  // Un-mask the interrupt by setting the corresponding bit in the PIO INT CTL register.
   int pin = CTP_INT_PIN;
 
-  // Offset: 0x250 Register Name: PH_EINT_CTL_REG
+  // PH_EINT_CTL_REG (Interrupt Control Register for PH4) at Offset
   #define PH_EINT_CTL_REG (0x1c20800 + 0x250)
   _info("v=0x%x, m=0x%x, a=0x%x\n", PIO_INT_CTL(pin), PIO_INT_CTL(pin), PH_EINT_CTL_REG);
   // Shows touch_panel_initialize: v=0x10, m=0x10, a=0x1c20a50
 
+  // Enter Critical Section
   irqstate_t flags;
   flags = enter_critical_section();
 
+  // Enable the Touch Panel Interrupt
   modreg32(
     PIO_INT_CTL(pin),
     PIO_INT_CTL(pin),
     PH_EINT_CTL_REG
   );
 
-  // Previously:
-  // regval  = getreg32(A1X_PIO_INT_CTL);
-  // regval |= PIO_INT_CTL(pin);
+  // Leave Critical Section
   leave_critical_section(flags);
 
-  /* Disable all external PIO interrupts */
+  // TODO: Disable all external PIO interrupts
+  // putreg32(0, A1X_PIO_INT_CTL);
 
-  /* TODO: putreg32(0, A1X_PIO_INT_CTL); */
-
-  /* Attach the PIO interrupt handler */
-
+  // Attach the PIO interrupt handler
   if (irq_attach(PH_EINT, touch_panel_interrupt, NULL) < 0)
     {
       _err("irq_attach failed\n");
       return;
     }
 
-  /* And enable the PIO interrupt */
-
+  // And enable the PIO interrupt
   up_enable_irq(PH_EINT);
 }
