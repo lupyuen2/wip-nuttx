@@ -105,6 +105,8 @@ int pinephone_bringup(void)
 #include <debug.h>
 #include "arm64_arch.h"
 
+#ifdef TEST_INTERRUPT
+// Test Touch Panel Interrupt
 // Touch Panel Interrupt (CTP-INT) is at PH4
 #define CTP_INT (PIO_EINT | PIO_PORT_PIOH | PIO_PIN4)
 #define CTP_INT_PIN 4
@@ -164,3 +166,34 @@ void touch_panel_initialize(void)
   // And enable the PIO interrupt
   up_enable_irq(PH_EINT);
 }
+
+#else
+// Test Touch Panel Interrupt by Polling as GPIO Inpuy
+// Touch Panel Interrupt (CTP-INT) is at PH4
+// Configure for GPIO Input
+#define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
+
+// Poll for Touch Panel Interrupt (PH4) by reading as GPIO Input
+void touch_panel_initialize(void)
+{
+
+  // Configure the Touch Panel Interrupt for GPIO Input
+  int ret = a64_pio_config(CTP_INT);
+  DEBUGASSERT(ret == 0);
+
+  // Poll the Touch Panel Interrupt as GPIO Input
+  bool prev_val = false;
+  for (int i = 0; i < 500; i++) {
+    // Read the GPIO Input
+    bool val = a64_pio_read(CTP_INT);
+
+    // Print if value has changed
+    if (val != prev_val) {
+      if (val) { up_putc('+'); }
+      else     { up_putc('-'); }
+    }
+    prev_val = val;
+    up_mdelay(10);
+  }
+}
+#endif
