@@ -143,9 +143,9 @@ void touch_panel_initialize(void)
 
   // Enable the Touch Panel Interrupt
   modreg32(
-    PIO_INT_CTL(pin),
-    PIO_INT_CTL(pin),
-    PH_EINT_CTL_REG
+    PIO_INT_CTL(pin),  // Value
+    PIO_INT_CTL(pin),  // Mask
+    PH_EINT_CTL_REG    // Address
   );
 
   // Leave Critical Section
