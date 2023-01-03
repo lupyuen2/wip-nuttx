@@ -335,14 +335,25 @@ static void touch_panel_read(struct i2c_master_s *i2c)
   // Shows "39 31 37 53" or "917S"
 
   // Read the Touch Panel Status
-  uint8_t req[1];
-  touch_panel_i2c_read(i2c, GOODIX_READ_COORD_ADDR, req, sizeof(req));
+  uint8_t status[1];
+  touch_panel_i2c_read(i2c, GOODIX_READ_COORD_ADDR, status, sizeof(status));
   // Shows "81"
 
-  // Read the Touch Coordinates
-  uint8_t touch[6];
-  touch_panel_i2c_read(i2c, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
-  // Shows "9f 01 31 02 2f 00"
+  const uint8_t status_code    = status[0] & 0x80;  // Set to 0x80
+  const uint8_t touched_points = status[0] & 0x0f;  // Set to 0x01
+
+  if (status_code != 0 &&  // If Touch Panel Status is OK and...
+      touched_points >= 1) {  // Touched Points is 1 or more
+
+    // Read the First Touch Coordinates
+    uint8_t touch[6];
+    touch_panel_i2c_read(i2c, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
+    // Shows "9f 01 31 02 2f 00"
+
+    const uint16_t x = touch[0] + (touch[1] << 8);
+    const uint16_t y = touch[2] + (touch[3] << 8);
+    _info("touch x=%d, y=%d\n", x, y);
+  }
 
   // Set the Touch Panel Status to 0
   touch_panel_set_status(i2c, 0);
