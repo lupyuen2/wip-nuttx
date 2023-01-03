@@ -179,7 +179,22 @@ int pinephone_bringup(void)
 #include <debug.h>
 #include "arm64_arch.h"
 
-////#define TEST_INTERRUPT
+#define CTP_FREQ 400000  // I2C Frequency: 400 kHz
+#define CTP_I2C_ADDR 0x5d  // Default I2C Address for Goodix GT917S
+
+static void touch_panel_read(struct i2c_master_s *i2c);
+static int touch_panel_i2c_read(
+  struct i2c_master_s *i2c,  // I2C Bus
+  uint16_t reg,  // I2C Register
+  uint8_t *buf,  // Receive Buffer
+  size_t buflen  // Receive Buffer Size
+);
+static int touch_panel_set_status(
+  struct i2c_master_s *i2c,  // I2C Bus
+  uint8_t status  // Status value to be set
+);
+
+#define TEST_INTERRUPT
 #ifdef TEST_INTERRUPT
 // Test Touch Panel Interrupt
 // Touch Panel Interrupt (CTP-INT) is at PH4
@@ -189,31 +204,38 @@ int pinephone_bringup(void)
 // IRQ for Touch Panel Interrupt (PH)
 #define PH_EINT 53
 
+static struct i2c_master_s *touch_panel_i2c;
+
 // Interrupt Handler for Touch Panel
 static int touch_panel_interrupt(int irq, void *context, void *arg)
 {
-  // Poll the Touch Panel Interrupt as GPIO Input
-  static bool prev_val = false;
+  DEBUGASSERT(touch_panel_i2c != NULL);
 
   // Read the GPIO Input
+  static bool prev_val = false;
   bool val = a64_pio_read(CTP_INT);
 
   // Print if value has changed
   if (val != prev_val) {
     if (val) { up_putc('+'); }
     else     { up_putc('-'); }
+    prev_val = val;
   }
-  prev_val = val;
+
+  // Read the Touch Panel over I2C
+  touch_panel_read(touch_panel_i2c);
+
   return OK;
 }
 
 // Register the Interrupt Handler for Touch Panel
-void touch_panel_initialize(void)
+void touch_panel_initialize(struct i2c_master_s *i2c)
 {
-  int ret;
+  // Pass the I2C Bus to the Interrupt Handler
+  touch_panel_i2c = i2c;
 
   // Configure the Touch Panel Interrupt
-  ret = a64_pio_config(CTP_INT);
+  int ret = a64_pio_config(CTP_INT);
   DEBUGASSERT(ret == 0);
 
   // Un-mask the interrupt by setting the corresponding bit in the PIO INT CTL register.
@@ -258,21 +280,6 @@ void touch_panel_initialize(void)
 // Configure for GPIO Input
 #define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
 
-#define CTP_FREQ 400000  // I2C Frequency: 400 kHz
-#define CTP_I2C_ADDR 0x5d  // Default I2C Address for Goodix GT917S
-
-static void touch_panel_read(struct i2c_master_s *i2c);
-static int touch_panel_i2c_read(
-  struct i2c_master_s *i2c,  // I2C Bus
-  uint16_t reg,  // I2C Register
-  uint8_t *buf,  // Receive Buffer
-  size_t buflen  // Receive Buffer Size
-);
-static int touch_panel_set_status(
-  struct i2c_master_s *i2c,  // I2C Bus
-  uint8_t status  // Status value to be set
-);
-
 // Poll for Touch Panel Interrupt (PH4) by reading as GPIO Input
 void touch_panel_initialize(struct i2c_master_s *i2c)
 {
@@ -308,6 +315,8 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
     up_mdelay(10);
   }
 }
+
+#endif  // !TEST_INTERRUPT
 
 // ReadOnly registers (device and coordinates info)
 // Product ID (LSB 4 bytes)
@@ -435,5 +444,3 @@ static int touch_panel_set_status(
   if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
   return OK;
 }
-
-#endif  // !TEST_INTERRUPT
