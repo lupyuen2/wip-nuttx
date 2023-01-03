@@ -276,7 +276,7 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
 
   // Poll the Touch Panel Interrupt as GPIO Input
   bool prev_val = false;
-  for (int i = 0; i < 2000; i++) {  // Poll for 20 seconds
+  for (int i = 0; i < 6000; i++) {  // Poll for 60 seconds
 
     // Read the GPIO Input
     bool val = a64_pio_read(CTP_INT);
@@ -289,7 +289,7 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
       else     { up_putc('-'); }
       prev_val = val;
 
-      // If value is High...
+      // If we have just transitioned from Low to High...
       if (val) {
 
         // Read the Touch Panel over I2C
@@ -327,7 +327,12 @@ static void touch_panel_read(struct i2c_master_s *i2c)
   touch_panel_i2c_read(i2c, GOODIX_REG_ID, id, sizeof(id));
   // Shows "39 31 37 53" or "917S"
 
-  // Read the Touched Coordinates
+  // Request for Touch Coordinates
+  uint8_t req[1];
+  touch_panel_i2c_read(i2c, GOODIX_READ_COORD_ADDR, req, sizeof(req));
+  // Shows "80"
+
+  // Read the Touch Coordinates
   uint8_t touch[6];
   touch_panel_i2c_read(i2c, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
   // Shows "80 00 00 00 00 00"
