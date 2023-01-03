@@ -259,6 +259,12 @@ void touch_panel_initialize(void)
 #define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
 
 static void touch_panel_read(struct i2c_master_s *i2c);
+static int touch_panel_i2c_read(
+  struct i2c_master_s *i2c,  // I2C Bus
+  uint16_t reg,  // I2C Register
+  uint8_t *buf,  // Receive Buffer
+  size_t buflen  // Receive Buffer Size
+);
 
 // Poll for Touch Panel Interrupt (PH4) by reading as GPIO Input
 void touch_panel_initialize(struct i2c_master_s *i2c)
@@ -270,7 +276,8 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
 
   // Poll the Touch Panel Interrupt as GPIO Input
   bool prev_val = false;
-  for (int i = 0; i < 500; i++) {  // Poll for 5 seconds
+  for (int i = 0; i < 2000; i++) {  // Poll for 20 seconds
+
     // Read the GPIO Input
     bool val = a64_pio_read(CTP_INT);
 
@@ -311,20 +318,33 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
 #define GOODIX_READ_COORD_ADDR 0x814E
 
 #define GOODIX_POINT1_X_ADDR 0x8150
-#define GOODIX_POINT1_Y_ADDR 0x8152
 
 // Read Touch Panel over I2C
 static void touch_panel_read(struct i2c_master_s *i2c)
 {
+  // Read the Product ID
+  uint8_t id[4];
+  touch_panel_i2c_read(i2c, GOODIX_REG_ID, id, sizeof(id));
+  // Shows "39 31 37 53" or "917S"
+
+  // Read the Touched Coordinates
+  uint8_t touch[6];
+  touch_panel_i2c_read(i2c, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
+  // Shows "80 00 00 00 00 00"
+}
+
+static int touch_panel_i2c_read(
+  struct i2c_master_s *i2c,  // I2C Bus
+  uint16_t reg,  // I2C Register
+  uint8_t *buf,  // Receive Buffer
+  size_t buflen  // Receive Buffer Size
+) {
   uint32_t freq = 400000;  // 400 kHz
   uint16_t addr = 0x5d;  // Default I2C Address for Goodix GT917S
-  uint16_t reg = GOODIX_REG_ID;  // Read Product ID
   uint8_t regbuf[2] = { reg >> 8, reg & 0xff };  // Flip the bytes
 
   // Erase the receive buffer
-  uint8_t buf[4];
-  ssize_t buflen = sizeof(buf);
-  memset(buf, 0xff, sizeof(buf));
+  memset(buf, 0xff, buflen);
 
   // Compose the I2C Messages
   struct i2c_msg_s msgv[2] =
@@ -347,10 +367,11 @@ static void touch_panel_read(struct i2c_master_s *i2c)
 
   // Execute the I2C Transfer
   int ret = I2C_TRANSFER(i2c, msgv, 2);
-  if (ret < 0) { _err("I2C Error: %d\n", ret); return; }
+  if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
 
   // Dump the receive buffer
   infodumpbuffer("buf", buf, buflen);
-  // Shows "39 31 37 53" or "917S"
+  return OK;
 }
-#endif
+
+#endif  // !TEST_INTERRUPT
