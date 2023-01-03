@@ -154,6 +154,120 @@ int pinephone_bringup(void)
     }
 #endif
 
+  //
+  void touch_panel_initialize(void);
+  touch_panel_initialize();
+  //
+
   UNUSED(ret);
   return OK;
 }
+
+// Testing Touch Panel
+#include <nuttx/arch.h>
+#include <debug.h>
+#include "arm64_arch.h"
+
+#define TEST_INTERRUPT
+#ifdef TEST_INTERRUPT
+// Test Touch Panel Interrupt
+// Touch Panel Interrupt (CTP-INT) is at PH4
+#define CTP_INT (PIO_EINT | PIO_PORT_PIOH | PIO_PIN4)
+#define CTP_INT_PIN 4
+
+// IRQ for Touch Panel Interrupt (PH)
+#define PH_EINT 53
+
+// Interrupt Handler for Touch Panel
+static int touch_panel_interrupt(int irq, void *context, void *arg)
+{
+  // Poll the Touch Panel Interrupt as GPIO Input
+  static bool prev_val = false;
+
+  // Read the GPIO Input
+  bool val = a64_pio_read(CTP_INT);
+
+  // Print if value has changed
+  if (val != prev_val) {
+    if (val) { up_putc('+'); }
+    else     { up_putc('-'); }
+  }
+  prev_val = val;
+  return OK;
+}
+
+// Register the Interrupt Handler for Touch Panel
+void touch_panel_initialize(void)
+{
+  int ret;
+
+  // Configure the Touch Panel Interrupt
+  ret = a64_pio_config(CTP_INT);
+  DEBUGASSERT(ret == 0);
+
+  // Un-mask the interrupt by setting the corresponding bit in the PIO INT CTL register.
+  int pin = CTP_INT_PIN;
+
+  // PH_EINT_CTL_REG (Interrupt Control Register for PH4) at Offset 0x250
+  #define PH_EINT_CTL_REG (0x1c20800 + 0x250)
+  _info("v=0x%x, m=0x%x, a=0x%x\n", PIO_INT_CTL(pin), PIO_INT_CTL(pin), PH_EINT_CTL_REG);
+  // Shows touch_panel_initialize: v=0x10, m=0x10, a=0x1c20a50
+
+  // Enter Critical Section
+  irqstate_t flags;
+  flags = enter_critical_section();
+
+  // Enable the Touch Panel Interrupt
+  modreg32(
+    PIO_INT_CTL(pin),  // Value
+    PIO_INT_CTL(pin),  // Mask
+    PH_EINT_CTL_REG    // Address
+  );
+
+  // Leave Critical Section
+  leave_critical_section(flags);
+
+  // TODO: Disable all external PIO interrupts
+  // putreg32(0, A1X_PIO_INT_CTL);
+
+  // Attach the PIO interrupt handler
+  if (irq_attach(PH_EINT, touch_panel_interrupt, NULL) < 0)
+    {
+      _err("irq_attach failed\n");
+      return;
+    }
+
+  // And enable the PIO interrupt
+  up_enable_irq(PH_EINT);
+}
+
+#else
+// Test Touch Panel Interrupt by Polling as GPIO Input.
+// Touch Panel Interrupt (CTP-INT) is at PH4.
+// Configure for GPIO Input
+#define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
+
+// Poll for Touch Panel Interrupt (PH4) by reading as GPIO Input
+void touch_panel_initialize(void)
+{
+
+  // Configure the Touch Panel Interrupt for GPIO Input
+  int ret = a64_pio_config(CTP_INT);
+  DEBUGASSERT(ret == 0);
+
+  // Poll the Touch Panel Interrupt as GPIO Input
+  bool prev_val = false;
+  for (int i = 0; i < 500; i++) {  // Poll for 5 seconds
+    // Read the GPIO Input
+    bool val = a64_pio_read(CTP_INT);
+
+    // Print if value has changed
+    if (val != prev_val) {
+      if (val) { up_putc('+'); }
+      else     { up_putc('-'); }
+    }
+    prev_val = val;
+    up_mdelay(10);
+  }
+}
+#endif
