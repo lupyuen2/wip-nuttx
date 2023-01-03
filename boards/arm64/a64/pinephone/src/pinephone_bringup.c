@@ -357,11 +357,12 @@ static void touch_panel_read(struct i2c_master_s *i2c)
     // Read the First Touch Coordinates
     uint8_t touch[6];
     touch_panel_i2c_read(i2c, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
-    // Shows "9f 01 31 02 2f 00"
+    // Shows "92 02 59 05 1b 00"
 
     const uint16_t x = touch[0] + (touch[1] << 8);
     const uint16_t y = touch[2] + (touch[3] << 8);
     _info("touch x=%d, y=%d\n", x, y);
+    // Shows "touch x=658, y=1369"
   }
 
   // Set the Touch Panel Status to 0
