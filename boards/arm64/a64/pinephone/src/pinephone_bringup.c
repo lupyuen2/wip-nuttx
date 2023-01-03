@@ -154,10 +154,21 @@ int pinephone_bringup(void)
     }
 #endif
 
-  //
-  void touch_panel_initialize(void);
-  touch_panel_initialize();
-  //
+  ////TODO: Begin
+#if defined(CONFIG_I2C) && defined(CONFIG_A64_TWI0)
+  i2c_bus = 0;
+  i2c = a64_i2cbus_initialize(i2c_bus);
+  if (i2c == NULL)
+    {
+      syslog(LOG_ERR, "ERROR: Failed to get I2C%d interface\n", i2c_bus);
+    }
+  else
+    {
+      void touch_panel_initialize(void);
+      touch_panel_initialize();
+    }
+#endif
+  ////TODO: End
 
   UNUSED(ret);
   return OK;
@@ -168,7 +179,7 @@ int pinephone_bringup(void)
 #include <debug.h>
 #include "arm64_arch.h"
 
-#define TEST_INTERRUPT
+////#define TEST_INTERRUPT
 #ifdef TEST_INTERRUPT
 // Test Touch Panel Interrupt
 // Touch Panel Interrupt (CTP-INT) is at PH4
@@ -265,8 +276,10 @@ void touch_panel_initialize(void)
     if (val != prev_val) {
       if (val) { up_putc('+'); }
       else     { up_putc('-'); }
+      prev_val = val;
     }
-    prev_val = val;
+
+    // Wait a while
     up_mdelay(10);
   }
 }
