@@ -296,7 +296,6 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
 }
 
 // ReadOnly registers (device and coordinates info)
-// Product ID (LSB 4 bytes, GT9110: 0x06 0x00 0x00 0x09)
 #define GOODIX_REG_ID 0x8140
 // Firmware version (LSB 2 bytes)
 #define GOODIX_REG_FW_VER 0x8144
