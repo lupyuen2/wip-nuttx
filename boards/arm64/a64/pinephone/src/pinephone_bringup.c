@@ -164,8 +164,8 @@ int pinephone_bringup(void)
     }
   else
     {
-      void touch_panel_initialize(void);
-      touch_panel_initialize();
+      void touch_panel_initialize(struct i2c_master_s *i2c);
+      touch_panel_initialize(i2c);
     }
 #endif
   ////TODO: End
@@ -258,8 +258,10 @@ void touch_panel_initialize(void)
 // Configure for GPIO Input
 #define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
 
+static void touch_panel_read(struct i2c_master_s *i2c);
+
 // Poll for Touch Panel Interrupt (PH4) by reading as GPIO Input
-void touch_panel_initialize(void)
+void touch_panel_initialize(struct i2c_master_s *i2c)
 {
 
   // Configure the Touch Panel Interrupt for GPIO Input
@@ -277,10 +279,73 @@ void touch_panel_initialize(void)
       if (val) { up_putc('+'); }
       else     { up_putc('-'); }
       prev_val = val;
+
+      if (val) {
+        touch_panel_read(i2c);
+      }
     }
 
     // Wait a while
     up_mdelay(10);
   }
+}
+
+// ReadOnly registers (device and coordinates info)
+// Product ID (LSB 4 bytes, GT9110: 0x06 0x00 0x00 0x09)
+#define GOODIX_REG_ID 0x8140
+// Firmware version (LSB 2 bytes)
+#define GOODIX_REG_FW_VER 0x8144
+
+// Current output X resolution (LSB 2 bytes)
+#define GOODIX_READ_X_RES 0x8146
+// Current output Y resolution (LSB 2 bytes)
+#define GOODIX_READ_Y_RES 0x8148
+// Module vendor ID
+#define GOODIX_READ_VENDOR_ID 0x814A
+
+#define GOODIX_READ_COORD_ADDR 0x814E
+
+#define GOODIX_POINT1_X_ADDR 0x8150
+#define GOODIX_POINT1_Y_ADDR 0x8152
+
+// Read Touch Panel over I2C
+static void touch_panel_read(struct i2c_master_s *i2c)
+{
+  uint32_t freq = 400000;  // TODO
+  uint16_t addr = 0x5d;
+  uint16_t reg = GOODIX_REG_ID;
+  uint8_t buf[4];
+  ssize_t buflen = sizeof(buf);
+
+  // Erase the buffer
+  memset(buf, 0xff, sizeof(buf));
+
+  // Compose the I2C Messages
+  struct i2c_msg_s msgv[2] =
+  {
+    {
+      .frequency = freq,
+      .addr      = addr,
+#ifdef CONFIG_BL602_I2C0
+      .flags     = I2C_M_NOSTART,  /* BL602 must send Register ID as Sub Address */
+#else
+      .flags     = 0,  /* Otherwise send Register ID normally */
+#endif /* CONFIG_BL602_I2C0 */
+      .buffer    = (uint8_t *)&reg,
+      .length    = sizeof(reg)
+    },
+    {
+      .frequency = freq,
+      .addr      = addr,
+      .flags     = I2C_M_READ,
+      .buffer    = buf,
+      .length    = buflen
+    }
+  };
+
+  // Execute the I2C Transfer
+  int ret = I2C_TRANSFER(i2c, msgv, 2);
+  if (ret < 0) { _err("I2C Error: %d\n", ret); return; }
+  infodumpbuffer("buf", buf, buflen);
 }
 #endif
