@@ -105,6 +105,7 @@ int pinephone_bringup(void)
 #include <debug.h>
 #include "arm64_arch.h"
 
+#define TEST_INTERRUPT
 #ifdef TEST_INTERRUPT
 // Test Touch Panel Interrupt
 // Touch Panel Interrupt (CTP-INT) is at PH4
@@ -117,8 +118,18 @@ int pinephone_bringup(void)
 // Interrupt Handler for Touch Panel
 static int touch_panel_interrupt(int irq, void *context, void *arg)
 {
-  // Print something
-  up_putc('.');
+  // Poll the Touch Panel Interrupt as GPIO Input
+  static bool prev_val = false;
+
+  // Read the GPIO Input
+  bool val = a64_pio_read(CTP_INT);
+
+  // Print if value has changed
+  if (val != prev_val) {
+    if (val) { up_putc('+'); }
+    else     { up_putc('-'); }
+  }
+  prev_val = val;
   return OK;
 }
 
