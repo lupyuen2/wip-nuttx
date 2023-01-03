@@ -183,7 +183,7 @@ void touch_panel_initialize(void)
 
   // Poll the Touch Panel Interrupt as GPIO Input
   bool prev_val = false;
-  for (int i = 0; i < 500; i++) {
+  for (int i = 0; i < 500; i++) {  // Poll for 5 seconds
     // Read the GPIO Input
     bool val = a64_pio_read(CTP_INT);
 
