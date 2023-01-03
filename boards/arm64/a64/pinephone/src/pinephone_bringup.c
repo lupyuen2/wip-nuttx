@@ -313,7 +313,11 @@ static void touch_panel_read(struct i2c_master_s *i2c)
 {
   uint32_t freq = 400000;  // TODO
   uint16_t addr = 0x5d;
-  uint16_t reg = GOODIX_REG_ID;
+  ////uint16_t reg = GOODIX_REG_ID;
+  uint16_t reg = 0x4081;////
+
+  
+
   uint8_t buf[4];
   ssize_t buflen = sizeof(buf);
 
