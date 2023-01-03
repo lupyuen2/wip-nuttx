@@ -194,7 +194,7 @@ static int touch_panel_set_status(
   uint8_t status  // Status value to be set
 );
 
-#define TEST_INTERRUPT
+////#define TEST_INTERRUPT
 #ifdef TEST_INTERRUPT
 // Test Touch Panel Interrupt
 // Touch Panel Interrupt (CTP-INT) is at PH4
