@@ -274,13 +274,18 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
     // Read the GPIO Input
     bool val = a64_pio_read(CTP_INT);
 
-    // Print if value has changed
+    // If value has changed...
     if (val != prev_val) {
+
+      // Print the value
       if (val) { up_putc('+'); }
       else     { up_putc('-'); }
       prev_val = val;
 
+      // If value is High...
       if (val) {
+
+        // Read the Touch Panel over I2C
         touch_panel_read(i2c);
       }
     }
@@ -311,17 +316,14 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
 // Read Touch Panel over I2C
 static void touch_panel_read(struct i2c_master_s *i2c)
 {
-  uint32_t freq = 400000;  // TODO
-  uint16_t addr = 0x5d;
-  ////uint16_t reg = GOODIX_REG_ID;
-  uint16_t reg = 0x4081;////
+  uint32_t freq = 400000;  // 400 kHz
+  uint16_t addr = 0x5d;  // Default I2C Address for Goodix GT917S
+  uint16_t reg = GOODIX_REG_ID;  // Read Product ID
+  uint8_t regbuf[2] = { reg >> 8, reg & 0xff };  // Flip the bytes
 
-  
-
+  // Erase the receive buffer
   uint8_t buf[4];
   ssize_t buflen = sizeof(buf);
-
-  // Erase the buffer
   memset(buf, 0xff, sizeof(buf));
 
   // Compose the I2C Messages
@@ -330,13 +332,9 @@ static void touch_panel_read(struct i2c_master_s *i2c)
     {
       .frequency = freq,
       .addr      = addr,
-#ifdef CONFIG_BL602_I2C0
-      .flags     = I2C_M_NOSTART,  /* BL602 must send Register ID as Sub Address */
-#else
-      .flags     = 0,  /* Otherwise send Register ID normally */
-#endif /* CONFIG_BL602_I2C0 */
-      .buffer    = (uint8_t *)&reg,
-      .length    = sizeof(reg)
+      .flags     = 0,
+      .buffer    = regbuf,
+      .length    = sizeof(regbuf)
     },
     {
       .frequency = freq,
@@ -350,6 +348,9 @@ static void touch_panel_read(struct i2c_master_s *i2c)
   // Execute the I2C Transfer
   int ret = I2C_TRANSFER(i2c, msgv, 2);
   if (ret < 0) { _err("I2C Error: %d\n", ret); return; }
+
+  // Dump the receive buffer
   infodumpbuffer("buf", buf, buflen);
+  // Shows "39 31 37 53" or "917S"
 }
 #endif
