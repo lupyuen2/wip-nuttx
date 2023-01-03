@@ -168,8 +168,8 @@ void touch_panel_initialize(void)
 }
 
 #else
-// Test Touch Panel Interrupt by Polling as GPIO Inpuy
-// Touch Panel Interrupt (CTP-INT) is at PH4
+// Test Touch Panel Interrupt by Polling as GPIO Input.
+// Touch Panel Interrupt (CTP-INT) is at PH4.
 // Configure for GPIO Input
 #define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
 
