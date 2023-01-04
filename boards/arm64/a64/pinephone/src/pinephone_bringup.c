@@ -309,7 +309,7 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
   // putreg32(0, A1X_PIO_INT_CTL);
 
   // Attach the PIO interrupt handler
-  if (irq_attach(PH_EINT, gt9xx_isr_handler, NULL) < 0)
+  if (irq_attach(PH_EINT, gt9xx_isr_handler, priv) < 0)
     {
       _err("irq_attach failed\n");
       return ERROR;
