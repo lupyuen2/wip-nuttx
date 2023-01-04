@@ -318,6 +318,24 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
   // And enable the PIO interrupt
   up_enable_irq(PH_EINT);
 
+  // Poll for Touch Panel Interrupt
+  // TODO: Move this
+  for (int i = 0; i < 6000; i++) {  // Poll for 60 seconds
+
+    // If Touch Panel Interrupt has been triggered...
+    if (priv->int_pending) {
+
+      // Read the Touch Panel over I2C
+      touch_panel_read(i2c_dev);
+
+      // Reset the Interrupt Pending Flag
+      priv->int_pending = false;
+    }
+
+    // Wait a while
+    up_mdelay(10);  // 10 milliseconds
+  }
+
   // TODO: Register Touch Input Driver
   // ret = register_driver(devpath, &g_gt9xx_fileops, 0666, priv);
   // if (ret < 0)
@@ -328,7 +346,7 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
   //     return ret;
   //   }
 
-  _info("Registered with %d\n", ret);  // TODO
+  // _info("Registered with %d\n", ret);  // TODO
 
   /* TODO: Prepare interrupt line and handler. */
   // priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
@@ -375,7 +393,7 @@ int touch_panel_initialize(struct i2c_master_s *i2c)
     }
 
     // Wait a while
-    up_mdelay(10);
+    up_mdelay(10);  // 10 milliseconds
   }
 }
 
