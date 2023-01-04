@@ -164,8 +164,9 @@ int pinephone_bringup(void)
     }
   else
     {
-      void touch_panel_initialize(struct i2c_master_s *i2c);
-      touch_panel_initialize(i2c);
+      int touch_panel_initialize(struct i2c_master_s *i2c);
+      int ret2 = touch_panel_initialize(i2c);
+      DEBUGASSERT(ret2 == 0);
     }
 #endif
   ////TODO: End
@@ -175,8 +176,20 @@ int pinephone_bringup(void)
 }
 
 // Testing Touch Panel
-#include <nuttx/arch.h>
+#include <nuttx/config.h>
+#include <sys/types.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
+#include <poll.h>
+#include <assert.h>
+#include <errno.h>
 #include <debug.h>
+
+#include <nuttx/arch.h>
+#include <nuttx/kmalloc.h>
+#include <nuttx/signal.h>
+#include <nuttx/i2c/i2c_master.h>
 #include "arm64_arch.h"
 
 #define CTP_FREQ 400000  // I2C Frequency: 400 kHz
@@ -194,7 +207,7 @@ static int touch_panel_set_status(
   uint8_t status  // Status value to be set
 );
 
-////#define TEST_INTERRUPT
+#define TEST_INTERRUPT
 #ifdef TEST_INTERRUPT
 // Test Touch Panel Interrupt
 // Touch Panel Interrupt (CTP-INT) is at PH4
@@ -204,35 +217,67 @@ static int touch_panel_set_status(
 // IRQ for Touch Panel Interrupt (PH)
 #define PH_EINT 53
 
-static struct i2c_master_s *touch_panel_i2c;
+#define GT9XX_NPOLLWAITERS 10  // Number of poll waiters supported
+
+struct gt9xx_dev_s
+{
+  /* I2C bus and address for device */
+
+  struct i2c_master_s *i2c;
+  uint8_t addr;
+
+  /* Configuration for device */
+
+  mutex_t devlock;
+  uint8_t cref;
+  bool int_pending;
+
+  /* Poll Waiters for device */
+
+  struct pollfd *fds[GT9XX_NPOLLWAITERS];
+};
 
 // Interrupt Handler for Touch Panel
-static int touch_panel_interrupt(int irq, void *context, void *arg)
+static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
-  DEBUGASSERT(touch_panel_i2c != NULL);
+  FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
+  irqstate_t flags;
 
-  // Read the GPIO Input
-  static bool prev_val = false;
-  bool val = a64_pio_read(CTP_INT);
+  DEBUGASSERT(priv != NULL);
 
-  // Print if value has changed
-  if (val != prev_val) {
-    if (val) { up_putc('+'); }
-    else     { up_putc('-'); }
-    prev_val = val;
-  }
+  // Set the Interrupt Pending Flag
+  flags = enter_critical_section();
+  priv->int_pending = true;
+  leave_critical_section(flags);
 
-  // Read the Touch Panel over I2C
-  touch_panel_read(touch_panel_i2c);
-
-  return OK;
+  // Notify the Poll Waiters
+  poll_notify(priv->fds, GT9XX_NPOLLWAITERS, POLLIN);
+  return 0;
 }
 
 // Register the Interrupt Handler for Touch Panel
-void touch_panel_initialize(struct i2c_master_s *i2c)
+int touch_panel_initialize(struct i2c_master_s *i2c_dev)
 {
-  // Pass the I2C Bus to the Interrupt Handler
-  touch_panel_i2c = i2c;
+  uint8_t i2c_devaddr = CTP_I2C_ADDR;
+
+  /* Allocate device private structure */
+
+  struct gt9xx_dev_s *priv;
+  priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
+  if (!priv)
+    {
+      _err("Memory cannot be allocated for gt9xx sensor\n");  // TODO
+      return -ENOMEM;
+    }
+
+  /* Setup device structure. */
+
+  priv->addr = i2c_devaddr;
+  priv->i2c = i2c_dev;
+  // TODO: priv->board = board_config;
+  // TODO: priv->sensor_conf = sensor_conf;
+
+  nxmutex_init(&priv->devlock);
 
   // Configure the Touch Panel Interrupt
   int ret = a64_pio_config(CTP_INT);
@@ -264,14 +309,32 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
   // putreg32(0, A1X_PIO_INT_CTL);
 
   // Attach the PIO interrupt handler
-  if (irq_attach(PH_EINT, touch_panel_interrupt, NULL) < 0)
+  if (irq_attach(PH_EINT, gt9xx_isr_handler, NULL) < 0)
     {
       _err("irq_attach failed\n");
-      return;
+      return ERROR;
     }
 
   // And enable the PIO interrupt
   up_enable_irq(PH_EINT);
+
+  // TODO: Register Touch Input Driver
+  // ret = register_driver(devpath, &g_gt9xx_fileops, 0666, priv);
+  // if (ret < 0)
+  //   {
+  //     nxmutex_destroy(&priv->devlock);
+  //     kmm_free(priv);
+  //     gt9xx_dbg("Error occurred during the driver registering\n");
+  //     return ret;
+  //   }
+
+  _info("Registered with %d\n", ret);  // TODO
+
+  /* TODO: Prepare interrupt line and handler. */
+  // priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
+  // priv->board->irq_enable(priv->board, false);
+
+  return OK;
 }
 
 #else
@@ -281,7 +344,7 @@ void touch_panel_initialize(struct i2c_master_s *i2c)
 #define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
 
 // Poll for Touch Panel Interrupt (PH4) by reading as GPIO Input
-void touch_panel_initialize(struct i2c_master_s *i2c)
+int touch_panel_initialize(struct i2c_master_s *i2c)
 {
 
   // Configure the Touch Panel Interrupt for GPIO Input
