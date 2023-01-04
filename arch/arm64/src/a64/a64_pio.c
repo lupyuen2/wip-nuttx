@@ -42,7 +42,7 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Name: a64_pio_pin
+ * Name: a64_pio_port
  *
  * Description:
  *   Return the Port Number for the bit-encoded description of the pin.
@@ -61,6 +61,42 @@ static inline int a64_pio_port(pio_pinset_t cfgset)
 
   DEBUGASSERT(port >= PIO_REG_PORTB && port <= PIO_REG_PORTL);
   return port;
+}
+
+/****************************************************************************
+ * Name: a64_pio_ext
+ *
+ * Description:
+ *   Return the External Port Number for the bit-encoded description of the
+ *   pin.
+ *
+ * Input Parameters:
+ *   cfgset - Bit-encoded description of a pin that supports External
+ *            Interrupts
+ *
+ * Returned Value:
+ *   0 for Port B, 1 for Port G, 2 for Port H, -1 otherwise
+ *
+ ****************************************************************************/
+
+static inline int a64_pio_ext(pio_pinset_t cfgset)
+{
+  int port = (cfgset & PIO_PORT_MASK) >> PIO_PORT_SHIFT;
+
+  switch (port)
+    {
+      case PIO_REG_PORTB:
+        return 0;
+
+      case PIO_REG_PORTG:
+        return 1;
+
+      case PIO_REG_PORTH:
+        return 2;
+
+      default:
+        return -1; /* External Interrupt not supported for the Port */
+    }
 }
 
 /****************************************************************************
@@ -106,6 +142,7 @@ static inline int a64_pio_pin(pio_pinset_t cfgset)
 int a64_pio_config(pio_pinset_t cfgset)
 {
   unsigned int port = a64_pio_port(cfgset);
+  unsigned int ext  = a64_pio_ext(cfgset);
   unsigned int pin  = a64_pio_pin(cfgset);
   unsigned int shift;
   unsigned int value;
@@ -131,7 +168,7 @@ int a64_pio_config(pio_pinset_t cfgset)
                   A64_PIO_CFG0(port);
         intaddr = (port == PIO_REG_PORTL) ?
                   A64_RPIO_INT_CFG0 :
-                  A64_PIO_INT_CFG0;
+                  A64_PIO_INT_CFG0(ext);
         break;
 
       case 1: /* PIO 8-15 */
@@ -140,7 +177,7 @@ int a64_pio_config(pio_pinset_t cfgset)
                   A64_PIO_CFG1(port);
         intaddr = (port == PIO_REG_PORTL) ?
                   A64_RPIO_INT_CFG1 :
-                  A64_PIO_INT_CFG1;
+                  A64_PIO_INT_CFG1(ext);
         break;
 
       case 2: /* PIO 16-23 */
@@ -149,7 +186,7 @@ int a64_pio_config(pio_pinset_t cfgset)
                   A64_PIO_CFG2(port);
         intaddr = (port == PIO_REG_PORTL) ?
                   A64_RPIO_INT_CFG2 :
-                  A64_PIO_INT_CFG2;
+                  A64_PIO_INT_CFG2(ext);
         break;
 
       case 3: /* PIO 24-31 */
@@ -158,7 +195,7 @@ int a64_pio_config(pio_pinset_t cfgset)
                   A64_PIO_CFG3(port);
         intaddr = (port == PIO_REG_PORTL) ?
                   A64_RPIO_INT_CFG3 :
-                  A64_PIO_INT_CFG3;
+                  A64_PIO_INT_CFG3(ext);
         break;
 
       default:
@@ -180,12 +217,13 @@ int a64_pio_config(pio_pinset_t cfgset)
 
   if ((cfgset & PIO_EINT_MASK) == PIO_EINT)
     {
-      value = (cfgset & PIO_INT_MASK) >> PIO_INT_SHIFT;
+      if (ext < 0)
+        {
+          gpioerr("External Interrupt not supported for Port %d\n", port);
+          return -EINVAL;
+        }
 
-      //// TODO: PH_EINT_CFG0_REG at offset 0x240
-      intaddr = 0x1c20800 + 0x240; //// Previously 0x1c20a00
-      _info("cfgaddr=%p, intaddr=%p, value=0x%x, shift=%d\n", cfgaddr, intaddr, value, shift); ////
-      //// Shows: a64_pio_config: cfgaddr=0x1c208fc, intaddr=0x1c20a40, value=0x0, shift=16
+      value = (cfgset & PIO_INT_MASK) >> PIO_INT_SHIFT;
 
       regval = getreg32(intaddr);
       regval &= ~(7 << shift);
@@ -332,3 +370,5 @@ bool a64_pio_read(pio_pinset_t pinset)
   regval  = getreg32(regaddr);
   return ((regval & PIO_DAT(pin)) != 0);
 }
+
+////TODO: Register Interrupt Handler
