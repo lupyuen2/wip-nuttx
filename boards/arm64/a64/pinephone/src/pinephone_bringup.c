@@ -259,9 +259,9 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 int touch_panel_initialize(struct i2c_master_s *i2c_dev)
 {
   uint8_t i2c_devaddr = CTP_I2C_ADDR;
+  int ret;
 
-  /* Allocate device private structure */
-
+  // Allocate device private structure
   struct gt9xx_dev_s *priv;
   priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
   if (!priv)
@@ -270,53 +270,28 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
       return -ENOMEM;
     }
 
-  /* Setup device structure. */
-
+  // Setup device structure
   priv->addr = i2c_devaddr;
   priv->i2c = i2c_dev;
-  // TODO: priv->board = board_config;
-  // TODO: priv->sensor_conf = sensor_conf;
-
   nxmutex_init(&priv->devlock);
 
-  // Configure the Touch Panel Interrupt
-  int ret = a64_pio_config(CTP_INT);
-  DEBUGASSERT(ret == 0);
-
-  // Un-mask the interrupt by setting the corresponding bit in the PIO INT CTL register.
-  int pin = CTP_INT_PIN;
-
-  // PH_EINT_CTL_REG (Interrupt Control Register for PH4) at Offset 0x250
-  #define PH_EINT_CTL_REG (0x1c20800 + 0x250)
-  _info("v=0x%x, m=0x%x, a=0x%x\n", PIO_INT_CTL(pin), PIO_INT_CTL(pin), PH_EINT_CTL_REG);
-  // Shows touch_panel_initialize: v=0x10, m=0x10, a=0x1c20a50
-
-  // Enter Critical Section
-  irqstate_t flags;
-  flags = enter_critical_section();
-
-  // Enable the Touch Panel Interrupt
-  modreg32(
-    PIO_INT_CTL(pin),  // Value
-    PIO_INT_CTL(pin),  // Mask
-    PH_EINT_CTL_REG    // Address
-  );
-
-  // Leave Critical Section
-  leave_critical_section(flags);
-
-  // TODO: Disable all external PIO interrupts
-  // putreg32(0, A1X_PIO_INT_CTL);
-
-  // Attach the PIO interrupt handler
+  // Attach the PIO Interrupt Handler
   if (irq_attach(PH_EINT, gt9xx_isr_handler, priv) < 0)
     {
       _err("irq_attach failed\n");
       return ERROR;
     }
 
-  // And enable the PIO interrupt
+  // Enable the PIO Interrupt
   up_enable_irq(PH_EINT);
+
+  // Configure the Touch Panel Interrupt
+  ret = a64_pio_config(CTP_INT);
+  DEBUGASSERT(ret == 0);
+
+  // Enable the Touch Panel Interrupt
+  ret = a64_pio_irqenable(CTP_INT);
+  DEBUGASSERT(ret == 0);
 
   // Poll for Touch Panel Interrupt
   // TODO: Move this
@@ -348,7 +323,7 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
 
   // _info("Registered with %d\n", ret);  // TODO
 
-  /* TODO: Prepare interrupt line and handler. */
+  // TODO: Prepare interrupt line and handler
   // priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
   // priv->board->irq_enable(priv->board, false);
 

@@ -122,6 +122,56 @@ static inline int a64_pio_pin(pio_pinset_t cfgset)
 }
 
 /****************************************************************************
+ * Name: a64_pio_pin
+ *
+ * Description:
+ *   Enable or disable the interrupt for specified PIO pin.  Only Ports B, G
+ *   and H are supported for interrupts.
+ *
+ * Input Parameters:
+ *   pinset - Bit-encoded description of a pin. Port should be B, G or H.
+ *   enable - True to enable interrupt; False to disable.
+ *
+ * Returned Value:
+ *   Zero (OK) on success; -EINVAL if pin is not from Port B, G or H.
+ *
+ ****************************************************************************/
+
+static int a64_pio_irq(pio_pinset_t pinset, bool enable)
+{
+  const unsigned int port = a64_pio_port(pinset);
+  const unsigned int ext  = a64_pio_ext(pinset);
+  const unsigned int pin  = a64_pio_pin(pinset);
+  const uint32_t pin_mask = PIO_INT_CTL(pin);
+  const uint32_t pin_val  = enable ? pin_mask : 0;
+  const unsigned long pin_addr = A64_PIO_INT_CTL(ext);
+  irqstate_t flags;
+
+  if (ext < 0)
+    {
+      gpioerr("External Interrupt not supported for Port %d\n", port);
+      return -EINVAL;
+    }
+
+  // PH_EINT_CTL_REG (Interrupt Control Register for PH4) at Offset 0x250
+  #define PH_EINT_CTL_REG (0x1c20800 + 0x250)
+  _info("v=0x%x, m=0x%x, a=0x%x\n", PIO_INT_CTL(pin), PIO_INT_CTL(pin), PH_EINT_CTL_REG);
+  // Shows touch_panel_initialize: v=0x10, m=0x10, a=0x1c20a50
+  DEBUGASSERT(PH_EINT_CTL_REG == pin_addr); ////
+
+  // Enter Critical Section
+  flags = enter_critical_section();
+
+  // Enable the Interrupt
+  modreg32(pin_val, pin_mask, pin_addr);
+
+  // Leave Critical Section
+  leave_critical_section(flags);
+
+  return OK;
+}
+
+/****************************************************************************
  * Public Functions
  ****************************************************************************/
 
@@ -371,4 +421,42 @@ bool a64_pio_read(pio_pinset_t pinset)
   return ((regval & PIO_DAT(pin)) != 0);
 }
 
-////TODO: Register Interrupt Handler
+/****************************************************************************
+ * Name: a64_pio_irqenable
+ *
+ * Description:
+ *   Enable the interrupt for specified PIO pin.  Only Ports B, G and H are
+ *   supported for interrupts.
+ *
+ * Input Parameters:
+ *   cfgset - Bit-encoded description of a pin. Port should be B, G or H.
+ *
+ * Returned Value:
+ *   Zero (OK) on success; -EINVAL if pin is not from Port B, G or H.
+ *
+ ****************************************************************************/
+
+int a64_pio_irqenable(pio_pinset_t pinset)
+{
+  return a64_pio_irq(pinset, true);
+}
+
+/****************************************************************************
+ * Name: a64_pio_irqdisable
+ *
+ * Description:
+ *   Disable the interrupt for specified PIO pin.  Only Ports B, G and H are
+ *   supported for interrupts.
+ *
+ * Input Parameters:
+ *   cfgset - Bit-encoded description of a pin. Port should be B, G or H.
+ *
+ * Returned Value:
+ *   Zero (OK) on success; -EINVAL if pin is not from Port B, G or H.
+ *
+ ****************************************************************************/
+
+int a64_pio_irqdisable(pio_pinset_t pinset)
+{
+  return a64_pio_irq(pinset, false);
+}
