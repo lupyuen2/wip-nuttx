@@ -126,34 +126,30 @@ static const struct file_operations g_gt9xx_fileops =
 #define GOODIX_POINT1_X_ADDR 0x8150
 
 static int gt9xx_i2c_read(
-  struct i2c_master_s *i2c,  // I2C Bus
+  FAR struct gt9xx_dev_s *dev,  // I2C Device
   uint16_t reg,  // I2C Register
   uint8_t *buf,  // Receive Buffer
   size_t buflen  // Receive Buffer Size
 ) {
-  uint32_t freq = CONFIG_INPUT_GT9XX_I2C_FREQUENCY;  // 400 kHz
-  uint16_t addr = CTP_I2C_ADDR;  // Default I2C Address for Goodix GT917S
+  // Send the Register Address, MSB first
   uint8_t regbuf[2] = {
     reg >> 8,   // Swap the bytes
     reg & 0xff  // Swap the bytes
   };
 
-  // Erase the receive buffer
-  memset(buf, 0xff, buflen);
-
   // Compose the I2C Messages
   struct i2c_msg_s msgv[2] =
   {
     {
-      .frequency = freq,
-      .addr      = addr,
+      .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
+      .addr      = dev->addr,
       .flags     = 0,
       .buffer    = regbuf,
       .length    = sizeof(regbuf)
     },
     {
-      .frequency = freq,
-      .addr      = addr,
+      .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
+      .addr      = dev->addr,
       .flags     = I2C_M_READ,
       .buffer    = buf,
       .length    = buflen
@@ -162,7 +158,8 @@ static int gt9xx_i2c_read(
 
   // Execute the I2C Transfer
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
-  int ret = I2C_TRANSFER(i2c, msgv, msgv_len);
+  int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
+
   if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
 
   // Dump the receive buffer
@@ -171,12 +168,10 @@ static int gt9xx_i2c_read(
 }
 
 static int gt9xx_set_status(
-  struct i2c_master_s *i2c,  // I2C Bus
+  FAR struct gt9xx_dev_s *dev,  // I2C Device
   uint8_t status  // Status value to be set
 ) {
-  uint16_t reg = GOODIX_READ_COORD_ADDR;  // I2C Register
-  uint32_t freq = CONFIG_INPUT_GT9XX_I2C_FREQUENCY;  // 400 kHz
-  uint16_t addr = CTP_I2C_ADDR;  // Default I2C Address for Goodix GT917S
+  const uint16_t reg = GOODIX_READ_COORD_ADDR;  // I2C Register
   uint8_t buf[3] = {
     reg >> 8,    // Swap the bytes
     reg & 0xff,  // Swap the bytes
@@ -187,8 +182,8 @@ static int gt9xx_set_status(
   struct i2c_msg_s msgv[1] =
   {
     {
-      .frequency = freq,
-      .addr      = addr,
+      .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
+      .addr      = dev->addr,
       .flags     = 0,
       .buffer    = buf,
       .length    = sizeof(buf)
@@ -197,22 +192,24 @@ static int gt9xx_set_status(
 
   // Execute the I2C Transfer
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
-  int ret = I2C_TRANSFER(i2c, msgv, msgv_len);
+  int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
+
   if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
   return OK;
 }
 
 // Read Touch Panel over I2C
-static void gt9xx_get_touch_data(struct i2c_master_s *i2c)
-{
+static void gt9xx_get_touch_data(
+  FAR struct gt9xx_dev_s *dev  // I2C Device
+) {
   // Read the Product ID
   uint8_t id[4];
-  gt9xx_i2c_read(i2c, GOODIX_REG_ID, id, sizeof(id));
+  gt9xx_i2c_read(dev, GOODIX_REG_ID, id, sizeof(id));
   // Shows "39 31 37 53" or "917S"
 
   // Read the Touch Panel Status
   uint8_t status[1];
-  gt9xx_i2c_read(i2c, GOODIX_READ_COORD_ADDR, status, sizeof(status));
+  gt9xx_i2c_read(dev, GOODIX_READ_COORD_ADDR, status, sizeof(status));
   // Shows "81"
 
   const uint8_t status_code    = status[0] & 0x80;  // Set to 0x80
@@ -226,7 +223,7 @@ static void gt9xx_get_touch_data(struct i2c_master_s *i2c)
 
     // Read the First Touch Coordinates
     uint8_t touch[6];
-    gt9xx_i2c_read(i2c, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
+    gt9xx_i2c_read(dev, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
     // Shows "92 02 59 05 1b 00"
 
     // Dump the receive buffer
@@ -239,7 +236,7 @@ static void gt9xx_get_touch_data(struct i2c_master_s *i2c)
   }
 
   // Set the Touch Panel Status to 0
-  gt9xx_set_status(i2c, 0);
+  gt9xx_set_status(dev, 0);
 }
 
 static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
@@ -366,11 +363,7 @@ static int gt9xx_close(FAR struct file *filep)
 
       priv->board->irq_enable(priv->board, false);
 
-      /* Set chip in low-power mode. */
-
-      gt9xx_enter_low_power_mode(priv);
-
-      /* Last user, do power off. */
+      /* Last user, do power off */
 
       priv->board->set_power(priv->board, false);
       priv->cref = use_count;
@@ -496,7 +489,6 @@ int gt9xx_register(FAR const char *devpath,
                    uint8_t i2c_devaddr,
                    struct gt9xx_board_s *board_config)
 {
-  uint8_t i2c_devaddr = CTP_I2C_ADDR;
   int ret;
 
   // Allocate device private structure
