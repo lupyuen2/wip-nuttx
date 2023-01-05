@@ -103,10 +103,138 @@ static const struct file_operations g_gt9xx_fileops =
  * Private Functions
  ****************************************************************************/
 
-static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev, uint8_t reg,
-                          uint8_t *buf, size_t buflen)
+// ReadOnly registers (device and coordinates info)
+// Product ID (LSB 4 bytes)
+#define GOODIX_REG_ID 0x8140
+// Firmware version (LSB 2 bytes)
+#define GOODIX_REG_FW_VER 0x8144
+
+// Current output X resolution (LSB 2 bytes)
+#define GOODIX_READ_X_RES 0x8146
+// Current output Y resolution (LSB 2 bytes)
+#define GOODIX_READ_Y_RES 0x8148
+// Module vendor ID
+#define GOODIX_READ_VENDOR_ID 0x814A
+
+#define GOODIX_READ_COORD_ADDR 0x814E
+
+#define GOODIX_POINT1_X_ADDR 0x8150
+
+static int gt9xx_i2c_read(
+  struct i2c_master_s *i2c,  // I2C Bus
+  uint16_t reg,  // I2C Register
+  uint8_t *buf,  // Receive Buffer
+  size_t buflen  // Receive Buffer Size
+) {
+  uint32_t freq = CTP_FREQ;  // 400 kHz
+  uint16_t addr = CTP_I2C_ADDR;  // Default I2C Address for Goodix GT917S
+  uint8_t regbuf[2] = {
+    reg >> 8,   // Swap the bytes
+    reg & 0xff  // Swap the bytes
+  };
+
+  // Erase the receive buffer
+  memset(buf, 0xff, buflen);
+
+  // Compose the I2C Messages
+  struct i2c_msg_s msgv[2] =
+  {
+    {
+      .frequency = freq,
+      .addr      = addr,
+      .flags     = 0,
+      .buffer    = regbuf,
+      .length    = sizeof(regbuf)
+    },
+    {
+      .frequency = freq,
+      .addr      = addr,
+      .flags     = I2C_M_READ,
+      .buffer    = buf,
+      .length    = buflen
+    }
+  };
+
+  // Execute the I2C Transfer
+  const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
+  int ret = I2C_TRANSFER(i2c, msgv, msgv_len);
+  if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
+
+  // Dump the receive buffer
+  infodumpbuffer("buf", buf, buflen);
+  return OK;
+}
+
+static int gt9xx_set_status(
+  struct i2c_master_s *i2c,  // I2C Bus
+  uint8_t status  // Status value to be set
+) {
+  uint16_t reg = GOODIX_READ_COORD_ADDR;  // I2C Register
+  uint32_t freq = CTP_FREQ;  // 400 kHz
+  uint16_t addr = CTP_I2C_ADDR;  // Default I2C Address for Goodix GT917S
+  uint8_t buf[3] = {
+    reg >> 8,    // Swap the bytes
+    reg & 0xff,  // Swap the bytes
+    status
+  };
+
+  // Compose the I2C Message
+  struct i2c_msg_s msgv[1] =
+  {
+    {
+      .frequency = freq,
+      .addr      = addr,
+      .flags     = 0,
+      .buffer    = buf,
+      .length    = sizeof(buf)
+    }
+  };
+
+  // Execute the I2C Transfer
+  const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
+  int ret = I2C_TRANSFER(i2c, msgv, msgv_len);
+  if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
+  return OK;
+}
+
+// Read Touch Panel over I2C
+static void gt9xx_get_touch_data(struct i2c_master_s *i2c)
 {
-  // TODO
+  // Read the Product ID
+  uint8_t id[4];
+  gt9xx_i2c_read(i2c, GOODIX_REG_ID, id, sizeof(id));
+  // Shows "39 31 37 53" or "917S"
+
+  // Read the Touch Panel Status
+  uint8_t status[1];
+  gt9xx_i2c_read(i2c, GOODIX_READ_COORD_ADDR, status, sizeof(status));
+  // Shows "81"
+
+  const uint8_t status_code    = status[0] & 0x80;  // Set to 0x80
+  const uint8_t touched_points = status[0] & 0x0f;  // Set to 0x01
+
+  if (status_code != 0 &&  // If Touch Panel Status is OK and...
+      touched_points >= 1) {  // Touched Points is 1 or more
+
+    // Dump the receive buffer
+    // infodumpbuffer("buf", status, sizeof(status));
+
+    // Read the First Touch Coordinates
+    uint8_t touch[6];
+    gt9xx_i2c_read(i2c, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
+    // Shows "92 02 59 05 1b 00"
+
+    // Dump the receive buffer
+    // infodumpbuffer("buf", touch, sizeof(touch));
+
+    const uint16_t x = touch[0] + (touch[1] << 8);
+    const uint16_t y = touch[2] + (touch[3] << 8);
+    _info("touch x=%d, y=%d\n", x, y);
+    // Shows "touch x=658, y=1369"
+  }
+
+  // Set the Touch Panel Status to 0
+  gt9xx_set_status(i2c, 0);
 }
 
 static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
