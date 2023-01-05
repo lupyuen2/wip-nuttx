@@ -315,14 +315,15 @@ static int gt9xx_open(FAR struct file *filep)
 
       /* Check that device exists on I2C. */
 
-      ret = gt9xx_probe_device(priv);
-      if (ret < 0)
-        {
-          /* No such device. Power off the switch. */
+      // TODO
+      // ret = gt9xx_probe_device(priv);
+      // if (ret < 0)
+      //   {
+      //     /* No such device. Power off the switch. */
 
-          priv->board->set_power(priv->board, false);
-          goto out_lock;
-        }
+      //     priv->board->set_power(priv->board, false);
+      //     goto out_lock;
+      //   }
 
       priv->cref = use_count;
     }
