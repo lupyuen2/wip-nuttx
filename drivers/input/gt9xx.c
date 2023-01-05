@@ -47,7 +47,7 @@
 #endif
 
 #ifndef CONFIG_INPUT_GT9XX_NPOLLWAITERS
-#  define CONFIG_INPUT_GT9XX_NPOLLWAITERS 10
+#  define CONFIG_INPUT_GT9XX_NPOLLWAITERS 1
 #endif
 
 /****************************************************************************
