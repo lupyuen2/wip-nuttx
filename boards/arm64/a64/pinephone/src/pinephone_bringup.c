@@ -392,8 +392,8 @@ int touch_panel_initialize(struct i2c_master_s *i2c)
 static void touch_panel_read(struct i2c_master_s *i2c)
 {
   // Read the Product ID
-  uint8_t id[4];
-  touch_panel_i2c_read(i2c, GOODIX_REG_ID, id, sizeof(id));
+  // uint8_t id[4];
+  // touch_panel_i2c_read(i2c, GOODIX_REG_ID, id, sizeof(id));
   // Shows "39 31 37 53" or "917S"
 
   // Read the Touch Panel Status
@@ -407,10 +407,16 @@ static void touch_panel_read(struct i2c_master_s *i2c)
   if (status_code != 0 &&  // If Touch Panel Status is OK and...
       touched_points >= 1) {  // Touched Points is 1 or more
 
+    // Dump the receive buffer
+    infodumpbuffer("buf", status, sizeof(status));
+
     // Read the First Touch Coordinates
     uint8_t touch[6];
     touch_panel_i2c_read(i2c, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
     // Shows "92 02 59 05 1b 00"
+
+    // Dump the receive buffer
+    infodumpbuffer("buf", touch, sizeof(touch));
 
     const uint16_t x = touch[0] + (touch[1] << 8);
     const uint16_t y = touch[2] + (touch[3] << 8);
@@ -463,7 +469,7 @@ static int touch_panel_i2c_read(
   if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
 
   // Dump the receive buffer
-  infodumpbuffer("buf", buf, buflen);
+  // infodumpbuffer("buf", buf, buflen);
   return OK;
 }
 
