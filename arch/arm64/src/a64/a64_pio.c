@@ -153,19 +153,16 @@ static int a64_pio_irq(pio_pinset_t pinset, bool enable)
       return -EINVAL;
     }
 
-  // PH_EINT_CTL_REG (Interrupt Control Register for PH4) at Offset 0x250
-  #define PH_EINT_CTL_REG (0x1c20800 + 0x250)
-  _info("v=0x%x, m=0x%x, a=0x%x\n", PIO_INT_CTL(pin), PIO_INT_CTL(pin), PH_EINT_CTL_REG);
-  // Shows touch_panel_initialize: v=0x10, m=0x10, a=0x1c20a50
-  DEBUGASSERT(PH_EINT_CTL_REG == pin_addr); ////
+  /* Enter Critical Section */
 
-  // Enter Critical Section
   flags = enter_critical_section();
 
-  // Enable the Interrupt
+  /* Enable or disable the interrupt */
+
   modreg32(pin_val, pin_mask, pin_addr);
 
-  // Leave Critical Section
+  /* Leave Critical Section */
+
   leave_critical_section(flags);
 
   return OK;
