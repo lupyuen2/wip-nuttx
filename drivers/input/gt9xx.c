@@ -131,9 +131,22 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   // TODO
 }
 
+// Interrupt Handler for Touch Panel
 static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
-  // TODO
+  FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
+  irqstate_t flags;
+
+  DEBUGASSERT(priv != NULL);
+
+  // Set the Interrupt Pending Flag
+  flags = enter_critical_section();
+  priv->int_pending = true;
+  leave_critical_section(flags);
+
+  // Notify the Poll Waiters
+  poll_notify(priv->fds, CONFIG_INPUT_GT9XX_NPOLLWAITERS, POLLIN);
+  return 0;
 }
 
 /****************************************************************************
@@ -145,5 +158,57 @@ int gt9xx_register(FAR const char *devpath,
                    uint8_t i2c_devaddr,
                    struct gt9xx_board_s *board_config)
 {
+  uint8_t i2c_devaddr = CTP_I2C_ADDR;
+  int ret;
+
+  // Allocate device private structure
+  struct gt9xx_dev_s *priv;
+  priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
+  if (!priv)
+    {
+      _err("Memory cannot be allocated for gt9xx sensor\n");  // TODO
+      return -ENOMEM;
+    }
+
+  // Setup device structure
+  priv->addr = i2c_devaddr;
+  priv->i2c = i2c_dev;
+  nxmutex_init(&priv->devlock);
+
+  // Register Touch Input Driver
+  ret = register_driver(devpath, &g_gt9xx_fileops, 0666, priv);
+  if (ret < 0)
+    {
+      nxmutex_destroy(&priv->devlock);
+      kmm_free(priv);
+      gt9xx_dbg("Error occurred during the driver registering\n");
+      return ret;
+    }
+
+  _info("Registered with %d\n", ret);  // TODO
+
+  // Prepare interrupt line and handler
+  priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
+  priv->board->irq_enable(priv->board, false);
+
   // TODO
+  // Attach the PIO Interrupt Handler
+  // if (irq_attach(A64_IRQ_PH_EINT, gt9xx_isr_handler, priv) < 0)
+  //   {
+  //     _err("irq_attach failed\n");
+  //     return ERROR;
+  //   }
+
+  // Enable the PIO Interrupt
+  // up_enable_irq(A64_IRQ_PH_EINT);
+
+  // Configure the Touch Panel Interrupt
+  // ret = a64_pio_config(CTP_INT);
+  // DEBUGASSERT(ret == 0);
+
+  // Enable the Touch Panel Interrupt
+  // ret = a64_pio_irqenable(CTP_INT);
+  // DEBUGASSERT(ret == 0);
+
+  return OK;
 }
