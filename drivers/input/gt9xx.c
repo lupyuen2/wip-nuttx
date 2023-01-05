@@ -77,7 +77,12 @@ struct gt9xx_dev_s
  * Private Function Prototypes
  ****************************************************************************/
 
-// TODO
+static int gt9xx_open(FAR struct file *filep);
+static int gt9xx_close(FAR struct file *filep);
+static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
+                          size_t buflen);
+static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
+                      bool setup);
 
 /****************************************************************************
  * Private Data
@@ -126,7 +131,7 @@ static int gt9xx_i2c_read(
   uint8_t *buf,  // Receive Buffer
   size_t buflen  // Receive Buffer Size
 ) {
-  uint32_t freq = CTP_FREQ;  // 400 kHz
+  uint32_t freq = CONFIG_INPUT_GT9XX_I2C_FREQUENCY;  // 400 kHz
   uint16_t addr = CTP_I2C_ADDR;  // Default I2C Address for Goodix GT917S
   uint8_t regbuf[2] = {
     reg >> 8,   // Swap the bytes
@@ -170,7 +175,7 @@ static int gt9xx_set_status(
   uint8_t status  // Status value to be set
 ) {
   uint16_t reg = GOODIX_READ_COORD_ADDR;  // I2C Register
-  uint32_t freq = CTP_FREQ;  // 400 kHz
+  uint32_t freq = CONFIG_INPUT_GT9XX_I2C_FREQUENCY;  // 400 kHz
   uint16_t addr = CTP_I2C_ADDR;  // Default I2C Address for Goodix GT917S
   uint8_t buf[3] = {
     reg >> 8,    // Swap the bytes
@@ -240,23 +245,227 @@ static void gt9xx_get_touch_data(struct i2c_master_s *i2c)
 static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
                           size_t buflen)
 {
-  // TODO
+  FAR struct inode *inode;
+  FAR struct gt9xx_dev_s *priv;
+  size_t outlen;
+  irqstate_t flags;
+  int ret;
+
+  DEBUGASSERT(filep);
+  inode = filep->f_inode;
+
+  DEBUGASSERT(inode && inode->i_private);
+  priv = inode->i_private;
+
+  ret = nxmutex_lock(&priv->devlock);
+  if (ret < 0)
+    {
+      return ret;
+    }
+
+  ret = -EINVAL;
+
+  outlen = sizeof(struct gt9xx_sensor_status_s);
+  if (buflen >= outlen)
+    {
+      ret = gt9xx_get_sensor_status(priv, buffer);
+    }
+
+  flags = enter_critical_section();
+  priv->int_pending = false;
+  leave_critical_section(flags);
+
+  nxmutex_unlock(&priv->devlock);
+  return ret < 0 ? ret : outlen;
 }
 
 static int gt9xx_open(FAR struct file *filep)
 {
-  // TOOD
+  FAR struct inode *inode;
+  FAR struct gt9xx_dev_s *priv;
+  unsigned int use_count;
+  int ret;
+
+  DEBUGASSERT(filep);
+  inode = filep->f_inode;
+
+  DEBUGASSERT(inode && inode->i_private);
+  priv = inode->i_private;
+
+  ret = nxmutex_lock(&priv->devlock);
+  if (ret < 0)
+    {
+      return ret;
+    }
+
+  use_count = priv->cref + 1;
+  if (use_count == 1)
+    {
+      /* First user, do power on. */
+
+      ret = priv->board->set_power(priv->board, true);
+      if (ret < 0)
+        {
+          goto out_lock;
+        }
+
+      /* Let chip to power up before probing */
+
+      nxsig_usleep(100 * 1000);
+
+      /* Check that device exists on I2C. */
+
+      ret = gt9xx_probe_device(priv);
+      if (ret < 0)
+        {
+          /* No such device. Power off the switch. */
+
+          priv->board->set_power(priv->board, false);
+          goto out_lock;
+        }
+
+      priv->cref = use_count;
+    }
+  else
+    {
+      DEBUGASSERT(use_count < UINT8_MAX && use_count > priv->cref);
+
+      priv->cref = use_count;
+      ret = 0;
+    }
+
+out_lock:
+  nxmutex_unlock(&priv->devlock);
+  return ret;
 }
 
 static int gt9xx_close(FAR struct file *filep)
 {
-  // TODO
+  FAR struct inode *inode;
+  FAR struct gt9xx_dev_s *priv;
+  int use_count;
+  int ret;
+
+  DEBUGASSERT(filep);
+  inode = filep->f_inode;
+
+  DEBUGASSERT(inode && inode->i_private);
+  priv = inode->i_private;
+
+  ret = nxmutex_lock(&priv->devlock);
+  if (ret < 0)
+    {
+      return ret;
+    }
+
+  use_count = priv->cref - 1;
+  if (use_count == 0)
+    {
+      /* Disable interrupt */
+
+      priv->board->irq_enable(priv->board, false);
+
+      /* Set chip in low-power mode. */
+
+      gt9xx_enter_low_power_mode(priv);
+
+      /* Last user, do power off. */
+
+      priv->board->set_power(priv->board, false);
+      priv->cref = use_count;
+    }
+  else
+    {
+      DEBUGASSERT(use_count > 0);
+
+      priv->cref = use_count;
+    }
+
+  nxmutex_unlock(&priv->devlock);
+  return 0;
 }
 
 static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
                       bool setup)
 {
-  // TODO
+  FAR struct gt9xx_dev_s *priv;
+  FAR struct inode *inode;
+  bool pending;
+  int ret = 0;
+  int i;
+
+  DEBUGASSERT(filep && fds);
+  inode = filep->f_inode;
+
+  DEBUGASSERT(inode && inode->i_private);
+  priv = (FAR struct gt9xx_dev_s *)inode->i_private;
+
+  ret = nxmutex_lock(&priv->devlock);
+  if (ret < 0)
+    {
+      return ret;
+    }
+
+  if (setup)
+    {
+      /* Ignore waits that do not include POLLIN */
+
+      if ((fds->events & POLLIN) == 0)
+        {
+          ret = -EDEADLK;
+          goto out;
+        }
+
+      /* This is a request to set up the poll.  Find an available slot for
+       * the poll structure reference.
+       */
+
+      for (i = 0; i < CONFIG_INPUT_GT9XX_NPOLLWAITERS; i++)
+        {
+          /* Find an available slot */
+
+          if (!priv->fds[i])
+            {
+              /* Bind the poll structure and this slot */
+
+              priv->fds[i] = fds;
+              fds->priv = &priv->fds[i];
+              break;
+            }
+        }
+
+      if (i >= CONFIG_INPUT_GT9XX_NPOLLWAITERS)
+        {
+          fds->priv = NULL;
+          ret = -EBUSY;
+        }
+      else
+        {
+          pending = priv->int_pending;
+          if (pending)
+            {
+              poll_notify(priv->fds,
+                          CONFIG_INPUT_GT9XX_NPOLLWAITERS,
+                          POLLIN);
+            }
+        }
+    }
+  else if (fds->priv)
+    {
+      /* This is a request to tear down the poll. */
+
+      FAR struct pollfd **slot = (FAR struct pollfd **)fds->priv;
+      DEBUGASSERT(slot != NULL);
+
+      /* Remove all memory of the poll setup */
+
+      *slot = NULL;
+      fds->priv = NULL;
+    }
+
+out:
+  nxmutex_unlock(&priv->devlock);
+  return ret;
 }
 
 // Interrupt Handler for Touch Panel
@@ -309,7 +518,7 @@ int gt9xx_register(FAR const char *devpath,
     {
       nxmutex_destroy(&priv->devlock);
       kmm_free(priv);
-      gt9xx_dbg("Error occurred during the driver registering\n");
+      _err("Error occurred during the driver registering\n");  // TODO
       return ret;
     }
 
