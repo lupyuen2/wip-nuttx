@@ -214,9 +214,6 @@ static int touch_panel_set_status(
 #define CTP_INT (PIO_EINT | PIO_PORT_PIOH | PIO_PIN4)
 #define CTP_INT_PIN 4
 
-// IRQ for Touch Panel Interrupt (PH)
-#define PH_EINT 53
-
 #define GT9XX_NPOLLWAITERS 10  // Number of poll waiters supported
 
 struct gt9xx_dev_s
@@ -276,14 +273,14 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
   nxmutex_init(&priv->devlock);
 
   // Attach the PIO Interrupt Handler
-  if (irq_attach(PH_EINT, gt9xx_isr_handler, priv) < 0)
+  if (irq_attach(A64_IRQ_PH_EINT, gt9xx_isr_handler, priv) < 0)
     {
       _err("irq_attach failed\n");
       return ERROR;
     }
 
   // Enable the PIO Interrupt
-  up_enable_irq(PH_EINT);
+  up_enable_irq(A64_IRQ_PH_EINT);
 
   // Configure the Touch Panel Interrupt
   ret = a64_pio_config(CTP_INT);
