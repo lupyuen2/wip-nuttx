@@ -33,7 +33,15 @@
  * Public Types
  ****************************************************************************/
 
-/* Board configuration */
+/* Touch Point */
+
+begin_packed_struct struct gt9xx_touch_point_s
+{
+  uint16_t x;  /* X Coordinate */
+  uint16_t y;  /* Y Coordinate */
+} end_packed_struct;
+
+/* Board Configuration */
 
 struct gt9xx_board_s
 {
@@ -48,7 +56,7 @@ struct gt9xx_board_s
  * Public Function Prototypes
  ****************************************************************************/
 
-/* Device registration */
+/* Device Registration */
 
 int gt9xx_register(FAR const char *devpath,
                    FAR struct i2c_master_s *dev,

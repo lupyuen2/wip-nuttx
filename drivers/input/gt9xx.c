@@ -199,9 +199,14 @@ static int gt9xx_set_status(
 }
 
 // Read Touch Panel over I2C
-static void gt9xx_get_touch_data(
-  FAR struct gt9xx_dev_s *dev  // I2C Device
+static int gt9xx_get_touch_data(
+  FAR struct gt9xx_dev_s *dev,  // I2C Device
+  FAR struct gt9xx_touch_point_s *tp  // Touch Point
 ) {
+  DEBUGASSERT(dev != NULL);
+  DEBUGASSERT(tp != NULL);
+  memset(tp, 0, sizeof(*tp));
+
   // Read the Product ID
   uint8_t id[4];
   gt9xx_i2c_read(dev, GOODIX_REG_ID, id, sizeof(id));
@@ -233,10 +238,17 @@ static void gt9xx_get_touch_data(
     const uint16_t y = touch[2] + (touch[3] << 8);
     _info("touch x=%d, y=%d\n", x, y);
     // Shows "touch x=658, y=1369"
+
+    // Return the Touch Coordinates
+    tp->x = x;
+    tp->y = y;
   }
 
   // Set the Touch Panel Status to 0
   gt9xx_set_status(dev, 0);
+
+  // TODO: Return OK only if Status Code != 0 and Touched Points >= 1
+  return OK;
 }
 
 static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
@@ -244,7 +256,8 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
 {
   FAR struct inode *inode;
   FAR struct gt9xx_dev_s *priv;
-  size_t outlen;
+  struct gt9xx_touch_point_s tp;
+  const size_t outlen = sizeof(tp);
   irqstate_t flags;
   int ret;
 
@@ -262,10 +275,11 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
 
   ret = -EINVAL;
 
-  outlen = sizeof(struct gt9xx_sensor_status_s);
-  if (buflen >= outlen)
+  // Read the Touch Point
+  if (buflen >= sizeof(tp))
     {
-      ret = gt9xx_get_sensor_status(priv, buffer);
+      ret = gt9xx_get_touch_data(priv, &tp);
+      memcpy(buffer, &tp, sizeof(tp));
     }
 
   flags = enter_critical_section();
