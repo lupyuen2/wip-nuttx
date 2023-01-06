@@ -319,6 +319,7 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       sample.point[0].y = last_y;
       sample.point[0].flags = last_flags;
       memcpy(buffer, &sample, sizeof(sample));
+      ret = OK;
     }
   // Read the Touch Sample only if screen has been touched
   else if (priv->int_pending)
