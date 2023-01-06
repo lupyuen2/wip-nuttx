@@ -561,19 +561,28 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
   int ret;
 
   _info("enable=%d\n", enable);
+  if (enable)
+    {
+      // Enable the PIO Interrupt
+      up_enable_irq(A64_IRQ_PH_EINT);
 
-  // Enable the PIO Interrupt
-  up_enable_irq(A64_IRQ_PH_EINT);
+      // Configure the Touch Panel Interrupt
+      ret = a64_pio_config(CTP_INT);
+      DEBUGASSERT(ret == 0);
 
-  // Configure the Touch Panel Interrupt
-  ret = a64_pio_config(CTP_INT);
-  DEBUGASSERT(ret == 0);
+      // Enable the Touch Panel Interrupt
+      ret = a64_pio_irqenable(CTP_INT);
+      DEBUGASSERT(ret == 0);
+    }
+  else
+    {
+      // Disable the Touch Panel Interrupt
+      ret = a64_pio_irqdisable(CTP_INT);
+      DEBUGASSERT(ret == 0);
 
-  // Enable the Touch Panel Interrupt
-  ret = a64_pio_irqenable(CTP_INT);
-  DEBUGASSERT(ret == 0);
-
-  // TODO: Handle disable
+      // Disable the PIO Interrupt
+      up_disable_irq(A64_IRQ_PH_EINT);
+    }
 }
 
 static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,

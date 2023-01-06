@@ -594,15 +594,34 @@ int gt9xx_register(FAR const char *devpath,
   iinfo("Registered with %d\n", ret);  // TODO
 
   // Prepare interrupt line and handler
-  // DEBUGASSERT(priv->board->irq_attach != NULL && priv->board->irq_enable != NULL);
+  DEBUGASSERT(priv->board->irq_attach != NULL && priv->board->irq_enable != NULL);
   priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
   priv->board->irq_enable(priv->board, false);
 
+#ifdef TODO
   // Set the Touch Panel Status to 0. If we don't do this, the Touch Panel will fire interrupts continuously.
   // ret = gt9xx_set_status(priv, 0);
-  struct touch_sample_s sample;
-  ret = gt9xx_read_touch_data(priv, &sample);
-  DEBUGASSERT(ret == OK);
+
+  // TODO: Move this
+  // Poll for Touch Panel Interrupt
+  for (int i = 0; i < 1000; i++) {  // Poll for 10 seconds
+
+    // If Touch Panel Interrupt has been triggered...
+    if (priv->int_pending) {
+
+      // Read the Touch Panel over I2C
+      struct touch_sample_s sample;
+      ret = gt9xx_read_touch_data(priv, &sample);
+      DEBUGASSERT(ret == OK);
+
+      // Reset the Interrupt Pending Flag
+      priv->int_pending = false;
+    }
+
+    // Wait a while
+    up_mdelay(10);  // 10 milliseconds
+  }
+#endif // TODO
 
   return OK;
 }
