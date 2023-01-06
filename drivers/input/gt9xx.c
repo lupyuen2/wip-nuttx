@@ -164,7 +164,7 @@ static int gt9xx_i2c_read(
   if (ret < 0) { ierr("I2C Error: %d\n", ret); return ret; }
 
   // Dump the receive buffer
-  infodumpbuffer("buf", buf, buflen);
+  // infodumpbuffer("buf", buf, buflen);
   return OK;
 }
 
@@ -215,8 +215,8 @@ static int gt9xx_read_touch_data(
   memset(sample, 0, sizeof(*sample));
 
   // Read the Product ID
-  uint8_t id[4];
-  gt9xx_i2c_read(dev, GOODIX_REG_ID, id, sizeof(id));
+  // uint8_t id[4];
+  // gt9xx_i2c_read(dev, GOODIX_REG_ID, id, sizeof(id));
   // Shows "39 31 37 53" or "917S"
 
   // Read the Touch Panel Status
