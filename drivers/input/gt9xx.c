@@ -209,6 +209,7 @@ static int gt9xx_read_touch_data(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
   FAR struct touch_sample_s *sample  // Touch Sample
 ) {
+  iinfo("\n");
   DEBUGASSERT(dev != NULL);
   DEBUGASSERT(sample != NULL);
   memset(sample, 0, sizeof(*sample));
@@ -536,7 +537,7 @@ out:
 // Interrupt Handler for Touch Panel
 static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
-  up_putc('.'); ////
+  ////static int count = 0; if (count++ % 100 == 0) { up_putc('.'); } ////
   FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
   irqstate_t flags;
 
@@ -598,7 +599,9 @@ int gt9xx_register(FAR const char *devpath,
   priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
   priv->board->irq_enable(priv->board, false);
 
+#define TODO
 #ifdef TODO
+  priv->board->irq_enable(priv->board, true);
   // Set the Touch Panel Status to 0. If we don't do this, the Touch Panel will fire interrupts continuously.
   // ret = gt9xx_set_status(priv, 0);
 
