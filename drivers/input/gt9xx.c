@@ -63,7 +63,7 @@ struct gt9xx_dev_s
 
   /* Configuration for device */
 
-  struct gt9xx_board_s *board;
+  const struct gt9xx_board_s *board;
   mutex_t devlock;
   uint8_t cref;
   bool int_pending;
@@ -314,6 +314,7 @@ static int gt9xx_open(FAR struct file *filep)
     {
       /* First user, do power on */
 
+      DEBUGASSERT(priv->board->set_power != NULL);
       ret = priv->board->set_power(priv->board, true);
       if (ret < 0)
         {
@@ -338,6 +339,7 @@ static int gt9xx_open(FAR struct file *filep)
 
       /* Enable Interrupts */
 
+      DEBUGASSERT(priv->board->irq_enable != NULL);
       priv->board->irq_enable(priv->board, true);
 
       priv->cref = use_count;
@@ -379,10 +381,12 @@ static int gt9xx_close(FAR struct file *filep)
     {
       /* Disable interrupt */
 
+      DEBUGASSERT(priv->board->irq_enable != NULL);
       priv->board->irq_enable(priv->board, false);
 
       /* Last user, do power off */
 
+      DEBUGASSERT(priv->board->set_power != NULL);
       priv->board->set_power(priv->board, false);
       priv->cref = use_count;
     }
@@ -505,7 +509,7 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 int gt9xx_register(FAR const char *devpath,
                    FAR struct i2c_master_s *i2c_dev,
                    uint8_t i2c_devaddr,
-                   struct gt9xx_board_s *board_config)
+                   const struct gt9xx_board_s *board_config)
 {
   struct gt9xx_dev_s *priv;
   int ret = 0;
@@ -539,27 +543,9 @@ int gt9xx_register(FAR const char *devpath,
   _info("Registered with %d\n", ret);  // TODO
 
   // Prepare interrupt line and handler
+  DEBUGASSERT(priv->board->irq_attach != NULL && priv->board->irq_enable != NULL);
   priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
   priv->board->irq_enable(priv->board, false);
-
-  // TODO
-  // Attach the PIO Interrupt Handler
-  // if (irq_attach(A64_IRQ_PH_EINT, gt9xx_isr_handler, priv) < 0)
-  //   {
-  //     _err("irq_attach failed\n");
-  //     return ERROR;
-  //   }
-
-  // Enable the PIO Interrupt
-  // up_enable_irq(A64_IRQ_PH_EINT);
-
-  // Configure the Touch Panel Interrupt
-  // ret = a64_pio_config(CTP_INT);
-  // DEBUGASSERT(ret == 0);
-
-  // Enable the Touch Panel Interrupt
-  // ret = a64_pio_irqenable(CTP_INT);
-  // DEBUGASSERT(ret == 0);
 
   return OK;
 }

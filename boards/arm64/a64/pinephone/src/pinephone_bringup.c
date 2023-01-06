@@ -32,6 +32,9 @@
 #ifdef CONFIG_MPU60X0_I2C
 #  include <nuttx/sensors/mpu60x0.h>
 #endif
+#ifdef CONFIG_INPUT_GT9XX
+#  include <nuttx/input/gt9xx.h>
+#endif
 
 #ifdef CONFIG_FS_PROCFS
 #  include <nuttx/fs/fs.h>
@@ -49,6 +52,25 @@
 #include "a64_twi.h"
 #include "pinephone.h"
 #include "pinephone_pmic.h"
+
+// TODO
+static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
+                                      xcpt_t isr,
+                                      FAR void *arg);
+static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
+                                       bool enable);
+static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
+                                     bool on);
+
+// TODO
+#ifdef CONFIG_INPUT_GT9XX
+static const struct gt9xx_board_s g_pinephone_gt9xx =
+{
+  .irq_attach = pinephone_gt9xx_irq_attach,
+  .irq_enable = pinephone_gt9xx_irq_enable,
+  .set_power  = pinephone_gt9xx_set_power
+};
+#endif /* CONFIG_INPUT_GT9XX */
 
 /****************************************************************************
  * Public Functions
@@ -131,7 +153,7 @@ int pinephone_bringup(void)
       ret = pinephone_pmic_init();
       if (ret < 0)
         {
-          syslog(LOG_ERR, "Init PMIC failed: %d\n", ret);
+          syslog(LOG_ERR, "ERROR: Init PMIC failed: %d\n", ret);
           return ret;
         }
 
@@ -164,9 +186,21 @@ int pinephone_bringup(void)
     }
   else
     {
-      int touch_panel_initialize(struct i2c_master_s *i2c);
-      int ret2 = touch_panel_initialize(i2c);
-      DEBUGASSERT(ret2 == 0);
+      // int touch_panel_initialize(struct i2c_master_s *i2c);
+      // int ret2 = touch_panel_initialize(i2c);
+      // DEBUGASSERT(ret2 == 0);
+    }
+#endif
+
+#ifdef CONFIG_INPUT_GT9XX
+  // TODO
+  #define CTP_I2C_ADDR 0x5d  // Default I2C Address for Goodix GT917S
+  DEBUGASSERT(i2c != NULL);
+  ret = gt9xx_register("/dev/input0", i2c, CTP_I2C_ADDR, &g_pinephone_gt9xx);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: Register Touch Input GT9xx failed: %d\n", ret);
+      return ret;
     }
 #endif
   ////TODO: End
@@ -502,5 +536,49 @@ static int touch_panel_set_status(
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
   int ret = I2C_TRANSFER(i2c, msgv, msgv_len);
   if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
+  return OK;
+}
+
+static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
+                                      xcpt_t isr,
+                                      FAR void *arg)
+{
+  _info("\n");
+
+  // Attach the PIO Interrupt Handler
+  if (irq_attach(A64_IRQ_PH_EINT, isr, arg) < 0)
+    {
+      _err("irq_attach failed\n");
+      return ERROR;
+    }
+
+  return OK;
+}
+
+static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
+                                       bool enable)
+{
+  int ret;
+
+  _info("enable=%d\n", enable);
+
+  // Enable the PIO Interrupt
+  up_enable_irq(A64_IRQ_PH_EINT);
+
+  // Configure the Touch Panel Interrupt
+  ret = a64_pio_config(CTP_INT);
+  DEBUGASSERT(ret == 0);
+
+  // Enable the Touch Panel Interrupt
+  ret = a64_pio_irqenable(CTP_INT);
+  DEBUGASSERT(ret == 0);
+
+  // TODO: Handle disable
+}
+
+static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
+                                     bool on)
+{
+  _info("on=%d\n", on);
   return OK;
 }

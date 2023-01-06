@@ -45,11 +45,11 @@ begin_packed_struct struct gt9xx_touch_point_s
 
 struct gt9xx_board_s
 {
-  int (*irq_attach) (FAR struct gt9xx_board_s *state,
+  int (*irq_attach) (const struct gt9xx_board_s *state,
                      xcpt_t isr,
                      FAR void *arg);
-  void (*irq_enable) (FAR struct gt9xx_board_s *state, bool enable);
-  int (*set_power) (FAR struct gt9xx_board_s *state, bool on);
+  void (*irq_enable) (const struct gt9xx_board_s *state, bool enable);
+  int (*set_power) (const struct gt9xx_board_s *state, bool on);
 };
 
 /****************************************************************************
@@ -61,6 +61,6 @@ struct gt9xx_board_s
 int gt9xx_register(FAR const char *devpath,
                    FAR struct i2c_master_s *dev,
                    uint8_t i2c_devaddr,
-                   struct gt9xx_board_s *board_config);
+                   const struct gt9xx_board_s *board_config);
 
 #endif /* __INCLUDE_NUTTX_INPUT_GT9XX_H */
