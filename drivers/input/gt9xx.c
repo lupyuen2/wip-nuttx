@@ -205,7 +205,7 @@ static uint16_t last_y = 0;
 static uint8_t last_flags = 0;
 
 // Read Touch Panel over I2C
-static int gt9xx_get_touch_data(
+static int gt9xx_read_touch_data(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
   FAR struct touch_sample_s *sample  // Touch Sample
 ) {
@@ -317,7 +317,7 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   // Read the Touch Sample only if screen has been touched
   else if (priv->int_pending)
     {
-      ret = gt9xx_get_touch_data(priv, &sample);
+      ret = gt9xx_read_touch_data(priv, &sample);
       memcpy(buffer, &sample, sizeof(sample));
 
       /* Clear pending flag with critical section */
@@ -601,7 +601,7 @@ int gt9xx_register(FAR const char *devpath,
   // Set the Touch Panel Status to 0. If we don't do this, the Touch Panel will fire interrupts continuously.
   // ret = gt9xx_set_status(priv, 0);
   struct touch_sample_s sample;
-  ret = gt9xx_get_touch_data(priv, &sample);
+  ret = gt9xx_read_touch_data(priv, &sample);
   DEBUGASSERT(ret == OK);
 
   return OK;
