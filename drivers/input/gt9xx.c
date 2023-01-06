@@ -266,7 +266,7 @@ static int gt9xx_read_touch_data(
   gt9xx_set_status(dev, 0);
 
   // Enable the PIO Interrupt
-  up_enable_irq(A64_IRQ_PH_EINT); ////
+  up_enable_irq(A64_IRQ_PH_EINT); //// TODO
 
   return OK;
 }
@@ -293,6 +293,9 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
 
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
+
+  // Enable the PIO Interrupt
+  up_enable_irq(A64_IRQ_PH_EINT); //// TODO
 
   /* Lock mutex to prevent concurrent reads */
 
@@ -544,9 +547,9 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 
   DEBUGASSERT(priv != NULL);
 
-  up_putc('.'); ////
+  up_putc('.'); //// TODO
   // Disable the PIO Interrupt
-  if (priv->int_pending) { up_disable_irq(A64_IRQ_PH_EINT); } ////
+  if (priv->int_pending) { up_disable_irq(A64_IRQ_PH_EINT); } //// TODO
 
   // Set the Interrupt Pending Flag
   flags = enter_critical_section();
