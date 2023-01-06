@@ -265,7 +265,9 @@ static int gt9xx_read_touch_data(
   // Set the Touch Panel Status to 0
   gt9xx_set_status(dev, 0);
 
-  // TODO: Return OK only if Status Code != 0 and Touched Points >= 1
+  // Enable the PIO Interrupt
+  up_enable_irq(A64_IRQ_PH_EINT); ////
+
   return OK;
 }
 
@@ -279,10 +281,10 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   irqstate_t flags;
   int ret;
 
-  iinfo("buflen=%d\n", buflen);
+  iinfo("buflen=%ld\n", buflen);
   if (buflen < outlen)
     {
-      ierr("Buffer should be at least %d bytes, got %d bytes\n", outlen, buflen);
+      ierr("Buffer should be at least %ld bytes, got %ld bytes\n", outlen, buflen);
       return -EINVAL;
     }
 
@@ -537,7 +539,10 @@ out:
 // Interrupt Handler for Touch Panel
 static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
-  ////static int count = 0; if (count++ % 100 == 0) { up_putc('.'); } ////
+  up_putc('.'); ////
+  // Disable the PIO Interrupt
+  up_disable_irq(A64_IRQ_PH_EINT);////
+
   FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
   irqstate_t flags;
 
@@ -601,11 +606,9 @@ int gt9xx_register(FAR const char *devpath,
 
 #define TODO
 #ifdef TODO
+  // Enable Touch Panel Interrupt
   priv->board->irq_enable(priv->board, true);
-  // Set the Touch Panel Status to 0. If we don't do this, the Touch Panel will fire interrupts continuously.
-  // ret = gt9xx_set_status(priv, 0);
 
-  // TODO: Move this
   // Poll for Touch Panel Interrupt
   for (int i = 0; i < 1000; i++) {  // Poll for 10 seconds
 
