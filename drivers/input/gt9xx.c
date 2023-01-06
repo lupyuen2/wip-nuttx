@@ -312,7 +312,7 @@ static int gt9xx_open(FAR struct file *filep)
   use_count = priv->cref + 1;
   if (use_count == 1)
     {
-      /* First user, do power on. */
+      /* First user, do power on */
 
       ret = priv->board->set_power(priv->board, true);
       if (ret < 0)
@@ -324,17 +324,21 @@ static int gt9xx_open(FAR struct file *filep)
 
       nxsig_usleep(100 * 1000);
 
-      /* Check that device exists on I2C. */
+      /* Check that device exists on I2C */
 
       // TODO
       // ret = gt9xx_probe_device(priv);
       // if (ret < 0)
       //   {
-      //     /* No such device. Power off the switch. */
+      //     /* No such device, power off the board */
 
       //     priv->board->set_power(priv->board, false);
       //     goto out_lock;
       //   }
+
+      /* Enable Interrupts */
+
+      priv->board->irq_enable(priv->board, true);
 
       priv->cref = use_count;
     }
@@ -503,10 +507,12 @@ int gt9xx_register(FAR const char *devpath,
                    uint8_t i2c_devaddr,
                    struct gt9xx_board_s *board_config)
 {
-  int ret;
+  struct gt9xx_dev_s *priv;
+  int ret = 0;
+
+  DEBUGASSERT(devpath != NULL && i2c_dev != NULL && board_config != NULL);
 
   // Allocate device private structure
-  struct gt9xx_dev_s *priv;
   priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
   if (!priv)
     {
@@ -517,6 +523,7 @@ int gt9xx_register(FAR const char *devpath,
   // Setup device structure
   priv->addr = i2c_devaddr;
   priv->i2c = i2c_dev;
+  priv->board = board_config;
   nxmutex_init(&priv->devlock);
 
   // Register Touch Input Driver
