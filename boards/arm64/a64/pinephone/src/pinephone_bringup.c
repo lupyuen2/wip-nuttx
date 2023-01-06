@@ -240,6 +240,11 @@ struct gt9xx_dev_s
 // Interrupt Handler for Touch Panel
 static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
+  up_putc('.'); ////
+
+  // Disable the PIO interrupt
+  up_disable_irq(PH_EINT); ////
+
   FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
   irqstate_t flags;
 
@@ -279,6 +284,12 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
 
   nxmutex_init(&priv->devlock);
 
+  // Read the Touch Panel over I2C
+  // for (int i = 0; i < 10; i++) {
+  //   touch_panel_read(i2c_dev);
+  //   up_mdelay(100);
+  // }
+
   // Configure the Touch Panel Interrupt
   int ret = a64_pio_config(CTP_INT);
   DEBUGASSERT(ret == 0);
@@ -301,6 +312,7 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
     PIO_INT_CTL(pin),  // Mask
     PH_EINT_CTL_REG    // Address
   );
+  _info("*PH_EINT_CTL_REG=0x%x\n", getreg32(PH_EINT_CTL_REG));
 
   // Leave Critical Section
   leave_critical_section(flags);
@@ -330,6 +342,9 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
 
       // Reset the Interrupt Pending Flag
       priv->int_pending = false;
+
+      // Enable the PIO interrupt
+      up_enable_irq(PH_EINT); ////
     }
 
     // Wait a while
@@ -395,6 +410,7 @@ int touch_panel_initialize(struct i2c_master_s *i2c)
     // Wait a while
     up_mdelay(10);  // 10 milliseconds
   }
+  return OK;
 }
 
 #endif  // !TEST_INTERRUPT
