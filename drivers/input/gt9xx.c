@@ -536,6 +536,7 @@ out:
 // Interrupt Handler for Touch Panel
 static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
+  up_putc('.'); ////
   FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
   irqstate_t flags;
 
@@ -570,7 +571,7 @@ int gt9xx_register(FAR const char *devpath,
   priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
   if (!priv)
     {
-      ierr("Memory cannot be allocated for gt9xx sensor\n");  // TODO
+      ierr("Memory cannot be allocated for gt9xx\n");  // TODO
       return -ENOMEM;
     }
 
@@ -586,16 +587,22 @@ int gt9xx_register(FAR const char *devpath,
     {
       nxmutex_destroy(&priv->devlock);
       kmm_free(priv);
-      ierr("Error occurred during the driver registering\n");  // TODO
+      ierr("Error occurred during the gt9xx registration\n");  // TODO
       return ret;
     }
 
   iinfo("Registered with %d\n", ret);  // TODO
 
   // Prepare interrupt line and handler
-  DEBUGASSERT(priv->board->irq_attach != NULL && priv->board->irq_enable != NULL);
+  // DEBUGASSERT(priv->board->irq_attach != NULL && priv->board->irq_enable != NULL);
   priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
   priv->board->irq_enable(priv->board, false);
+
+  // Set the Touch Panel Status to 0. If we don't do this, the Touch Panel will fire interrupts continuously.
+  // ret = gt9xx_set_status(priv, 0);
+  struct touch_sample_s sample;
+  ret = gt9xx_get_touch_data(priv, &sample);
+  DEBUGASSERT(ret == OK);
 
   return OK;
 }
