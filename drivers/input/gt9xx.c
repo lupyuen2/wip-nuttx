@@ -604,7 +604,7 @@ int gt9xx_register(FAR const char *devpath,
   priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
   priv->board->irq_enable(priv->board, false);
 
-#define TODO
+////#define TODO
 #ifdef TODO
   // Enable Touch Panel Interrupt
   priv->board->irq_enable(priv->board, true);

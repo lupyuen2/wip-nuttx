@@ -186,13 +186,12 @@ int pinephone_bringup(void)
     }
   else
     {
-      int touch_panel_initialize(struct i2c_master_s *i2c);
-      int ret2 = touch_panel_initialize(i2c);
-      DEBUGASSERT(ret2 == 0);
+      // int touch_panel_initialize(struct i2c_master_s *i2c);
+      // int ret2 = touch_panel_initialize(i2c);
+      // DEBUGASSERT(ret2 == 0);
     }
 #endif
 
-#ifdef NOTUSED ////
 #ifdef CONFIG_INPUT_GT9XX
   // TODO
   #define CTP_I2C_ADDR 0x5d  // Default I2C Address for Goodix GT917S
@@ -204,8 +203,6 @@ int pinephone_bringup(void)
       return ret;
     }
 #endif
-#endif //// NOTUSED
-  UNUSED(g_pinephone_gt9xx);
   ////TODO: End
 
   UNUSED(ret);
