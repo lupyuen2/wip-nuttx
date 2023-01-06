@@ -539,14 +539,14 @@ out:
 // Interrupt Handler for Touch Panel
 static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
-  up_putc('.'); ////
-  // Disable the PIO Interrupt
-  up_disable_irq(A64_IRQ_PH_EINT);////
-
   FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
   irqstate_t flags;
 
   DEBUGASSERT(priv != NULL);
+
+  up_putc('.'); ////
+  // Disable the PIO Interrupt
+  if (priv->int_pending) { up_disable_irq(A64_IRQ_PH_EINT); } ////
 
   // Set the Interrupt Pending Flag
   flags = enter_critical_section();
