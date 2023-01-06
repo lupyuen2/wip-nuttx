@@ -160,7 +160,7 @@ static int gt9xx_i2c_read(
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
   int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
-  if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
+  if (ret < 0) { ierr("I2C Error: %d\n", ret); return ret; }
 
   // Dump the receive buffer
   infodumpbuffer("buf", buf, buflen);
@@ -194,7 +194,7 @@ static int gt9xx_set_status(
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
   int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
-  if (ret < 0) { _err("I2C Error: %d\n", ret); return ret; }
+  if (ret < 0) { ierr("I2C Error: %d\n", ret); return ret; }
   return OK;
 }
 
@@ -236,7 +236,7 @@ static int gt9xx_get_touch_data(
 
     const uint16_t x = touch[0] + (touch[1] << 8);
     const uint16_t y = touch[2] + (touch[3] << 8);
-    _info("touch x=%d, y=%d\n", x, y);
+    iinfo("touch x=%d, y=%d\n", x, y);
     // Shows "touch x=658, y=1369"
 
     // Return the Touch Coordinates
@@ -260,6 +260,8 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   const size_t outlen = sizeof(tp);
   irqstate_t flags;
   int ret;
+
+  iinfo("buflen=%d\n", buflen);
 
   DEBUGASSERT(filep);
   inode = filep->f_inode;
@@ -296,6 +298,8 @@ static int gt9xx_open(FAR struct file *filep)
   FAR struct gt9xx_dev_s *priv;
   unsigned int use_count;
   int ret;
+
+  iinfo("\n");
 
   DEBUGASSERT(filep);
   inode = filep->f_inode;
@@ -364,6 +368,8 @@ static int gt9xx_close(FAR struct file *filep)
   int use_count;
   int ret;
 
+  iinfo("\n");
+
   DEBUGASSERT(filep);
   inode = filep->f_inode;
 
@@ -409,6 +415,8 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   bool pending;
   int ret = 0;
   int i;
+
+  iinfo("setup=%d\n", setup);
 
   DEBUGASSERT(filep && fds);
   inode = filep->f_inode;
@@ -514,13 +522,14 @@ int gt9xx_register(FAR const char *devpath,
   struct gt9xx_dev_s *priv;
   int ret = 0;
 
+  iinfo("devpath=%s, i2c_devaddr=%d\n", devpath, i2c_devaddr);
   DEBUGASSERT(devpath != NULL && i2c_dev != NULL && board_config != NULL);
 
   // Allocate device private structure
   priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
   if (!priv)
     {
-      _err("Memory cannot be allocated for gt9xx sensor\n");  // TODO
+      ierr("Memory cannot be allocated for gt9xx sensor\n");  // TODO
       return -ENOMEM;
     }
 
@@ -536,11 +545,11 @@ int gt9xx_register(FAR const char *devpath,
     {
       nxmutex_destroy(&priv->devlock);
       kmm_free(priv);
-      _err("Error occurred during the driver registering\n");  // TODO
+      ierr("Error occurred during the driver registering\n");  // TODO
       return ret;
     }
 
-  _info("Registered with %d\n", ret);  // TODO
+  iinfo("Registered with %d\n", ret);  // TODO
 
   // Prepare interrupt line and handler
   DEBUGASSERT(priv->board->irq_attach != NULL && priv->board->irq_enable != NULL);
