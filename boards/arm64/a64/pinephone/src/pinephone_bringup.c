@@ -558,12 +558,12 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
   return OK;
 }
 
+// Called by Touch Panel Interrupt Handler
 static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
                                        bool enable)
 {
   int ret;
 
-  _info("enable=%d\n", enable);
   if (enable)
     {
       // Configure the Touch Panel Interrupt

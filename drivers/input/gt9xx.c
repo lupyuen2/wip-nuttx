@@ -265,9 +265,6 @@ static int gt9xx_read_touch_data(
   // Set the Touch Panel Status to 0
   gt9xx_set_status(dev, 0);
 
-  // Enable the PIO Interrupt
-  up_enable_irq(A64_IRQ_PH_EINT); //// TODO
-
   return OK;
 }
 
@@ -295,7 +292,8 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   priv = inode->i_private;
 
   // Enable the PIO Interrupt
-  up_enable_irq(A64_IRQ_PH_EINT); //// TODO
+  DEBUGASSERT(priv->board && priv->board->irq_enable);
+  priv->board->irq_enable(priv->board, true);
 
   /* Lock mutex to prevent concurrent reads */
 
@@ -391,7 +389,7 @@ static int gt9xx_open(FAR struct file *filep)
 
       /* Enable Interrupts */
 
-      DEBUGASSERT(priv->board->irq_enable != NULL);
+      DEBUGASSERT(priv->board->irq_enable);
       priv->board->irq_enable(priv->board, true);
 
       priv->cref = use_count;
@@ -435,12 +433,12 @@ static int gt9xx_close(FAR struct file *filep)
     {
       /* Disable interrupt */
 
-      DEBUGASSERT(priv->board->irq_enable != NULL);
+      DEBUGASSERT(priv->board && priv->board->irq_enable);
       priv->board->irq_enable(priv->board, false);
 
       /* Last user, do power off */
 
-      DEBUGASSERT(priv->board->set_power != NULL);
+      DEBUGASSERT(priv->board->set_power);
       priv->board->set_power(priv->board, false);
       priv->cref = use_count;
     }
@@ -473,7 +471,8 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   priv = (FAR struct gt9xx_dev_s *)inode->i_private;
 
   // Enable the PIO Interrupt
-  up_enable_irq(A64_IRQ_PH_EINT); //// TODO
+  DEBUGASSERT(priv->board && priv->board->irq_enable);
+  priv->board->irq_enable(priv->board, true);
 
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
@@ -552,8 +551,10 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
   DEBUGASSERT(priv != NULL);
 
   up_putc('.'); //// TODO
-  // Disable the PIO Interrupt
-  if (priv->int_pending) { up_disable_irq(A64_IRQ_PH_EINT); } //// TODO
+
+  // Throttle the PIO Interrupt
+  DEBUGASSERT(priv->board && priv->board->irq_enable);
+  if (priv->int_pending) { priv->board->irq_enable(priv->board, false); }
 
   // Set the Interrupt Pending Flag
   flags = enter_critical_section();
@@ -607,7 +608,7 @@ int gt9xx_register(FAR const char *devpath,
   iinfo("Registered with %d\n", ret);  // TODO
 
   // Prepare interrupt line and handler
-  DEBUGASSERT(priv->board->irq_attach != NULL && priv->board->irq_enable != NULL);
+  DEBUGASSERT(priv->board->irq_attach && priv->board->irq_enable);
   priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
   priv->board->irq_enable(priv->board, false);
 
