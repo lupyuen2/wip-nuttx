@@ -472,6 +472,9 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   DEBUGASSERT(inode && inode->i_private);
   priv = (FAR struct gt9xx_dev_s *)inode->i_private;
 
+  // Enable the PIO Interrupt
+  up_enable_irq(A64_IRQ_PH_EINT); //// TODO
+
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
     {
