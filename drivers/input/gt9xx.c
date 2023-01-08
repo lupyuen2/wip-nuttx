@@ -49,9 +49,13 @@
  * Pre-Processor Definitions
  ****************************************************************************/
 
+/* Default I2C Frequency is 400 kHz */
+
 #ifndef CONFIG_INPUT_GT9XX_I2C_FREQUENCY
 #  define CONFIG_INPUT_GT9XX_I2C_FREQUENCY 400000
 #endif
+
+/* Default number of Poll Waiters is 1 */
 
 #ifndef CONFIG_INPUT_GT9XX_NPOLLWAITERS
 #  define CONFIG_INPUT_GT9XX_NPOLLWAITERS 1
@@ -61,6 +65,8 @@
  * Private Types
  ****************************************************************************/
 
+/* Touch Panel Device */
+
 struct gt9xx_dev_s
 {
   /* I2C bus and address for device */
@@ -68,12 +74,15 @@ struct gt9xx_dev_s
   struct i2c_master_s *i2c;
   uint8_t addr;
 
-  /* Configuration for device */
+  /* Callback for Board-Specific Operations */
 
   const struct gt9xx_board_s *board;
-  mutex_t devlock;
-  uint8_t cref;
-  bool int_pending;
+
+  /* Device State */
+
+  mutex_t devlock;  /* Mutex for locking Device State */
+  uint8_t cref;     /* Reference Counter for device */
+  bool int_pending; /* True if a Touch Interrupt is pending processing */
 
   /* Poll Waiters for device */
 
@@ -94,6 +103,8 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
 /****************************************************************************
  * Private Data
  ****************************************************************************/
+
+/* File Operations for Touch Panel */
 
 static const struct file_operations g_gt9xx_fileops =
 {
@@ -132,6 +143,7 @@ static const struct file_operations g_gt9xx_fileops =
 
 #define GOODIX_POINT1_X_ADDR 0x8150
 
+// Read a Touch Panel Register over I2C
 static int gt9xx_i2c_read(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
   uint16_t reg,  // I2C Register
@@ -174,6 +186,7 @@ static int gt9xx_i2c_read(
   return OK;
 }
 
+// Set the Touch Panel Status over I2C
 static int gt9xx_set_status(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
   uint8_t status  // Status value to be set
@@ -210,7 +223,7 @@ static uint16_t last_x = 0;
 static uint16_t last_y = 0;
 static uint8_t last_flags = 0;
 
-// Read Touch Panel over I2C
+// Read the Touch Coordinates over I2C
 static int gt9xx_read_touch_data(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
   FAR struct touch_sample_s *sample  // Touch Sample
@@ -274,6 +287,7 @@ static int gt9xx_read_touch_data(
   return OK;
 }
 
+// Read the Touch Coordinates, if any
 static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
                           size_t buflen)
 {
@@ -344,6 +358,7 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   return ret < 0 ? ret : outlen;
 }
 
+// Open the Touch Panel
 static int gt9xx_open(FAR struct file *filep)
 {
   FAR struct inode *inode;
@@ -413,6 +428,7 @@ out_lock:
   return ret;
 }
 
+// Close the Touch Panel
 static int gt9xx_close(FAR struct file *filep)
 {
   FAR struct inode *inode;
@@ -459,6 +475,7 @@ static int gt9xx_close(FAR struct file *filep)
   return 0;
 }
 
+// Block until a Touch Interrupt has been triggered
 static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
                       bool setup)
 {
@@ -587,61 +604,39 @@ int gt9xx_register(FAR const char *devpath,
   iinfo("devpath=%s, i2c_devaddr=%d\n", devpath, i2c_devaddr);
   DEBUGASSERT(devpath != NULL && i2c_dev != NULL && board_config != NULL);
 
-  // Allocate device private structure
+  // Allocate the Device Structure
   priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
   if (!priv)
     {
-      ierr("Memory cannot be allocated for gt9xx\n");  // TODO
+      ierr("Memory cannot be allocated for gt9xx\n");
       return -ENOMEM;
     }
 
-  // Setup device structure
+  // Setup the Device Structure
   priv->addr = i2c_devaddr;
   priv->i2c = i2c_dev;
   priv->board = board_config;
   nxmutex_init(&priv->devlock);
 
-  // Register Touch Input Driver
+  // Register the Touch Input Driver
   ret = register_driver(devpath, &g_gt9xx_fileops, 0666, priv);
   if (ret < 0)
     {
       nxmutex_destroy(&priv->devlock);
       kmm_free(priv);
-      ierr("Error occurred during the gt9xx registration\n");  // TODO
+      ierr("Error occurred during the gt9xx registration\n");
       return ret;
     }
 
-  iinfo("Registered with %d\n", ret);  // TODO
+  iinfo("Registered with %d\n", ret);
 
-  // Prepare interrupt line and handler
-  DEBUGASSERT(priv->board->irq_attach && priv->board->irq_enable);
+  // Attach the Interrupt Handler
+  DEBUGASSERT(priv->board->irq_attach);
   priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
+
+  // Disable the Touch Interrupt
+  DEBUGASSERT(priv->board->irq_enable);
   priv->board->irq_enable(priv->board, false);
-
-////#define TODO
-#ifdef TODO
-  // Enable Touch Panel Interrupt
-  priv->board->irq_enable(priv->board, true);
-
-  // Poll for Touch Panel Interrupt
-  for (int i = 0; i < 1000; i++) {  // Poll for 10 seconds
-
-    // If Touch Panel Interrupt has been triggered...
-    if (priv->int_pending) {
-
-      // Read the Touch Panel over I2C
-      struct touch_sample_s sample;
-      ret = gt9xx_read_touch_data(priv, &sample);
-      DEBUGASSERT(ret == OK);
-
-      // Reset the Interrupt Pending Flag
-      priv->int_pending = false;
-    }
-
-    // Wait a while
-    up_mdelay(10);  // 10 milliseconds
-  }
-#endif // TODO
 
   return OK;
 }
