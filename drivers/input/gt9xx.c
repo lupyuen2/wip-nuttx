@@ -55,7 +55,7 @@
 #  define CONFIG_INPUT_GT9XX_I2C_FREQUENCY 400000
 #endif
 
-/* Default number of Poll Waiters is 1 */
+/* Default Number of Poll Waiters is 1 */
 
 #ifndef CONFIG_INPUT_GT9XX_NPOLLWAITERS
 #  define CONFIG_INPUT_GT9XX_NPOLLWAITERS 1
@@ -63,11 +63,9 @@
 
 /* I2C Registers for Goodix GT9XX Touch Panel */
 
-// TODO: ReadOnly registers (device and coordinates info)
-// Product ID (LSB 4 bytes)
-#define GOODIX_REG_ID 0x8140
-#define GOODIX_READ_COORD_ADDR 0x814E
-#define GOODIX_POINT1_X_ADDR 0x8150
+#define GTP_REG_VERSION    0x8140  /* Product ID */
+#define GTP_READ_COOR_ADDR 0x814e  /* Touch Panel Status */
+#define GTP_POINT1         0x8150  /* Touch Point 1 */
 
 /****************************************************************************
  * Private Types
@@ -222,7 +220,7 @@ static int gt9xx_probe_device(FAR struct gt9xx_dev_s *dev)
   uint8_t id[4];
 
   // Read the Product ID
-  ret = gt9xx_i2c_read(dev, GOODIX_REG_ID, id, sizeof(id));
+  ret = gt9xx_i2c_read(dev, GTP_REG_VERSION, id, sizeof(id));
   if (ret < 0)
     {
       ierr("I2C Probe failed: %d\n", ret);
@@ -244,7 +242,7 @@ static int gt9xx_set_status(
   uint8_t status  // Status value to be set
 ) {
   // Write to the Status Register over I2C
-  return gt9xx_i2c_write(dev, GOODIX_READ_COORD_ADDR, status);
+  return gt9xx_i2c_write(dev, GTP_READ_COOR_ADDR, status);
 }
 
 // Read the Touch Coordinates over I2C
@@ -261,7 +259,7 @@ static int gt9xx_read_touch_data(
 
   // Read the Touch Panel Status
   uint8_t status[1];
-  ret = gt9xx_i2c_read(dev, GOODIX_READ_COORD_ADDR, status, sizeof(status));
+  ret = gt9xx_i2c_read(dev, GTP_READ_COOR_ADDR, status, sizeof(status));
   if (ret < 0)
     {
       ierr("Read Touch Panel Status failed: %d\n", ret);
@@ -278,7 +276,7 @@ static int gt9xx_read_touch_data(
 
     // Read the First Touch Coordinates
     uint8_t touch[6];
-    ret = gt9xx_i2c_read(dev, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
+    ret = gt9xx_i2c_read(dev, GTP_POINT1, touch, sizeof(touch));
     if (ret < 0)
       {
         ierr("Read Touch Point failed: %d\n", ret);
