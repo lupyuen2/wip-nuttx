@@ -548,10 +548,10 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
 }
 
 /****************************************************************************
- * Name: gt9xx_read
+ * Name: gt9xx_open
  *
  * Description:
- *   Open the Touch Panel Device. If this is the first open, we power on
+ *   Open the Touch Panel Device.  If this is the first open, we power on
  *   the Touch Panel, probe for the Touch Panel and enable Touch Panel
  *   Interrupts.
  *
@@ -570,13 +570,15 @@ static int gt9xx_open(FAR struct file *filep)
   unsigned int use_count;
   int ret;
 
+  /* Get the Touch Panel Device */
+
   iinfo("\n");
   DEBUGASSERT(filep);
   inode = filep->f_inode;
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
-  /* Begin Mutex: Lock to prevent concurrent access to Reference Count */
+  /* Begin Mutex: Lock to prevent concurrent update to Reference Count */
 
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
@@ -588,9 +590,10 @@ static int gt9xx_open(FAR struct file *filep)
   /* Get next Reference Count */
 
   use_count = priv->cref + 1;
+  DEBUGASSERT(use_count < UINT8_MAX && use_count > priv->cref);
   if (use_count == 1)
     {
-      /* First user, do power on */
+      /* If first user, power on the Touch Panel */
 
       DEBUGASSERT(priv->board->set_power != NULL);
       ret = priv->board->set_power(priv->board, true);
@@ -599,47 +602,53 @@ static int gt9xx_open(FAR struct file *filep)
           goto out_lock;
         }
 
-      /* Let chip to power up before probing */
+      /* Let Touch Panel power up before probing */
 
       nxsig_usleep(100 * 1000);
 
-      /* Check that device exists on I2C */
+      /* Check that Touch Panel exists on I2C */
 
       ret = gt9xx_probe_device(priv);
       if (ret < 0)
         {
-          /* No such device, power off the board */
+          /* No such device, power off the Touch Panel */
 
           priv->board->set_power(priv->board, false);
           goto out_lock;
         }
 
-      /* Enable Interrupts */
+      /* Enable Touch Panel Interrupts */
 
       DEBUGASSERT(priv->board->irq_enable);
       priv->board->irq_enable(priv->board, true);
-
-      /* Set the Reference Count */
-
-      priv->cref = use_count;
-    }
-  else
-    {
-      /* If not first user, just set the Reference Count */
-
-      DEBUGASSERT(use_count < UINT8_MAX && use_count > priv->cref);
-      priv->cref = use_count;
-      ret = 0;
     }
 
-  /* Begin Mutex: Unlock to allow access to Reference Count */
+  /* Set the Reference Count */
+
+  priv->cref = use_count;
+
+  /* End Mutex: Unlock to allow update to Reference Count */
 
 out_lock:
   nxmutex_unlock(&priv->devlock);
   return ret;
 }
 
-// Close the Touch Panel
+/****************************************************************************
+ * Name: gt9xx_close
+ *
+ * Description:
+ *   Close the Touch Panel Device.  If this is the final close, we disable
+ *   Touch Panel Interrupts and power off the Touch Panel.
+ *
+ * Input Parameters:
+ *   filep - File Struct for Touch Panel
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static int gt9xx_close(FAR struct file *filep)
 {
   FAR struct inode *inode;
@@ -647,15 +656,16 @@ static int gt9xx_close(FAR struct file *filep)
   int use_count;
   int ret;
 
-  iinfo("\n");
+  /* Get the Touch Panel Device */
 
+  iinfo("\n");
   DEBUGASSERT(filep);
   inode = filep->f_inode;
-
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
-  // Begin Mutex
+  /* Begin Mutex: Lock to prevent concurrent update to Reference Count */
+
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
     {
@@ -663,28 +673,30 @@ static int gt9xx_close(FAR struct file *filep)
       return ret;
     }
 
+  /* Decrement the Reference Count */
+
   use_count = priv->cref - 1;
+  DEBUGASSERT(use_count >= 0);
   if (use_count == 0)
     {
-      /* Disable interrupt */
+      /* If final user, disable Touch Panel Interrupts */
 
       DEBUGASSERT(priv->board && priv->board->irq_enable);
       priv->board->irq_enable(priv->board, false);
 
-      /* Last user, do power off */
+      /* Power off the Touch Panel */
 
       DEBUGASSERT(priv->board->set_power);
       priv->board->set_power(priv->board, false);
       priv->cref = use_count;
     }
-  else
-    {
-      DEBUGASSERT(use_count > 0);
 
-      priv->cref = use_count;
-    }
+  /* Set the Reference Count */
 
-  // End Mutex
+  priv->cref = use_count;
+
+  /* End Mutex: Unlock to allow update to Reference Count */
+
   nxmutex_unlock(&priv->devlock);
   return OK;
 }
