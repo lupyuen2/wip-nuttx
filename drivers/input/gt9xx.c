@@ -266,13 +266,27 @@ static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
   return OK;
 }
 
-// Read the Product ID from the Touch Panel over I2C
+/****************************************************************************
+ * Name: gt9xx_probe_device
+ *
+ * Description:
+ *   Read the Product ID from the Touch Panel over I2C.
+ *
+ * Input Parameters:
+ *   dev - Touch Panel Device
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static int gt9xx_probe_device(FAR struct gt9xx_dev_s *dev)
 {
   int ret;
   uint8_t id[4];
 
-  // Read the Product ID
+  /* Read the Product ID */
+
   ret = gt9xx_i2c_read(dev, GTP_REG_VERSION, id, sizeof(id));
   if (ret < 0)
     {
@@ -280,7 +294,7 @@ static int gt9xx_probe_device(FAR struct gt9xx_dev_s *dev)
       return ret;
     }
 
-  // For GT917S: Product ID will be "39 31 37 53" or "917S"
+  /* For GT917S: Product ID will be "39 31 37 53" or "917S" */
 
 #ifdef CONFIG_DEBUG_INPUT_INFO
   iinfodumpbuffer("gt9xx_probe_device", id, sizeof(id));
@@ -289,13 +303,38 @@ static int gt9xx_probe_device(FAR struct gt9xx_dev_s *dev)
   return OK;
 }
 
-// Set the Touch Panel Status over I2C
-static int gt9xx_set_status(
-  FAR struct gt9xx_dev_s *dev,  // I2C Device
-  uint8_t status  // Status value to be set
-) {
-  // Write to the Status Register over I2C
-  return gt9xx_i2c_write(dev, GTP_READ_COOR_ADDR, status);
+/****************************************************************************
+ * Name: gt9xx_set_status
+ *
+ * Description:
+ *   Set the Touch Panel Status over I2C.
+ *
+ * Input Parameters:
+ *   dev    - Touch Panel Device
+ *   status - Status value to be set
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
+static int gt9xx_set_status(FAR struct gt9xx_dev_s *dev, uint8_t status)
+{
+  int ret;
+
+  iinfo("status=%d\n", status);
+  DEBUGASSERT(dev);
+
+  /* Write to the Status Register over I2C */
+
+  ret = gt9xx_i2c_write(dev, GTP_READ_COOR_ADDR, status);
+  if (ret < 0)
+    {
+      ierr("I2C Set Status failed: %d\n", ret);
+      return ret;
+    }
+
+  return OK;
 }
 
 // Read the Touch Coordinates over I2C
