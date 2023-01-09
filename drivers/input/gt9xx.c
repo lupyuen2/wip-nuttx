@@ -894,7 +894,8 @@ int gt9xx_register(FAR const char *devpath,
   iinfo("devpath=%s, i2c_devaddr=%d\n", devpath, i2c_devaddr);
   DEBUGASSERT(devpath != NULL && i2c_dev != NULL && board_config != NULL);
 
-  // Allocate the Device Structure
+  /* Allocate the Touch Panel Device Structure */
+
   priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
   if (!priv)
     {
@@ -902,13 +903,15 @@ int gt9xx_register(FAR const char *devpath,
       return -ENOMEM;
     }
 
-  // Setup the Device Structure
+  /* Setup the Touch Panel Device Structure */
+
   priv->addr = i2c_devaddr;
   priv->i2c = i2c_dev;
   priv->board = board_config;
   nxmutex_init(&priv->devlock);
 
-  // Register the Touch Input Driver
+  /* Register the Touch Input Driver */
+
   ret = register_driver(devpath, &g_gt9xx_fileops, 0666, priv);
   if (ret < 0)
     {
@@ -918,15 +921,16 @@ int gt9xx_register(FAR const char *devpath,
       return ret;
     }
 
-  iinfo("Registered with %d\n", ret);
+  /* Attach the Interrupt Handler */
 
-  // Attach the Interrupt Handler
   DEBUGASSERT(priv->board->irq_attach);
   priv->board->irq_attach(priv->board, gt9xx_isr_handler, priv);
 
-  // Disable the Touch Interrupt
+  /* Disable Touch Panel Interrupts */
+
   DEBUGASSERT(priv->board->irq_enable);
   priv->board->irq_enable(priv->board, false);
 
+  iinfo("GT9XX Touch Panel registered\n");
   return OK;
 }
