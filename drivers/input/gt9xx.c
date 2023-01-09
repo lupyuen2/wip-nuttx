@@ -547,7 +547,22 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   return (ret < 0) ? ret : outlen;
 }
 
-// Open the Touch Panel
+/****************************************************************************
+ * Name: gt9xx_read
+ *
+ * Description:
+ *   Open the Touch Panel Device. If this is the first open, we power on
+ *   the Touch Panel, probe for the Touch Panel and enable Touch Panel
+ *   Interrupts.
+ *
+ * Input Parameters:
+ *   filep - File Struct for Touch Panel
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static int gt9xx_open(FAR struct file *filep)
 {
   FAR struct inode *inode;
@@ -556,20 +571,21 @@ static int gt9xx_open(FAR struct file *filep)
   int ret;
 
   iinfo("\n");
-
   DEBUGASSERT(filep);
   inode = filep->f_inode;
-
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
-  // Begin Mutex
+  /* Begin Mutex: Lock to prevent concurrent access to Reference Count */
+
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
     {
       ierr("Lock Mutex failed: %d\n", ret);
       return ret;
     }
+
+  /* Get next Reference Count */
 
   use_count = priv->cref + 1;
   if (use_count == 1)
@@ -603,17 +619,21 @@ static int gt9xx_open(FAR struct file *filep)
       DEBUGASSERT(priv->board->irq_enable);
       priv->board->irq_enable(priv->board, true);
 
+      /* Set the Reference Count */
+
       priv->cref = use_count;
     }
   else
     {
-      DEBUGASSERT(use_count < UINT8_MAX && use_count > priv->cref);
+      /* If not first user, just set the Reference Count */
 
+      DEBUGASSERT(use_count < UINT8_MAX && use_count > priv->cref);
       priv->cref = use_count;
       ret = 0;
     }
 
-  // End Mutex
+  /* Begin Mutex: Unlock to allow access to Reference Count */
+
 out_lock:
   nxmutex_unlock(&priv->devlock);
   return ret;
