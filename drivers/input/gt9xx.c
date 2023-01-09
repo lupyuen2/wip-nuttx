@@ -701,7 +701,23 @@ static int gt9xx_close(FAR struct file *filep)
   return OK;
 }
 
-// Block until a Touch Interrupt has been triggered
+/****************************************************************************
+ * Name: gt9xx_poll
+ *
+ * Description:
+ *   Setup or teardown a poll for the Touch Panel Device.
+ *
+ * Input Parameters:
+ *   filep - File Struct for Touch Panel
+ *   fds   - The structure describing the events to be monitored, OR NULL if
+ *           this is a request to stop monitoring events.
+ *   setup - true: Setup the poll; false: Teardown the poll
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
                       bool setup)
 {
@@ -743,7 +759,7 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
           goto out;
         }
 
-      /* Find an available slot for the poll structure reference */
+      /* Find an available slot for the Poll Waiter */
 
       for (i = 0; i < CONFIG_INPUT_GT9XX_NPOLLWAITERS; i++)
         {
@@ -797,25 +813,50 @@ out:
   return ret;
 }
 
-// Interrupt Handler for Touch Panel
+/****************************************************************************
+ * Name: gt9xx_isr_handler
+ *
+ * Description:
+ *   Interrupt Handler for Touch Panel.
+ *
+ * Input Parameters:
+ *   irq     - IRQ Number
+ *   context - IRQ Context
+ *   arg     - Touch Panel Device
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
   FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
   irqstate_t flags;
 
-  DEBUGASSERT(priv != NULL);
+  /* Throttle the Touch Panel Interrupts if they are pending processing */
 
-  up_putc('.'); //// TODO
+  DEBUGASSERT(priv);
+  if (priv->int_pending)
+    {
+      DEBUGASSERT(priv->board && priv->board->irq_enable);
+      priv->board->irq_enable(priv->board, false);
+    }
 
-  // Throttle the PIO Interrupt
-  if (priv->int_pending) { priv->board->irq_enable(priv->board, false); }
+  /* Begin Critical Section */
 
-  // Set the Interrupt Pending Flag
   flags = enter_critical_section();
+
+  /* Set the Interrupt Pending Flag */
+
   priv->int_pending = true;
+
+  /* End Critical Section */
+
   leave_critical_section(flags);
 
-  // Notify the Poll Waiters
+  /* Notify the Poll Waiters */
+
   poll_notify(priv->fds, CONFIG_INPUT_GT9XX_NPOLLWAITERS, POLLIN);
   return OK;
 }
