@@ -158,7 +158,8 @@ static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
 {
   /* Send the Register Address, MSB first */
 
-  uint8_t regbuf[2] = {
+  uint8_t regbuf[2] =
+  {
     reg >> 8,   /* First Byte: MSB */
     reg & 0xff  /* Second Byte: LSB */
   };
@@ -186,7 +187,10 @@ static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
   /* Execute the I2C Transfer */
 
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
-  int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
+  int ret;
+
+  iinfo("reg=0x%x, buflen=%d\n", reg, buflen);
+  ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
   if (ret < 0)
     {
@@ -201,20 +205,38 @@ static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
   return OK;
 }
 
-// Write to a Touch Panel Register over I2C
-static int gt9xx_i2c_write(
-  FAR struct gt9xx_dev_s *dev,  // I2C Device
-  uint16_t reg,  // I2C Register
-  uint8_t val    // Value to be written
-) {
-  // Send the Register Address, MSB first, followed by the value
-  uint8_t buf[3] = {
-    reg >> 8,    // First Byte: MSB
-    reg & 0xff,  // Second Byte: LSB
-    val          // Value to be written
+/****************************************************************************
+ * Name: gt9xx_i2c_write
+ *
+ * Description:
+ *   Write to a Touch Panel Register over I2C.
+ *
+ * Input Parameters:
+ *   dev - Touch Panel Device
+ *   reg - I2C Register to be written
+ *   val - Value to be written
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
+static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
+                           uint16_t reg,
+                           uint8_t val)
+{
+
+  /* Send the Register Address, MSB first, followed by the value */
+
+  uint8_t buf[3] =
+  {
+    reg >> 8,    /* First Byte: MSB */
+    reg & 0xff,  /* Second Byte: LSB */
+    val          /* Value to be written */
   };
 
-  // Compose the I2C Message
+  /* Compose the I2C Message */
+
   struct i2c_msg_s msgv[1] =
   {
     { /* Send the I2C Register Address and Value */
@@ -226,11 +248,20 @@ static int gt9xx_i2c_write(
     }
   };
 
-  // Execute the I2C Transfer
-  const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
-  int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
+  /* Execute the I2C Transfer */
 
-  if (ret < 0) { ierr("I2C Write failed: %d\n", ret); return ret; }
+  const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
+  int ret;
+
+  iinfo("reg=0x%x, val=%d\n", reg, val);
+  ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
+
+  if (ret < 0)
+    {
+        ierr("I2C Write failed: %d\n", ret);
+        return ret;
+    }
+
   return OK;
 }
 
