@@ -190,6 +190,7 @@ static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
   int ret;
 
   iinfo("reg=0x%x, buflen=%d\n", reg, buflen);
+  DEBUGASSERT(dev && dev->i2c && buf);
   ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
   if (ret < 0)
@@ -225,7 +226,6 @@ static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
                            uint16_t reg,
                            uint8_t val)
 {
-
   /* Send the Register Address, MSB first, followed by the value */
 
   uint8_t buf[3] =
@@ -254,12 +254,13 @@ static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
   int ret;
 
   iinfo("reg=0x%x, val=%d\n", reg, val);
+  DEBUGASSERT(dev && dev->i2c);
   ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
   if (ret < 0)
     {
-        ierr("I2C Write failed: %d\n", ret);
-        return ret;
+      ierr("I2C Write failed: %d\n", ret);
+      return ret;
     }
 
   return OK;
