@@ -224,7 +224,7 @@ static int gt9xx_probe_device(FAR struct gt9xx_dev_s *dev)
   if (ret < 0)
     {
       ierr("I2C Probe failed: %d\n", ret);
-      return ret; 
+      return ret;
     }
 
   // For GT917S: Product ID will be "39 31 37 53" or "917S"
@@ -263,7 +263,7 @@ static int gt9xx_read_touch_data(
   if (ret < 0)
     {
       ierr("Read Touch Panel Status failed: %d\n", ret);
-      return ret; 
+      return ret;
     }
   // Shows "81"
 
@@ -280,7 +280,7 @@ static int gt9xx_read_touch_data(
     if (ret < 0)
       {
         ierr("Read Touch Point failed: %d\n", ret);
-        return ret; 
+        return ret;
       }
     // Shows "92 02 59 05 1b 00"
 
@@ -304,7 +304,7 @@ static int gt9xx_read_touch_data(
   if (ret < 0)
     {
       ierr("Set Touch Panel Status failed: %d\n", ret);
-      return ret; 
+      return ret;
     }
 
   return OK;
@@ -424,7 +424,7 @@ static int gt9xx_open(FAR struct file *filep)
   if (ret < 0)
     {
       ierr("Lock Mutex failed: %d\n", ret);
-      return ret; 
+      return ret;
     }
 
   use_count = priv->cref + 1;
@@ -496,7 +496,7 @@ static int gt9xx_close(FAR struct file *filep)
   if (ret < 0)
     {
       ierr("Lock Mutex failed: %d\n", ret);
-      return ret; 
+      return ret;
     }
 
   use_count = priv->cref - 1;
@@ -552,7 +552,7 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   if (ret < 0)
     {
       ierr("Lock Mutex failed: %d\n", ret);
-      return ret; 
+      return ret;
     }
 
   if (setup)
@@ -643,6 +643,24 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 
 /****************************************************************************
  * Public Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Name: gt9xx_register
+ *
+ * Description:
+ *   Register the Touch Panel Driver.  Attach the Interrupt Handler for the
+ *   Touch Panel and disable the Touch Interrupt.
+ *
+ * Input Parameters:
+ *   devpath      - Device Path (e.g. "/dev/input0")
+ *   dev          - I2C Bus
+ *   i2c_devaddr  - I2C Address of Touch Panel
+ *   board_config - Callback for Board-Specific Operations
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
  ****************************************************************************/
 
 int gt9xx_register(FAR const char *devpath,

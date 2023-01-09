@@ -33,14 +33,24 @@
  * Public Types
  ****************************************************************************/
 
-/* Board Configuration */
+/* Callback for Board-Specific Operations */
 
 struct gt9xx_board_s
 {
+  /* Attach the Interrupt Handler for Touch Panel */
+
   int (*irq_attach) (const struct gt9xx_board_s *state,
                      xcpt_t isr,
                      FAR void *arg);
+
+  /* Enable or disable Interrupts for the Touch Panel. Will be called by
+   * Interrupt Handler.
+   */
+
   void (*irq_enable) (const struct gt9xx_board_s *state, bool enable);
+
+  /* Power on or off the Touch Panel */
+
   int (*set_power) (const struct gt9xx_board_s *state, bool on);
 };
 
@@ -48,7 +58,23 @@ struct gt9xx_board_s
  * Public Function Prototypes
  ****************************************************************************/
 
-/* Device Registration */
+/****************************************************************************
+ * Name: gt9xx_register
+ *
+ * Description:
+ *   Register the Touch Panel Driver.  Attach the Interrupt Handler for the
+ *   Touch Panel and disable the Touch Interrupt.
+ *
+ * Input Parameters:
+ *   devpath      - Device Path (e.g. "/dev/input0")
+ *   dev          - I2C Bus
+ *   i2c_devaddr  - I2C Address of Touch Panel
+ *   board_config - Callback for Board-Specific Operations
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
 
 int gt9xx_register(FAR const char *devpath,
                    FAR struct i2c_master_s *dev,
