@@ -61,6 +61,14 @@
 #  define CONFIG_INPUT_GT9XX_NPOLLWAITERS 1
 #endif
 
+/* I2C Registers for Goodix GT9XX Touch Panel */
+
+// TODO: ReadOnly registers (device and coordinates info)
+// Product ID (LSB 4 bytes)
+#define GOODIX_REG_ID 0x8140
+#define GOODIX_READ_COORD_ADDR 0x814E
+#define GOODIX_POINT1_X_ADDR 0x8150
+
 /****************************************************************************
  * Private Types
  ****************************************************************************/
@@ -128,23 +136,6 @@ static const struct file_operations g_gt9xx_fileops =
 /****************************************************************************
  * Private Functions
  ****************************************************************************/
-
-// TODO: ReadOnly registers (device and coordinates info)
-// Product ID (LSB 4 bytes)
-#define GOODIX_REG_ID 0x8140
-// Firmware version (LSB 2 bytes)
-#define GOODIX_REG_FW_VER 0x8144
-
-// Current output X resolution (LSB 2 bytes)
-#define GOODIX_READ_X_RES 0x8146
-// Current output Y resolution (LSB 2 bytes)
-#define GOODIX_READ_Y_RES 0x8148
-// Module vendor ID
-#define GOODIX_READ_VENDOR_ID 0x814A
-
-#define GOODIX_READ_COORD_ADDR 0x814E
-
-#define GOODIX_POINT1_X_ADDR 0x8150
 
 // Read from a Touch Panel Register over I2C
 static int gt9xx_i2c_read(
