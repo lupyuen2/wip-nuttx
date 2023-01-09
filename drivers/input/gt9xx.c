@@ -182,10 +182,12 @@ static int gt9xx_i2c_read(
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
   int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
-  if (ret < 0) { ierr("I2C Error: %d\n", ret); return ret; }
+  if (ret < 0) { ierr("I2C Read failed: %d\n", ret); return ret; }
 
-  // Dump the receive buffer
-  // TODO: infodumpbuffer("buf", buf, buflen);
+#ifdef CONFIG_DEBUG_INPUT_INFO
+  iinfodumpbuffer("gt9xx_i2c_read", buf, buflen);
+#endif /* CONFIG_DEBUG_INPUT_INFO */
+
   return OK;
 }
 
@@ -218,7 +220,30 @@ static int gt9xx_i2c_write(
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
   int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
-  if (ret < 0) { ierr("I2C Error: %d\n", ret); return ret; }
+  if (ret < 0) { ierr("I2C Write failed: %d\n", ret); return ret; }
+  return OK;
+}
+
+// Read the Product ID from the Touch Panel over I2C
+static int gt9xx_probe_device(FAR struct gt9xx_dev_s *dev)
+{
+  int ret;
+  uint8_t id[4];
+
+  // Read the Product ID
+  ret = gt9xx_i2c_read(dev, GOODIX_REG_ID, id, sizeof(id));
+  if (ret < 0)
+    {
+      ierr("I2C Probe failed: %d\n", ret);
+      return ret; 
+    }
+
+  // For GT917S: Product ID will be "39 31 37 53" or "917S"
+
+#ifdef CONFIG_DEBUG_INPUT_INFO
+  iinfodumpbuffer("gt9xx_probe_device", id, sizeof(id));
+#endif /* CONFIG_DEBUG_INPUT_INFO */
+
   return OK;
 }
 
@@ -236,19 +261,21 @@ static int gt9xx_read_touch_data(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
   FAR struct touch_sample_s *sample  // Touch Sample
 ) {
+  int ret;
+
   iinfo("\n");
   DEBUGASSERT(dev != NULL);
   DEBUGASSERT(sample != NULL);
   memset(sample, 0, sizeof(*sample));
 
-  // Read the Product ID
-  // uint8_t id[4];
-  // gt9xx_i2c_read(dev, GOODIX_REG_ID, id, sizeof(id));
-  // Shows "39 31 37 53" or "917S"
-
   // Read the Touch Panel Status
   uint8_t status[1];
-  gt9xx_i2c_read(dev, GOODIX_READ_COORD_ADDR, status, sizeof(status));
+  ret = gt9xx_i2c_read(dev, GOODIX_READ_COORD_ADDR, status, sizeof(status));
+  if (ret < 0)
+    {
+      ierr("Read Touch Panel Status failed: %d\n", ret);
+      return ret; 
+    }
   // Shows "81"
 
   // Decode the Status Code and the Touched Points
@@ -260,7 +287,12 @@ static int gt9xx_read_touch_data(
 
     // Read the First Touch Coordinates
     uint8_t touch[6];
-    gt9xx_i2c_read(dev, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
+    ret = gt9xx_i2c_read(dev, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
+    if (ret < 0)
+      {
+        ierr("Read Touch Point failed: %d\n", ret);
+        return ret; 
+      }
     // Shows "92 02 59 05 1b 00"
 
     // Decode the Touch Coordinates
@@ -279,7 +311,12 @@ static int gt9xx_read_touch_data(
   }
 
   // Set the Touch Panel Status to 0
-  gt9xx_set_status(dev, 0);
+  ret = gt9xx_set_status(dev, 0);
+  if (ret < 0)
+    {
+      ierr("Set Touch Panel Status failed: %d\n", ret);
+      return ret; 
+    }
 
   return OK;
 }
@@ -312,7 +349,7 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   DEBUGASSERT(priv->board && priv->board->irq_enable);
   priv->board->irq_enable(priv->board, true);
 
-  /* Lock mutex to prevent concurrent reads */
+  /* Begin Mutex: Lock to prevent concurrent reads */
 
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
@@ -371,10 +408,10 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       leave_critical_section(flags);
     }
 
-  /* Unlock mutex to allow next read */
+  /* End Mutex: Unlock to allow next read */
 
   nxmutex_unlock(&priv->devlock);
-  return ret < 0 ? ret : outlen;
+  return (ret < 0) ? ret : outlen;
 }
 
 // Open the Touch Panel
@@ -393,10 +430,12 @@ static int gt9xx_open(FAR struct file *filep)
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
+  // Begin Mutex
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
     {
-      return ret;
+      ierr("Lock Mutex failed: %d\n", ret);
+      return ret; 
     }
 
   use_count = priv->cref + 1;
@@ -417,15 +456,14 @@ static int gt9xx_open(FAR struct file *filep)
 
       /* Check that device exists on I2C */
 
-      // TODO
-      // ret = gt9xx_probe_device(priv);
-      // if (ret < 0)
-      //   {
-      //     /* No such device, power off the board */
+      ret = gt9xx_probe_device(priv);
+      if (ret < 0)
+        {
+          /* No such device, power off the board */
 
-      //     priv->board->set_power(priv->board, false);
-      //     goto out_lock;
-      //   }
+          priv->board->set_power(priv->board, false);
+          goto out_lock;
+        }
 
       /* Enable Interrupts */
 
@@ -442,6 +480,7 @@ static int gt9xx_open(FAR struct file *filep)
       ret = 0;
     }
 
+  // End Mutex
 out_lock:
   nxmutex_unlock(&priv->devlock);
   return ret;
@@ -463,10 +502,12 @@ static int gt9xx_close(FAR struct file *filep)
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
+  // Begin Mutex
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
     {
-      return ret;
+      ierr("Lock Mutex failed: %d\n", ret);
+      return ret; 
     }
 
   use_count = priv->cref - 1;
@@ -490,8 +531,9 @@ static int gt9xx_close(FAR struct file *filep)
       priv->cref = use_count;
     }
 
+  // End Mutex
   nxmutex_unlock(&priv->devlock);
-  return 0;
+  return OK;
 }
 
 // Block until a Touch Interrupt has been triggered
@@ -516,10 +558,12 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   DEBUGASSERT(priv->board && priv->board->irq_enable);
   priv->board->irq_enable(priv->board, true);
 
+  // Begin Mutex
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
     {
-      return ret;
+      ierr("Lock Mutex failed: %d\n", ret);
+      return ret; 
     }
 
   if (setup)
@@ -579,6 +623,7 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
       fds->priv = NULL;
     }
 
+  // End Mutex
 out:
   nxmutex_unlock(&priv->devlock);
   return ret;
@@ -595,7 +640,6 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
   up_putc('.'); //// TODO
 
   // Throttle the PIO Interrupt
-  DEBUGASSERT(priv->board && priv->board->irq_enable);
   if (priv->int_pending) { priv->board->irq_enable(priv->board, false); }
 
   // Set the Interrupt Pending Flag
@@ -605,7 +649,7 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 
   // Notify the Poll Waiters
   poll_notify(priv->fds, CONFIG_INPUT_GT9XX_NPOLLWAITERS, POLLIN);
-  return 0;
+  return OK;
 }
 
 /****************************************************************************
@@ -627,7 +671,7 @@ int gt9xx_register(FAR const char *devpath,
   priv = kmm_zalloc(sizeof(struct gt9xx_dev_s));
   if (!priv)
     {
-      ierr("Memory cannot be allocated for gt9xx\n");
+      ierr("GT9XX Memory Allocation failed\n");
       return -ENOMEM;
     }
 
@@ -643,7 +687,7 @@ int gt9xx_register(FAR const char *devpath,
     {
       nxmutex_destroy(&priv->devlock);
       kmm_free(priv);
-      ierr("Error occurred during the gt9xx registration\n");
+      ierr("GT9XX Registration failed: %d\n", ret);
       return ret;
     }
 
