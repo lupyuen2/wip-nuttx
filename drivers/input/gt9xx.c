@@ -268,11 +268,6 @@ static int gt9xx_read_touch_data(
     sample->point[0].x = x;
     sample->point[0].y = y;
     sample->point[0].flags = flags;
-
-    // Remember the last valid touch data
-    last_x = x;
-    last_y = y;
-    last_flags = flags;
   }
 
   // Set the Touch Panel Status to 0
@@ -323,7 +318,17 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   if (last_flags & TOUCH_DOWN)
     {
       iinfo("touch up x=%d, y=%d\n", last_x, last_y);
+
+      // Enter Critical Section
+      flags = enter_critical_section();
+
+      // Forget the Last Touch Point
       last_flags = TOUCH_UP | TOUCH_ID_VALID | TOUCH_POS_VALID;
+
+      // Leave Critical Section
+      leave_critical_section(flags);
+
+      // Return the Last Touch Point
       memset(&sample, 0, sizeof(sample));
       sample.npoints = 1;
       sample.point[0].id = 0;
@@ -339,10 +344,21 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       ret = gt9xx_read_touch_data(priv, &sample);
       memcpy(buffer, &sample, sizeof(sample));
 
-      /* Clear pending flag with critical section */
-
+      // Enter Critical Section
       flags = enter_critical_section();
+
+      // Clear the Interrupt Pending Flag
       priv->int_pending = false;
+
+      // Remember the last Touch Point
+      if (sample.npoints >= 1)
+        {
+          last_x = sample.point[0].x;
+          last_y = sample.point[0].y;
+          last_flags = sample.point[0].flags;
+        }
+
+      // Leave Critical Section
       leave_critical_section(flags);
     }
 
