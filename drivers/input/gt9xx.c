@@ -126,7 +126,7 @@ static const struct file_operations g_gt9xx_fileops =
  * Private Functions
  ****************************************************************************/
 
-// ReadOnly registers (device and coordinates info)
+// TODO: ReadOnly registers (device and coordinates info)
 // Product ID (LSB 4 bytes)
 #define GOODIX_REG_ID 0x8140
 // Firmware version (LSB 2 bytes)
@@ -182,11 +182,11 @@ static int gt9xx_i2c_read(
   if (ret < 0) { ierr("I2C Error: %d\n", ret); return ret; }
 
   // Dump the receive buffer
-  // infodumpbuffer("buf", buf, buflen);
+  // TODO: infodumpbuffer("buf", buf, buflen);
   return OK;
 }
 
-// Set the Touch Panel Status over I2C
+// TODO: Set the Touch Panel Status over I2C
 static int gt9xx_set_status(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
   uint8_t status  // Status value to be set
@@ -250,16 +250,10 @@ static int gt9xx_read_touch_data(
   if (status_code != 0 &&  // If Touch Panel Status is OK and...
       touched_points >= 1) {  // Touched Points is 1 or more
 
-    // Dump the receive buffer
-    // infodumpbuffer("buf", status, sizeof(status));
-
     // Read the First Touch Coordinates
     uint8_t touch[6];
     gt9xx_i2c_read(dev, GOODIX_POINT1_X_ADDR, touch, sizeof(touch));
     // Shows "92 02 59 05 1b 00"
-
-    // Dump the receive buffer
-    // infodumpbuffer("buf", touch, sizeof(touch));
 
     // Decode the Touch Coordinates
     const uint16_t x = touch[0] + (touch[1] << 8);
