@@ -330,68 +330,92 @@ static int gt9xx_set_status(FAR struct gt9xx_dev_s *dev, uint8_t status)
   ret = gt9xx_i2c_write(dev, GTP_READ_COOR_ADDR, status);
   if (ret < 0)
     {
-      ierr("I2C Set Status failed: %d\n", ret);
+      ierr("Set Status failed: %d\n", ret);
       return ret;
     }
 
   return OK;
 }
 
-// Read the Touch Coordinates over I2C
-static int gt9xx_read_touch_data(
-  FAR struct gt9xx_dev_s *dev,  // I2C Device
-  FAR struct touch_sample_s *sample  // Touch Sample
-) {
+/****************************************************************************
+ * Name: gt9xx_read_touch_data
+ *
+ * Description:
+ *   Read a Touch Sample from Touch Panel. Returns either 0 or 1
+ *   Touch Points.
+ *
+ * Input Parameters:
+ *   dev    - Touch Panel Device
+ *   sample - Returned Touch Sample (0 or 1 Touch Points)
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
+static int gt9xx_read_touch_data(FAR struct gt9xx_dev_s *dev,
+                                 FAR struct touch_sample_s *sample)
+{
+  uint8_t status[1];
+  uint8_t status_code;
+  uint8_t touched_points;
+  uint8_t touch[6];
+  uint16_t x;
+  uint16_t y;
+  uint8_t flags;
   int ret;
 
+  /* Erase the Touch Sample and Touch Point */
+
   iinfo("\n");
-  DEBUGASSERT(dev != NULL);
-  DEBUGASSERT(sample != NULL);
+  DEBUGASSERT(dev && sample);
   memset(sample, 0, sizeof(*sample));
 
-  // Read the Touch Panel Status
-  uint8_t status[1];
+  /* Read the Touch Panel Status */
+
   ret = gt9xx_i2c_read(dev, GTP_READ_COOR_ADDR, status, sizeof(status));
   if (ret < 0)
     {
       ierr("Read Touch Panel Status failed: %d\n", ret);
       return ret;
     }
-  // Shows "81"
 
-  // Decode the Status Code and the Touched Points
-  const uint8_t status_code    = status[0] & 0x80;  // Set to 0x80
-  const uint8_t touched_points = status[0] & 0x0f;  // Set to 0x01
+  /* Decode the Status Code and the Touched Points */
 
-  if (status_code != 0 &&  // If Touch Panel Status is OK and...
-      touched_points >= 1) {  // Touched Points is 1 or more
+  status_code = status[0] & 0x80;
+  touched_points = status[0] & 0x0f;
 
-    // Read the First Touch Coordinates
-    uint8_t touch[6];
-    ret = gt9xx_i2c_read(dev, GTP_POINT1, touch, sizeof(touch));
-    if (ret < 0)
-      {
-        ierr("Read Touch Point failed: %d\n", ret);
-        return ret;
-      }
-    // Shows "92 02 59 05 1b 00"
+  /* If Touch Panel Status is OK and Touched Points is 1 or more */
 
-    // Decode the Touch Coordinates
-    const uint16_t x = touch[0] + (touch[1] << 8);
-    const uint16_t y = touch[2] + (touch[3] << 8);
-    const uint8_t flags = TOUCH_DOWN | TOUCH_ID_VALID | TOUCH_POS_VALID;
-    iinfo("touch down x=%d, y=%d\n", x, y);
-    // Shows "touch x=658, y=1369"
+  if (status_code != 0 && touched_points >= 1)
+    {
+      /* Read the First Touch Point (6 bytes) */
 
-    // Return the Touch Coordinates
-    sample->npoints = 1;
-    sample->point[0].id = 0;
-    sample->point[0].x = x;
-    sample->point[0].y = y;
-    sample->point[0].flags = flags;
-  }
+      ret = gt9xx_i2c_read(dev, GTP_POINT1, touch, sizeof(touch));
+      if (ret < 0)
+        {
+          ierr("Read Touch Point failed: %d\n", ret);
+          return ret;
+        }
 
-  // Set the Touch Panel Status to 0
+      /* Decode the Touch Coordinates */
+
+      x = touch[0] + (touch[1] << 8);
+      y = touch[2] + (touch[3] << 8);
+
+      /* Return the Touch Coordinates as Touch Down */
+
+      flags = TOUCH_DOWN | TOUCH_ID_VALID | TOUCH_POS_VALID;
+      sample->npoints = 1;
+      sample->point[0].id = 0;
+      sample->point[0].x = x;
+      sample->point[0].y = y;
+      sample->point[0].flags = flags;
+      iinfo("touch down x=%d, y=%d\n", x, y);
+    }
+
+  /* Set the Touch Panel Status to 0 */
+
   ret = gt9xx_set_status(dev, 0);
   if (ret < 0)
     {
