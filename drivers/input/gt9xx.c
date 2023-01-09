@@ -144,7 +144,7 @@ static const struct file_operations g_gt9xx_fileops =
  *   dev    - Touch Panel Device
  *   reg    - I2C Register to be read
  *   buf    - Receive Buffer
- *   buflen - Size of Receive Buffer
+ *   buflen - Number of bytes to be read
  *
  * Returned Value:
  *   Zero (OK) on success; a negated errno value is returned on any failure.
@@ -156,6 +156,8 @@ static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
                           uint8_t *buf,
                           size_t buflen)
 {
+  int ret;
+
   /* Send the Register Address, MSB first */
 
   uint8_t regbuf[2] =
@@ -168,14 +170,18 @@ static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
 
   struct i2c_msg_s msgv[2] =
   {
-    { /* Send the I2C Register Address */
+    {
+      /* Send the I2C Register Address */
+
       .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
       .addr      = dev->addr,
       .flags     = 0,
       .buffer    = regbuf,
       .length    = sizeof(regbuf)
     },
-    { /* Receive the I2C Register Value */
+    {
+      /* Receive the I2C Register Values */
+
       .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
       .addr      = dev->addr,
       .flags     = I2C_M_READ,
@@ -184,15 +190,14 @@ static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
     }
   };
 
-  /* Execute the I2C Transfer */
-
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
-  int ret;
 
   iinfo("reg=0x%x, buflen=%d\n", reg, buflen);
   DEBUGASSERT(dev && dev->i2c && buf);
-  ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
+  /* Execute the I2C Transfer */
+
+  ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
   if (ret < 0)
     {
       ierr("I2C Read failed: %d\n", ret);
@@ -226,6 +231,8 @@ static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
                            uint16_t reg,
                            uint8_t val)
 {
+  int ret;
+
   /* Send the Register Address, MSB first, followed by the value */
 
   uint8_t buf[3] =
@@ -239,7 +246,9 @@ static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
 
   struct i2c_msg_s msgv[1] =
   {
-    { /* Send the I2C Register Address and Value */
+    {
+      /* Send the I2C Register Address and Value */
+
       .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
       .addr      = dev->addr,
       .flags     = 0,
@@ -248,15 +257,14 @@ static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
     }
   };
 
-  /* Execute the I2C Transfer */
-
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
-  int ret;
 
   iinfo("reg=0x%x, val=%d\n", reg, val);
   DEBUGASSERT(dev && dev->i2c);
-  ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
+  /* Execute the I2C Transfer */
+
+  ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
   if (ret < 0)
     {
       ierr("I2C Write failed: %d\n", ret);
@@ -294,7 +302,7 @@ static int gt9xx_probe_device(FAR struct gt9xx_dev_s *dev)
       return ret;
     }
 
-  /* For GT917S: Product ID will be "39 31 37 53" or "917S" */
+  /* For GT917S: Product ID will be 39 31 37 53, i.e. "917S" */
 
 #ifdef CONFIG_DEBUG_INPUT_INFO
   iinfodumpbuffer("gt9xx_probe_device", id, sizeof(id));
