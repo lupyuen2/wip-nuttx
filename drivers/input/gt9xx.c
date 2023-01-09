@@ -134,30 +134,47 @@ static const struct file_operations g_gt9xx_fileops =
  * Private Functions
  ****************************************************************************/
 
-// Read from a Touch Panel Register over I2C
-static int gt9xx_i2c_read(
-  FAR struct gt9xx_dev_s *dev,  // I2C Device
-  uint16_t reg,  // I2C Register
-  uint8_t *buf,  // Receive Buffer
-  size_t buflen  // Receive Buffer Size
-) {
-  // Send the Register Address, MSB first
+/****************************************************************************
+ * Name: gt9xx_i2c_read
+ *
+ * Description:
+ *   Read a Touch Panel Register over I2C.
+ *
+ * Input Parameters:
+ *   dev    - Touch Panel Device
+ *   reg    - I2C Register to be read
+ *   buf    - Receive Buffer
+ *   buflen - Size of Receive Buffer
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
+static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
+                          uint16_t reg,
+                          uint8_t *buf,
+                          size_t buflen)
+{
+  /* Send the Register Address, MSB first */
+
   uint8_t regbuf[2] = {
-    reg >> 8,   // First Byte: MSB
-    reg & 0xff  // Second Byte: LSB
+    reg >> 8,   /* First Byte: MSB */
+    reg & 0xff  /* Second Byte: LSB */
   };
 
-  // Compose the I2C Messages
+  /* Compose the I2C Messages */
+
   struct i2c_msg_s msgv[2] =
   {
-    {
+    { /* Send the I2C Register Address */
       .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
       .addr      = dev->addr,
       .flags     = 0,
       .buffer    = regbuf,
       .length    = sizeof(regbuf)
     },
-    {
+    { /* Receive the I2C Register Value */
       .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
       .addr      = dev->addr,
       .flags     = I2C_M_READ,
@@ -166,11 +183,16 @@ static int gt9xx_i2c_read(
     }
   };
 
-  // Execute the I2C Transfer
+  /* Execute the I2C Transfer */
+
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
   int ret = I2C_TRANSFER(dev->i2c, msgv, msgv_len);
 
-  if (ret < 0) { ierr("I2C Read failed: %d\n", ret); return ret; }
+  if (ret < 0)
+    {
+      ierr("I2C Read failed: %d\n", ret);
+      return ret;
+    }
 
 #ifdef CONFIG_DEBUG_INPUT_INFO
   iinfodumpbuffer("gt9xx_i2c_read", buf, buflen);
@@ -195,7 +217,7 @@ static int gt9xx_i2c_write(
   // Compose the I2C Message
   struct i2c_msg_s msgv[1] =
   {
-    {
+    { /* Send the I2C Register Address and Value */
       .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
       .addr      = dev->addr,
       .flags     = 0,
