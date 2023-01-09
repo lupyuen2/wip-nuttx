@@ -426,13 +426,29 @@ static int gt9xx_read_touch_data(FAR struct gt9xx_dev_s *dev,
   return OK;
 }
 
-// Read the Touch Coordinates, if any
+/****************************************************************************
+ * Name: gt9xx_read
+ *
+ * Description:
+ *   Read a Touch Sample from Touch Panel. Returns either 0 or 1
+ *   Touch Points.
+ *
+ * Input Parameters:
+ *   dev    - Touch Panel Device
+ *   buffer - Returned Touch Sample (0 or 1 Touch Points)
+ *   buflen - Size of buffer
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
                           size_t buflen)
 {
   FAR struct inode *inode;
   FAR struct gt9xx_dev_s *priv;
-  struct touch_sample_s sample; /* Support only 1 point per sample */
+  struct touch_sample_s sample;
   const size_t outlen = sizeof(sample);
   irqstate_t flags;
   int ret;
@@ -440,7 +456,8 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   iinfo("buflen=%ld\n", buflen);
   if (buflen < outlen)
     {
-      ierr("Buffer should be at least %ld bytes, got %ld bytes\n", outlen, buflen);
+      ierr("Buffer should be at least %ld bytes, got %ld bytes\n",
+           outlen, buflen);
       return -EINVAL;
     }
 
@@ -450,7 +467,8 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
-  // Enable the PIO Interrupt
+  /* Enable the Touch Panel Interrupt */
+
   DEBUGASSERT(priv->board && priv->board->irq_enable);
   priv->board->irq_enable(priv->board, true);
 
@@ -464,21 +482,24 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
 
   ret = -EINVAL;
 
-  // If we're waiting for Touch Up, return the last sample
+  /* If waiting for Touch Up, return the Last Touch Point */
+
   if (priv->flags & TOUCH_DOWN)
     {
-      iinfo("touch up x=%d, y=%d\n", priv->x, priv->y);
+      /* Begin Critical Section */
 
-      // Begin Critical Section
       flags = enter_critical_section();
 
-      // Mark the Last Touch Point as Touch Up
+      /* Mark the Last Touch Point as Touch Up */
+
       priv->flags = TOUCH_UP | TOUCH_ID_VALID | TOUCH_POS_VALID;
 
-      // End Critical Section
+      /* End Critical Section */
+
       leave_critical_section(flags);
 
-      // Return the Last Touch Point, changed to Touch Up
+      /* Return the Last Touch Point, changed to Touch Up */
+
       memset(&sample, 0, sizeof(sample));
       sample.npoints = 1;
       sample.point[0].id = 0;
@@ -487,21 +508,27 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       sample.point[0].flags = priv->flags;
       memcpy(buffer, &sample, sizeof(sample));
       ret = OK;
+      iinfo("touch up x=%d, y=%d\n", priv->x, priv->y);
     }
-
-  // Read the Touch Sample only if screen has been touched
   else if (priv->int_pending)
     {
+      /* Otherwise read the Touch Point only if Touch Panel Interrupt
+       * has been triggered
+       */
+
       ret = gt9xx_read_touch_data(priv, &sample);
       memcpy(buffer, &sample, sizeof(sample));
 
-      // Begin Critical Section
+      /* Begin Critical Section */
+
       flags = enter_critical_section();
 
-      // Clear the Interrupt Pending Flag
+      /* Clear the Interrupt Pending Flag */
+
       priv->int_pending = false;
 
-      // Remember the last Touch Point
+      /* Remember the Last Touch Point */
+
       if (sample.npoints >= 1)
         {
           priv->x = sample.point[0].x;
@@ -509,7 +536,8 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
           priv->flags = sample.point[0].flags;
         }
 
-      // End Critical Section
+      /* End Critical Section */
+
       leave_critical_section(flags);
     }
 
