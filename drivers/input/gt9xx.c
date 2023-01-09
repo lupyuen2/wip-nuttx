@@ -19,7 +19,6 @@
  ****************************************************************************/
 
 /* Reference:
- *
  * "NuttX RTOS for PinePhone: Touch Panel"
  * https://lupyuen.github.io/articles/touch2
  */
