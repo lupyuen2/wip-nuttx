@@ -146,7 +146,7 @@ static const struct file_operations g_gt9xx_fileops =
 
 #define GOODIX_POINT1_X_ADDR 0x8150
 
-// Read a Touch Panel Register over I2C
+// Read from a Touch Panel Register over I2C
 static int gt9xx_i2c_read(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
   uint16_t reg,  // I2C Register
@@ -155,8 +155,8 @@ static int gt9xx_i2c_read(
 ) {
   // Send the Register Address, MSB first
   uint8_t regbuf[2] = {
-    reg >> 8,   // Swap the bytes
-    reg & 0xff  // Swap the bytes
+    reg >> 8,   // First Byte: MSB
+    reg & 0xff  // Second Byte: LSB
   };
 
   // Compose the I2C Messages
@@ -189,16 +189,17 @@ static int gt9xx_i2c_read(
   return OK;
 }
 
-// TODO: Set the Touch Panel Status over I2C
-static int gt9xx_set_status(
+// Write to a Touch Panel Register over I2C
+static int gt9xx_i2c_write(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
-  uint8_t status  // Status value to be set
+  uint16_t reg,  // I2C Register
+  uint8_t val    // Value to be written
 ) {
-  const uint16_t reg = GOODIX_READ_COORD_ADDR;  // I2C Register
+  // Send the Register Address, MSB first, followed by the value
   uint8_t buf[3] = {
-    reg >> 8,    // Swap the bytes
-    reg & 0xff,  // Swap the bytes
-    status
+    reg >> 8,    // First Byte: MSB
+    reg & 0xff,  // Second Byte: LSB
+    val          // Value to be written
   };
 
   // Compose the I2C Message
@@ -219,6 +220,15 @@ static int gt9xx_set_status(
 
   if (ret < 0) { ierr("I2C Error: %d\n", ret); return ret; }
   return OK;
+}
+
+// Set the Touch Panel Status over I2C
+static int gt9xx_set_status(
+  FAR struct gt9xx_dev_s *dev,  // I2C Device
+  uint8_t status  // Status value to be set
+) {
+  // Write to the Status Register over I2C
+  return gt9xx_i2c_write(dev, GOODIX_READ_COORD_ADDR, status);
 }
 
 // Read the Touch Coordinates over I2C
