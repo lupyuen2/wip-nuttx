@@ -461,6 +461,8 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   irqstate_t flags;
   int ret;
 
+  /* Returned Touch Sample will have 0 or 1 Touch Points */
+
   iinfo("buflen=%ld\n", buflen);
   if (buflen < outlen)
     {
@@ -469,13 +471,14 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       return -EINVAL;
     }
 
+  /* Get the Touch Panel Device */
+
   DEBUGASSERT(filep);
   inode = filep->f_inode;
-
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
-  /* Enable the Touch Panel Interrupt */
+  /* Enable Touch Panel Interrupts */
 
   DEBUGASSERT(priv->board && priv->board->irq_enable);
   priv->board->irq_enable(priv->board, true);
@@ -490,7 +493,7 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
 
   ret = -EINVAL;
 
-  /* If waiting for Touch Up, return the Last Touch Point */
+  /* If waiting for Touch Up, return the Last Touch Point as Touch Up */
 
   if (priv->flags & TOUCH_DOWN)
     {
