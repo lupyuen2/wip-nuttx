@@ -126,7 +126,7 @@ static const struct file_operations g_gt9xx_fileops =
   NULL,         /* mmap */
   gt9xx_poll    /* poll */
 #ifndef CONFIG_DISABLE_PSEUDOFS_OPERATIONS
-  , NULL          /* unlink */
+  , NULL        /* unlink */
 #endif
 };
 
