@@ -711,19 +711,21 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   int ret = 0;
   int i;
 
-  iinfo("setup=%d\n", setup);
+  /* Get the Touch Panel Device */
 
+  iinfo("setup=%d\n", setup);
   DEBUGASSERT(filep && fds);
   inode = filep->f_inode;
-
   DEBUGASSERT(inode && inode->i_private);
   priv = (FAR struct gt9xx_dev_s *)inode->i_private;
 
-  // Enable the PIO Interrupt
+  /* Enable Touch Panel Interrupts */
+
   DEBUGASSERT(priv->board && priv->board->irq_enable);
   priv->board->irq_enable(priv->board, true);
 
-  // Begin Mutex
+  /* Begin Mutex: Lock to prevent concurrent update to Poll Waiters */
+
   ret = nxmutex_lock(&priv->devlock);
   if (ret < 0)
     {
@@ -733,7 +735,7 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
 
   if (setup)
     {
-      /* Ignore waits that do not include POLLIN */
+      /* If Poll Setup: Ignore waits that do not include POLLIN */
 
       if ((fds->events & POLLIN) == 0)
         {
@@ -741,13 +743,11 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
           goto out;
         }
 
-      /* This is a request to set up the poll.  Find an available slot for
-       * the poll structure reference.
-       */
+      /* Find an available slot for the poll structure reference */
 
       for (i = 0; i < CONFIG_INPUT_GT9XX_NPOLLWAITERS; i++)
         {
-          /* Find an available slot */
+          /* Found an available slot */
 
           if (!priv->fds[i])
             {
@@ -761,11 +761,15 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
 
       if (i >= CONFIG_INPUT_GT9XX_NPOLLWAITERS)
         {
+          /* No slots available */
+
           fds->priv = NULL;
           ret = -EBUSY;
         }
       else
         {
+          /* If Interrupt Pending is set, notify the Poll Waiters */
+
           pending = priv->int_pending;
           if (pending)
             {
@@ -777,18 +781,17 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
     }
   else if (fds->priv)
     {
-      /* This is a request to tear down the poll. */
+      /* If Poll Teardown: Remove the poll setup */
 
       FAR struct pollfd **slot = (FAR struct pollfd **)fds->priv;
       DEBUGASSERT(slot != NULL);
-
-      /* Remove all memory of the poll setup */
 
       *slot = NULL;
       fds->priv = NULL;
     }
 
-  // End Mutex
+  /* End Mutex: Unlock to allow update to Poll Waiters */
+
 out:
   nxmutex_unlock(&priv->devlock);
   return ret;
