@@ -80,9 +80,12 @@ struct gt9xx_dev_s
 
   /* Device State */
 
-  mutex_t devlock;  /* Mutex for locking Device State */
+  mutex_t devlock;  /* Mutex to prevent concurrent reads */
   uint8_t cref;     /* Reference Counter for device */
   bool int_pending; /* True if a Touch Interrupt is pending processing */
+  uint16_t x;       /* X Coordinate of Last Touch Point */
+  uint16_t y;       /* Y Coordinate of Last Touch Point */
+  uint8_t flags;    /* Touch Up or Touch Down for Last Touch Point */
 
   /* Poll Waiters for device */
 
@@ -218,11 +221,6 @@ static int gt9xx_set_status(
   return OK;
 }
 
-// TODO: Move to struct
-static uint16_t last_x = 0;
-static uint16_t last_y = 0;
-static uint8_t last_flags = 0;
-
 // Read the Touch Coordinates over I2C
 static int gt9xx_read_touch_data(
   FAR struct gt9xx_dev_s *dev,  // I2C Device
@@ -315,36 +313,37 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   ret = -EINVAL;
 
   // If we're waiting for Touch Up, return the last sample
-  if (last_flags & TOUCH_DOWN)
+  if (priv->flags & TOUCH_DOWN)
     {
-      iinfo("touch up x=%d, y=%d\n", last_x, last_y);
+      iinfo("touch up x=%d, y=%d\n", priv->x, priv->y);
 
-      // Enter Critical Section
+      // Begin Critical Section
       flags = enter_critical_section();
 
-      // Forget the Last Touch Point
-      last_flags = TOUCH_UP | TOUCH_ID_VALID | TOUCH_POS_VALID;
+      // Mark the Last Touch Point as Touch Up
+      priv->flags = TOUCH_UP | TOUCH_ID_VALID | TOUCH_POS_VALID;
 
-      // Leave Critical Section
+      // End Critical Section
       leave_critical_section(flags);
 
-      // Return the Last Touch Point
+      // Return the Last Touch Point, changed to Touch Up
       memset(&sample, 0, sizeof(sample));
       sample.npoints = 1;
       sample.point[0].id = 0;
-      sample.point[0].x = last_x;
-      sample.point[0].y = last_y;
-      sample.point[0].flags = last_flags;
+      sample.point[0].x = priv->x;
+      sample.point[0].y = priv->y;
+      sample.point[0].flags = priv->flags;
       memcpy(buffer, &sample, sizeof(sample));
       ret = OK;
     }
+
   // Read the Touch Sample only if screen has been touched
   else if (priv->int_pending)
     {
       ret = gt9xx_read_touch_data(priv, &sample);
       memcpy(buffer, &sample, sizeof(sample));
 
-      // Enter Critical Section
+      // Begin Critical Section
       flags = enter_critical_section();
 
       // Clear the Interrupt Pending Flag
@@ -353,12 +352,12 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       // Remember the last Touch Point
       if (sample.npoints >= 1)
         {
-          last_x = sample.point[0].x;
-          last_y = sample.point[0].y;
-          last_flags = sample.point[0].flags;
+          priv->x = sample.point[0].x;
+          priv->y = sample.point[0].y;
+          priv->flags = sample.point[0].flags;
         }
 
-      // Leave Critical Section
+      // End Critical Section
       leave_critical_section(flags);
     }
 
