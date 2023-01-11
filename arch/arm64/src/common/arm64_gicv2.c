@@ -730,6 +730,7 @@ static int arm_gic_irq_trigger(int irq, bool edge)
 
   if (irq > GIC_IRQ_SGI15 && irq < NR_IRQS)
     {
+      _info("irq=%d, edge=%d\n", irq, edge);////
       /* Get the address of the Interrupt Configuration Register for this
        * irq.
        */
@@ -1312,11 +1313,13 @@ void arm64_gic_irq_set_priority(unsigned int intid, unsigned int prio,
     {
       if (flags & IRQ_TYPE_EDGE)
         {
+          _info("edge trigger intid=%d, prio=%d, flags=%d\n", intid, prio, flags);////
           ret = arm_gic_irq_trigger(intid, true);
           DEBUGASSERT(ret == OK);
         }
       else
         {
+          _info("level trigger intid=%d, prio=%d, flags=%d\n", intid, prio, flags);////
           ret = arm_gic_irq_trigger(intid, false);
           DEBUGASSERT(ret == OK);
         }
