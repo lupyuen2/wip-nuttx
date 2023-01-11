@@ -233,25 +233,40 @@ static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
 {
   int ret;
 
-  /* Send the Register Address, MSB first, followed by the value */
+  /* Send the Register Address, MSB first */
 
-  uint8_t buf[3] =
+  uint8_t regbuf[2] =
   {
-    reg >> 8,    /* First Byte: MSB */
-    reg & 0xff,  /* Second Byte: LSB */
-    val          /* Value to be written */
+    reg >> 8,   /* First Byte: MSB */
+    reg & 0xff  /* Second Byte: LSB */
   };
 
-  /* Compose the I2C Message */
+  /* Send the Register Value */
 
-  struct i2c_msg_s msgv[1] =
+  uint8_t buf[1] =
+  {
+    val  /* Value to be written */
+  };
+
+  /* Compose the I2C Messages */
+
+  struct i2c_msg_s msgv[2] =
   {
     {
-      /* Send the I2C Register Address and Value */
+      /* Send the I2C Register Address */
 
       .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
       .addr      = dev->addr,
       .flags     = 0,
+      .buffer    = regbuf,
+      .length    = sizeof(regbuf)
+    },
+    {
+      /* Send the I2C Register Value */
+
+      .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
+      .addr      = dev->addr,
+      .flags     = I2C_M_NOSTART,
       .buffer    = buf,
       .length    = sizeof(buf)
     }
