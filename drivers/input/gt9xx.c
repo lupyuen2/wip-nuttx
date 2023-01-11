@@ -233,25 +233,40 @@ static int gt9xx_i2c_write(FAR struct gt9xx_dev_s *dev,
 {
   int ret;
 
-  /* Send the Register Address, MSB first, followed by the value */
+  /* Send the Register Address, MSB first */
 
-  uint8_t buf[3] =
+  uint8_t regbuf[2] =
   {
-    reg >> 8,    /* First Byte: MSB */
-    reg & 0xff,  /* Second Byte: LSB */
-    val          /* Value to be written */
+    reg >> 8,   /* First Byte: MSB */
+    reg & 0xff  /* Second Byte: LSB */
   };
 
-  /* Compose the I2C Message */
+  /* Send the Register Value */
 
-  struct i2c_msg_s msgv[1] =
+  uint8_t buf[1] =
+  {
+    val  /* Value to be written */
+  };
+
+  /* Compose the I2C Messages */
+
+  struct i2c_msg_s msgv[2] =
   {
     {
-      /* Send the I2C Register Address and Value */
+      /* Send the I2C Register Address */
 
       .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
       .addr      = dev->addr,
       .flags     = 0,
+      .buffer    = regbuf,
+      .length    = sizeof(regbuf)
+    },
+    {
+      /* Send the I2C Register Value */
+
+      .frequency = CONFIG_INPUT_GT9XX_I2C_FREQUENCY,
+      .addr      = dev->addr,
+      .flags     = I2C_M_NOSTART,
       .buffer    = buf,
       .length    = sizeof(buf)
     }
@@ -478,11 +493,6 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
-  /* Enable Touch Panel Interrupts */
-
-  DEBUGASSERT(priv->board && priv->board->irq_enable);
-  priv->board->irq_enable(priv->board, true);
-
   /* Begin Mutex: Lock to prevent concurrent reads */
 
   ret = nxmutex_lock(&priv->devlock);
@@ -632,6 +642,11 @@ static int gt9xx_open(FAR struct file *filep)
 
       DEBUGASSERT(priv->board->irq_enable);
       priv->board->irq_enable(priv->board, true);
+
+      /* Set the Touch Panel Status to 0 */
+
+      ret = gt9xx_set_status(priv, 0);
+      DEBUGASSERT(ret == OK);
     }
 
   /* Set the Reference Count */
@@ -746,11 +761,6 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   DEBUGASSERT(inode && inode->i_private);
   priv = (FAR struct gt9xx_dev_s *)inode->i_private;
 
-  /* Enable Touch Panel Interrupts */
-
-  DEBUGASSERT(priv->board && priv->board->irq_enable);
-  priv->board->irq_enable(priv->board, true);
-
   /* Begin Mutex: Lock to prevent concurrent update to Poll Waiters */
 
   ret = nxmutex_lock(&priv->devlock);
@@ -842,17 +852,11 @@ out:
 
 static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
 {
+  up_putc('.'); //
   FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
   irqstate_t flags;
 
-  /* Throttle the Touch Panel Interrupts if they are pending processing */
-
   DEBUGASSERT(priv);
-  if (priv->int_pending)
-    {
-      DEBUGASSERT(priv->board && priv->board->irq_enable);
-      priv->board->irq_enable(priv->board, false);
-    }
 
   /* Begin Critical Section */
 
