@@ -714,7 +714,6 @@ static int gt9xx_close(FAR struct file *filep)
 
       DEBUGASSERT(priv->board->set_power);
       priv->board->set_power(priv->board, false);
-      priv->cref = use_count;
     }
 
   /* Set the Reference Count */
