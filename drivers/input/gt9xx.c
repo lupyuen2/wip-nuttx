@@ -192,7 +192,7 @@ static int gt9xx_i2c_read(FAR struct gt9xx_dev_s *dev,
 
   const int msgv_len = sizeof(msgv) / sizeof(msgv[0]);
 
-  iinfo("reg=0x%x, buflen=%d\n", reg, buflen);
+  iinfo("reg=0x%x, buflen=%ld\n", reg, buflen);
   DEBUGASSERT(dev && dev->i2c && buf);
 
   /* Execute the I2C Transfer */
@@ -894,8 +894,8 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
  * Name: gt9xx_register
  *
  * Description:
- *   Register the Touch Panel Driver.  Attach the Interrupt Handler for the
- *   Touch Panel and disable the Touch Interrupt.
+ *   Register the driver for Goodix GT9XX Touch Panel.  Attach the
+ *   Interrupt Handler for the Touch Panel and disable Touch Interrupts.
  *
  * Input Parameters:
  *   devpath      - Device Path (e.g. "/dev/input0")
