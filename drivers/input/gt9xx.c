@@ -531,13 +531,24 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       ret = OK;
       iinfo("touch up x=%d, y=%d\n", priv->x, priv->y);
     }
-  else // if (priv->int_pending)
+  else
     {
-      /* Otherwise read the Touch Point only if Touch Panel Interrupt
-       * has been triggered
-       */
+      /* Otherwise read the Touch Point over I2C */
 
       ret = gt9xx_read_touch_data(priv, &sample);
+
+      /* Skip duplicates */
+
+      if (sample.npoints >= 1 &&
+          priv->x == sample.point[0].x &&
+          priv->y == sample.point[0].y)
+        {
+          memset(&sample, 0, sizeof(sample));
+          sample.npoints = 0;
+        }
+
+      /* Return the Touch Point */
+
       memcpy(buffer, &sample, sizeof(sample));
 
       /* Begin Critical Section */
