@@ -225,6 +225,7 @@ int pinephone_bringup(void)
 #include <nuttx/signal.h>
 #include <nuttx/i2c/i2c_master.h>
 #include "arm64_arch.h"
+#include "arm64_gic.h"
 
 #define CTP_FREQ 400000  // I2C Frequency: 400 kHz
 #define CTP_I2C_ADDR 0x5d  // Default I2C Address for Goodix GT917S
@@ -552,6 +553,10 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
       return ERROR;
     }
 
+  // Set Interrupt Priority in Generic Interrupt Controller v2
+  // TODO: Why 2?
+  arm64_gic_irq_set_priority(A64_IRQ_PH_EINT, 2, IRQ_TYPE_EDGE);
+
   // Enable the PIO Interrupt
   up_enable_irq(A64_IRQ_PH_EINT);
 
@@ -564,6 +569,7 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
 {
   int ret;
 
+  _info("enable=%d\n", enable);
   if (enable)
     {
       // Configure the Touch Panel Interrupt
