@@ -493,11 +493,6 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
   DEBUGASSERT(inode && inode->i_private);
   priv = inode->i_private;
 
-  /* Enable Touch Panel Interrupts */
-
-  DEBUGASSERT(priv->board && priv->board->irq_enable);
-  priv->board->irq_enable(priv->board, true);
-
   /* Begin Mutex: Lock to prevent concurrent reads */
 
   ret = nxmutex_lock(&priv->devlock);
@@ -536,13 +531,24 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       ret = OK;
       iinfo("touch up x=%d, y=%d\n", priv->x, priv->y);
     }
-  else if (priv->int_pending)
+  else
     {
-      /* Otherwise read the Touch Point only if Touch Panel Interrupt
-       * has been triggered
-       */
+      /* Otherwise read the Touch Point over I2C */
 
       ret = gt9xx_read_touch_data(priv, &sample);
+
+      /* Skip duplicates */
+
+      if (sample.npoints >= 1 &&
+          priv->x == sample.point[0].x &&
+          priv->y == sample.point[0].y)
+        {
+          memset(&sample, 0, sizeof(sample));
+          sample.npoints = 0;
+        }
+
+      /* Return the Touch Point */
+
       memcpy(buffer, &sample, sizeof(sample));
 
       /* Begin Critical Section */
@@ -760,11 +766,6 @@ static int gt9xx_poll(FAR struct file *filep, FAR struct pollfd *fds,
   DEBUGASSERT(inode && inode->i_private);
   priv = (FAR struct gt9xx_dev_s *)inode->i_private;
 
-  /* Enable Touch Panel Interrupts */
-
-  DEBUGASSERT(priv->board && priv->board->irq_enable);
-  priv->board->irq_enable(priv->board, true);
-
   /* Begin Mutex: Lock to prevent concurrent update to Poll Waiters */
 
   ret = nxmutex_lock(&priv->devlock);
@@ -859,14 +860,7 @@ static int gt9xx_isr_handler(int irq, FAR void *context, FAR void *arg)
   FAR struct gt9xx_dev_s *priv = (FAR struct gt9xx_dev_s *)arg;
   irqstate_t flags;
 
-  /* Throttle the Touch Panel Interrupts if they are pending processing */
-
   DEBUGASSERT(priv);
-  if (priv->int_pending)
-    {
-      DEBUGASSERT(priv->board && priv->board->irq_enable);
-      priv->board->irq_enable(priv->board, false);
-    }
 
   /* Begin Critical Section */
 
