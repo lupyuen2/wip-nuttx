@@ -531,7 +531,7 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
       ret = OK;
       iinfo("touch up x=%d, y=%d\n", priv->x, priv->y);
     }
-  else if (priv->int_pending)
+  else // if (priv->int_pending)
     {
       /* Otherwise read the Touch Point only if Touch Panel Interrupt
        * has been triggered
