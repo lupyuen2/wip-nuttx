@@ -314,6 +314,9 @@ int touch_panel_initialize(struct i2c_master_s *i2c_dev)
       return ERROR;
     }
 
+  // Set Interrupt Priority in Generic Interrupt Controller v2
+  arm64_gic_irq_set_priority(A64_IRQ_PH_EINT, 2, IRQ_TYPE_EDGE);
+
   // Enable the PIO Interrupt
   up_enable_irq(A64_IRQ_PH_EINT);
 
