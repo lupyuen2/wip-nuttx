@@ -545,6 +545,7 @@ static ssize_t gt9xx_read(FAR struct file *filep, FAR char *buffer,
         {
           memset(&sample, 0, sizeof(sample));
           sample.npoints = 0;
+          iinfo("skip duplicate x=%d, y=%d\n", priv->x, priv->y);
         }
 
       /* Return the Touch Point */
