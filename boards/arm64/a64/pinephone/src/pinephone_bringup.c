@@ -547,7 +547,7 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
                                       xcpt_t isr,
                                       FAR void *arg)
 {
-  _info("\n");
+  iinfo("\n");
 
   // Attach the PIO Interrupt Handler
   if (irq_attach(A64_IRQ_PH_EINT, isr, arg) < 0)
@@ -566,13 +566,13 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
   return OK;
 }
 
-// Called by Touch Panel Interrupt Handler
+// Enable or disable interrupts
 static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
                                        bool enable)
 {
   int ret;
 
-  _info("enable=%d\n", enable);
+  iinfo("enable=%d\n", enable);
   if (enable)
     {
       // Configure the Touch Panel Interrupt
@@ -594,6 +594,6 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
 static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
                                      bool on)
 {
-  _info("on=%d\n", on);
+  iinfo("on=%d\n", on);
   return OK;
 }
