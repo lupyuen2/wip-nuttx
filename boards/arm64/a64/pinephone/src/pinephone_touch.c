@@ -86,13 +86,16 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
                                       xcpt_t isr,
                                       FAR void *arg)
 {
+  int ret;
+
   iinfo("\n");
 
   // Attach the PIO Interrupt Handler
-  if (irq_attach(A64_IRQ_PH_EINT, isr, arg) < 0)
+  ret = irq_attach(A64_IRQ_PH_EINT, isr, arg);
+  if (ret < 0)
     {
-      _err("irq_attach failed\n");
-      return ERROR;
+      ierr("Attach Interrupt Handler failed: %d\n", ret);
+      return ret;
     }
 
   // Set Interrupt Priority in Generic Interrupt Controller v2
@@ -116,23 +119,37 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
     {
       // Configure the Touch Panel Interrupt
       ret = a64_pio_config(CTP_INT);
-      DEBUGASSERT(ret == 0);
+      if (ret < 0)
+        {
+          ierr("Configure Touch Panel Interrupt failed: %d\n", ret);
+          return;
+        }
 
       // Enable the Touch Panel Interrupt
       ret = a64_pio_irqenable(CTP_INT);
-      DEBUGASSERT(ret == 0);
+      if (ret < 0)
+        {
+          ierr("Enable Touch Panel Interrupt failed: %d\n", ret);
+          return;
+        }
     }
   else
     {
       // Disable the Touch Panel Interrupt
       ret = a64_pio_irqdisable(CTP_INT);
-      DEBUGASSERT(ret == 0);
+      if (ret < 0)
+        {
+          ierr("Disable Touch Panel Interrupt failed: %d\n", ret);
+          return;
+        }
     }
 }
 
+// TODO
 static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
                                      bool on)
 {
+  // Assume that Touch Panel is already powered on by pinephone_pmic_init()
   iinfo("on=%d\n", on);
   return OK;
 }
@@ -143,6 +160,7 @@ static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
 
 // TODO
 int pinephone_touch_panel_register(
+  const char *devpath, // Device Path (e.g. "/dev/input0")
   struct i2c_master_s *i2c  // I2C Bus
 )
 {
@@ -150,12 +168,12 @@ int pinephone_touch_panel_register(
 
   DEBUGASSERT(i2c != NULL);
 
-  ret = gt9xx_register("/dev/input0", i2c, CTP_I2C_ADDR, &g_pinephone_gt9xx);
+  ret = gt9xx_register(devpath, i2c, CTP_I2C_ADDR, &g_pinephone_gt9xx);
   if (ret < 0)
     {
       ierr("Register Touch Input GT9xx failed: %d\n", ret);
       return ret;
-    }  
+    }
 
   return OK;
 }

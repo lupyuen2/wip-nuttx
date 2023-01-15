@@ -32,5 +32,9 @@
  ****************************************************************************/
 
 // TODO
+int pinephone_touch_panel_register(
+  const char *devpath, // Device Path (e.g. "/dev/input0")
+  struct i2c_master_s *i2c  // I2C Bus
+);
 
 #endif /* __BOARDS_ARM64_A64_PINEPHONE_SRC_PINEPHONE_TOUCH_H */
