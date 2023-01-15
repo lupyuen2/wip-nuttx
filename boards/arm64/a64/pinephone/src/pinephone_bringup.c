@@ -167,7 +167,8 @@ int pinephone_bringup(void)
       );
       if (ret < 0)
         {
-          syslog(LOG_ERR, "ERROR: Failed to register Touch Input GT9xx : %d\n", ret);
+          syslog(LOG_ERR, "ERROR: Failed to register Touch Input GT9xx: %d\n",
+                 ret);
         }
     }
 #endif
