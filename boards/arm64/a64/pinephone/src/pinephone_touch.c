@@ -32,14 +32,22 @@
 #include <stdbool.h>
 #include <debug.h>
 
-#include <nuttx/board.h>
-#include <arch/board/board.h>
+#include <nuttx/arch.h>
+#include <nuttx/i2c/i2c_master.h>
 #include <nuttx/input/gt9xx.h>
+#include "arm64_arch.h"
+#include "arm64_gic.h"
+#include "a64_pio.h"
 #include "pinephone_touch.h"
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
+
+// Test Touch Panel Interrupt by Polling as GPIO Input.
+// Touch Panel Interrupt (CTP-INT) is at PH4.
+// Configure for GPIO Input
+#define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
 
 // TODO
 #define CTP_I2C_ADDR 0x5d  // Default I2C Address for Goodix GT917S
@@ -74,6 +82,60 @@ static const struct gt9xx_board_s g_pinephone_gt9xx =
  ****************************************************************************/
 
 // TODO
+static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
+                                      xcpt_t isr,
+                                      FAR void *arg)
+{
+  iinfo("\n");
+
+  // Attach the PIO Interrupt Handler
+  if (irq_attach(A64_IRQ_PH_EINT, isr, arg) < 0)
+    {
+      _err("irq_attach failed\n");
+      return ERROR;
+    }
+
+  // Set Interrupt Priority in Generic Interrupt Controller v2
+  // TODO: Why 2?
+  arm64_gic_irq_set_priority(A64_IRQ_PH_EINT, 2, IRQ_TYPE_EDGE);
+
+  // Enable the PIO Interrupt
+  up_enable_irq(A64_IRQ_PH_EINT);
+
+  return OK;
+}
+
+// Enable or disable interrupts
+static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
+                                       bool enable)
+{
+  int ret;
+
+  iinfo("enable=%d\n", enable);
+  if (enable)
+    {
+      // Configure the Touch Panel Interrupt
+      ret = a64_pio_config(CTP_INT);
+      DEBUGASSERT(ret == 0);
+
+      // Enable the Touch Panel Interrupt
+      ret = a64_pio_irqenable(CTP_INT);
+      DEBUGASSERT(ret == 0);
+    }
+  else
+    {
+      // Disable the Touch Panel Interrupt
+      ret = a64_pio_irqdisable(CTP_INT);
+      DEBUGASSERT(ret == 0);
+    }
+}
+
+static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
+                                     bool on)
+{
+  iinfo("on=%d\n", on);
+  return OK;
+}
 
 /****************************************************************************
  * Public Functions
