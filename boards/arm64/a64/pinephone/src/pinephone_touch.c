@@ -166,7 +166,8 @@ int pinephone_touch_panel_register(
 {
   int ret;
 
-  DEBUGASSERT(i2c != NULL);
+  DEBUGASSERT(devpath != NULL && i2c != NULL);
+  iinfo("devpath=%s\n", devpath);
 
   ret = gt9xx_register(devpath, i2c, CTP_I2C_ADDR, &g_pinephone_gt9xx);
   if (ret < 0)
