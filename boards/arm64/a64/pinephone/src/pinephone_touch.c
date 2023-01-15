@@ -98,8 +98,7 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
     }
 
   // Set Interrupt Priority in Generic Interrupt Controller v2
-  // TODO: Why 2?
-  arm64_gic_irq_set_priority(A64_IRQ_PH_EINT, 2, IRQ_TYPE_EDGE);
+  arm64_gic_irq_set_priority(A64_IRQ_PH_EINT, 0, IRQ_TYPE_EDGE);
 
   // Enable the PIO Interrupt
   up_enable_irq(A64_IRQ_PH_EINT);
