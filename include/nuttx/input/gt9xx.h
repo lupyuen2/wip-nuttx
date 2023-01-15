@@ -43,9 +43,7 @@ struct gt9xx_board_s
                      xcpt_t isr,
                      FAR void *arg);
 
-  /* Enable or disable Interrupts for the Touch Panel. Will be called by
-   * Interrupt Handler.
-   */
+  /* Enable or disable Interrupts for the Touch Panel */
 
   void (*irq_enable) (const struct gt9xx_board_s *state, bool enable);
 

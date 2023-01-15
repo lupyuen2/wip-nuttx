@@ -81,7 +81,22 @@ static const struct gt9xx_board_s g_pinephone_gt9xx =
  * Private Functions
  ****************************************************************************/
 
-// TODO
+/****************************************************************************
+ * Name: pinephone_gt9xx_irq_attach
+ *
+ * Description:
+ *   Attach the Interrupt Handler for Touch Panel.
+ *
+ * Input Parameters:
+ *   state - Callback for Board-Specific Operations
+ *   isr   - Interrupt Handler
+ *   arg   - Argument for Interrupt Handler
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
                                       xcpt_t isr,
                                       FAR void *arg)
@@ -91,7 +106,8 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
   iinfo("\n");
   DEBUGASSERT(state != NULL && isr != NULL && arg != NULL);
 
-  // Attach the PIO Interrupt Handler
+  /* Attach the Interrupt Handler to Port PH */
+
   ret = irq_attach(A64_IRQ_PH_EINT, isr, arg);
   if (ret < 0)
     {
@@ -99,16 +115,32 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
       return ret;
     }
 
-  // Set Interrupt Priority in Generic Interrupt Controller v2
+  /* Set Interrupt Priority in Generic Interrupt Controller v2 */
+
   arm64_gic_irq_set_priority(A64_IRQ_PH_EINT, 0, IRQ_TYPE_EDGE);
 
-  // Enable the PIO Interrupt
+  /* Enable Interrupts for Port PH */
+
   up_enable_irq(A64_IRQ_PH_EINT);
 
   return OK;
 }
 
-// Enable or disable interrupts
+/****************************************************************************
+ * Name: pinephone_gt9xx_irq_enable
+ *
+ * Description:
+ *   Enable or disable Interrupts for the Touch Panel.
+ *
+ * Input Parameters:
+ *   state  - Callback for Board-Specific Operations
+ *   enable - True to enable interrupts; False to disable interrupts
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
                                        bool enable)
 {
@@ -119,7 +151,8 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
 
   if (enable)
     {
-      // Configure the Touch Panel Interrupt
+      /* Configure the Touch Panel Interrupt */
+
       ret = a64_pio_config(CTP_INT);
       if (ret < 0)
         {
@@ -127,7 +160,8 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
           return;
         }
 
-      // Enable the Touch Panel Interrupt
+      /* Enable the Touch Panel Interrupt */
+
       ret = a64_pio_irqenable(CTP_INT);
       if (ret < 0)
         {
@@ -137,7 +171,8 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
     }
   else
     {
-      // Disable the Touch Panel Interrupt
+      /* Disable the Touch Panel Interrupt */
+
       ret = a64_pio_irqdisable(CTP_INT);
       if (ret < 0)
         {
@@ -147,11 +182,26 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
     }
 }
 
-// TODO
+/****************************************************************************
+ * Name: pinephone_gt9xx_set_power
+ *
+ * Description:
+ *   Power on or off the Touch Panel.
+ *
+ * Input Parameters:
+ *   state - Callback for Board-Specific Operations
+ *   on    - True to power on; False to power off
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
                                      bool on)
 {
-  // Assume that Touch Panel is already powered on by pinephone_pmic_init()
+  /* Assume that Touch Panel is already powered on by pinephone_pmic_init() */
+
   iinfo("on=%d\n", on);
   return OK;
 }
