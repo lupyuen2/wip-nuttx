@@ -159,6 +159,8 @@ int pinephone_bringup(void)
 
   if (i2c0 != NULL)
     {
+      /* Register Touch Input Driver at /dev/input0 */
+
       // TODO
     }
 #endif
@@ -181,7 +183,7 @@ int pinephone_bringup(void)
 
       up_mdelay(15);
 
-      /* Register IMU Driver */
+      /* Register IMU Driver at /dev/imu0 */
 
       mpu_config = kmm_zalloc(sizeof(struct mpu_config_s));
       if (mpu_config == NULL)
