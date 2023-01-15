@@ -140,19 +140,11 @@ int pinephone_bringup(void)
 #warning a64_i2cbus_initialize(i2c_bus1)
 #endif
 
-#if defined(CONFIG_INPUT_GT9XX) && defined(CONFIG_A64_TWI0)
-  if (i2c0 != NULL)
-    {
-      /* Register driver for GT9XX Touch Panel */
-      // TODO
-    }
-#endif
-
 #if defined(CONFIG_SYSTEM_I2CTOOL) && defined(CONFIG_A64_TWI1)
+  /* Register I2C Driver for I2C Bus 1 */
+
   if (i2c1 != NULL)
     {
-      /* Register driver for I2C Bus 1 */
-
       ret = i2c_register(i2c1, i2c1_bus);
       if (ret < 0)
         {
@@ -163,7 +155,18 @@ int pinephone_bringup(void)
     }
 #endif
 
+#if defined(CONFIG_INPUT_GT9XX) && defined(CONFIG_A64_TWI0)
+  /* Register Touch Input Driver for GT9XX Touch Panel */
+
+  if (i2c0 != NULL)
+    {
+      // TODO
+    }
+#endif
+
 #if defined(CONFIG_MPU60X0_I2C) && defined(CONFIG_A64_TWI1)
+  /* Register IMU Driver for MPU-60X0 Accelerometer */
+
   if (i2c1 != NULL)
     {
       /* Init PMIC */
@@ -179,7 +182,7 @@ int pinephone_bringup(void)
 
       up_mdelay(15);
 
-      /* Register driver for MPU-60X0 Accelerometer */
+      /* Register IMU Driver */
 
       mpu_config = kmm_zalloc(sizeof(struct mpu_config_s));
       if (mpu_config == NULL)
