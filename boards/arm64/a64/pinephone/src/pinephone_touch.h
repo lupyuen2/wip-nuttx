@@ -31,10 +31,23 @@
  * Public Function Prototypes
  ****************************************************************************/
 
-// TODO
-int pinephone_touch_panel_register(
-  const char *devpath, // Device Path (e.g. "/dev/input0")
-  struct i2c_master_s *i2c  // I2C Bus
-);
+/****************************************************************************
+ * Name: pinephone_touch_panel_register
+ *
+ * Description:
+ *   Register the driver for Goodix GT9XX Touch Panel.  Attach the
+ *   Interrupt Handler for the Touch Panel and disable Touch Interrupts.
+ *
+ * Input Parameters:
+ *   devpath - Device Path (e.g. "/dev/input0")
+ *   i2c     - I2C Bus
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
+int pinephone_touch_panel_register(const char *devpath,
+                                   struct i2c_master_s *i2c);
 
 #endif /* __BOARDS_ARM64_A64_PINEPHONE_SRC_PINEPHONE_TOUCH_H */

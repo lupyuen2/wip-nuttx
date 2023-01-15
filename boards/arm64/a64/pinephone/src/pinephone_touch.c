@@ -44,17 +44,18 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-// Touch Panel Interrupt (CTP-INT) is at PH4
+/* Goodix GT917S Touch Panel Interrupt at PH4 */
+
 #define CTP_INT (PIO_EINT | PIO_PORT_PIOH | PIO_PIN4)
 
-// TODO
-#define CTP_I2C_ADDR 0x5d  // Default I2C Address for Goodix GT917S
+/* I2C Address for Touch Panel */
+
+#define CTP_I2C_ADDR 0x5d
 
 /****************************************************************************
  * Private Function Prototypes
  ****************************************************************************/
 
-// TODO
 static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
                                       xcpt_t isr,
                                       FAR void *arg);
@@ -67,7 +68,8 @@ static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
  * Private Data
  ****************************************************************************/
 
-// TODO
+/* Callback for Board-Specific Operations */
+
 static const struct gt9xx_board_s g_pinephone_gt9xx =
 {
   .irq_attach = pinephone_gt9xx_irq_attach,
@@ -158,11 +160,24 @@ static int pinephone_gt9xx_set_power(const struct gt9xx_board_s *state,
  * Public Functions
  ****************************************************************************/
 
-// TODO
-int pinephone_touch_panel_register(
-  const char *devpath, // Device Path (e.g. "/dev/input0")
-  struct i2c_master_s *i2c  // I2C Bus
-)
+/****************************************************************************
+ * Name: pinephone_touch_panel_register
+ *
+ * Description:
+ *   Register the driver for Goodix GT9XX Touch Panel.  Attach the
+ *   Interrupt Handler for the Touch Panel and disable Touch Interrupts.
+ *
+ * Input Parameters:
+ *   devpath - Device Path (e.g. "/dev/input0")
+ *   i2c     - I2C Bus
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
+int pinephone_touch_panel_register(const char *devpath,
+                                   struct i2c_master_s *i2c)
 {
   int ret;
 
