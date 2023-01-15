@@ -150,7 +150,6 @@ int pinephone_bringup(void)
           syslog(LOG_ERR, "ERROR: Failed to register I2C%d driver: %d\n",
                  i2c1_bus, ret);
         }
-#warning Register driver for I2C Bus 1 //
     }
 #endif
 
@@ -161,13 +160,11 @@ int pinephone_bringup(void)
     {
       /* Register Touch Input Driver at /dev/input0 */
 
-      ret = pinephone_touch_panel_register(
-        "/dev/input0",
-        i2c0  // I2C Bus
-      );
+      ret = pinephone_touch_panel_register("/dev/input0", i2c0);
       if (ret < 0)
         {
-          syslog(LOG_ERR, "ERROR: Failed to register Touch Input GT9xx: %d\n",
+          syslog(LOG_ERR,
+                 "ERROR: Failed to register Touch Input GT9xx: %d\n",
                  ret);
         }
     }
