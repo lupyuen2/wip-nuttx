@@ -44,10 +44,8 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-// Test Touch Panel Interrupt by Polling as GPIO Input.
-// Touch Panel Interrupt (CTP-INT) is at PH4.
-// Configure for GPIO Input
-#define CTP_INT (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN4)
+// Touch Panel Interrupt (CTP-INT) is at PH4
+#define CTP_INT (PIO_EINT | PIO_PORT_PIOH | PIO_PIN4)
 
 // TODO
 #define CTP_I2C_ADDR 0x5d  // Default I2C Address for Goodix GT917S
@@ -89,6 +87,7 @@ static int pinephone_gt9xx_irq_attach(const struct gt9xx_board_s *state,
   int ret;
 
   iinfo("\n");
+  DEBUGASSERT(state != NULL && isr != NULL && arg != NULL);
 
   // Attach the PIO Interrupt Handler
   ret = irq_attach(A64_IRQ_PH_EINT, isr, arg);
@@ -115,6 +114,8 @@ static void pinephone_gt9xx_irq_enable(const struct gt9xx_board_s *state,
   int ret;
 
   iinfo("enable=%d\n", enable);
+  DEBUGASSERT(state != NULL);
+
   if (enable)
     {
       // Configure the Touch Panel Interrupt
@@ -166,8 +167,8 @@ int pinephone_touch_panel_register(
 {
   int ret;
 
-  DEBUGASSERT(devpath != NULL && i2c != NULL);
   iinfo("devpath=%s\n", devpath);
+  DEBUGASSERT(devpath != NULL && i2c != NULL);
 
   ret = gt9xx_register(devpath, i2c, CTP_I2C_ADDR, &g_pinephone_gt9xx);
   if (ret < 0)
