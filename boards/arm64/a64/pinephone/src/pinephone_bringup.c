@@ -48,7 +48,7 @@
 #endif
 
 #ifdef CONFIG_INPUT_GT9XX
-#  include <nuttx/input/gt9xx.h>
+//#  include <nuttx/input/gt9xx.h>
 #endif
 
 #ifdef CONFIG_MPU60X0_I2C
@@ -69,20 +69,20 @@
 
 int pinephone_bringup(void)
 {
-  int ret;
+  int ret = OK;
 
 #if defined(CONFIG_I2C) && defined(CONFIG_A64_TWI0)
   const int i2c0_bus = 0;
-  struct i2c_master_s *i2c0;
+  struct i2c_master_s *i2c0 = NULL;
 #endif
 
 #if defined(CONFIG_I2C) && defined(CONFIG_A64_TWI1)
   const int i2c1_bus = 1;
-  struct i2c_master_s *i2c1;
+  struct i2c_master_s *i2c1 = NULL;
 #endif
 
 #if defined(CONFIG_MPU60X0_I2C) && defined(CONFIG_A64_TWI1)
-  struct mpu_config_s *mpu_config;
+  struct mpu_config_s *mpu_config = NULL;
 #endif
 
 #ifdef CONFIG_USERLED
@@ -137,11 +137,10 @@ int pinephone_bringup(void)
     {
       syslog(LOG_ERR, "ERROR: Failed to get I2C%d interface\n", i2c1_bus);
     }
-#warning a64_i2cbus_initialize(i2c_bus1)
 #endif
 
 #if defined(CONFIG_SYSTEM_I2CTOOL) && defined(CONFIG_A64_TWI1)
-  /* Register I2C Driver for I2C Bus 1 */
+  /* Register I2C Driver for I2C Bus 1 at TWI1 */
 
   if (i2c1 != NULL)
     {
@@ -156,7 +155,7 @@ int pinephone_bringup(void)
 #endif
 
 #if defined(CONFIG_INPUT_GT9XX) && defined(CONFIG_A64_TWI0)
-  /* Register Touch Input Driver for GT9XX Touch Panel */
+  /* Register Touch Input Driver for GT9XX Touch Panel at TWI0 */
 
   if (i2c0 != NULL)
     {
@@ -165,7 +164,7 @@ int pinephone_bringup(void)
 #endif
 
 #if defined(CONFIG_MPU60X0_I2C) && defined(CONFIG_A64_TWI1)
-  /* Register IMU Driver for MPU-60X0 Accelerometer */
+  /* Register IMU Driver for MPU-60X0 Accelerometer at TWI1 */
 
   if (i2c1 != NULL)
     {
@@ -194,7 +193,6 @@ int pinephone_bringup(void)
           mpu_config->i2c = i2c1;
           mpu_config->addr = 0x68;
           mpu60x0_register("/dev/imu0", mpu_config);
-#warning mpu60x0_register("/dev/imu0", mpu_config)
         }
     }
 #endif
