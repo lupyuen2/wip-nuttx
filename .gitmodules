@@ -1,0 +1,3 @@
+[submodule "arch/arm64/src/a64/pinephone-nuttx-usb"]
+	path = arch/arm64/src/a64/pinephone-nuttx-usb
+	url = https://github.com/lupyuen/pinephone-nuttx-usb
