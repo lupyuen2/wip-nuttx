@@ -65,6 +65,14 @@ config A64_TWI2
 	---help---
 		Select to enable support for TWI2.
 
+config A64_USBOTG
+	bool "USB EHCI"
+	default n
+	select USBHOST_HAVE_ASYNCH if USBHOST
+	select USBHOST_ASYNCH
+	---help---
+		Select to enable support for USB EHCI.
+
 endmenu # Allwinner A64 Peripheral Selection
 
 endif # ARCH_CHIP_A64
