@@ -65,6 +65,7 @@ config A64_TWI2
 	---help---
 		Select to enable support for TWI2.
 
+# TODO: Rename OTG
 config A64_USBOTG
 	bool "USB EHCI"
 	default n
