@@ -205,7 +205,7 @@ int pinephone_bringup(void)
 #endif
 
 // TODO #ifdef CONFIG_USBHOST
-  int imxrt_usbhost_initialize(void); // TODO
+  int a64_usbhost_initialize(void); // TODO
   ret = a64_usbhost_initialize();
   if (ret < 0)
     {
