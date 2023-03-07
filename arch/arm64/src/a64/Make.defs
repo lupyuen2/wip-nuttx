@@ -40,3 +40,6 @@ CHIP_CSRCS += a64_tcon0.c
 endif
 
 CHIP_ASRCS  = a64_lowputc.S
+
+# TODO: USB Source Files
+CHIP_CSRCS += a64_ehci.c a64_usbhost.c
