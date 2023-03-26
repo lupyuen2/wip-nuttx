@@ -204,14 +204,14 @@ int pinephone_bringup(void)
     }
 #endif
 
-// TODO #ifdef CONFIG_USBHOST
+#ifdef CONFIG_USBHOST
   int a64_usbhost_initialize(void); // TODO
   ret = a64_usbhost_initialize();
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: Couldn't start usb %d\n", ret);
     }
-// TODO #endif
+#endif
 
   UNUSED(ret);
   return OK;
