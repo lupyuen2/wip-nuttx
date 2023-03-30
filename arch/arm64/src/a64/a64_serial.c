@@ -428,7 +428,25 @@ static void a64_uart_send(struct uart_dev_s *dev, int ch)
 
   /* Write char to Transmit Holding Register (UART_THR) */
 
-  putreg8(ch, UART_THR(config->uart));
+  ////putreg8(ch, UART_THR(config->uart));
+
+  //// TODO: Fix the garbled output. Buffer the chars until we see CR or LF.
+  static char buf[256];
+  static int pos = 0;
+  if (ch != '\r' && ch != '\n' && pos < sizeof(buf))
+    {
+      buf[pos] = ch;
+      pos += 1;
+      return;
+    }
+  for (int i = 0; i < pos; i++)
+    {
+      up_putc(buf[i]);      
+    }
+  pos = 0;
+  up_putc(ch);
+  UNUSED(config);
+  //// End
 }
 
 /***************************************************************************
