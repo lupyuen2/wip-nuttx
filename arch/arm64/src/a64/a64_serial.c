@@ -433,7 +433,7 @@ static void a64_uart_send(struct uart_dev_s *dev, int ch)
   //// TODO: Fix the garbled output. Buffer the chars until we see CR or LF.
   static char buf[256];
   static int pos = 0;
-  if (ch != '\r' && ch != '\n' && pos < sizeof(buf))
+  if (ch != '>' && ch != '\r' && ch != '\n' && pos < sizeof(buf))
     {
       buf[pos] = ch;
       pos += 1;
