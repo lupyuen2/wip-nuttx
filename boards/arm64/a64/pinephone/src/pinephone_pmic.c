@@ -293,10 +293,12 @@ int pinephone_pmic_init(void)
 
 // Power on DCDC1 for VCC-EFUSE, VCC-IO, VCC-PC (VQMMC2), VCC-PD, 
 // VCC-USB; Modem [I2C, PCM, UART], Motor, Pogo I2C, UART0, VMMC0, 
-// VMMC2, WiFi CHIP_EN
+// VMMC2, WiFi CHIP_EN.
 int pinephone_pmic_usb_init(void)
 {
   int ret;
+
+  // TODO: Is DCDC1 already enabled?
 
   // REG 20H: DCDC1 voltage control (AXP803 Page 55)
   // 4-0
