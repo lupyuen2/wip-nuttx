@@ -280,3 +280,41 @@ int pinephone_pmic_init(void)
 
   return OK;
 }
+
+#ifdef NOTUSED
+  // REG 20H: DCDC1 voltage control (AXP803 Page 55)
+  // 4-0
+  // voltage setting Bit 4-0
+  // 1.6-3.4V
+  // 100mV/step
+  // default is 3.3V
+  // 11H
+
+  /* DCDC1 Voltage Control (AXP803 Page 52)
+   * Set Voltage (Bits 0 to 4) to 11 (1.6V + 1.7V = 3.3V)
+   */
+
+  batinfo("Set DCDC1 Voltage to 3.3V\n");
+  ret = pmic_write(DCDC1_VOLTAGE_CONTROL, DCDC1_VOLTAGE(17));  
+  if (ret < 0)
+    {
+      baterr("Set DCDC1 failed: %d\n", ret);
+      return ret;
+    }
+
+  // Power on DCDC1
+  // REG 10H: Output power on-off control 1 (AXP803 Page 51)
+  // Bit 0: DCDC1 on-off control
+
+  /* Output Power On-Off Control 1 (AXP803 Page 51)
+   * Set DCDC1 On-Off Control (Bit 0) to 1 (Power On)
+   */
+
+  ret = pmic_clrsetbits(OUTPUT_POWER_ON_OFF_CONTROL1, 0,
+                        DCDC1_ON_OFF_CONTROL);
+  if (ret < 0)
+    {
+      baterr("Power on DCDC1 failed: %d\n", ret);
+      return ret;
+    }
+#endif // NOTUSED
