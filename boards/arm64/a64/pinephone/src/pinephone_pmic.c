@@ -61,6 +61,11 @@
 #define DLDO1_VOLTAGE_CONTROL               0x15
 #define DLDO1_VOLTAGE(n)                    ((n) << 0)
 
+/* Output Power On-Off Control 1 (AXP803 Page 51) */
+
+#define OUTPUT_POWER_ON_OFF_CONTROL1        0x10
+#define DCDC1_ON_OFF_CONTROL                (1 << 0)
+
 /* Output Power On-Off Control 2 (AXP803 Page 51) */
 
 #define OUTPUT_POWER_ON_OFF_CONTROL2        0x12
@@ -81,6 +86,11 @@
 
 #define DLDO2_VOLTAGE_CONTROL               0x16
 #define DLDO2_VOLTAGE(n)                    ((n) << 0)
+
+/* DCDC1 Voltage Control (AXP803 Page 55) */
+
+#define DCDC1_VOLTAGE_CONTROL               0x20
+#define DCDC1_VOLTAGE(n)                    ((n) << 0)
 
 /****************************************************************************
  * Private Functions
@@ -281,7 +291,13 @@ int pinephone_pmic_init(void)
   return OK;
 }
 
-#ifdef NOTUSED
+// Power on DCDC1 for VCC-EFUSE, VCC-IO, VCC-PC (VQMMC2), VCC-PD, 
+// VCC-USB; Modem [I2C, PCM, UART], Motor, Pogo I2C, UART0, VMMC0, 
+// VMMC2, WiFi CHIP_EN
+int pinephone_pmic_usb_init(void)
+{
+  int ret;
+
   // REG 20H: DCDC1 voltage control (AXP803 Page 55)
   // 4-0
   // voltage setting Bit 4-0
@@ -290,8 +306,8 @@ int pinephone_pmic_init(void)
   // default is 3.3V
   // 11H
 
-  /* DCDC1 Voltage Control (AXP803 Page 52)
-   * Set Voltage (Bits 0 to 4) to 11 (1.6V + 1.7V = 3.3V)
+  /* DCDC1 Voltage Control (AXP803 Page 55)
+   * Set Voltage (Bits 0 to 4) to 17 (1.6V + 1.7V = 3.3V)
    */
 
   batinfo("Set DCDC1 Voltage to 3.3V\n");
@@ -317,4 +333,6 @@ int pinephone_pmic_init(void)
       baterr("Power on DCDC1 failed: %d\n", ret);
       return ret;
     }
-#endif // NOTUSED
+
+  return OK;
+}
