@@ -168,6 +168,68 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
   return OK;
 }
 
+/* Register offsets *********************************************************/
+
+#define A1X_UART_RBR_OFFSET       0x0000 /* UART Receive Buffer Register */
+#define A1X_UART_THR_OFFSET       0x0000 /* UART Transmit Holding Register */
+#define A1X_UART_DLL_OFFSET       0x0000 /* UART Divisor Latch Low Register */
+#define A1X_UART_DLH_OFFSET       0x0004 /* UART Divisor Latch High Register */
+#define A1X_UART_IER_OFFSET       0x0004 /* UART Interrupt Enable Register */
+#define A1X_UART_IIR_OFFSET       0x0008 /* UART Interrupt Identity Register */
+#define A1X_UART_FCR_OFFSET       0x0008 /* UART FIFO Control Register */
+#define A1X_UART_LCR_OFFSET       0x000c /* UART Line Control Register */
+#define A1X_UART_MCR_OFFSET       0x0010 /* UART Modem Control Register */
+#define A1X_UART_LSR_OFFSET       0x0014 /* UART Line Status Register */
+#define A1X_UART_MSR_OFFSET       0x0018 /* UART Modem Status Register */
+#define A1X_UART_SCH_OFFSET       0x001c /* UART Scratch Register */
+#define A1X_UART_USR_OFFSET       0x007c /* UART Status Register */
+#define A1X_UART_TFL_OFFSET       0x0080 /* UART Transmit FIFO Level */
+#define A1X_UART_RFL_OFFSET       0x0084 /* UART Receive FIFO Level */
+#define A1X_UART_HALT_OFFSET      0x00a4 /* UART Halt TX Register */
+
+/* UART FIFO Control Register */
+
+#define UART_FCR_FIFOE            (1 << 0)  /* Bit 0:  Enable FIFOs */
+#define UART_FCR_RFIFOR           (1 << 1)  /* Bit 1:  RCVR FIFO Reset */
+#define UART_FCR_XFIFOR           (1 << 2)  /* Bit 2:  XMIT FIFO reset */
+#define UART_FCR_DMAM             (1 << 3)  /* Bit 3:  DMA mode */
+#define UART_FCR_TFT_SHIFT        (4)       /* Bits 4-5: TX Empty Trigger */
+#define UART_FCR_TFT_MASK         (3 << UART_FCR_TFT_SHIFT)
+#  define UART_FCR_TFT_EMPTY      (0 << UART_FCR_TFT_SHIFT) /* FIFO empty */
+#  define UART_FCR_TFT_TWO        (1 << UART_FCR_TFT_SHIFT) /* 2 characters in the FIFO */
+#  define UART_FCR_TFT_QUARTER    (2 << UART_FCR_TFT_SHIFT) /* FIFO 1/4 full */
+#  define UART_FCR_TFT_HALF       (3 << UART_FCR_TFT_SHIFT) /* FIFO 1/2 full */
+
+#define UART_FCR_RT_SHIFT         (6)       /* Bits 6-7: RCVR Trigger */
+#define UART_FCR_RT_MASK          (3 << UART_FCR_RT_SHIFT)
+#  define UART_FCR_RT_ONE         (0 << UART_FCR_RT_SHIFT) /* 1 character in the FIFO */
+#  define UART_FCR_RT_QUARTER     (1 << UART_FCR_RT_SHIFT) /* FIFO 1/4 full */
+#  define UART_FCR_RT_HALF        (2 << UART_FCR_RT_SHIFT) /* FIFO 1/2 full */
+#  define UART_FCR_RT_MINUS2      (3 << UART_FCR_RT_SHIFT) /* FIFO-2 less than full */
+
+/* UART Line Control Register */
+
+#define UART_LCR_DLS_SHIFT        (0)       /* Bits 0-1: Data Length Select */
+#define UART_LCR_DLS_MASK         (3 << UART_LCR_DLS_SHIFT)
+#  define UART_LCR_DLS_5BITS      (0 << UART_LCR_DLS_SHIFT) /* 5 bits */
+#  define UART_LCR_DLS_6BITS      (1 << UART_LCR_DLS_SHIFT) /* 6 bits */
+#  define UART_LCR_DLS_7BITS      (2 << UART_LCR_DLS_SHIFT) /* 7 bits */
+#  define UART_LCR_DLS_8BITS      (3 << UART_LCR_DLS_SHIFT) /* 8 bits */
+
+#define UART_LCR_STOP             (1 << 2)  /* Bit 2:  Number of stop bits */
+#define UART_LCR_PEN              (1 << 3)  /* Bit 3:  Parity Enable */
+#define UART_LCR_EPS              (1 << 4)  /* Bit 4:  Even Parity Select */
+#define UART_LCR_BC               (1 << 6)  /* Bit 6:  Break Control Bit */
+#define UART_LCR_DLAB             (1 << 7)  /* Bit 7:  Divisor Latch Access Bit */
+
+/* SCLK is the UART input clock.
+ *
+ * Through experimentation, it has been found that the serial clock is
+ * OSC24M
+ */
+
+#define A1X_SCLK 24000000
+
 /****************************************************************************
  * Name: a1x_uartdl
  *
@@ -182,6 +244,15 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
 static inline uint32_t a64_uartdl(uint32_t baud)
 {
   return A1X_SCLK / (baud << 4);
+}
+
+/****************************************************************************
+ * Name: up_serialin
+ ****************************************************************************/
+
+static inline uint32_t up_serialin(struct up_dev_s *priv, int offset)
+{
+  return getreg32(priv->uartbase + offset);
 }
 
 /****************************************************************************
@@ -209,6 +280,9 @@ static int up_setup(struct uart_dev_s *dev)
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   uint16_t dl;
   uint32_t lcr;
+
+  DEBUGASSERT(priv != NULL);
+  _info("baud=%d\n", priv->baud);////
 
   /* Clear fifos */
 
