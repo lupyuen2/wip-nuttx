@@ -172,7 +172,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
   return OK;
 }
 
-//// TODO
+//// TODO 
 
 /* Register offsets *********************************************************/
 
