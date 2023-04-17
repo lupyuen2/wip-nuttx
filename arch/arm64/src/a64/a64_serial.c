@@ -380,6 +380,11 @@ static int up_setup(struct uart_dev_s *dev)
 #endif
 
 #endif
+
+  // TODO
+  // _info("Restore FCR to 0xc1"); ////
+  // up_serialout(config, A1X_UART_FCR_OFFSET, 0xc1);
+
   return OK;
 }
 
@@ -983,6 +988,7 @@ up_serialout: addr=0x1c28000, before=0x0, after=0xd
 
 up_setup: Clear DLAB
 up_serialout: addr=0x1c2800c, before=0x3, after=0x3
+
 up_setup: Configure the FIFOs
 up_serialout: addr=0x1c28008, before=0xc7, after=0x87
 #endif  // NOTUSED
