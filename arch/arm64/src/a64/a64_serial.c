@@ -268,6 +268,8 @@ static inline uint32_t up_serialin(const struct a64_uart_config *config, int off
 static inline void up_serialout(const struct a64_uart_config *config, int offset,
                                 uint32_t value)
 {
+  uint32_t before = getreg32(config->uart + offset); ////
+  _info("addr=0x%x, before=0x%x, after=0x%x\n", config->uart + offset, before, value); ////
   putreg32(value, config->uart + offset);
 }
 
@@ -962,3 +964,25 @@ int up_putc(int ch)
 }
 
 #endif /* USE_SERIALDRIVER */
+
+#ifdef NOTUSED ////TODO
+up_setup: baud_rate=115200
+up_setup: Clear fifos
+up_serialout: addr=0x1c28008, before=0xc1, after=0x6
+
+up_setup: Set trigger
+up_serialout: addr=0x1c28008, before=0x1, after=0x81
+
+up_setup: Set up the IER
+up_setup: Enter DLAB=1
+up_serialout: addr=0x1c2800c, before=0x3, after=0x83
+
+up_setup: Set the BAUD divisor
+up_serialout: addr=0x1c28004, before=0x0, after=0x0
+up_serialout: addr=0x1c28000, before=0x0, after=0xd
+
+up_setup: Clear DLAB
+up_serialout: addr=0x1c2800c, before=0x3, after=0x3
+up_setup: Configure the FIFOs
+up_serialout: addr=0x1c28008, before=0xc7, after=0x87
+#endif  // NOTUSED
