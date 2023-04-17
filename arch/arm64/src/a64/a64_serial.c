@@ -157,6 +157,104 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
   return OK;
 }
 
+/****************************************************************************
+ * Name: up_setup
+ *
+ * Description:
+ *   Configure the UART baud, bits, parity, fifos, etc. This method is
+ *   called the first time that the serial port is opened.
+ *
+ ****************************************************************************/
+
+static int up_setup(struct uart_dev_s *dev)
+{
+#ifndef CONFIG_SUPPRESS_UART_CONFIG
+  struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
+  uint16_t dl;
+  uint32_t lcr;
+
+  /* Clear fifos */
+
+  up_serialout(priv, A1X_UART_FCR_OFFSET,
+              (UART_FCR_RFIFOR | UART_FCR_XFIFOR));
+
+  /* Set trigger */
+
+  up_serialout(priv, A1X_UART_FCR_OFFSET,
+              (UART_FCR_FIFOE | UART_FCR_RT_HALF));
+
+  /* Set up the IER */
+
+  priv->ier = up_serialin(priv, A1X_UART_IER_OFFSET);
+
+  /* Set up the LCR */
+
+  lcr = 0;
+
+  switch (priv->bits)
+    {
+    case 5:
+      lcr |= UART_LCR_DLS_5BITS;
+      break;
+
+    case 6:
+      lcr |= UART_LCR_DLS_6BITS;
+      break;
+
+    case 7:
+      lcr |= UART_LCR_DLS_7BITS;
+      break;
+
+    case 8:
+    default:
+      lcr |= UART_LCR_DLS_8BITS;
+      break;
+    }
+
+  if (priv->stopbits2)
+    {
+      lcr |= UART_LCR_STOP;
+    }
+
+  if (priv->parity == 1)
+    {
+      lcr |= UART_LCR_PEN;
+    }
+  else if (priv->parity == 2)
+    {
+      lcr |= (UART_LCR_PEN | UART_LCR_EPS);
+    }
+
+  /* Enter DLAB=1 */
+
+  up_serialout(priv, A1X_UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
+
+  /* Set the BAUD divisor */
+
+  dl = a1x_uartdl(priv->baud);
+  up_serialout(priv, A1X_UART_DLH_OFFSET, dl >> 8);
+  up_serialout(priv, A1X_UART_DLL_OFFSET, dl & 0xff);
+
+  /* Clear DLAB */
+
+  up_serialout(priv, A1X_UART_LCR_OFFSET, lcr);
+
+  /* Configure the FIFOs */
+
+  up_serialout(priv, A1X_UART_FCR_OFFSET,
+               (UART_FCR_RT_HALF | UART_FCR_XFIFOR | UART_FCR_RFIFOR |
+                UART_FCR_FIFOE));
+
+  /* Enable Auto-Flow Control in the Modem Control Register */
+
+#if defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL)
+#  warning Missing logic
+#endif
+
+#endif
+  return OK;
+}
+
 /***************************************************************************
  * Name: a64_uart_setup
  *
@@ -174,9 +272,10 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
 
 static int a64_uart_setup(struct uart_dev_s *dev)
 {
-  /* TODO: Set the Baud Rate if this isn't A64 UART0 */
+  int ret = up_setup(dev);
+  DEBUGASSERT(ret == OK);
 
-  return OK;
+  return ret;
 }
 
 /***************************************************************************
@@ -426,7 +525,7 @@ static void a64_uart_send(struct uart_dev_s *dev, int ch)
   const struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
   const struct a64_uart_config *config = &port->config;
 
-#define BUFFER_UART
+////#define BUFFER_UART
 #ifdef BUFFER_UART
   //// TODO: Fix the garbled output. Buffer the chars until we see CR or LF.
   static char buf[256];
