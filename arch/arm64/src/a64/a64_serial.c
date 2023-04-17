@@ -174,7 +174,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
 }
 #endif  // NOTUSED
 
-//// TODO 
+//// TODO
 
 /* Register offsets *********************************************************/
 
