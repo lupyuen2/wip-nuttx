@@ -1109,8 +1109,9 @@ void arm64_serialinit(void)
 
 #ifdef CONFIG_A64_UART3 ////
   // TODO: Enable power to UART3
-  // TODO: Enable clocking to UART3
-  // TODO: Enable UART3 on PD0 and PD1
+  // TODO: Enable clocking to UART3: UART3_GATING
+  // TODO: Deassert reset: UART3_RST
+  // TODO: Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
   #define TTYS1_DEV g_uart3port /* UART3 is ttyS1 */
   uart_register("/dev/ttyS1", &TTYS1_DEV);
 #endif  ////
