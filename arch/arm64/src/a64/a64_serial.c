@@ -128,6 +128,7 @@ struct a64_uart_port_s
  * Private Functions
  ***************************************************************************/
 
+#ifdef NOTUSED
 /***************************************************************************
  * Name: a64_uart_irq_handler
  *
@@ -171,6 +172,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
 
   return OK;
 }
+#endif  // NOTUSED
 
 //// TODO 
 
@@ -192,6 +194,23 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
 #define A1X_UART_TFL_OFFSET       0x0080 /* UART Transmit FIFO Level */
 #define A1X_UART_RFL_OFFSET       0x0084 /* UART Receive FIFO Level */
 #define A1X_UART_HALT_OFFSET      0x00a4 /* UART Halt TX Register */
+
+/* UART Interrupt Identity Register */
+
+#define UART_IIR_IID_SHIFT        (0) /* Bits: 0-3: Interrupt ID */
+#define UART_IIR_IID_MASK         (15 << UART_IIR_IID_SHIFT)
+#  define UART_IIR_IID_MODEM      (0 << UART_IIR_IID_SHIFT)  /* Modem status */
+#  define UART_IIR_IID_NONE       (1 << UART_IIR_IID_SHIFT)  /* No interrupt pending */
+#  define UART_IIR_IID_TXEMPTY    (2 << UART_IIR_IID_SHIFT)  /* THR empty */
+#  define UART_IIR_IID_RECV       (4 << UART_IIR_IID_SHIFT)  /* Received data available */
+#  define UART_IIR_IID_LINESTATUS (6 << UART_IIR_IID_SHIFT)  /* Receiver line status */
+#  define UART_IIR_IID_BUSY       (7 << UART_IIR_IID_SHIFT)  /* Busy detect */
+#  define UART_IIR_IID_TIMEOUT    (12 << UART_IIR_IID_SHIFT) /* Character timeout */
+
+#define UART_IIR_FEFLAG_SHIFT     (6) /* Bits 6-7: FIFOs Enable Flag */
+#define UART_IIR_FEFLAG_MASK      (3 << UART_IIR_FEFLAG_SHIFT)
+#  define UART_IIR_FEFLAG_DISABLE (0 << UART_IIR_FEFLAG_SHIFT)
+#  define UART_IIR_FEFLAG_ENABLE  (3 << UART_IIR_FEFLAG_SHIFT)
 
 /* UART FIFO Control Register */
 
@@ -271,6 +290,118 @@ static inline void up_serialout(const struct a64_uart_config *config, int offset
   uint32_t before = getreg32(config->uart + offset); ////
   _info("addr=0x%x, before=0x%x, after=0x%x\n", config->uart + offset, before, value); ////
   putreg32(value, config->uart + offset);
+}
+
+/****************************************************************************
+ * Name: a64_uart_irq_handler
+ *
+ * Description:
+ *   This is the UART interrupt handler.  It will be invoked when an
+ *   interrupt is received on the 'irq'.  It should call uart_xmitchars or
+ *   uart_recvchars to perform the appropriate data transfers.  The
+ *   interrupt handling logic must be able to map the 'arg' to the
+ *   appropriate uart_dev_s structure in order to call these functions.
+ *
+ ****************************************************************************/
+
+static int a64_uart_irq_handler(int irq, void *context, void *arg)
+{
+  struct uart_dev_s *dev = (struct uart_dev_s *)arg;
+  const struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
+  const struct a64_uart_config *config = &port->config;
+  uint32_t status;
+  int passes;
+
+  DEBUGASSERT(dev != NULL && dev->priv != NULL);
+
+  /* Loop until there are no characters to be transferred or,
+   * until we have been looping for a long time.
+   */
+
+  for (passes = 0; passes < 256; passes++)
+    {
+      /* Get the current UART status */
+
+      status = up_serialin(config, A1X_UART_IIR_OFFSET);
+
+      /* Handle the interrupt by its interrupt ID field */
+
+      switch (status & UART_IIR_IID_MASK)
+        {
+          /* Handle incoming, receive bytes (with or without timeout) */
+
+          case UART_IIR_IID_RECV:
+          case UART_IIR_IID_TIMEOUT:
+            {
+              uart_recvchars(dev);
+              break;
+            }
+
+          /* Handle outgoing, transmit bytes */
+
+          case UART_IIR_IID_TXEMPTY:
+            {
+              uart_xmitchars(dev);
+              break;
+            }
+
+          /* Just clear modem status interrupts (UART1 only) */
+
+          case UART_IIR_IID_MODEM:
+            {
+              /* Read the modem status register (MSR) to clear */
+
+              status = up_serialin(config, A1X_UART_MSR_OFFSET);
+              _info("MSR: %02" PRIx32 "\n", status);
+              break;
+            }
+
+          /* Just clear any line status interrupts */
+
+          case UART_IIR_IID_LINESTATUS:
+            {
+              /* Read the line status register (LSR) to clear */
+
+              status = up_serialin(config, A1X_UART_LSR_OFFSET);
+              _info("LSR: %02" PRIx32 "\n", status);
+              break;
+            }
+
+          /* Busy detect.
+           * Just ignore.
+           * Cleared by reading the status register
+           */
+
+          case UART_IIR_IID_BUSY:
+            {
+              /* Read from the UART status register
+               * to clear the BUSY condition
+               */
+
+              status = up_serialin(config, A1X_UART_USR_OFFSET);
+              break;
+            }
+
+          /* No further interrupts pending... return now */
+
+          case UART_IIR_IID_NONE:
+            {
+              return OK;
+            }
+
+            /* Otherwise we have received an interrupt
+             * that we cannot handle
+             */
+
+          default:
+            {
+              _err("ERROR: Unexpected IIR: %02" PRIx32 "\n", status);
+              break;
+            }
+        }
+    }
+
+  return OK;
 }
 
 /****************************************************************************
