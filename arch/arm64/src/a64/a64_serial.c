@@ -85,16 +85,16 @@
  * Private Types
  ***************************************************************************/
 
-struct up_dev_s
-{
-  uint32_t uartbase;  /* Base address of UART registers */
-  uint32_t baud;      /* Configured baud */
-  uint32_t ier;       /* Saved IER value */
-  uint8_t  irq;       /* IRQ associated with this UART */
-  uint8_t  parity;    /* 0=none, 1=odd, 2=even */
-  uint8_t  bits;      /* Number of bits (7 or 8) */
-  bool     stopbits2; /* true: Configure with 2 stop bits instead of 1 */
-};
+// struct up_dev_s
+// {
+//   uint32_t uartbase;  /* Base address of UART registers */
+//   uint32_t baud;      /* Configured baud */
+//   uint32_t ier;       /* Saved IER value */
+//   uint8_t  irq;       /* IRQ associated with this UART */
+//   uint8_t  parity;    /* 0=none, 1=odd, 2=even */
+//   uint8_t  bits;      /* Number of bits (7 or 8) */
+//   bool     stopbits2; /* true: Configure with 2 stop bits instead of 1 */
+// };
 
 /* A64 UART Configuration */
 
@@ -108,6 +108,10 @@ struct a64_uart_config
 struct a64_uart_data
 {
   uint32_t baud_rate;  /* UART Baud Rate */
+  uint32_t ier;        /* Saved IER value */
+  uint8_t  parity;     /* 0=none, 1=odd, 2=even */
+  uint8_t  bits;       /* Number of bits (7 or 8) */
+  bool     stopbits2;  /* true: Configure with 2 stop bits instead of 1 */
 };
 
 /* A64 UART Port */
@@ -250,19 +254,19 @@ static inline uint32_t a64_uartdl(uint32_t baud)
  * Name: up_serialin
  ****************************************************************************/
 
-static inline uint32_t up_serialin(struct up_dev_s *priv, int offset)
+static inline uint32_t up_serialin(const struct a64_uart_config *config, int offset)
 {
-  return getreg32(priv->uartbase + offset);
+  return getreg32(config->uart + offset);
 }
 
 /****************************************************************************
  * Name: up_serialout
  ****************************************************************************/
 
-static inline void up_serialout(struct up_dev_s *priv, int offset,
+static inline void up_serialout(const struct a64_uart_config *config, int offset,
                                 uint32_t value)
 {
-  putreg32(value, priv->uartbase + offset);
+  putreg32(value, config->uart + offset);
 }
 
 /****************************************************************************
@@ -277,32 +281,34 @@ static inline void up_serialout(struct up_dev_s *priv, int offset,
 static int up_setup(struct uart_dev_s *dev)
 {
 #ifndef CONFIG_SUPPRESS_UART_CONFIG
-  struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
+  struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
+  const struct a64_uart_config *config = &port->config;
+  struct a64_uart_data *data = &port->data;
   uint16_t dl;
   uint32_t lcr;
 
-  DEBUGASSERT(priv != NULL);
-  _info("baud=%d\n", priv->baud);////
+  DEBUGASSERT(data != NULL);
+  _info("baud_rate=%d\n", data->baud_rate);////
 
   /* Clear fifos */
 
-  up_serialout(priv, A1X_UART_FCR_OFFSET,
+  up_serialout(config, A1X_UART_FCR_OFFSET,
               (UART_FCR_RFIFOR | UART_FCR_XFIFOR));
 
   /* Set trigger */
 
-  up_serialout(priv, A1X_UART_FCR_OFFSET,
+  up_serialout(config, A1X_UART_FCR_OFFSET,
               (UART_FCR_FIFOE | UART_FCR_RT_HALF));
 
   /* Set up the IER */
 
-  priv->ier = up_serialin(priv, A1X_UART_IER_OFFSET);
+  data->ier = up_serialin(config, A1X_UART_IER_OFFSET);
 
   /* Set up the LCR */
 
   lcr = 0;
 
-  switch (priv->bits)
+  switch (data->bits)
     {
     case 5:
       lcr |= UART_LCR_DLS_5BITS;
@@ -322,37 +328,37 @@ static int up_setup(struct uart_dev_s *dev)
       break;
     }
 
-  if (priv->stopbits2)
+  if (data->stopbits2)
     {
       lcr |= UART_LCR_STOP;
     }
 
-  if (priv->parity == 1)
+  if (data->parity == 1)
     {
       lcr |= UART_LCR_PEN;
     }
-  else if (priv->parity == 2)
+  else if (data->parity == 2)
     {
       lcr |= (UART_LCR_PEN | UART_LCR_EPS);
     }
 
   /* Enter DLAB=1 */
 
-  up_serialout(priv, A1X_UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
+  up_serialout(config, A1X_UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
   /* Set the BAUD divisor */
 
-  dl = a64_uartdl(priv->baud);
-  up_serialout(priv, A1X_UART_DLH_OFFSET, dl >> 8);
-  up_serialout(priv, A1X_UART_DLL_OFFSET, dl & 0xff);
+  dl = a64_uartdl(data->baud_rate);
+  up_serialout(config, A1X_UART_DLH_OFFSET, dl >> 8);
+  up_serialout(config, A1X_UART_DLL_OFFSET, dl & 0xff);
 
   /* Clear DLAB */
 
-  up_serialout(priv, A1X_UART_LCR_OFFSET, lcr);
+  up_serialout(config, A1X_UART_LCR_OFFSET, lcr);
 
   /* Configure the FIFOs */
 
-  up_serialout(priv, A1X_UART_FCR_OFFSET,
+  up_serialout(config, A1X_UART_FCR_OFFSET,
                (UART_FCR_RT_HALF | UART_FCR_XFIFOR | UART_FCR_RFIFOR |
                 UART_FCR_FIFOE));
 
@@ -774,6 +780,9 @@ static struct a64_uart_port_s g_uart1priv =
   .data   =
     {
       .baud_rate  = CONFIG_UART1_BAUD,
+      .parity     = CONFIG_UART1_PARITY,
+      .bits       = CONFIG_UART1_BITS,
+      .stopbits2  = CONFIG_UART1_2STOP
     },
 
   .config =
