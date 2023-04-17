@@ -965,6 +965,56 @@ static struct uart_dev_s    g_uart1port =
 
 #endif
 
+#ifdef CONFIG_A64_UART3 ////
+
+/* UART3 Port State */
+
+static struct a64_uart_port_s g_uart3priv =
+{
+  .data   =
+    {
+      .baud_rate  = CONFIG_UART3_BAUD,
+      .parity     = CONFIG_UART3_PARITY,
+      .bits       = CONFIG_UART3_BITS,
+      .stopbits2  = CONFIG_UART3_2STOP
+    },
+
+  .config =
+    {
+      .uart       = CONFIG_A64_UART3_BASE
+    },
+
+    .irq_num      = CONFIG_A64_UART3_IRQ,
+    .is_console   = 0
+};
+
+/* UART3 I/O Buffers */
+
+static char                 g_uart3rxbuffer[CONFIG_UART3_RXBUFSIZE];
+static char                 g_uart3txbuffer[CONFIG_UART3_TXBUFSIZE];
+
+/* UART3 Port Definition */
+
+static struct uart_dev_s    g_uart3port =
+{
+  .recv  =
+    {
+      .size   = CONFIG_UART3_RXBUFSIZE,
+      .buffer = g_uart3rxbuffer,
+    },
+
+  .xmit  =
+    {
+      .size   = CONFIG_UART3_TXBUFSIZE,
+      .buffer = g_uart3txbuffer,
+    },
+
+  .ops   = &g_uart_ops,
+  .priv  = &g_uart3priv,
+};
+
+#endif ////
+
 /***************************************************************************
  * Public Functions
  ***************************************************************************/
@@ -1056,6 +1106,11 @@ void arm64_serialinit(void)
     {
       sinfo("error at register dev/ttyS0, ret =%d\n", ret);
     }
+
+#ifdef CONFIG_A64_UART3 ////
+  #define TTYS1_DEV g_uart3port /* UART3 is ttyS1 */
+  uart_register("/dev/ttyS1", &TTYS1_DEV);
+#endif  ////
 }
 
 #else /* USE_SERIALDRIVER */
