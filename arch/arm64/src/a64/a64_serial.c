@@ -294,16 +294,19 @@ static int up_setup(struct uart_dev_s *dev)
 
   /* Clear fifos */
 
+  _info("Clear fifos"); ////
   up_serialout(config, A1X_UART_FCR_OFFSET,
               (UART_FCR_RFIFOR | UART_FCR_XFIFOR));
 
   /* Set trigger */
 
+  _info("Set trigger"); ////
   up_serialout(config, A1X_UART_FCR_OFFSET,
               (UART_FCR_FIFOE | UART_FCR_RT_HALF));
 
   /* Set up the IER */
 
+  _info("Set up the IER"); ////
   data->ier = up_serialin(config, A1X_UART_IER_OFFSET);
 
   /* Set up the LCR */
@@ -346,20 +349,24 @@ static int up_setup(struct uart_dev_s *dev)
 
   /* Enter DLAB=1 */
 
+  _info("Enter DLAB=1"); ////
   up_serialout(config, A1X_UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
   /* Set the BAUD divisor */
 
+  _info("Set the BAUD divisor"); ////
   dl = a64_uartdl(data->baud_rate);
   up_serialout(config, A1X_UART_DLH_OFFSET, dl >> 8);
   up_serialout(config, A1X_UART_DLL_OFFSET, dl & 0xff);
 
   /* Clear DLAB */
 
+  _info("Clear DLAB"); ////
   up_serialout(config, A1X_UART_LCR_OFFSET, lcr);
 
   /* Configure the FIFOs */
 
+  _info("Configure the FIFOs"); ////
   up_serialout(config, A1X_UART_FCR_OFFSET,
                (UART_FCR_RT_HALF | UART_FCR_XFIFOR | UART_FCR_RFIFOR |
                 UART_FCR_FIFOE));
