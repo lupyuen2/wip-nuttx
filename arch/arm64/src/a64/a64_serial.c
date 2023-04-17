@@ -85,6 +85,17 @@
  * Private Types
  ***************************************************************************/
 
+struct up_dev_s
+{
+  uint32_t uartbase;  /* Base address of UART registers */
+  uint32_t baud;      /* Configured baud */
+  uint32_t ier;       /* Saved IER value */
+  uint8_t  irq;       /* IRQ associated with this UART */
+  uint8_t  parity;    /* 0=none, 1=odd, 2=even */
+  uint8_t  bits;      /* Number of bits (7 or 8) */
+  bool     stopbits2; /* true: Configure with 2 stop bits instead of 1 */
+};
+
 /* A64 UART Configuration */
 
 struct a64_uart_config
@@ -155,6 +166,32 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
     }
 
   return OK;
+}
+
+/****************************************************************************
+ * Name: a1x_uartdl
+ *
+ * Description:
+ *   Select a divider to produce the BAUD from the UART PCLK.
+ *
+ *     BAUD = PCLK / (16 * DL), or
+ *     DL   = PCLK / BAUD / 16
+ *
+ ****************************************************************************/
+
+static inline uint32_t a64_uartdl(uint32_t baud)
+{
+  return A1X_SCLK / (baud << 4);
+}
+
+/****************************************************************************
+ * Name: up_serialout
+ ****************************************************************************/
+
+static inline void up_serialout(struct up_dev_s *priv, int offset,
+                                uint32_t value)
+{
+  putreg32(value, priv->uartbase + offset);
 }
 
 /****************************************************************************
@@ -231,7 +268,7 @@ static int up_setup(struct uart_dev_s *dev)
 
   /* Set the BAUD divisor */
 
-  dl = a1x_uartdl(priv->baud);
+  dl = a64_uartdl(priv->baud);
   up_serialout(priv, A1X_UART_DLH_OFFSET, dl >> 8);
   up_serialout(priv, A1X_UART_DLL_OFFSET, dl & 0xff);
 
