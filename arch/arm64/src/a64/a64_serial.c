@@ -511,11 +511,6 @@ static int up_setup(struct uart_dev_s *dev)
 #endif
 
 #endif
-
-  // TODO
-  // _info("Restore FCR to 0xc1"); ////
-  // up_serialout(config, A1X_UART_FCR_OFFSET, 0xc1);
-
   return OK;
 }
 
