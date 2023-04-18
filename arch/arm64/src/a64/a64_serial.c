@@ -1228,24 +1228,194 @@ int up_putc(int ch)
 #endif /* USE_SERIALDRIVER */
 
 #ifdef NOTUSED ////TODO
+DRAM: 2048 MiB
+Trying to boot from MMC1
+NOTICE:  BL31: v2.2(release):v2.2-904-gf9ea3a629
+NOTICE:  BL31: Built : 15:32:12, Apr  9 2020
+NOTICE:  BL31: Detected Allwinner A64/H64/R18 SoC (1689)
+NOTICE:  BL31: Found U-Boot DTB at 0x4064410, model: PinePhone
+NOTICE:  PSCI: System suspend is unavailable
+
+
+U-Boot 2020.07 (Nov 08 2020 - 00:15:12 +0100)
+
+DRAM:  2 GiB
+MMC:   Device 'mmc@1c11000': seq 1 is in use by 'mmc@1c10000'
+mmc@1c0f000: 0, mmc@1c10000: 2, mmc@1c11000: 1
+Loading Environment from FAT... *** Warning - bad CRC, using default environment
+
+starting USB...
+No working controllers found
+Hit any key to stop autoboot:  0 
+switch to partitions #0, OK
+mmc0 is current device
+Scanning mmc 0:1...
+Found U-Boot script /boot.scr
+653 bytes read in 3 ms (211.9 KiB/s)
+## Executing script at 4fc00000
+gpio: pin 114 (gpio 114) value is 1
+360517 bytes read in 20 ms (17.2 MiB/s)
+Uncompressed size: 10543104 = 0xA0E000
+36162 bytes read in 4 ms (8.6 MiB/s)
+1078500 bytes read in 50 ms (20.6 MiB/s)
+## Flattened Device Tree blob at 4fa00000
+   Booting using the fdt blob at 0x4fa00000
+   Loading Ramdisk to 49ef8000, end 49fff4e4 ... OK
+   Loading Device Tree to 0000000049eec000, end 0000000049ef7d41 ... OK
+
+Starting kernel ...
+
 up_setup: baud_rate=115200
 up_setup: Clear fifos
 up_serialout: addr=0x1c28008, before=0xc1, after=0x6
-
 up_setup: Set trigger
 up_serialout: addr=0x1c28008, before=0x1, after=0x81
-
 up_setup: Set up the IER
 up_setup: Enter DLAB=1
 up_serialout: addr=0x1c2800c, before=0x3, after=0x83
-
 up_setup: Set the BAUD divisor
 up_serialout: addr=0x1c28004, before=0x0, after=0x0
 up_serialout: addr=0x1c28000, before=0x0, after=0xd
 
 up_setup: Clear DLAB
 up_serialout: addr=0x1c2800c, before=0x3, after=0x3
-
 up_setup: Configure the FIFOs
 up_serialout: addr=0x1c28008, before=0xc7, after=0x87
+arm64_serialinit: Enable clocking to UART3: Set UART3_GATING to High (Pass): addr=0x1c2006c, before=0x0, after=0x80000
+arm64_serialinit: Compare with UART0_GATING: addr=0x1c2006c, val=0x10000
+arm64_serialinit: Deassert reset for UART3: Set UART3_RST to High: addr=0x1c202d8, before=0x0, after=0x80000
+arm64_serialinit: Compare with UART0_RST: addr=0x1c202d8, val=0x10000
+arm64_serialinit: Enable UART3 on PD0: PD0_SELECT: addr=0x1c2086c, before=0x0, after=0x0
+arm64_serialinit: Enable UART3 on PD1: PD0_SELECT: addr=0x1c2086c, before=0x0, after=0x0
+pinephone_pmic_init: Set DLDO1 Voltage to 3.3V
+pmic_write: reg=0x15, val=0x1a
+a64_rsb_write: rt_addr=0x2d, reg_addr=0x15, value=0x1a
+pmic_clrsetbits: reg=0x12, clr_mask=0x0, set_mask=0x8
+a64_rsb_read: rt_addr=0x2d, reg_addr=0x12
+a64_rsb_write: rt_addr=0x2d, reg_addr=0x12, value=0xd9
+pinephone_pmic_init: Set LDO Voltage to 3.3V
+pmic_write: reg=0x91, val=0x1a
+a64_rsb_write: rt_addr=0x2d, reg_addr=0x91, value=0x1a
+pinephone_pmic_init: Enable LDO mode on GPIO0
+pmic_write: reg=0x90, val=0x3
+a64_rsb_write: rt_addr=0x2d, reg_addr=0x90, value=0x3
+pinephone_pmic_init: Set DLDO2 Voltage to 1.8V
+pmic_write: reg=0x16, val=0xb
+a64_rsb_write: rt_addr=0x2d, reg_addr=0x16, value=0xb
+pmic_clrsetbits: reg=0x12, clr_mask=0x0, set_mask=0x10
+a64_rsb_read: rt_addr=0x2d, reg_addr=0x12
+a64_rsb_write: rt_addr=0x2d, reg_addr=0x12, value=0xd9
+a64_usbhost_clk_enable: CLK_USB_PHY0
+set_bit: 0x1c200cc Bit 8
+a64_usbhost_clk_enable: CLK_USB_PHY1
+set_bit: 0x1c200cc Bit 9
+a64_usbhost_clk_enable: CLK_BUS_OHCI0
+set_bit: 0x1c20060 Bit 28
+a64_usbhost_clk_enable: CLK_BUS_EHCI0
+set_bit: 0x1c20060 Bit 24
+a64_usbhost_clk_enable: CLK_USB_OHCI0
+set_bit: 0x1c200cc Bit 16
+a64_usbhost_clk_enable: CLK_BUS_OHCI1
+set_bit: 0x1c20060 Bit 29
+a64_usbhost_clk_enable: CLK_BUS_EHCI1
+set_bit: 0x1c20060 Bit 25
+a64_usbhost_clk_enable: CLK_USB_OHCI1
+set_bit: 0x1c200cc Bit 17
+a64_usbhost_reset_deassert: RST_USB_PHY0
+set_bit: 0x1c200cc Bit 0
+a64_usbhost_reset_deassert: RST_USB_PHY1
+set_bit: 0x1c200cc Bit 1
+a64_usbhost_reset_deassert: RST_BUS_OHCI0
+set_bit: 0x1c202c0 Bit 28
+a64_usbhost_reset_deassert: RST_BUS_EHCI0
+set_bit: 0x1c202c0 Bit 24
+a64_usbhost_reset_deassert: RST_BUS_OHCI1
+set_bit: 0x1c202c0 Bit 29
+a64_usbhost_reset_deassert: RST_BUS_EHCI1
+set_bit: 0x1c202c0 Bit 25
+a64_usbhost_initialize: TODO: switch off USB bus power
+a64_usbhost_initialize: TODO: Setup pins, with power initially off
+usbhost_registerclass: Registering class:0x40125968 nids:2
+EHCI Initializing EHCI Stack
+a64_printreg: 01c1b010<-00000000
+a64_printreg: 01c1b014->00001000
+a64_printreg: 01c1b010->00000000
+a64_printreg: 01c1b010<-00000002
+a64_printreg: 01c1b010->00080b00
+a64_printreg: 01c1b018<-00000000
+a64_printreg: 01c1b014<-0000003f
+EHCI HCIVERSION 1.00
+a64_printreg: 01c1b004->00001101
+EHCI nports=1, HCSPARAMS=1101
+a64_printreg: 01c1b008->0000a026
+EHCI HCCPARAMS=00a026
+a64_printreg: 01c1b028<-40a89fa0
+a64_printreg: 01c1b024<-40a9a000
+a64_printreg: 01c1b010->00080b00
+a64_printreg: 01c1b010<-00080b30
+a64_printreg: 01c1b010->00080b30
+a64_printreg: 01c1b010<-00080b31
+a64_printreg: 01c1b050->00000000
+a64_printreg: 01c1b050<-00000001
+a64_printreg: 01c1b014->00000000
+a64_ehci_initialize: irq_attach
+a64_printreg: 01c1b018<-00000037
+a64_ehci_initialize: up_enable_irq
+a64_ehci_initialize: TODO: a64_usbhost_vbusdrive
+a64_printreg: 01c1b054->00001000
+EHCI USB EHCI Initialized
+a64_usbhost_initialize: 1
+a64_usbhost_initialize: Status=0
+pinephone_pmic_usb_init: Set DCDC1 Voltage to 3.3V
+pmic_write: reg=0x20, val=0x11
+a64_rsb_write: rt_addr=0x2d, reg_addr=0x20, value=0x11
+pmic_clrsetbits: reg=0x10, clr_mask=0x0, set_mask=0x1
+a64_rsb_read: rt_addr=0x2d, reg_addr=0x10
+a64_rsb_write: rt_addr=0x2d, reg_addr=0x10, value=0x37
+a64_usbhost_initialize: Status=0
+a64_usbhost_initialize: Wait 1000 ms
+a64_usbhost_initialize: Status=0
+a64_usbhost_initialize: Configure PWR_BAT (PL7) for Output
+a64_usbhost_initialize: Set PWR_BAT (PL7) to High
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Wait 1000 ms
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Configure RESET_N (PC4) for Output
+a64_usbhost_initialize: Set RESET_N (PC4) to High
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Configure PWRKEY (PB3) for Output
+a64_usbhost_initialize: Set PWRKEY (PB3) to High
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Wait 30 ms for VBAT to be stable
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Set PWRKEY (PB3) to Low
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Wait 500 ms
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Set PWRKEY (PB3) to High
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Configure W_DISABLE (PH8) for Output
+a64_usbhost_initialize: Set W_DISABLE (PH8) to High
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Green LED
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Red LED
+a64_usbhost_initialize: Status=1
+a64_usbhost_initialize: Blue LED
+a64_usbhost_initialize: Status=1
+nshe:h cmik_fwaatiftse:r :c oemhmcain_dw aniotte rf:o u nRdu
+n
+n
+i
+nNgu
+t
+taS6h4e_lwla i(tN:S HW)a iNtu tftoXr- 1c2o.n0n.e3c
+t
+ n/s hd>i s.c[oKnnect
+
+nsh> 
+nsh> uname -a
+NuttX 12.0.3 4d922be-dirty Mar  7 2023 15:54:47 arm64 pinephone
+nsh> 
+nsh> 
 #endif  // NOTUSED
