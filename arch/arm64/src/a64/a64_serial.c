@@ -1172,8 +1172,8 @@ void arm64_serialinit(void)
   // A64 User Manual Page 385
   #define PIO_BASE_ADDR 0x01C20800
   #define PD_CFG0_REG (PIO_BASE_ADDR + 0x6C)
-  #define PD0_SELECT (0b111 < 0)
-  #define PD1_SELECT (0b111 < 4)
+  #define PD0_SELECT (0b111 << 0)
+  #define PD1_SELECT (0b111 << 4)
   uint32_t before0 = getreg32(PD_CFG0_REG) & PD0_SELECT;
   uint32_t before1 = getreg32(PD_CFG0_REG) & PD1_SELECT;
 
@@ -1235,6 +1235,7 @@ int up_putc(int ch)
 #endif /* USE_SERIALDRIVER */
 
 #ifdef NOTUSED ////TODO
+
 DRAM: 2048 MiB
 Trying to boot from MMC1
 NOTICE:  BL31: v2.2(release):v2.2-904-gf9ea3a629
@@ -1261,10 +1262,10 @@ Found U-Boot script /boot.scr
 653 bytes read in 3 ms (211.9 KiB/s)
 ## Executing script at 4fc00000
 gpio: pin 114 (gpio 114) value is 1
-360718 bytes read in 21 ms (16.4 MiB/s)
+360708 bytes read in 20 ms (17.2 MiB/s)
 Uncompressed size: 10543104 = 0xA0E000
-36162 bytes read in 5 ms (6.9 MiB/s)
-1078500 bytes read in 50 ms (20.6 MiB/s)
+36162 bytes read in 4 ms (8.6 MiB/s)
+1078500 bytes read in 51 ms (20.2 MiB/s)
 ## Flattened Device Tree blob at 4fa00000
    Booting using the fdt blob at 0x4fa00000
    Loading Ramdisk to 49ef8000, end 49fff4e4 ... OK
@@ -1297,8 +1298,8 @@ arm64_serialinit: Deassert reset for UART3: Set UART3_RST to High: addr=0x1c202d
 arm64_serialinit: Compare with UART0_RST: addr=0x1c202d8, val=0x10000
 a64_pio_config: port=3, pin=0, ext=-1, cfgaddr=0x1c2086c, value=3, shift=0
 a64_pio_config: port=3, pin=1, ext=-1, cfgaddr=0x1c2086c, value=3, shift=4
-arm64_serialinit: Enable UART3 on PD0: PD0_SELECT: addr=0x1c2086c, before=0x0, after=0x0
-arm64_serialinit: Enable UART3 on PD1: PD0_SELECT: addr=0x1c2086c, before=0x0, after=0x0
+arm64_serialinit: Enable UART3 on PD0: PD0_SELECT: addr=0x1c2086c, before=0x7, after=0x3
+arm64_serialinit: Enable UART3 on PD1: PD0_SELECT: addr=0x1c2086c, before=0x70, after=0x30
 a64_pio_config: port=3, pin=18, ext=-1, cfgaddr=0x1c20874, value=1, shift=8
 a64_pio_config: port=3, pin=19, ext=-1, cfgaddr=0x1c20874, value=1, shift=12
 a64_pio_config: port=3, pin=20, ext=-1, cfgaddr=0x1c20874, value=1, shift=16
