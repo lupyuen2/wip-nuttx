@@ -1115,6 +1115,7 @@ void arm64_serialinit(void)
   // Bus Clock Gating Register3
   // Offset: 0x006C, Register Name: BUS_CLK_GATING_REG3
   // Bit 19
+  // A64 User Manual Page 105
 
   // Compare with UART0_GATING (Bit 16)
 
@@ -1123,6 +1124,7 @@ void arm64_serialinit(void)
   // Bus Software Reset Register 4
   // Offset: 0x02D8, Register Name: BUS_SOFT_RST_REG4
   // Bit 9
+  // A64 User Manual Page 142
 
   // Compare with UART0_RST (Bit 16)
 
@@ -1139,6 +1141,7 @@ void arm64_serialinit(void)
   // Offset: 0x6C, Register Name: PD_CFG0_REG
   // Bits 0 to 2: PD0_SELECT
   // Bits 4 to 6: PD1_SELECT
+  // A64 User Manual Page 385
 
   #define TTYS1_DEV g_uart3port /* UART3 is ttyS1 */
   uart_register("/dev/ttyS1", &TTYS1_DEV);
