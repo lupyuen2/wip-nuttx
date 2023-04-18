@@ -46,6 +46,7 @@
 
 #include "arm64_arch.h"
 #include "arm64_internal.h"
+#include "a64_pio.h"
 #include "a64_serial.h"
 #include "arm64_arch_timer.h"
 #include "a64_boot.h"
