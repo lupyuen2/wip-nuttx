@@ -1109,9 +1109,37 @@ void arm64_serialinit(void)
 
 #ifdef CONFIG_A64_UART3 ////
   // TODO: Enable power to UART3
-  // TODO: Enable clocking to UART3: UART3_GATING
-  // TODO: Deassert reset: UART3_RST
-  // TODO: Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
+
+  // TODO: Enable clocking to UART3: Set UART3_GATING to High (Pass)
+  // CCU Base Address: 0x01C20000
+  // Bus Clock Gating Register3
+  // Offset: 0x006C, Register Name: BUS_CLK_GATING_REG3
+  // Bit 19
+
+  // Compare with UART0_GATING (Bit 16)
+
+  // TODO: Deassert reset: Set UART3_RST to High
+  // CCU Base Address: 0x01C20000
+  // Bus Software Reset Register 4
+  // Offset: 0x02D8, Register Name: BUS_SOFT_RST_REG4
+  // Bit 9
+
+  // Compare with UART0_RST (Bit 16)
+
+  // Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
+  #define PIO_UART3_TX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN0)
+  #define PIO_UART3_RX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
+  ret = a64_pio_config(PIO_UART3_TX);
+  DEBUGASSERT(ret == OK);
+  ret = a64_pio_config(PIO_UART3_RX);
+  DEBUGASSERT(ret == OK);
+
+  // PIO Base Address: 0x01C20800
+  // PD Configure Register 0
+  // Offset: 0x6C, Register Name: PD_CFG0_REG
+  // Bits 0 to 2: PD0_SELECT
+  // Bits 4 to 6: PD1_SELECT
+
   #define TTYS1_DEV g_uart3port /* UART3 is ttyS1 */
   uart_register("/dev/ttyS1", &TTYS1_DEV);
 #endif  ////
