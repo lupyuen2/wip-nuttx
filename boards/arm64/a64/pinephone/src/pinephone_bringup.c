@@ -26,6 +26,7 @@
 #include <nuttx/kmalloc.h>
 #include <sys/types.h>
 #include <syslog.h>
+#include <debug.h>
 #include "a64_twi.h"
 #include "pinephone.h"
 #include "pinephone_pmic.h"
@@ -213,6 +214,148 @@ int pinephone_bringup(void)
     }
 #endif
 
+  // Init PinePhone LTE Modem
+  int pinephone_modem_init(void);
+  ret = pinephone_modem_init();
+  DEBUGASSERT(ret == OK);
+
   UNUSED(ret);
+  return OK;
+}
+
+// Init PinePhone LTE Modem
+int pinephone_modem_init(void)
+{
+  int ret;
+
+  // Read PH9 to check LTE Modem Status
+  #define STATUS (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN9)
+  ret = a64_pio_config(STATUS);
+  DEBUGASSERT(ret == OK);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Power on DCDC1
+  int pinephone_pmic_usb_init(void);
+  ret = pinephone_pmic_usb_init();
+  DEBUGASSERT(ret == OK);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Wait 1000 ms
+  _info("Wait 1000 ms\n");
+  up_mdelay(1000);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set PL7 to High to Power On LTE Modem (4G-PWR-BAT)
+
+  #define P_OUTPUT (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
+                   PIO_INT_NONE | PIO_OUTPUT_SET)
+  #define PWR_BAT (P_OUTPUT | PIO_PORT_PIOL | PIO_PIN7)
+  _info("Configure PWR_BAT (PL7) for Output\n");
+  ret = a64_pio_config(PWR_BAT);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set PWR_BAT (PL7) to High\n");
+  a64_pio_write(PWR_BAT, true);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Wait 1000 ms
+  _info("Wait 1000 ms\n");
+  up_mdelay(1000);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set PC4 to High to Deassert LTE Modem Reset (BB-RESET / RESET_N)
+
+  #define RESET_N (P_OUTPUT | PIO_PORT_PIOC | PIO_PIN4)
+  _info("Configure RESET_N (PC4) for Output\n");
+  ret = a64_pio_config(RESET_N);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set RESET_N (PC4) to High\n");
+  a64_pio_write(RESET_N, true);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set PB3 to Power On LTE Modem (BB-PWRKEY / PWRKEY).
+  // PWRKEY should be pulled down at least 500 ms, then pulled up.
+
+  #define PWRKEY (P_OUTPUT | PIO_PORT_PIOB | PIO_PIN3)
+  _info("Configure PWRKEY (PB3) for Output\n");
+  ret = a64_pio_config(PWRKEY);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set PWRKEY (PB3) to High\n");
+  a64_pio_write(PWRKEY, true);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Wait 30 ms for VBAT to be stable
+  _info("Wait 30 ms for VBAT to be stable\n");
+  up_mdelay(30);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Set PWRKEY (PB3) to Low\n");
+  a64_pio_write(PWRKEY, false);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Wait 500 ms\n");
+  up_mdelay(500);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Set PWRKEY (PB3) to High\n");
+  a64_pio_write(PWRKEY, true);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set PH8 to High to Enable LTE Modem and Disable Airplane Mode (BB-DISABLE / W_DISABLE#)
+
+  #define W_DISABLE (P_OUTPUT | PIO_PORT_PIOH | PIO_PIN8)
+  _info("Configure W_DISABLE (PH8) for Output\n");
+  ret = a64_pio_config(W_DISABLE);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set W_DISABLE (PH8) to High\n");
+  a64_pio_write(W_DISABLE, true);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // TODO: Read PL6 to handle Ring Indicator / [Unsolicited Result Code](https://embeddedfreak.wordpress.com/2008/08/19/handling-urc-unsolicited-result-code-in-hayes-at-command/)
+
+  // TODO: Set PH7 to High or Low for Sleep State
+
+  // Poll for Modem Status while switching on RGB LEDs
+
+  /* Green LED on PD18 */
+  #define GREEN_LED (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN18)
+
+  /* Red LED on PD19 */
+  #define RED_LED (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN19)
+
+  /* Blue LED on PD20 */
+  #define BLUE_LED (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN20)
+
+  ret = a64_pio_config(GREEN_LED);
+  DEBUGASSERT(ret >= 0);
+  ret = a64_pio_config(RED_LED);
+  DEBUGASSERT(ret >= 0);
+  ret = a64_pio_config(BLUE_LED);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Turn on Green LED");
+  a64_pio_write(GREEN_LED, true);
+  a64_pio_write(RED_LED, false);
+  a64_pio_write(BLUE_LED, false);
+  up_mdelay(2000);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Turn on Red LED");
+  a64_pio_write(GREEN_LED, false);
+  a64_pio_write(RED_LED, true);
+  a64_pio_write(BLUE_LED, false);
+  up_mdelay(2000);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Turn on Blue LED");
+  a64_pio_write(GREEN_LED, false);
+  a64_pio_write(RED_LED, false);
+  a64_pio_write(BLUE_LED, true);
+  up_mdelay(2000);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
   return OK;
 }

@@ -1262,8 +1262,8 @@ Found U-Boot script /boot.scr
 653 bytes read in 3 ms (211.9 KiB/s)
 ## Executing script at 4fc00000
 gpio: pin 114 (gpio 114) value is 1
-360708 bytes read in 20 ms (17.2 MiB/s)
-Uncompressed size: 10543104 = 0xA0E000
+346865 bytes read in 20 ms (16.5 MiB/s)
+Uncompressed size: 10510336 = 0xA06000
 36162 bytes read in 4 ms (8.6 MiB/s)
 1078500 bytes read in 51 ms (20.2 MiB/s)
 ## Flattened Device Tree blob at 4fa00000
@@ -1327,125 +1327,75 @@ a64_rsb_write: rt_addr=0x2d, reg_addr=0x12, value=0xd9
 a64_pio_config: port=3, pin=23, ext=-1, cfgaddr=0x1c20874, value=1, shift=28
 a64_pio_config: port=7, pin=0, ext=2, cfgaddr=0x1c208fc, value=2, shift=0
 a64_pio_config: port=7, pin=1, ext=2, cfgaddr=0x1c208fc, value=2, shift=4
-a64_usbhost_clk_enable: CLK_USB_PHY0
-set_bit: 0x1c200cc Bit 8
-a64_usbhost_clk_enable: CLK_USB_PHY1
-set_bit: 0x1c200cc Bit 9
-a64_usbhost_clk_enable: CLK_BUS_OHCI0
-set_bit: 0x1c20060 Bit 28
-a64_usbhost_clk_enable: CLK_BUS_EHCI0
-set_bit: 0x1c20060 Bit 24
-a64_usbhost_clk_enable: CLK_USB_OHCI0
-set_bit: 0x1c200cc Bit 16
-a64_usbhost_clk_enable: CLK_BUS_OHCI1
-set_bit: 0x1c20060 Bit 29
-a64_usbhost_clk_enable: CLK_BUS_EHCI1
-set_bit: 0x1c20060 Bit 25
-a64_usbhost_clk_enable: CLK_USB_OHCI1
-set_bit: 0x1c200cc Bit 17
-a64_usbhost_reset_deassert: RST_USB_PHY0
-set_bit: 0x1c200cc Bit 0
-a64_usbhost_reset_deassert: RST_USB_PHY1
-set_bit: 0x1c200cc Bit 1
-a64_usbhost_reset_deassert: RST_BUS_OHCI0
-set_bit: 0x1c202c0 Bit 28
-a64_usbhost_reset_deassert: RST_BUS_EHCI0
-set_bit: 0x1c202c0 Bit 24
-a64_usbhost_reset_deassert: RST_BUS_OHCI1
-set_bit: 0x1c202c0 Bit 29
-a64_usbhost_reset_deassert: RST_BUS_EHCI1
-set_bit: 0x1c202c0 Bit 25
-a64_usbhost_initialize: TODO: switch off USB bus power
-a64_usbhost_initialize: TODO: Setup pins, with power initially off
-usbhost_registerclass: Registering class:0x40125968 nids:2
-EHCI Initializing EHCI Stack
-a64_printreg: 01c1b010<-00000000
-a64_printreg: 01c1b014->00001000
-a64_printreg: 01c1b010->00000000
-a64_printreg: 01c1b010<-00000002
-a64_printreg: 01c1b010->00080b00
-a64_printreg: 01c1b018<-00000000
-a64_printreg: 01c1b014<-0000003f
-EHCI HCIVERSION 1.00
-a64_printreg: 01c1b004->00001101
-EHCI nports=1, HCSPARAMS=1101
-a64_printreg: 01c1b008->0000a026
-EHCI HCCPARAMS=00a026
-a64_printreg: 01c1b028<-40a89fa0
-a64_printreg: 01c1b024<-40a9a000
-a64_printreg: 01c1b010->00080b00
-a64_printreg: 01c1b010<-00080b30
-a64_printreg: 01c1b010->00080b30
-a64_printreg: 01c1b010<-00080b31
-a64_printreg: 01c1b050->00000000
-a64_printreg: 01c1b050<-00000001
-a64_printreg: 01c1b014->00000000
-a64_ehci_initialize: irq_attach
-a64_printreg: 01c1b018<-00000037
-a64_ehci_initialize: up_enable_irq
-a64_ehci_initialize: TODO: a64_usbhost_vbusdrive
-a64_printreg: 01c1b054->00001000
-EHCI USB EHCI Initialized
-a64_usbhost_initialize: 1
 a64_pio_config: port=7, pin=9, ext=2, cfgaddr=0x1c20900, value=0, shift=4
-a64_usbhost_initialize: Status=0
+pinephone_modem_init: Status=0
 pinephone_pmic_usb_init: Set DCDC1 Voltage to 3.3V
 pmic_write: reg=0x20, val=0x11
 a64_rsb_write: rt_addr=0x2d, reg_addr=0x20, value=0x11
 pmic_clrsetbits: reg=0x10, clr_mask=0x0, set_mask=0x1
 a64_rsb_read: rt_addr=0x2d, reg_addr=0x10
 a64_rsb_write: rt_addr=0x2d, reg_addr=0x10, value=0x37
-a64_usbhost_initialize: Status=0
-a64_usbhost_initialize: Wait 1000 ms
-a64_usbhost_initialize: Status=0
-a64_usbhost_initialize: Configure PWR_BAT (PL7) for Output
+pinephone_modem_init: Status=0
+pinephone_modem_init: Wait 1000 ms
+pinephone_modem_init: Status=0
+pinephone_modem_init: Configure PWR_BAT (PL7) for Output
 a64_pio_config: port=8, pin=7, ext=-1, cfgaddr=0x1f02c00, value=1, shift=28
-a64_usbhost_initialize: Set PWR_BAT (PL7) to High
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Wait 1000 ms
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Configure RESET_N (PC4) for Output
+pinephone_modem_init: Set PWR_BAT (PL7) to High
+pinephone_modem_init: Status=1
+pinephone_modem_init: Wait 1000 ms
+pinephone_modem_init: Status=1
+pinephone_modem_init: Configure RESET_N (PC4) for Output
 a64_pio_config: port=2, pin=4, ext=-1, cfgaddr=0x1c20848, value=1, shift=16
-a64_usbhost_initialize: Set RESET_N (PC4) to High
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Configure PWRKEY (PB3) for Output
+pinephone_modem_init: Set RESET_N (PC4) to High
+pinephone_modem_init: Status=1
+pinephone_modem_init: Configure PWRKEY (PB3) for Output
 a64_pio_config: port=1, pin=3, ext=0, cfgaddr=0x1c20824, value=1, shift=12
-a64_usbhost_initialize: Set PWRKEY (PB3) to High
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Wait 30 ms for VBAT to be stable
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Set PWRKEY (PB3) to Low
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Wait 500 ms
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Set PWRKEY (PB3) to High
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Configure W_DISABLE (PH8) for Output
+pinephone_modem_init: Set PWRKEY (PB3) to High
+pinephone_modem_init: Status=1
+pinephone_modem_init: Wait 30 ms for VBAT to be stable
+pinephone_modem_init: Status=1
+pinephone_modem_init: Set PWRKEY (PB3) to Low
+pinephone_modem_init: Status=1
+pinephone_modem_init: Wait 500 ms
+pinephone_modem_init: Status=1
+pinephone_modem_init: Set PWRKEY (PB3) to High
+pinephone_modem_init: Status=1
+pinephone_modem_init: Configure W_DISABLE (PH8) for Output
 a64_pio_config: port=7, pin=8, ext=2, cfgaddr=0x1c20900, value=1, shift=0
-a64_usbhost_initialize: Set W_DISABLE (PH8) to High
-a64_usbhost_initialize: Status=1
+pinephone_modem_init: Set W_DISABLE (PH8) to High
+pinephone_modem_init: Status=1
 a64_pio_config: port=3, pin=18, ext=-1, cfgaddr=0x1c20874, value=1, shift=8
 a64_pio_config: port=3, pin=19, ext=-1, cfgaddr=0x1c20874, value=1, shift=12
 a64_pio_config: port=3, pin=20, ext=-1, cfgaddr=0x1c20874, value=1, shift=16
-a64_usbhost_initialize: Green LED
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Red LED
-a64_usbhost_initialize: Status=1
-a64_usbhost_initialize: Blue LED
-a64_usbhost_initialize: Status=1
-nshe:h cmik_fwaatiftse:r :c oemhmcain_dw aniotte rf:o u nRdu
-n
-n
-i
-nNgu
-t
-taS6h4e_lwla i(tN:S HW)a iNtu tftoXr- 1c2o.n0n.e3c
-t
- n/s hd>i s.c[oKnnect
+pinephone_modem_init: Turn on Green LED
+pinephone_modem_init: Status=1
+pinephone_modem_init: Turn on Red LED
+pinephone_modem_init: Status=1
+pinephone_modem_init: Turn on Blue LED
+pinephone_modem_init: Status=1
+nsh: mkfatfs: command not found
 
+NuttShell (NSH) NuttX-12.0.3
 nsh> 
-nsh> uname -a
-NuttX 12.0.3 4d922be-dirty Mar  7 2023 15:54:47 arm64 pinephone
+nsh> 
+nsh> ls
+/:
+ dev/
+ etc/
+ proc/
+nsh> 
+nsh> ls /dev
+/dev:
+ console
+ fb0
+ input0
+ null
+ ram0
+ ram2
+ ttyS0
+ ttyS1
+ userleds
+ zero
 nsh> 
 nsh> 
 
