@@ -587,20 +587,23 @@ static void a64_uart_shutdown(struct uart_dev_s *dev)
 static int a64_uart_attach(struct uart_dev_s *dev)
 {
   int ret;
+  const struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
+
+  DEBUGASSERT(port != NULL);
 
   /* Attach UART Interrupt Handler */
 
-  ret = irq_attach(CONFIG_A64_UART_IRQ, a64_uart_irq_handler, dev);
+  ret = irq_attach(port->irq_num, a64_uart_irq_handler, dev);
 
   /* Set Interrupt Priority in Generic Interrupt Controller v2 */
 
-  arm64_gic_irq_set_priority(CONFIG_A64_UART_IRQ, IRQ_TYPE_LEVEL, 0);
+  arm64_gic_irq_set_priority(port->irq_num, IRQ_TYPE_LEVEL, 0);
 
   /* Enable UART Interrupt */
 
   if (ret == OK)
     {
-      up_enable_irq(CONFIG_A64_UART_IRQ);
+      up_enable_irq(port->irq_num);
     }
   else
     {
@@ -628,13 +631,17 @@ static int a64_uart_attach(struct uart_dev_s *dev)
 
 static void a64_uart_detach(struct uart_dev_s *dev)
 {
+  const struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
+
+  DEBUGASSERT(port != NULL);
+
   /* Disable UART Interrupt */
 
-  up_disable_irq(CONFIG_A64_UART_IRQ);
+  up_disable_irq(port->irq_num);
 
   /* Detach UART Interrupt Handler */
 
-  irq_detach(CONFIG_A64_UART_IRQ);
+  irq_detach(port->irq_num);
 }
 
 /***************************************************************************
