@@ -1110,14 +1110,23 @@ void arm64_serialinit(void)
 #ifdef CONFIG_A64_UART3 ////
   // TODO: Enable power to UART3
 
-  // TODO: Enable clocking to UART3: Set UART3_GATING to High (Pass)
+  // Enable clocking to UART3: Set UART3_GATING to High (Pass)
   // CCU Base Address: 0x01C20000
   // Bus Clock Gating Register3
   // Offset: 0x006C, Register Name: BUS_CLK_GATING_REG3
   // Bit 19
   // A64 User Manual Page 105
+  #define CCU_BASE_ADDR 0x01C20000
+  #define BUS_CLK_GATING_REG3 (CCU_BASE_ADDR + 0x006C)
+  #define UART3_GATING (2 << 19)
+  uint32_t before = getreg32(BUS_CLK_GATING_REG3) & UART3_GATING;
+  modreg32(UART3_GATING, UART3_GATING, BUS_CLK_GATING_REG3);
+  uint32_t after = getreg32(BUS_CLK_GATING_REG3) & UART3_GATING;
+  _info("Enable clocking to UART3: Set UART3_GATING to High (Pass): addr=0x%x, before=0x%x, after=0x%x\n", BUS_CLK_GATING_REG3, before, after);
 
   // Compare with UART0_GATING (Bit 16)
+  #define UART0_GATING (2 << 16)
+  _info("Compare with UART0_GATING: addr=0x%x, val=0x%x\n", BUS_CLK_GATING_REG3, getreg32(BUS_CLK_GATING_REG3) & UART0_GATING);
 
   // TODO: Deassert reset: Set UART3_RST to High
   // CCU Base Address: 0x01C20000
