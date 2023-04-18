@@ -1261,7 +1261,7 @@ Found U-Boot script /boot.scr
 653 bytes read in 3 ms (211.9 KiB/s)
 ## Executing script at 4fc00000
 gpio: pin 114 (gpio 114) value is 1
-360517 bytes read in 20 ms (17.2 MiB/s)
+360624 bytes read in 20 ms (17.2 MiB/s)
 Uncompressed size: 10543104 = 0xA0E000
 36162 bytes read in 4 ms (8.6 MiB/s)
 1078500 bytes read in 50 ms (20.6 MiB/s)
@@ -1272,6 +1272,9 @@ Uncompressed size: 10543104 = 0xA0E000
 
 Starting kernel ...
 
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=8
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=12
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=16
 up_setup: baud_rate=115200
 up_setup: Clear fifos
 up_serialout: addr=0x1c28008, before=0xc1, after=0x6
@@ -1292,8 +1295,16 @@ arm64_serialinit: Enable clocking to UART3: Set UART3_GATING to High (Pass): add
 arm64_serialinit: Compare with UART0_GATING: addr=0x1c2006c, val=0x10000
 arm64_serialinit: Deassert reset for UART3: Set UART3_RST to High: addr=0x1c202d8, before=0x0, after=0x80000
 arm64_serialinit: Compare with UART0_RST: addr=0x1c202d8, val=0x10000
+a64_pio_config: cfgaddr=0x1c2086c, value=3, shift=0
+a64_pio_config: cfgaddr=0x1c2086c, value=3, shift=4
 arm64_serialinit: Enable UART3 on PD0: PD0_SELECT: addr=0x1c2086c, before=0x0, after=0x0
 arm64_serialinit: Enable UART3 on PD1: PD0_SELECT: addr=0x1c2086c, before=0x0, after=0x0
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=8
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=12
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=16
+a64_pio_config: cfgaddr=0x1f02c04, value=2, shift=8
+a64_pio_config: cfgaddr=0x1c20900, value=1, shift=8
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=28
 pinephone_pmic_init: Set DLDO1 Voltage to 3.3V
 pmic_write: reg=0x15, val=0x1a
 a64_rsb_write: rt_addr=0x2d, reg_addr=0x15, value=0x1a
@@ -1312,6 +1323,9 @@ a64_rsb_write: rt_addr=0x2d, reg_addr=0x16, value=0xb
 pmic_clrsetbits: reg=0x12, clr_mask=0x0, set_mask=0x10
 a64_rsb_read: rt_addr=0x2d, reg_addr=0x12
 a64_rsb_write: rt_addr=0x2d, reg_addr=0x12, value=0xd9
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=28
+a64_pio_config: cfgaddr=0x1c208fc, value=2, shift=0
+a64_pio_config: cfgaddr=0x1c208fc, value=2, shift=4
 a64_usbhost_clk_enable: CLK_USB_PHY0
 set_bit: 0x1c200cc Bit 8
 a64_usbhost_clk_enable: CLK_USB_PHY1
@@ -1372,6 +1386,7 @@ a64_ehci_initialize: TODO: a64_usbhost_vbusdrive
 a64_printreg: 01c1b054->00001000
 EHCI USB EHCI Initialized
 a64_usbhost_initialize: 1
+a64_pio_config: cfgaddr=0x1c20900, value=0, shift=4
 a64_usbhost_initialize: Status=0
 pinephone_pmic_usb_init: Set DCDC1 Voltage to 3.3V
 pmic_write: reg=0x20, val=0x11
@@ -1383,14 +1398,17 @@ a64_usbhost_initialize: Status=0
 a64_usbhost_initialize: Wait 1000 ms
 a64_usbhost_initialize: Status=0
 a64_usbhost_initialize: Configure PWR_BAT (PL7) for Output
+a64_pio_config: cfgaddr=0x1f02c00, value=1, shift=28
 a64_usbhost_initialize: Set PWR_BAT (PL7) to High
 a64_usbhost_initialize: Status=1
 a64_usbhost_initialize: Wait 1000 ms
 a64_usbhost_initialize: Status=1
 a64_usbhost_initialize: Configure RESET_N (PC4) for Output
+a64_pio_config: cfgaddr=0x1c20848, value=1, shift=16
 a64_usbhost_initialize: Set RESET_N (PC4) to High
 a64_usbhost_initialize: Status=1
 a64_usbhost_initialize: Configure PWRKEY (PB3) for Output
+a64_pio_config: cfgaddr=0x1c20824, value=1, shift=12
 a64_usbhost_initialize: Set PWRKEY (PB3) to High
 a64_usbhost_initialize: Status=1
 a64_usbhost_initialize: Wait 30 ms for VBAT to be stable
@@ -1402,8 +1420,12 @@ a64_usbhost_initialize: Status=1
 a64_usbhost_initialize: Set PWRKEY (PB3) to High
 a64_usbhost_initialize: Status=1
 a64_usbhost_initialize: Configure W_DISABLE (PH8) for Output
+a64_pio_config: cfgaddr=0x1c20900, value=1, shift=0
 a64_usbhost_initialize: Set W_DISABLE (PH8) to High
 a64_usbhost_initialize: Status=1
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=8
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=12
+a64_pio_config: cfgaddr=0x1c20874, value=1, shift=16
 a64_usbhost_initialize: Green LED
 a64_usbhost_initialize: Status=1
 a64_usbhost_initialize: Red LED
