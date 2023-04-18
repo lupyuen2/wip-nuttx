@@ -253,7 +253,7 @@ int a64_pio_config(pio_pinset_t cfgset)
   value = (cfgset & PIO_MODE_MASK) >> PIO_MODE_SHIFT;
   shift = (pin & 7) << 2;
 
-  _info("cfgaddr=0x%x, value=%d, shift=%d\n", cfgaddr, value, shift);////
+  _info("port=%d, pin=%d, ext=%d, cfgaddr=0x%x, value=%d, shift=%d\n", port, pin, ext, cfgaddr, value, shift);////
   regval = getreg32(cfgaddr);
   regval &= ~(7 << shift);
   regval |= (value << shift);
