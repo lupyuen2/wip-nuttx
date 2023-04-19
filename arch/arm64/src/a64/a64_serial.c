@@ -288,8 +288,6 @@ static inline uint32_t up_serialin(const struct a64_uart_config *config, int off
 static inline void up_serialout(const struct a64_uart_config *config, int offset,
                                 uint32_t value)
 {
-  uint32_t before = getreg32(config->uart + offset); ////
-  _info("addr=0x%x, before=0x%x, after=0x%x\n", config->uart + offset, before, value); ////
   putreg32(value, config->uart + offset);
 }
 
@@ -483,20 +481,28 @@ static int up_setup(struct uart_dev_s *dev)
 
   /* Enter DLAB=1 */
 
-  _info("Enter DLAB=1"); ////
+  _info("Enter DLAB=1 and set BAUD divisor"); ////
   up_serialout(config, A1X_UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
   /* Set the BAUD divisor */
 
-  _info("Set the BAUD divisor"); ////
+  uint32_t before0 = getreg32(config->uart + A1X_UART_DLH_OFFSET); ////
+  uint32_t before1 = getreg32(config->uart + A1X_UART_DLL_OFFSET); ////
+
   dl = a64_uartdl(data->baud_rate);
   up_serialout(config, A1X_UART_DLH_OFFSET, dl >> 8);
   up_serialout(config, A1X_UART_DLL_OFFSET, dl & 0xff);
 
+  uint32_t after0 = getreg32(config->uart + A1X_UART_DLH_OFFSET); ////
+  uint32_t after1 = getreg32(config->uart + A1X_UART_DLL_OFFSET); ////
+
   /* Clear DLAB */
 
-  _info("Clear DLAB"); ////
   up_serialout(config, A1X_UART_LCR_OFFSET, lcr);
+  _info("Clear DLAB"); ////
+
+  _info("addr=0x%x, before=0x%x, after=0x%x\n", config->uart + A1X_UART_DLH_OFFSET, before0, after0); ////
+  _info("addr=0x%x, before=0x%x, after=0x%x\n", config->uart + A1X_UART_DLL_OFFSET, before1, after1); ////
 
   /* Configure the FIFOs */
 
