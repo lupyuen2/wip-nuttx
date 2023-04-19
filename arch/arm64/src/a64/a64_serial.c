@@ -422,23 +422,23 @@ static int up_setup(struct uart_dev_s *dev)
   uint32_t lcr;
 
   DEBUGASSERT(data != NULL);
-  _info("baud_rate=%d\n", data->baud_rate);////
+  // _info("baud_rate=%d\n", data->baud_rate);////
 
   /* Clear fifos */
 
-  _info("Clear fifos"); ////
+  // _info("Clear fifos"); ////
   up_serialout(config, A1X_UART_FCR_OFFSET,
               (UART_FCR_RFIFOR | UART_FCR_XFIFOR));
 
   /* Set trigger */
 
-  _info("Set trigger"); ////
+  // _info("Set trigger"); ////
   up_serialout(config, A1X_UART_FCR_OFFSET,
               (UART_FCR_FIFOE | UART_FCR_RT_HALF));
 
   /* Set up the IER */
 
-  _info("Set up the IER"); ////
+  // _info("Set up the IER"); ////
   data->ier = up_serialin(config, A1X_UART_IER_OFFSET);
 
   /* Set up the LCR */
@@ -481,9 +481,24 @@ static int up_setup(struct uart_dev_s *dev)
 
   /* Enter DLAB=1 */
 
-  _info("Enter DLAB=1 and set BAUD divisor"); ////
+  // _info("Enter DLAB=1 and set BAUD divisor"); ////
+
+  // Wait for UART not busy: UART_USR[0] must be zero
+  for (;;)
+    {
+      uint32_t status = getreg32(config->uart + A1X_UART_USR_OFFSET); ////
+      if ((status & 1) == 0) { break; }
+    }
+  
   up_serialout(config, A1X_UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
+  // Wait for UART not busy: UART_USR[0] must be zero
+  for (;;)
+    {
+      uint32_t status = getreg32(config->uart + A1X_UART_USR_OFFSET); ////
+      if ((status & 1) == 0) { break; }
+    }
+  
   /* Set the BAUD divisor */
 
   uint32_t before0 = getreg32(config->uart + A1X_UART_DLH_OFFSET); ////
