@@ -230,6 +230,7 @@ int pinephone_modem_init(void)
 
   // Read PH9 to check LTE Modem Status
   #define STATUS (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN9)
+  _info("Configure STATUS (PH9) for Input\n");
   ret = a64_pio_config(STATUS);
   DEBUGASSERT(ret == OK);
   _info("Status=%d\n", a64_pio_read(STATUS));
