@@ -329,33 +329,33 @@ int pinephone_modem_init(void)
   /* Blue LED on PD20 */
   #define BLUE_LED (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN20)
 
-  ret = a64_pio_config(GREEN_LED);
-  DEBUGASSERT(ret >= 0);
-  ret = a64_pio_config(RED_LED);
-  DEBUGASSERT(ret >= 0);
-  ret = a64_pio_config(BLUE_LED);
-  DEBUGASSERT(ret >= 0);
+  // ret = a64_pio_config(GREEN_LED);
+  // DEBUGASSERT(ret >= 0);
+  // ret = a64_pio_config(RED_LED);
+  // DEBUGASSERT(ret >= 0);
+  // ret = a64_pio_config(BLUE_LED);
+  // DEBUGASSERT(ret >= 0);
 
-  _info("Turn on Green LED");
-  a64_pio_write(GREEN_LED, true);
-  a64_pio_write(RED_LED, false);
-  a64_pio_write(BLUE_LED, false);
-  up_mdelay(2000);
-  _info("Status=%d\n", a64_pio_read(STATUS));
+  // _info("Turn on Green LED");
+  // a64_pio_write(GREEN_LED, true);
+  // a64_pio_write(RED_LED, false);
+  // a64_pio_write(BLUE_LED, false);
+  // up_mdelay(2000);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
 
-  _info("Turn on Red LED");
-  a64_pio_write(GREEN_LED, false);
-  a64_pio_write(RED_LED, true);
-  a64_pio_write(BLUE_LED, false);
-  up_mdelay(2000);
-  _info("Status=%d\n", a64_pio_read(STATUS));
+  // _info("Turn on Red LED");
+  // a64_pio_write(GREEN_LED, false);
+  // a64_pio_write(RED_LED, true);
+  // a64_pio_write(BLUE_LED, false);
+  // up_mdelay(2000);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
 
-  _info("Turn on Blue LED");
-  a64_pio_write(GREEN_LED, false);
-  a64_pio_write(RED_LED, false);
-  a64_pio_write(BLUE_LED, true);
-  up_mdelay(2000);
-  _info("Status=%d\n", a64_pio_read(STATUS));
+  // _info("Turn on Blue LED");
+  // a64_pio_write(GREEN_LED, false);
+  // a64_pio_write(RED_LED, false);
+  // a64_pio_write(BLUE_LED, true);
+  // up_mdelay(2000);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
 
   return OK;
 }
