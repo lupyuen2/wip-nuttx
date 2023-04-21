@@ -274,7 +274,16 @@ int pinephone_modem_init(void)
   a64_pio_write(RESET_N, true);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  // TODO: Set DTR (PB2) to Low to wake up modem
+  // Set DTR (PB2) to Low to wake up modem
+
+  #define DTR (P_OUTPUT | PIO_PORT_PIOB | PIO_PIN2)
+  _info("Configure DTR (PB2) for Output\n");
+  ret = a64_pio_config(DTR);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set DTR (PB2) to Low to wake up modem\n");
+  a64_pio_write(DTR, false);
+  _info("Status=%d\n", a64_pio_read(STATUS));
 
   // Set PB3 to Power On LTE Modem (BB-PWRKEY / PWRKEY).
   // PWRKEY should be pulled down at least 500 ms, then pulled up.
@@ -316,18 +325,28 @@ int pinephone_modem_init(void)
   a64_pio_write(W_DISABLE, true);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  // TODO: Test CTS / RTS: Pull RTS (PD4 Output) to Low,
+  // Test CTS / RTS: Pull RTS (PD4 Output) to Low,
   // check whether CTS (PD5 Input) gets pulled to High
 
-  // TODO: Read CTS (PD5 Input)
+  // TODO: Read CTS (PD5)
+  #define CTS (PIO_INPUT | PIO_PORT_PIOD | PIO_PIN5)
+  ret = a64_pio_config(CTS);
+  DEBUGASSERT(ret == OK);
+  _info("CTS=%d\n", a64_pio_read(CTS));
 
-  // TODO: Set RTS (PD4 Output) to Low
+  // TODO: Set RTS (PD4) to Low
 
-  // TODO: Read CTS (PD5 Input)
+  #define RTS (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN4)
+  _info("Configure RTS (PD4) for Output\n");
+  ret = a64_pio_config(RTS);
+  DEBUGASSERT(ret >= 0);
 
+  _info("Set RTS (PD4) to Low\n");
+  a64_pio_write(RTS, false);
 
-
-
+  // TODO: Read CTS (PD5)
+  _info("CTS=%d\n", a64_pio_read(CTS));
+  _info("Status=%d\n", a64_pio_read(STATUS));
 
   // TODO: Read PL6 to handle Ring Indicator / [Unsolicited Result Code](https://embeddedfreak.wordpress.com/2008/08/19/handling-urc-unsolicited-result-code-in-hayes-at-command/)
 
