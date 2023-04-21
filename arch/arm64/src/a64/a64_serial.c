@@ -721,6 +721,18 @@ static int a64_uart_ioctl(struct file *filep, int cmd, unsigned long arg)
 
 static int a64_uart_receive(struct uart_dev_s *dev, unsigned int *status)
 {
+  struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
+  const struct a64_uart_config *config = &port->config;
+  uint32_t rbr;
+
+  *status = up_serialin(config, A1X_UART_LSR_OFFSET);
+  rbr     = up_serialin(config, A1X_UART_RBR_OFFSET);
+  return rbr;
+}
+
+#ifdef NOTUSED ////
+static int a64_uart_receive(struct uart_dev_s *dev, unsigned int *status)
+{
   const struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
   const struct a64_uart_config *config = &port->config;
 
@@ -732,6 +744,7 @@ static int a64_uart_receive(struct uart_dev_s *dev, unsigned int *status)
 
   return getreg8(UART_RBR(config->uart));
 }
+#endif  // NOTUSED
 
 /***************************************************************************
  * Name: a64_uart_rxint
