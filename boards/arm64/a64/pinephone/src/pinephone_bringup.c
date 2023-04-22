@@ -271,11 +271,7 @@ int pinephone_modem_init(void)
   ret = a64_pio_config(RESET_N);
   DEBUGASSERT(ret >= 0);
 
-  // _info("Set RESET_N (PC4) to High\n");
-  // a64_pio_write(RESET_N, true);
-  // _info("Status=%d\n", a64_pio_read(STATUS));
-
-  _info("TESTING: Set RESET_N (PC4) to Low\n");
+  _info("Set RESET_N (PC4) to Low\n");
   a64_pio_write(RESET_N, false);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
@@ -324,23 +320,6 @@ int pinephone_modem_init(void)
   _info("Set PWRKEY (PB3) to Low\n");
   a64_pio_write(PWRKEY, false);
   _info("Status=%d\n", a64_pio_read(STATUS));
-
-  // Wait 2000 ms for VBAT to be stable
-  // _info("Wait 2000 ms for VBAT to be stable\n");
-  // up_mdelay(2000);
-  // _info("Status=%d\n", a64_pio_read(STATUS));
-
-  // _info("Set PWRKEY (PB3) to Low\n");
-  // a64_pio_write(PWRKEY, false);
-  // _info("Status=%d\n", a64_pio_read(STATUS));
-
-  // _info("Wait 2000 ms\n");
-  // up_mdelay(2000);
-  // _info("Status=%d\n", a64_pio_read(STATUS));
-
-  // _info("Set PWRKEY (PB3) to High\n");
-  // a64_pio_write(PWRKEY, true);
-  // _info("Status=%d\n", a64_pio_read(STATUS));
 
   // Set PH8 to High to Enable LTE Modem and Disable Airplane Mode (BB-DISABLE / W_DISABLE#)
 
