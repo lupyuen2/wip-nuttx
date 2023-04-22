@@ -248,7 +248,7 @@ int pinephone_modem_init(void)
   a64_pio_write(PWR_BAT, true);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  // Set PC4 to High to Deassert LTE Modem Reset (BB-RESET / RESET_N)
+  // Set PC4 to Low to Deassert LTE Modem Reset (BB-RESET / RESET_N)
 
   #define RESET_N (P_OUTPUT | PIO_PORT_PIOC | PIO_PIN4)
   _info("Configure RESET_N (PC4) for Output\n");
