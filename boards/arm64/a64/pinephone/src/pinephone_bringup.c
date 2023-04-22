@@ -255,8 +255,12 @@ int pinephone_modem_init(void)
   ret = a64_pio_config(PWR_BAT);
   DEBUGASSERT(ret >= 0);
 
-  _info("Set PWR_BAT (PL7) to High\n");
-  a64_pio_write(PWR_BAT, true);
+  // _info("Set PWR_BAT (PL7) to High\n");
+  // a64_pio_write(PWR_BAT, true);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("TESTING: Set PWR_BAT (PL7) to Low\n");
+  a64_pio_write(PWR_BAT, false);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   // Wait 1000 ms
