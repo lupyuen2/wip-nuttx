@@ -271,8 +271,23 @@ int pinephone_modem_init(void)
   ret = a64_pio_config(RESET_N);
   DEBUGASSERT(ret >= 0);
 
-  _info("Set RESET_N (PC4) to High\n");
-  a64_pio_write(RESET_N, true);
+  // _info("Set RESET_N (PC4) to High\n");
+  // a64_pio_write(RESET_N, true);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("TESTING: Set RESET_N (PC4) to Low\n");
+  a64_pio_write(RESET_N, false);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set AP-READY (PH7) to Low to wake up modem
+
+  #define AP_READY (P_OUTPUT | PIO_PORT_PIOH | PIO_PIN7)
+  _info("Configure AP-READY (PH7) for Output\n");
+  ret = a64_pio_config(AP_READY);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set AP-READY (PH7) to Low to wake up modem\n");
+  a64_pio_write(AP_READY, false);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   // Set DTR (PB2) to Low to wake up modem
@@ -284,6 +299,10 @@ int pinephone_modem_init(void)
 
   _info("Set DTR (PB2) to Low to wake up modem\n");
   a64_pio_write(DTR, false);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Wait 30 ms\n");
+  up_mdelay(30);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   // Set PB3 to Power On LTE Modem (BB-PWRKEY / PWRKEY).
@@ -298,22 +317,30 @@ int pinephone_modem_init(void)
   a64_pio_write(PWRKEY, true);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  // Wait 2000 ms for VBAT to be stable
-  _info("Wait 2000 ms for VBAT to be stable\n");
-  up_mdelay(2000);
+  _info("Wait 600 ms\n");
+  up_mdelay(600);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   _info("Set PWRKEY (PB3) to Low\n");
   a64_pio_write(PWRKEY, false);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  _info("Wait 2000 ms\n");
-  up_mdelay(2000);
-  _info("Status=%d\n", a64_pio_read(STATUS));
+  // Wait 2000 ms for VBAT to be stable
+  // _info("Wait 2000 ms for VBAT to be stable\n");
+  // up_mdelay(2000);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
 
-  _info("Set PWRKEY (PB3) to High\n");
-  a64_pio_write(PWRKEY, true);
-  _info("Status=%d\n", a64_pio_read(STATUS));
+  // _info("Set PWRKEY (PB3) to Low\n");
+  // a64_pio_write(PWRKEY, false);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // _info("Wait 2000 ms\n");
+  // up_mdelay(2000);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // _info("Set PWRKEY (PB3) to High\n");
+  // a64_pio_write(PWRKEY, true);
+  // _info("Status=%d\n", a64_pio_read(STATUS));
 
   // Set PH8 to High to Enable LTE Modem and Disable Airplane Mode (BB-DISABLE / W_DISABLE#)
 
@@ -350,8 +377,6 @@ int pinephone_modem_init(void)
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   // TODO: Read PL6 to handle Ring Indicator / [Unsolicited Result Code](https://embeddedfreak.wordpress.com/2008/08/19/handling-urc-unsolicited-result-code-in-hayes-at-command/)
-
-  // TODO: Set PH7 to High or Low for Sleep State
 
   // Poll for Modem Status while switching on RGB LEDs
 
