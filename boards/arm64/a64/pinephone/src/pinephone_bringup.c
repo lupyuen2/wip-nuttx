@@ -241,9 +241,9 @@ int pinephone_modem_init(void)
   DEBUGASSERT(ret == OK);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  // Wait 1000 ms
-  _info("Wait 1000 ms\n");
-  up_mdelay(1000);
+  // Wait 2000 ms
+  _info("Wait 2000 ms\n");
+  up_mdelay(2000);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   // Set PL7 to High to Power On LTE Modem (4G-PWR-BAT)
@@ -259,9 +259,9 @@ int pinephone_modem_init(void)
   a64_pio_write(PWR_BAT, true);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  // Wait 1000 ms
-  _info("Wait 1000 ms\n");
-  up_mdelay(1000);
+  // Wait 2000 ms
+  _info("Wait 2000 ms\n");
+  up_mdelay(2000);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   // Set PC4 to High to Deassert LTE Modem Reset (BB-RESET / RESET_N)
@@ -298,17 +298,17 @@ int pinephone_modem_init(void)
   a64_pio_write(PWRKEY, true);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  // Wait 30 ms for VBAT to be stable
-  _info("Wait 30 ms for VBAT to be stable\n");
-  up_mdelay(30);
+  // Wait 2000 ms for VBAT to be stable
+  _info("Wait 2000 ms for VBAT to be stable\n");
+  up_mdelay(2000);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   _info("Set PWRKEY (PB3) to Low\n");
   a64_pio_write(PWRKEY, false);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  _info("Wait 500 ms\n");
-  up_mdelay(500);
+  _info("Wait 2000 ms\n");
+  up_mdelay(2000);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
   _info("Set PWRKEY (PB3) to High\n");
