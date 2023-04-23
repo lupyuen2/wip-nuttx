@@ -319,66 +319,31 @@ int pinephone_modem_init(void)
   // Test CTS / RTS: Pull RTS (PD4 Output) to Low,
   // check whether CTS (PD5 Input) gets pulled to High
 
-  // TODO: Read CTS (PD5)
+  // Read CTS (PD5)
   #define CTS (PIO_INPUT | PIO_PORT_PIOD | PIO_PIN5)
   ret = a64_pio_config(CTS);
   DEBUGASSERT(ret == OK);
   _info("CTS=%d\n", a64_pio_read(CTS));
 
-  // TODO: Set RTS (PD4) to Low
-
+  // Set RTS (PD4) to Low
   #define RTS (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN4)
   _info("Configure RTS (PD4) for Output\n");
-  ret = a64_pio_config(RTS);
-  DEBUGASSERT(ret >= 0);
-
+  ret = a64_pio_config(RTS); DEBUGASSERT(ret >= 0);
   _info("Set RTS (PD4) to Low\n");
   a64_pio_write(RTS, false);
 
-  // TODO: Read CTS (PD5)
+  // Read CTS (PD5)
   _info("CTS=%d\n", a64_pio_read(CTS));
   _info("Status=%d\n", a64_pio_read(STATUS));
 
+  // Poll for Modem Status for 1 minute
+  for (int i = 0; i < 30; i++)
+    {
+      _info("Status=%d\n", a64_pio_read(STATUS));
+      up_mdelay(2000);  // Wait 2 seconds
+    }
+
   // TODO: Read PL6 to handle Ring Indicator / [Unsolicited Result Code](https://embeddedfreak.wordpress.com/2008/08/19/handling-urc-unsolicited-result-code-in-hayes-at-command/)
-
-  // Poll for Modem Status while switching on RGB LEDs
-
-  /* Green LED on PD18 */
-  #define GREEN_LED (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN18)
-
-  /* Red LED on PD19 */
-  #define RED_LED (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN19)
-
-  /* Blue LED on PD20 */
-  #define BLUE_LED (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN20)
-
-  // ret = a64_pio_config(GREEN_LED);
-  // DEBUGASSERT(ret >= 0);
-  // ret = a64_pio_config(RED_LED);
-  // DEBUGASSERT(ret >= 0);
-  // ret = a64_pio_config(BLUE_LED);
-  // DEBUGASSERT(ret >= 0);
-
-  // _info("Turn on Green LED");
-  // a64_pio_write(GREEN_LED, true);
-  // a64_pio_write(RED_LED, false);
-  // a64_pio_write(BLUE_LED, false);
-  // up_mdelay(2000);
-  // _info("Status=%d\n", a64_pio_read(STATUS));
-
-  // _info("Turn on Red LED");
-  // a64_pio_write(GREEN_LED, false);
-  // a64_pio_write(RED_LED, true);
-  // a64_pio_write(BLUE_LED, false);
-  // up_mdelay(2000);
-  // _info("Status=%d\n", a64_pio_read(STATUS));
-
-  // _info("Turn on Blue LED");
-  // a64_pio_write(GREEN_LED, false);
-  // a64_pio_write(RED_LED, false);
-  // a64_pio_write(BLUE_LED, true);
-  // up_mdelay(2000);
-  // _info("Status=%d\n", a64_pio_read(STATUS));
 
   return OK;
 }
