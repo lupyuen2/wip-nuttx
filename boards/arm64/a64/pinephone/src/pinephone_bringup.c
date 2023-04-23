@@ -316,14 +316,14 @@ int pinephone_modem_init(void)
   a64_pio_write(W_DISABLE, true);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
-  // Poll for Modem Status until it becomes 0
+  // Poll for Modem Status until it becomes Low
   for (int i = 0; i < 30; i++)  // Max 1 minute
     {
       // Read the Modem Status
       uint32_t status = a64_pio_read(STATUS);
       _info("Status=%d\n", status);
 
-      // Stop if Modem Status is 0
+      // Stop if Modem Status is Low
       if (status == 0) { break; }
 
       // Wait 2 seconds
