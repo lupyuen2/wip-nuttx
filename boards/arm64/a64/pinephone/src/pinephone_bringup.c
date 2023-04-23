@@ -316,6 +316,20 @@ int pinephone_modem_init(void)
   a64_pio_write(W_DISABLE, true);
   _info("Status=%d\n", a64_pio_read(STATUS));
 
+  // Poll for Modem Status until it becomes 0
+  for (int i = 0; i < 30; i++)  // Max 1 minute
+    {
+      // Read the Modem Status
+      uint32_t status = a64_pio_read(STATUS);
+      _info("Status=%d\n", status);
+
+      // Stop if Modem Status is 0
+      if (status == 0) { break; }
+
+      // Wait 2 seconds
+      up_mdelay(2000);
+    }
+
   // Test CTS / RTS: Pull RTS (PD4 Output) to Low,
   // check whether CTS (PD5 Input) gets pulled to High
 
@@ -335,13 +349,6 @@ int pinephone_modem_init(void)
   // Read CTS (PD5)
   _info("CTS=%d\n", a64_pio_read(CTS));
   _info("Status=%d\n", a64_pio_read(STATUS));
-
-  // Poll for Modem Status for 1 minute
-  for (int i = 0; i < 30; i++)
-    {
-      _info("Status=%d\n", a64_pio_read(STATUS));
-      up_mdelay(2000);  // Wait 2 seconds
-    }
 
   // TODO: Read PL6 to handle Ring Indicator / [Unsolicited Result Code](https://embeddedfreak.wordpress.com/2008/08/19/handling-urc-unsolicited-result-code-in-hayes-at-command/)
 
