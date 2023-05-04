@@ -26,6 +26,7 @@
 #include <nuttx/kmalloc.h>
 #include <sys/types.h>
 #include <syslog.h>
+#include <debug.h>
 #include "a64_twi.h"
 #include "pinephone.h"
 #include "pinephone_pmic.h"
@@ -204,6 +205,143 @@ int pinephone_bringup(void)
     }
 #endif
 
+  // Init PinePhone LTE Modem
+  int pinephone_modem_init(void);
+  ret = pinephone_modem_init();
+  DEBUGASSERT(ret == OK);
+
   UNUSED(ret);
+  return OK;
+}
+
+// Init PinePhone LTE Modem
+int pinephone_modem_init(void)
+{
+  int ret;
+
+  // Read PH9 to check LTE Modem Status
+  #define STATUS (PIO_INPUT | PIO_PORT_PIOH | PIO_PIN9)
+  _info("Configure STATUS (PH9) for Input\n");
+  ret = a64_pio_config(STATUS);
+  DEBUGASSERT(ret == OK);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set PL7 to High to Power On LTE Modem (4G-PWR-BAT)
+
+  #define P_OUTPUT (PIO_OUTPUT | PIO_PULL_NONE | PIO_DRIVE_MEDLOW | \
+                   PIO_INT_NONE | PIO_OUTPUT_SET)
+  #define PWR_BAT (P_OUTPUT | PIO_PORT_PIOL | PIO_PIN7)
+  _info("Configure PWR_BAT (PL7) for Output\n");
+  ret = a64_pio_config(PWR_BAT);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set PWR_BAT (PL7) to High\n");
+  a64_pio_write(PWR_BAT, true);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set PC4 to Low to Deassert LTE Modem Reset (BB-RESET / RESET_N)
+
+  #define RESET_N (P_OUTPUT | PIO_PORT_PIOC | PIO_PIN4)
+  _info("Configure RESET_N (PC4) for Output\n");
+  ret = a64_pio_config(RESET_N);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set RESET_N (PC4) to Low\n");
+  a64_pio_write(RESET_N, false);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set AP-READY (PH7) to Low to wake up modem
+
+  #define AP_READY (P_OUTPUT | PIO_PORT_PIOH | PIO_PIN7)
+  _info("Configure AP-READY (PH7) for Output\n");
+  ret = a64_pio_config(AP_READY);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set AP-READY (PH7) to Low to wake up modem\n");
+  a64_pio_write(AP_READY, false);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set DTR (PB2) to Low to wake up modem
+
+  #define DTR (P_OUTPUT | PIO_PORT_PIOB | PIO_PIN2)
+  _info("Configure DTR (PB2) for Output\n");
+  ret = a64_pio_config(DTR);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set DTR (PB2) to Low to wake up modem\n");
+  a64_pio_write(DTR, false);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Wait 30 ms\n");
+  up_mdelay(30);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set PB3 to Power On LTE Modem (BB-PWRKEY / PWRKEY).
+  // PWRKEY should be pulled down at least 500 ms, then pulled up.
+
+  #define PWRKEY (P_OUTPUT | PIO_PORT_PIOB | PIO_PIN3)
+  _info("Configure PWRKEY (PB3) for Output\n");
+  ret = a64_pio_config(PWRKEY);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set PWRKEY (PB3) to High\n");
+  a64_pio_write(PWRKEY, true);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Wait 600 ms\n");
+  up_mdelay(600);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  _info("Set PWRKEY (PB3) to Low\n");
+  a64_pio_write(PWRKEY, false);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Set PH8 to High to Enable LTE Modem and Disable Airplane Mode (BB-DISABLE / W_DISABLE#)
+
+  #define W_DISABLE (P_OUTPUT | PIO_PORT_PIOH | PIO_PIN8)
+  _info("Configure W_DISABLE (PH8) for Output\n");
+  ret = a64_pio_config(W_DISABLE);
+  DEBUGASSERT(ret >= 0);
+
+  _info("Set W_DISABLE (PH8) to High\n");
+  a64_pio_write(W_DISABLE, true);
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // Poll for Modem Status until it becomes Low
+  for (int i = 0; i < 30; i++)  // Max 1 minute
+    {
+      // Read the Modem Status
+      uint32_t status = a64_pio_read(STATUS);
+      _info("Status=%d\n", status);
+
+      // Stop if Modem Status is Low
+      if (status == 0) { break; }
+
+      // Wait 2 seconds
+      up_mdelay(2000);
+    }
+
+  // Test CTS / RTS: Pull RTS (PD4 Output) to Low,
+  // check whether CTS (PD5 Input) gets pulled to High
+
+  // Read CTS (PD5)
+  #define CTS (PIO_INPUT | PIO_PORT_PIOD | PIO_PIN5)
+  ret = a64_pio_config(CTS);
+  DEBUGASSERT(ret == OK);
+  _info("CTS=%d\n", a64_pio_read(CTS));
+
+  // Set RTS (PD4) to Low
+  #define RTS (P_OUTPUT | PIO_PORT_PIOD | PIO_PIN4)
+  _info("Configure RTS (PD4) for Output\n");
+  ret = a64_pio_config(RTS); DEBUGASSERT(ret >= 0);
+  _info("Set RTS (PD4) to Low\n");
+  a64_pio_write(RTS, false);
+
+  // Read CTS (PD5)
+  _info("CTS=%d\n", a64_pio_read(CTS));
+  _info("Status=%d\n", a64_pio_read(STATUS));
+
+  // TODO: Read PL6 to handle Ring Indicator / [Unsolicited Result Code](https://embeddedfreak.wordpress.com/2008/08/19/handling-urc-unsolicited-result-code-in-hayes-at-command/)
+
   return OK;
 }
