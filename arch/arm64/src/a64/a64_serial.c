@@ -918,9 +918,10 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
 }
 
 #ifdef CONFIG_A64_UART1
-static inline void a64_uart1config(void)
+static int a64_uart1config(void)
 {
   irqstate_t flags;
+  int ret;
 
   /* Step 1: Enable power to UART1 */
 
@@ -935,13 +936,15 @@ static inline void a64_uart1config(void)
   a64_pio_config(PIO_UART1_TX);
   a64_pio_config(PIO_UART1_RX);
   leave_critical_section(flags);
+  return OK;
 };
-#endif
+#endif /* CONFIG_A64_UART1 */
 
 #ifdef CONFIG_A64_UART2
-static inline void a64_uart2config(void)
+static int a64_uart2config(void)
 {
   irqstate_t flags;
+  int ret;
 
   /* Step 1: Enable power to UART2 */
 
@@ -956,29 +959,91 @@ static inline void a64_uart2config(void)
   a64_pio_config(PIO_UART2_TX);
   a64_pio_config(PIO_UART2_RX);
   leave_critical_section(flags);
+  return OK;
 };
-#endif
+#endif /* CONFIG_A64_UART2 */
 
 #ifdef CONFIG_A64_UART3
-static inline void a64_uart3config(void)
+static int a64_uart3config(void)
 {
   irqstate_t flags;
+  int ret;
 
   /* Step 1: Enable power to UART3 */
 
   flags   = enter_critical_section();
-#warning Missing logic
+
+  // Enable clocking to UART3: Set UART3_GATING to High (Pass)
+  // CCU Base Address: 0x01C20000
+  // Bus Clock Gating Register3
+  // Offset: 0x006C, Register Name: BUS_CLK_GATING_REG3
+  // Bit 19
+  // A64 User Manual Page 105
+  #define CCU_BASE_ADDR 0x01C20000
+  #define BUS_CLK_GATING_REG3 (CCU_BASE_ADDR + 0x006C)
+  #define UART3_GATING (1 << 19)
+  uint32_t before = getreg32(BUS_CLK_GATING_REG3) & UART3_GATING;
+  modreg32(UART3_GATING, UART3_GATING, BUS_CLK_GATING_REG3);
+  uint32_t after = getreg32(BUS_CLK_GATING_REG3) & UART3_GATING;
+  _info("Enable clocking to UART3: Set UART3_GATING to High (Pass): addr=0x%x, before=0x%x, after=0x%x\n", BUS_CLK_GATING_REG3, before, after);
+
+  // Compare with UART0_GATING (Bit 16)
+  #define UART0_GATING (1 << 16)
+  _info("Compare with UART0_GATING: addr=0x%x, val=0x%x\n", BUS_CLK_GATING_REG3, getreg32(BUS_CLK_GATING_REG3) & UART0_GATING);
+
+  // TODO: Deassert reset for UART3: Set UART3_RST to High
+  // CCU Base Address: 0x01C20000
+  // Bus Software Reset Register 4
+  // Offset: 0x02D8, Register Name: BUS_SOFT_RST_REG4
+  // Bit 19
+  // A64 User Manual Page 142
+  #define BUS_SOFT_RST_REG4 (CCU_BASE_ADDR + 0x02D8)
+  #define UART3_RST (1 << 19)
+  before = getreg32(BUS_SOFT_RST_REG4) & UART3_RST;
+  modreg32(UART3_RST, UART3_RST, BUS_SOFT_RST_REG4);
+  after = getreg32(BUS_SOFT_RST_REG4) & UART3_RST;
+  _info("Deassert reset for UART3: Set UART3_RST to High: addr=0x%x, before=0x%x, after=0x%x\n", BUS_SOFT_RST_REG4, before, after);
+
+  // Compare with UART0_RST (Bit 16)
+  #define UART0_RST (1 << 16)
+  _info("Compare with UART0_RST: addr=0x%x, val=0x%x\n", BUS_SOFT_RST_REG4, getreg32(BUS_SOFT_RST_REG4) & UART0_RST);
+
+  // PIO Base Address: 0x01C20800
+  // PD Configure Register 0
+  // Offset: 0x6C, Register Name: PD_CFG0_REG
+  // Bits 0 to 2: PD0_SELECT
+  // Bits 4 to 6: PD1_SELECT
+  // A64 User Manual Page 385
+  #define PIO_BASE_ADDR 0x01C20800
+  #define PD_CFG0_REG (PIO_BASE_ADDR + 0x6C)
+  #define PD0_SELECT (0b111 << 0)
+  #define PD1_SELECT (0b111 << 4)
+  uint32_t before0 = getreg32(PD_CFG0_REG) & PD0_SELECT;
+  uint32_t before1 = getreg32(PD_CFG0_REG) & PD1_SELECT;
+
+  // Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
+  #define PIO_UART3_TX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN0)
+  #define PIO_UART3_RX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
+  ret = a64_pio_config(PIO_UART3_TX);
+  DEBUGASSERT(ret == OK);
+  ret = a64_pio_config(PIO_UART3_RX);
+  DEBUGASSERT(ret == OK);
+
+  uint32_t after0 = getreg32(PD_CFG0_REG) & PD0_SELECT;
+  uint32_t after1 = getreg32(PD_CFG0_REG) & PD1_SELECT;
+  _info("Enable UART3 on PD0: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before0, after0);
+  _info("Enable UART3 on PD1: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before1, after1);
 
   /* Step 2: Enable clocking to UART3 */
-#warning Missing logic
 
   /* Step 3: Configure I/O pins */
 
-  a64_pio_config(PIO_UART3_TX);
-  a64_pio_config(PIO_UART3_RX);
+  // a64_pio_config(PIO_UART3_TX);
+  // a64_pio_config(PIO_UART3_RX);
   leave_critical_section(flags);
+  return OK;
 };
-#endif
+#endif /* CONFIG_A64_UART3 */
 
 /***************************************************************************
  * Private Data
@@ -1278,79 +1343,23 @@ void arm64_serialinit(void)
     }
 
 #ifdef CONFIG_A64_UART3 ////
-  // TODO: Enable power to UART3
+  ret = a64_uart3config();
 
-  // Enable clocking to UART3: Set UART3_GATING to High (Pass)
-  // CCU Base Address: 0x01C20000
-  // Bus Clock Gating Register3
-  // Offset: 0x006C, Register Name: BUS_CLK_GATING_REG3
-  // Bit 19
-  // A64 User Manual Page 105
-  #define CCU_BASE_ADDR 0x01C20000
-  #define BUS_CLK_GATING_REG3 (CCU_BASE_ADDR + 0x006C)
-  #define UART3_GATING (1 << 19)
-  uint32_t before = getreg32(BUS_CLK_GATING_REG3) & UART3_GATING;
-  modreg32(UART3_GATING, UART3_GATING, BUS_CLK_GATING_REG3);
-  uint32_t after = getreg32(BUS_CLK_GATING_REG3) & UART3_GATING;
-  _info("Enable clocking to UART3: Set UART3_GATING to High (Pass): addr=0x%x, before=0x%x, after=0x%x\n", BUS_CLK_GATING_REG3, before, after);
-
-  // Compare with UART0_GATING (Bit 16)
-  #define UART0_GATING (1 << 16)
-  _info("Compare with UART0_GATING: addr=0x%x, val=0x%x\n", BUS_CLK_GATING_REG3, getreg32(BUS_CLK_GATING_REG3) & UART0_GATING);
-
-  // TODO: Deassert reset for UART3: Set UART3_RST to High
-  // CCU Base Address: 0x01C20000
-  // Bus Software Reset Register 4
-  // Offset: 0x02D8, Register Name: BUS_SOFT_RST_REG4
-  // Bit 19
-  // A64 User Manual Page 142
-  #define BUS_SOFT_RST_REG4 (CCU_BASE_ADDR + 0x02D8)
-  #define UART3_RST (1 << 19)
-  before = getreg32(BUS_SOFT_RST_REG4) & UART3_RST;
-  modreg32(UART3_RST, UART3_RST, BUS_SOFT_RST_REG4);
-  after = getreg32(BUS_SOFT_RST_REG4) & UART3_RST;
-  _info("Deassert reset for UART3: Set UART3_RST to High: addr=0x%x, before=0x%x, after=0x%x\n", BUS_SOFT_RST_REG4, before, after);
-
-  // Compare with UART0_RST (Bit 16)
-  #define UART0_RST (1 << 16)
-  _info("Compare with UART0_RST: addr=0x%x, val=0x%x\n", BUS_SOFT_RST_REG4, getreg32(BUS_SOFT_RST_REG4) & UART0_RST);
-
-  // PIO Base Address: 0x01C20800
-  // PD Configure Register 0
-  // Offset: 0x6C, Register Name: PD_CFG0_REG
-  // Bits 0 to 2: PD0_SELECT
-  // Bits 4 to 6: PD1_SELECT
-  // A64 User Manual Page 385
-  #define PIO_BASE_ADDR 0x01C20800
-  #define PD_CFG0_REG (PIO_BASE_ADDR + 0x6C)
-  #define PD0_SELECT (0b111 << 0)
-  #define PD1_SELECT (0b111 << 4)
-  uint32_t before0 = getreg32(PD_CFG0_REG) & PD0_SELECT;
-  uint32_t before1 = getreg32(PD_CFG0_REG) & PD1_SELECT;
-
-  // Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
-  #define PIO_UART3_TX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN0)
-  #define PIO_UART3_RX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
-  ret = a64_pio_config(PIO_UART3_TX);
-  DEBUGASSERT(ret == OK);
-  ret = a64_pio_config(PIO_UART3_RX);
-  DEBUGASSERT(ret == OK);
-
-  uint32_t after0 = getreg32(PD_CFG0_REG) & PD0_SELECT;
-  uint32_t after1 = getreg32(PD_CFG0_REG) & PD1_SELECT;
-  _info("Enable UART3 on PD0: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before0, after0);
-  _info("Enable UART3 on PD1: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before1, after1);
-#endif  ////
+  if (ret < 0)
+    {
+      sinfo("UART3 config failed, ret =%d\n", ret);
+    }
+#endif /* CONFIG_A64_UART3 */
 
 #ifdef TTYS1_DEV
   uart_register("/dev/ttyS1", &TTYS1_DEV);
-#endif
+#endif /* TTYS1_DEV */
 #ifdef TTYS2_DEV
   uart_register("/dev/ttyS2", &TTYS2_DEV);
-#endif
+#endif /* TTYS2_DEV */
 #ifdef TTYS3_DEV
   uart_register("/dev/ttyS3", &TTYS3_DEV);
-#endif
+#endif /* TTYS3_DEV */
 }
 
 #else /* USE_SERIALDRIVER */
