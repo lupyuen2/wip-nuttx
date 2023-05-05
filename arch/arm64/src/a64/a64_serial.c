@@ -936,6 +936,17 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
  * Private Data
  ***************************************************************************/
 
+//// TODO
+#define CONFIG_A64_UART3
+#define CONFIG_UART3_RXBUFSIZE 256
+#define CONFIG_UART3_TXBUFSIZE 256
+#define CONFIG_UART3_BAUD 115200
+#define CONFIG_UART3_BITS 8
+#define CONFIG_UART3_PARITY 0
+#define CONFIG_UART3_2STOP 0
+#define CONFIG_A64_UART3_BASE      0x01C28C00  /* A64 UART3 Base Address */
+#define CONFIG_A64_UART3_IRQ       35          /* A64 UART3 IRQ */
+
 /* UART Operations for Serial Driver */
 
 static const struct uart_ops_s g_uart_ops =
@@ -1005,18 +1016,57 @@ static struct uart_dev_s    g_uart1port =
   .priv  = &g_uart1priv,
 };
 
-#endif
+#endif /* CONFIG_A64_UART */
 
-//// TODO
-#define CONFIG_A64_UART3
-#define CONFIG_UART3_RXBUFSIZE 256
-#define CONFIG_UART3_TXBUFSIZE 256
-#define CONFIG_UART3_BAUD 115200
-#define CONFIG_UART3_BITS 8
-#define CONFIG_UART3_PARITY 0
-#define CONFIG_UART3_2STOP 0
-#define CONFIG_A64_UART3_BASE      0x01C28C00  /* A64 UART3 Base Address */
-#define CONFIG_A64_UART3_IRQ       35          /* A64 UART3 IRQ */
+#ifdef CONFIG_A64_UART2 ////
+
+/* UART2 Port State */
+
+static struct a64_uart_port_s g_uart2priv =
+{
+  .data   =
+    {
+      .baud_rate  = CONFIG_UART2_BAUD,
+      .parity     = CONFIG_UART2_PARITY,
+      .bits       = CONFIG_UART2_BITS,
+      .stopbits2  = CONFIG_UART2_2STOP
+    },
+
+  .config =
+    {
+      .uart       = CONFIG_A64_UART2_BASE
+    },
+
+    .irq_num      = CONFIG_A64_UART2_IRQ,
+    .is_console   = 0
+};
+
+/* UART2 I/O Buffers */
+
+static char                 g_uart2rxbuffer[CONFIG_UART2_RXBUFSIZE];
+static char                 g_uart2txbuffer[CONFIG_UART2_TXBUFSIZE];
+
+/* UART2 Port Definition */
+
+static struct uart_dev_s    g_uart2port =
+{
+  .recv  =
+    {
+      .size   = CONFIG_UART2_RXBUFSIZE,
+      .buffer = g_uart2rxbuffer,
+    },
+
+  .xmit  =
+    {
+      .size   = CONFIG_UART2_TXBUFSIZE,
+      .buffer = g_uart2txbuffer,
+    },
+
+  .ops   = &g_uart_ops,
+  .priv  = &g_uart2priv,
+};
+
+#endif /* CONFIG_A64_UART2 */
 
 #ifdef CONFIG_A64_UART3 ////
 
@@ -1066,7 +1116,7 @@ static struct uart_dev_s    g_uart3port =
   .priv  = &g_uart3priv,
 };
 
-#endif ////
+#endif /* CONFIG_A64_UART3 */
 
 /* Pick ttys1.  This could be any of UART1-3. */
 
