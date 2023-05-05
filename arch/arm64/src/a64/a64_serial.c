@@ -1068,6 +1068,36 @@ static struct uart_dev_s    g_uart3port =
 
 #endif ////
 
+/* Pick ttys1.  This could be any of UART1-3. */
+
+#if defined(CONFIG_A64_UART1) && !defined(UART1_ASSIGNED)
+#  define TTYS1_DEV           g_uart1port /* UART1 is ttyS1 */
+#  define UART1_ASSIGNED      1
+#elif defined(CONFIG_A64_UART2) && !defined(UART2_ASSIGNED)
+#  define TTYS1_DEV           g_uart2port /* UART2 is ttyS1 */
+#  define UART2_ASSIGNED      1
+#elif defined(CONFIG_A64_UART3) && !defined(UART3_ASSIGNED)
+#  define TTYS1_DEV           g_uart3port /* UART3 is ttyS1 */
+#  define UART3_ASSIGNED      1
+#endif
+
+/* Pick ttys2.  This could be one of UART2-3. */
+
+#if defined(CONFIG_A64_UART2) && !defined(UART2_ASSIGNED)
+#  define TTYS2_DEV           g_uart2port /* UART2 is ttyS2 */
+#  define UART2_ASSIGNED      1
+#elif defined(CONFIG_A64_UART3) && !defined(UART3_ASSIGNED)
+#  define TTYS2_DEV           g_uart3port /* UART3 is ttyS2 */
+#  define UART3_ASSIGNED      1
+#endif
+
+/* Pick ttys3.  This could only be UART3. */
+
+#if defined(CONFIG_A64_UART3) && !defined(UART3_ASSIGNED)
+#  define TTYS3_DEV           g_uart3port /* UART3 is ttyS3 */
+#  define UART3_ASSIGNED      1
+#endif
+
 /***************************************************************************
  * Public Functions
  ***************************************************************************/
@@ -1223,11 +1253,21 @@ void arm64_serialinit(void)
   uint32_t after1 = getreg32(PD_CFG0_REG) & PD1_SELECT;
   _info("Enable UART3 on PD0: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before0, after0);
   _info("Enable UART3 on PD1: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before1, after1);
+#endif  ////
 
   // Register UART3 as /dev/ttyS1
-  #define TTYS1_DEV g_uart3port /* UART3 is ttyS1 */
+  // #define TTYS1_DEV g_uart3port /* UART3 is ttyS1 */
+  // uart_register("/dev/ttyS1", &TTYS1_DEV);
+
+#ifdef TTYS1_DEV
   uart_register("/dev/ttyS1", &TTYS1_DEV);
-#endif  ////
+#endif
+#ifdef TTYS2_DEV
+  uart_register("/dev/ttyS2", &TTYS2_DEV);
+#endif
+#ifdef TTYS3_DEV
+  uart_register("/dev/ttyS3", &TTYS3_DEV);
+#endif
 }
 
 #else /* USE_SERIALDRIVER */
