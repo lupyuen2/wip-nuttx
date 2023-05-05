@@ -1305,10 +1305,6 @@ void arm64_serialinit(void)
   _info("Enable UART3 on PD1: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before1, after1);
 #endif  ////
 
-  // Register UART3 as /dev/ttyS1
-  // #define TTYS1_DEV g_uart3port /* UART3 is ttyS1 */
-  // uart_register("/dev/ttyS1", &TTYS1_DEV);
-
 #ifdef TTYS1_DEV
   uart_register("/dev/ttyS1", &TTYS1_DEV);
 #endif
