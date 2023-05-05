@@ -30,7 +30,7 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <debug.h> ////TODO
 
 #ifdef CONFIG_SERIAL_TERMIOS
 #  include <termios.h>
@@ -51,6 +51,17 @@
 #include "arm64_arch_timer.h"
 #include "a64_boot.h"
 #include "arm64_gic.h"
+
+//// TODO
+#define CONFIG_A64_UART3
+#define CONFIG_UART3_RXBUFSIZE 256
+#define CONFIG_UART3_TXBUFSIZE 256
+#define CONFIG_UART3_BAUD 115200
+#define CONFIG_UART3_BITS 8
+#define CONFIG_UART3_PARITY 0
+#define CONFIG_UART3_2STOP 0
+#define CONFIG_A64_UART3_BASE      0x01C28C00  /* A64 UART3 Base Address */
+#define CONFIG_A64_UART3_IRQ       35          /* A64 UART3 IRQ */
 
 #ifdef USE_SERIALDRIVER
 
@@ -129,7 +140,7 @@ struct a64_uart_port_s
  * Private Functions
  ***************************************************************************/
 
-#ifdef NOTUSED
+#ifdef NOTUSED //// TODO
 /***************************************************************************
  * Name: a64_uart_irq_handler
  *
@@ -147,32 +158,6 @@ struct a64_uart_port_s
  *   OK is always returned at present.
  *
  ***************************************************************************/
-
-static int a64_uart_irq_handler(int irq, void *context, void *arg)
-{
-  struct uart_dev_s *dev = (struct uart_dev_s *)arg;
-  const struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
-  const struct a64_uart_config *config = &port->config;
-  uint8_t int_id;
-
-  UNUSED(irq);
-  UNUSED(context);
-
-  /* Read Interrupt ID from Interrupt Identity Register (UART_IIR) */
-
-  int_id = getreg8(UART_IIR(config->uart)) & UART_IIR_INTID;
-
-  if (int_id == 0b0100)  /* If received data is available */
-    {
-      uart_recvchars(dev);  /* Receive the data */
-    }
-  else if (int_id == 0b0010)  /* If Tx Holding Register is empty */
-    {
-      uart_xmitchars(dev);  /* Transmit the data */
-    }
-
-  return OK;
-}
 #endif  // NOTUSED
 
 //// TODO
@@ -932,20 +917,72 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
   return a64_uart_txready(dev);
 }
 
+#ifdef CONFIG_A64_UART1
+static inline void a64_uart1config(void)
+{
+  irqstate_t flags;
+
+  /* Step 1: Enable power to UART1 */
+
+  flags   = enter_critical_section();
+#warning Missing logic
+
+  /* Step 2: Enable clocking to UART1 */
+#warning Missing logic
+
+  /* Step 3: Configure I/O pins */
+
+  a64_pio_config(PIO_UART1_TX);
+  a64_pio_config(PIO_UART1_RX);
+  leave_critical_section(flags);
+};
+#endif
+
+#ifdef CONFIG_A64_UART2
+static inline void a64_uart2config(void)
+{
+  irqstate_t flags;
+
+  /* Step 1: Enable power to UART2 */
+
+  flags   = enter_critical_section();
+#warning Missing logic
+
+  /* Step 2: Enable clocking on UART2 */
+#warning Missing logic
+
+  /* Step 3: Configure I/O pins */
+
+  a64_pio_config(PIO_UART2_TX);
+  a64_pio_config(PIO_UART2_RX);
+  leave_critical_section(flags);
+};
+#endif
+
+#ifdef CONFIG_A64_UART3
+static inline void a64_uart3config(void)
+{
+  irqstate_t flags;
+
+  /* Step 1: Enable power to UART3 */
+
+  flags   = enter_critical_section();
+#warning Missing logic
+
+  /* Step 2: Enable clocking to UART3 */
+#warning Missing logic
+
+  /* Step 3: Configure I/O pins */
+
+  a64_pio_config(PIO_UART3_TX);
+  a64_pio_config(PIO_UART3_RX);
+  leave_critical_section(flags);
+};
+#endif
+
 /***************************************************************************
  * Private Data
  ***************************************************************************/
-
-//// TODO
-#define CONFIG_A64_UART3
-#define CONFIG_UART3_RXBUFSIZE 256
-#define CONFIG_UART3_TXBUFSIZE 256
-#define CONFIG_UART3_BAUD 115200
-#define CONFIG_UART3_BITS 8
-#define CONFIG_UART3_PARITY 0
-#define CONFIG_UART3_2STOP 0
-#define CONFIG_A64_UART3_BASE      0x01C28C00  /* A64 UART3 Base Address */
-#define CONFIG_A64_UART3_IRQ       35          /* A64 UART3 IRQ */
 
 /* UART Operations for Serial Driver */
 
