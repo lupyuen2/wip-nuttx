@@ -918,6 +918,7 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
 }
 
 #ifdef CONFIG_A64_UART1
+// TODO
 static int a64_uart1config(void)
 {
   irqstate_t flags;
@@ -941,6 +942,7 @@ static int a64_uart1config(void)
 #endif /* CONFIG_A64_UART1 */
 
 #ifdef CONFIG_A64_UART2
+// TODO
 static int a64_uart2config(void)
 {
   irqstate_t flags;
@@ -1004,6 +1006,7 @@ static int a64_uart2config(void)
 #define PIO_UART3_RX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
 
 #ifdef CONFIG_A64_UART3
+// TODO
 static int a64_uart3config(void)
 {
   irqstate_t flags;
@@ -1296,14 +1299,43 @@ static struct uart_dev_s    g_uart3port =
 
 void arm64_earlyserialinit(void)
 {
-  /* NOTE: This function assumes that low level hardware configuration
+  int ret;
+
+  /* NOTE: This function assumes that UART0 low level hardware configuration
    * -- including all clocking and pin configuration -- was performed
-   * earlier in the boot sequence.
+   * earlier by U-Boot Bootloader.
    */
 
-  /* Enable the console UART.  The other UARTs will be initialized if and
-   * when they are first opened.
-   */
+  /* Configure the other UART Ports */
+
+#ifdef CONFIG_A64_UART1 ////
+  ret = a64_uart1config();
+
+  if (ret < 0)
+    {
+      sinfo("UART1 config failed, ret=%d\n", ret);
+    }
+#endif /* CONFIG_A64_UART1 */
+
+#ifdef CONFIG_A64_UART2 ////
+  ret = a64_uart2config();
+
+  if (ret < 0)
+    {
+      sinfo("UART2 config failed, ret=%d\n", ret);
+    }
+#endif /* CONFIG_A64_UART2 */
+
+#ifdef CONFIG_A64_UART3 ////
+  ret = a64_uart3config();
+
+  if (ret < 0)
+    {
+      sinfo("UART3 config failed, ret=%d\n", ret);
+    }
+#endif /* CONFIG_A64_UART3 */
+
+  /* Enable the console at UART0 */
 #ifdef CONSOLE_DEV
   CONSOLE_DEV.isconsole = true;
   a64_uart_setup(&CONSOLE_DEV);
@@ -1359,33 +1391,41 @@ void arm64_serialinit(void)
   ret = uart_register("/dev/console", &CONSOLE_DEV);
   if (ret < 0)
     {
-      sinfo("error at register dev/console, ret =%d\n", ret);
+      sinfo("Register /dev/console failed, ret=%d\n", ret);
     }
 
   ret = uart_register("/dev/ttyS0", &TTYS0_DEV);
 
   if (ret < 0)
     {
-      sinfo("error at register dev/ttyS0, ret =%d\n", ret);
+      sinfo("Register /dev/ttyS0 failed, ret=%d\n", ret);
     }
 
-#ifdef CONFIG_A64_UART3 ////
-  ret = a64_uart3config();
+#ifdef TTYS1_DEV
+  ret = uart_register("/dev/ttyS1", &TTYS1_DEV);
 
   if (ret < 0)
     {
-      sinfo("UART3 config failed, ret =%d\n", ret);
+      sinfo("Register /dev/ttyS1 failed, ret=%d\n", ret);
     }
-#endif /* CONFIG_A64_UART3 */
-
-#ifdef TTYS1_DEV
-  uart_register("/dev/ttyS1", &TTYS1_DEV);
 #endif /* TTYS1_DEV */
+
 #ifdef TTYS2_DEV
-  uart_register("/dev/ttyS2", &TTYS2_DEV);
+  ret = uart_register("/dev/ttyS2", &TTYS2_DEV);
+
+  if (ret < 0)
+    {
+      sinfo("Register /dev/ttyS2 failed, ret=%d\n", ret);
+    }
 #endif /* TTYS2_DEV */
+
 #ifdef TTYS3_DEV
-  uart_register("/dev/ttyS3", &TTYS3_DEV);
+  ret = uart_register("/dev/ttyS3", &TTYS3_DEV);
+
+  if (ret < 0)
+    {
+      sinfo("Register /dev/ttyS3 failed, ret=%d\n", ret);
+    }
 #endif /* TTYS3_DEV */
 }
 
@@ -1426,170 +1466,3 @@ int up_putc(int ch)
 }
 
 #endif /* USE_SERIALDRIVER */
-
-#ifdef NOTUSED ////TODO
-
-DRAM: 2048 MiB
-Trying to boot from MMC1
-NOTICE:  BL31: v2.2(release):v2.2-904-gf9ea3a629
-NOTICE:  BL31: Built : 15:32:12, Apr  9 2020
-NOTICE:  BL31: Detected Allwinner A64/H64/R18 SoC (1689)
-NOTICE:  BL31: Found U-Boot DTB at 0x4064410, model: PinePhone
-NOTICE:  PSCI: System suspend is unavailable
-
-
-U-Boot 2020.07 (Nov 08 2020 - 00:15:12 +0100)
-
-DRAM:  2 GiB
-MMC:   Device 'mmc@1c11000': seq 1 is in use by 'mmc@1c10000'
-mmc@1c0f000: 0, mmc@1c10000: 2, mmc@1c11000: 1
-Loading Environment from FAT... *** Warning - bad CRC, using default environment
-
-starting USB...
-No working controllers found
-Hit any key to stop autoboot:  0 
-switch to partitions #0, OK
-mmc0 is current device
-Scanning mmc 0:1...
-Found U-Boot script /boot.scr
-653 bytes read in 3 ms (211.9 KiB/s)
-## Executing script at 4fc00000
-gpio: pin 114 (gpio 114) value is 1
-346865 bytes read in 20 ms (16.5 MiB/s)
-Uncompressed size: 10510336 = 0xA06000
-36162 bytes read in 4 ms (8.6 MiB/s)
-1078500 bytes read in 51 ms (20.2 MiB/s)
-## Flattened Device Tree blob at 4fa00000
-   Booting using the fdt blob at 0x4fa00000
-   Loading Ramdisk to 49ef8000, end 49fff4e4 ... OK
-   Loading Device Tree to 0000000049eec000, end 0000000049ef7d41 ... OK
-
-Starting kernel ...
-
-a64_pio_config: port=3, pin=18, ext=-1, cfgaddr=0x1c20874, value=1, shift=8
-a64_pio_config: port=3, pin=19, ext=-1, cfgaddr=0x1c20874, value=1, shift=12
-a64_pio_config: port=3, pin=20, ext=-1, cfgaddr=0x1c20874, value=1, shift=16
-up_setup: baud_rate=115200
-up_setup: Clear fifos
-up_serialout: addr=0x1c28008, before=0xc1, after=0x6
-up_setup: Set trigger
-up_serialout: addr=0x1c28008, before=0x1, after=0x81
-up_setup: Set up the IER
-up_setup: Enter DLAB=1
-up_serialout: addr=0x1c2800c, before=0x3, after=0x83
-up_setup: Set the BAUD divisor
-up_serialout: addr=0x1c28004, before=0x0, after=0x0
-up_serialout: addr=0x1c28000, before=0x0, after=0xd
-
-up_setup: Clear DLAB
-up_serialout: addr=0x1c2800c, before=0x3, after=0x3
-up_setup: Configure the FIFOs
-up_serialout: addr=0x1c28008, before=0xc7, after=0x87
-arm64_serialinit: Enable clocking to UART3: Set UART3_GATING to High (Pass): addr=0x1c2006c, before=0x0, after=0x80000
-arm64_serialinit: Compare with UART0_GATING: addr=0x1c2006c, val=0x10000
-arm64_serialinit: Deassert reset for UART3: Set UART3_RST to High: addr=0x1c202d8, before=0x0, after=0x80000
-arm64_serialinit: Compare with UART0_RST: addr=0x1c202d8, val=0x10000
-a64_pio_config: port=3, pin=0, ext=-1, cfgaddr=0x1c2086c, value=3, shift=0
-a64_pio_config: port=3, pin=1, ext=-1, cfgaddr=0x1c2086c, value=3, shift=4
-arm64_serialinit: Enable UART3 on PD0: PD0_SELECT: addr=0x1c2086c, before=0x7, after=0x3
-arm64_serialinit: Enable UART3 on PD1: PD0_SELECT: addr=0x1c2086c, before=0x70, after=0x30
-a64_pio_config: port=3, pin=18, ext=-1, cfgaddr=0x1c20874, value=1, shift=8
-a64_pio_config: port=3, pin=19, ext=-1, cfgaddr=0x1c20874, value=1, shift=12
-a64_pio_config: port=3, pin=20, ext=-1, cfgaddr=0x1c20874, value=1, shift=16
-a64_pio_config: port=8, pin=10, ext=-1, cfgaddr=0x1f02c04, value=2, shift=8
-a64_pio_config: port=7, pin=10, ext=2, cfgaddr=0x1c20900, value=1, shift=8
-a64_pio_config: port=3, pin=23, ext=-1, cfgaddr=0x1c20874, value=1, shift=28
-pinephone_pmic_init: Set DLDO1 Voltage to 3.3V
-pmic_write: reg=0x15, val=0x1a
-a64_rsb_write: rt_addr=0x2d, reg_addr=0x15, value=0x1a
-pmic_clrsetbits: reg=0x12, clr_mask=0x0, set_mask=0x8
-a64_rsb_read: rt_addr=0x2d, reg_addr=0x12
-a64_rsb_write: rt_addr=0x2d, reg_addr=0x12, value=0xd9
-pinephone_pmic_init: Set LDO Voltage to 3.3V
-pmic_write: reg=0x91, val=0x1a
-a64_rsb_write: rt_addr=0x2d, reg_addr=0x91, value=0x1a
-pinephone_pmic_init: Enable LDO mode on GPIO0
-pmic_write: reg=0x90, val=0x3
-a64_rsb_write: rt_addr=0x2d, reg_addr=0x90, value=0x3
-pinephone_pmic_init: Set DLDO2 Voltage to 1.8V
-pmic_write: reg=0x16, val=0xb
-a64_rsb_write: rt_addr=0x2d, reg_addr=0x16, value=0xb
-pmic_clrsetbits: reg=0x12, clr_mask=0x0, set_mask=0x10
-a64_rsb_read: rt_addr=0x2d, reg_addr=0x12
-a64_rsb_write: rt_addr=0x2d, reg_addr=0x12, value=0xd9
-a64_pio_config: port=3, pin=23, ext=-1, cfgaddr=0x1c20874, value=1, shift=28
-a64_pio_config: port=7, pin=0, ext=2, cfgaddr=0x1c208fc, value=2, shift=0
-a64_pio_config: port=7, pin=1, ext=2, cfgaddr=0x1c208fc, value=2, shift=4
-a64_pio_config: port=7, pin=9, ext=2, cfgaddr=0x1c20900, value=0, shift=4
-pinephone_modem_init: Status=0
-pinephone_pmic_usb_init: Set DCDC1 Voltage to 3.3V
-pmic_write: reg=0x20, val=0x11
-a64_rsb_write: rt_addr=0x2d, reg_addr=0x20, value=0x11
-pmic_clrsetbits: reg=0x10, clr_mask=0x0, set_mask=0x1
-a64_rsb_read: rt_addr=0x2d, reg_addr=0x10
-a64_rsb_write: rt_addr=0x2d, reg_addr=0x10, value=0x37
-pinephone_modem_init: Status=0
-pinephone_modem_init: Wait 1000 ms
-pinephone_modem_init: Status=0
-pinephone_modem_init: Configure PWR_BAT (PL7) for Output
-a64_pio_config: port=8, pin=7, ext=-1, cfgaddr=0x1f02c00, value=1, shift=28
-pinephone_modem_init: Set PWR_BAT (PL7) to High
-pinephone_modem_init: Status=1
-pinephone_modem_init: Wait 1000 ms
-pinephone_modem_init: Status=1
-pinephone_modem_init: Configure RESET_N (PC4) for Output
-a64_pio_config: port=2, pin=4, ext=-1, cfgaddr=0x1c20848, value=1, shift=16
-pinephone_modem_init: Set RESET_N (PC4) to High
-pinephone_modem_init: Status=1
-pinephone_modem_init: Configure PWRKEY (PB3) for Output
-a64_pio_config: port=1, pin=3, ext=0, cfgaddr=0x1c20824, value=1, shift=12
-pinephone_modem_init: Set PWRKEY (PB3) to High
-pinephone_modem_init: Status=1
-pinephone_modem_init: Wait 30 ms for VBAT to be stable
-pinephone_modem_init: Status=1
-pinephone_modem_init: Set PWRKEY (PB3) to Low
-pinephone_modem_init: Status=1
-pinephone_modem_init: Wait 500 ms
-pinephone_modem_init: Status=1
-pinephone_modem_init: Set PWRKEY (PB3) to High
-pinephone_modem_init: Status=1
-pinephone_modem_init: Configure W_DISABLE (PH8) for Output
-a64_pio_config: port=7, pin=8, ext=2, cfgaddr=0x1c20900, value=1, shift=0
-pinephone_modem_init: Set W_DISABLE (PH8) to High
-pinephone_modem_init: Status=1
-a64_pio_config: port=3, pin=18, ext=-1, cfgaddr=0x1c20874, value=1, shift=8
-a64_pio_config: port=3, pin=19, ext=-1, cfgaddr=0x1c20874, value=1, shift=12
-a64_pio_config: port=3, pin=20, ext=-1, cfgaddr=0x1c20874, value=1, shift=16
-pinephone_modem_init: Turn on Green LED
-pinephone_modem_init: Status=1
-pinephone_modem_init: Turn on Red LED
-pinephone_modem_init: Status=1
-pinephone_modem_init: Turn on Blue LED
-pinephone_modem_init: Status=1
-nsh: mkfatfs: command not found
-
-NuttShell (NSH) NuttX-12.0.3
-nsh> 
-nsh> 
-nsh> ls
-/:
- dev/
- etc/
- proc/
-nsh> 
-nsh> ls /dev
-/dev:
- console
- fb0
- input0
- null
- ram0
- ram2
- ttyS0
- ttyS1
- userleds
- zero
-nsh> 
-nsh> 
-
-#endif  // NOTUSED
