@@ -49,8 +49,8 @@
  ****************************************************************************/
 
 #ifdef CONFIG_ARCH_CHIP_A64
-#define CONFIG_A64_UART_BASE      0x1C28000  /* A64 UART0 Base Address */
-#define CONFIG_A64_UART_IRQ       32         /* A64 UART0 IRQ */
+#define CONFIG_A64_UART0_BASE      0x1C28000  /* A64 UART0 Base Address */
+#define CONFIG_A64_UART0_IRQ       32         /* A64 UART0 IRQ */
 #endif
 
 /****************************************************************************

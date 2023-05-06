@@ -52,6 +52,32 @@
 #include "a64_boot.h"
 #include "arm64_gic.h"
 
+/* UART0 Settings should be same as U-Boot Bootloader */
+
+#ifndef CONFIG_UART0_BAUD
+#  define CONFIG_UART0_BAUD 115200
+#endif
+
+#ifndef CONFIG_UART0_BITS
+#  define CONFIG_UART0_BITS 8
+#endif
+
+#ifndef CONFIG_UART0_PARITY
+#  define CONFIG_UART0_PARITY 0
+#endif
+
+#ifndef CONFIG_UART0_2STOP
+#  define CONFIG_UART0_2STOP 0
+#endif
+
+#ifndef CONFIG_UART0_RXBUFSIZE
+#  define CONFIG_UART0_RXBUFSIZE 256
+#endif
+
+#ifndef CONFIG_UART0_TXBUFSIZE
+#  define CONFIG_UART0_TXBUFSIZE 256
+#endif
+
 //// TODO
 #define CONFIG_A64_UART3
 #define CONFIG_UART3_RXBUFSIZE 256
@@ -69,13 +95,11 @@
  * Pre-processor Definitions
  ***************************************************************************/
 
-/* UART1 is console and ttys0 */
+/* UART0 is console and ttys0, follows U-Boot Bootloader */
 
-#if defined(CONFIG_UART1_SERIAL_CONSOLE)
-#  define CONSOLE_DEV     g_uart1port         /* UART1 is console */
-#  define TTYS0_DEV       g_uart1port         /* UART1 is ttyS0 */
-#  define UART1_ASSIGNED  1
-#endif
+#define CONSOLE_DEV     g_uart0port         /* UART0 is console */
+#define TTYS0_DEV       g_uart0port         /* UART0 is ttyS0 */
+#define UART0_ASSIGNED  1
 
 /* A64 UART Registers */
 
@@ -525,8 +549,7 @@ static int up_setup(struct uart_dev_s *dev)
  * Name: a64_uart_setup
  *
  * Description:
- *   Set up the UART Port.  We do nothing because U-Boot has already
- *   initialized A64 UART0 at 115.2 kbps.
+ *   Set up the UART Port.
  *
  * Input Parameters:
  *   dev - UART Device
@@ -1124,6 +1147,58 @@ static const struct uart_ops_s g_uart_ops =
   .txempty  = a64_uart_txempty,
 };
 
+/* UART0 Port State (Console) */
+
+static struct a64_uart_port_s g_uart0priv =
+{
+  .data   =
+    {
+      .baud_rate  = CONFIG_UART0_BAUD,
+      .parity     = CONFIG_UART0_PARITY,
+      .bits       = CONFIG_UART0_BITS,
+      .stopbits2  = CONFIG_UART0_2STOP
+    },
+
+  .config =
+    {
+      .uart       = CONFIG_A64_UART0_BASE
+    },
+
+    .irq_num      = CONFIG_A64_UART0_IRQ,
+    .is_console   = 1
+};
+
+#ifdef CONFIG_A64_UART
+
+/* UART0 I/O Buffers (Console) */
+
+static char                 g_uart0rxbuffer[CONFIG_UART0_RXBUFSIZE];
+static char                 g_uart0txbuffer[CONFIG_UART0_TXBUFSIZE];
+
+/* UART0 Port Definition (Console) */
+
+static struct uart_dev_s    g_uart0port =
+{
+  .recv  =
+    {
+      .size   = CONFIG_UART0_RXBUFSIZE,
+      .buffer = g_uart0rxbuffer,
+    },
+
+  .xmit  =
+    {
+      .size   = CONFIG_UART0_TXBUFSIZE,
+      .buffer = g_uart0txbuffer,
+    },
+
+  .ops   = &g_uart_ops,
+  .priv  = &g_uart0priv,
+};
+
+#endif /* CONFIG_A64_UART */
+
+#ifdef CONFIG_A64_UART1 ////
+
 /* UART1 Port State */
 
 static struct a64_uart_port_s g_uart1priv =
@@ -1138,16 +1213,14 @@ static struct a64_uart_port_s g_uart1priv =
 
   .config =
     {
-      .uart       = CONFIG_A64_UART_BASE,
+      .uart       = CONFIG_A64_UART1_BASE
     },
 
-    .irq_num      = CONFIG_A64_UART_IRQ,
-    .is_console   = 1,
+    .irq_num      = CONFIG_A64_UART1_IRQ,
+    .is_console   = 0
 };
 
 /* UART1 I/O Buffers */
-
-#ifdef CONFIG_A64_UART
 
 static char                 g_uart1rxbuffer[CONFIG_UART1_RXBUFSIZE];
 static char                 g_uart1txbuffer[CONFIG_UART1_TXBUFSIZE];
@@ -1172,7 +1245,7 @@ static struct uart_dev_s    g_uart1port =
   .priv  = &g_uart1priv,
 };
 
-#endif /* CONFIG_A64_UART */
+#endif /* CONFIG_A64_UART1 */
 
 #ifdef CONFIG_A64_UART2 ////
 
