@@ -1075,6 +1075,30 @@ static int a64_uart3config(void)
 };
 #endif /* CONFIG_A64_UART3 */
 
+#ifdef CONFIG_A64_UART4
+// TODO
+static int a64_uart4config(void)
+{
+  irqstate_t flags;
+  int ret;
+
+  /* Step 1: Enable power to UART4 */
+
+  flags   = enter_critical_section();
+#warning Missing logic
+
+  /* Step 2: Enable clocking on UART4 */
+#warning Missing logic
+
+  /* Step 3: Configure I/O pins */
+
+  a64_pio_config(PIO_UART4_TX);
+  a64_pio_config(PIO_UART4_RX);
+  leave_critical_section(flags);
+  return OK;
+};
+#endif /* CONFIG_A64_UART4 */
+
 /***************************************************************************
  * Private Data
  ***************************************************************************/
@@ -1250,7 +1274,57 @@ static struct uart_dev_s    g_uart3port =
 
 #endif /* CONFIG_A64_UART3 */
 
-/* Pick ttys1.  This could be any of UART1-3. */
+#ifdef CONFIG_A64_UART4 ////
+
+/* UART4 Port State */
+
+static struct a64_uart_port_s g_uart4priv =
+{
+  .data   =
+    {
+      .baud_rate  = CONFIG_UART4_BAUD,
+      .parity     = CONFIG_UART4_PARITY,
+      .bits       = CONFIG_UART4_BITS,
+      .stopbits2  = CONFIG_UART4_2STOP
+    },
+
+  .config =
+    {
+      .uart       = CONFIG_A64_UART4_BASE
+    },
+
+    .irq_num      = CONFIG_A64_UART4_IRQ,
+    .is_console   = 0
+};
+
+/* UART4 I/O Buffers */
+
+static char                 g_uart4rxbuffer[CONFIG_UART4_RXBUFSIZE];
+static char                 g_uart4txbuffer[CONFIG_UART4_TXBUFSIZE];
+
+/* UART4 Port Definition */
+
+static struct uart_dev_s    g_uart4port =
+{
+  .recv  =
+    {
+      .size   = CONFIG_UART4_RXBUFSIZE,
+      .buffer = g_uart4rxbuffer,
+    },
+
+  .xmit  =
+    {
+      .size   = CONFIG_UART4_TXBUFSIZE,
+      .buffer = g_uart4txbuffer,
+    },
+
+  .ops   = &g_uart_ops,
+  .priv  = &g_uart4priv,
+};
+
+#endif /* CONFIG_A64_UART4 */
+
+/* Pick ttys1.  This could be any of UART1-4. */
 
 #if defined(CONFIG_A64_UART1) && !defined(UART1_ASSIGNED)
 #  define TTYS1_DEV           g_uart1port /* UART1 is ttyS1 */
@@ -1261,9 +1335,12 @@ static struct uart_dev_s    g_uart3port =
 #elif defined(CONFIG_A64_UART3) && !defined(UART3_ASSIGNED)
 #  define TTYS1_DEV           g_uart3port /* UART3 is ttyS1 */
 #  define UART3_ASSIGNED      1
+#elif defined(CONFIG_A64_UART4) && !defined(UART4_ASSIGNED)
+#  define TTYS1_DEV           g_uart4port /* UART4 is ttyS1 */
+#  define UART4_ASSIGNED      1
 #endif
 
-/* Pick ttys2.  This could be one of UART2-3. */
+/* Pick ttys2.  This could be one of UART2-4. */
 
 #if defined(CONFIG_A64_UART2) && !defined(UART2_ASSIGNED)
 #  define TTYS2_DEV           g_uart2port /* UART2 is ttyS2 */
@@ -1271,13 +1348,26 @@ static struct uart_dev_s    g_uart3port =
 #elif defined(CONFIG_A64_UART3) && !defined(UART3_ASSIGNED)
 #  define TTYS2_DEV           g_uart3port /* UART3 is ttyS2 */
 #  define UART3_ASSIGNED      1
+#elif defined(CONFIG_A64_UART4) && !defined(UART4_ASSIGNED)
+#  define TTYS2_DEV           g_uart4port /* UART4 is ttyS2 */
+#  define UART4_ASSIGNED      1
 #endif
 
-/* Pick ttys3.  This could only be UART3. */
+/* Pick ttys3.  This could be one of UART3-4. */
 
 #if defined(CONFIG_A64_UART3) && !defined(UART3_ASSIGNED)
 #  define TTYS3_DEV           g_uart3port /* UART3 is ttyS3 */
 #  define UART3_ASSIGNED      1
+#elif defined(CONFIG_A64_UART4) && !defined(UART4_ASSIGNED)
+#  define TTYS3_DEV           g_uart4port /* UART4 is ttyS3 */
+#  define UART4_ASSIGNED      1
+#endif
+
+/* Pick ttys4.  This could only be UART4. */
+
+#if defined(CONFIG_A64_UART4) && !defined(UART4_ASSIGNED)
+#  define TTYS4_DEV           g_uart4port /* UART4 is ttyS4 */
+#  define UART4_ASSIGNED      1
 #endif
 
 /***************************************************************************
@@ -1306,9 +1396,9 @@ void arm64_earlyserialinit(void)
    * earlier by U-Boot Bootloader.
    */
 
-  /* Configure the other UART Ports */
-
 #ifdef CONFIG_A64_UART1 ////
+  /* Configure UART1 */
+
   ret = a64_uart1config();
 
   if (ret < 0)
@@ -1318,6 +1408,8 @@ void arm64_earlyserialinit(void)
 #endif /* CONFIG_A64_UART1 */
 
 #ifdef CONFIG_A64_UART2 ////
+  /* Configure UART2 */
+
   ret = a64_uart2config();
 
   if (ret < 0)
@@ -1327,6 +1419,8 @@ void arm64_earlyserialinit(void)
 #endif /* CONFIG_A64_UART2 */
 
 #ifdef CONFIG_A64_UART3 ////
+  /* Configure UART3 */
+
   ret = a64_uart3config();
 
   if (ret < 0)
@@ -1335,8 +1429,20 @@ void arm64_earlyserialinit(void)
     }
 #endif /* CONFIG_A64_UART3 */
 
-  /* Enable the console at UART0 */
+#ifdef CONFIG_A64_UART4 ////
+  /* Configure UART4 */
+
+  ret = a64_uart4config();
+
+  if (ret < 0)
+    {
+      sinfo("UART4 config failed, ret=%d\n", ret);
+    }
+#endif /* CONFIG_A64_UART4 */
+
 #ifdef CONSOLE_DEV
+  /* Enable the console at UART0 */
+
   CONSOLE_DEV.isconsole = true;
   a64_uart_setup(&CONSOLE_DEV);
 #endif
@@ -1427,6 +1533,15 @@ void arm64_serialinit(void)
       sinfo("Register /dev/ttyS3 failed, ret=%d\n", ret);
     }
 #endif /* TTYS3_DEV */
+
+#ifdef TTYS4_DEV
+  ret = uart_register("/dev/ttyS4", &TTYS4_DEV);
+
+  if (ret < 0)
+    {
+      sinfo("Register /dev/ttyS4 failed, ret=%d\n", ret);
+    }
+#endif /* TTYS4_DEV */
 }
 
 #else /* USE_SERIALDRIVER */
