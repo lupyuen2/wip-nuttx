@@ -37,7 +37,9 @@ config A64_TCON0
 config A64_UART
 	bool "UART 0"
 	default n
+	select A64_UART0
 	select UART0_SERIALDRIVER
+	select ARCH_HAVE_SERIAL_TERMIOS
 	---help---
 		Select to enable support for UART0.
 
@@ -45,6 +47,7 @@ config A64_UART1
 	bool "UART 1"
 	default n
 	select UART1_SERIALDRIVER
+	select ARCH_HAVE_SERIAL_TERMIOS
 	---help---
 		Select to enable support for UART1.
 
@@ -52,6 +55,7 @@ config A64_UART2
 	bool "UART 2"
 	default n
 	select UART2_SERIALDRIVER
+	select ARCH_HAVE_SERIAL_TERMIOS
 	---help---
 		Select to enable support for UART2.
 
@@ -59,6 +63,7 @@ config A64_UART3
 	bool "UART 3"
 	default n
 	select UART3_SERIALDRIVER
+	select ARCH_HAVE_SERIAL_TERMIOS
 	---help---
 		Select to enable support for UART3.
 
@@ -66,6 +71,7 @@ config A64_UART4
 	bool "UART 4"
 	default n
 	select UART4_SERIALDRIVER
+	select ARCH_HAVE_SERIAL_TERMIOS
 	---help---
 		Select to enable support for UART4.
 
