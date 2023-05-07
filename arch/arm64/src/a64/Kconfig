@@ -58,10 +58,6 @@ config A64_TWI2
 	---help---
 		Select to enable support for TWI2.
 
-#####################################################################
-#  UART Configuration
-#####################################################################
-
 config A64_UART
 	bool "UART 0"
 	default n
@@ -69,53 +65,6 @@ config A64_UART
 	select ARCH_HAVE_SERIAL_TERMIOS
 	---help---
 		Select to enable support for UART0.
-
-if A64_UART
-
-	config A64_UART0_RXBUFSIZE
-		int "Receive buffer size"
-		default 64
-		---help---
-			Characters are buffered as they are received. This specifies
-			the size of the receive buffer.
-
-	config A64_UART0_TXBUFSIZE
-		int "Transmit buffer size"
-		default 64
-		---help---
-			Characters are buffered before being sent.  This specifies
-			the size of the transmit buffer.
-
-	config A64_UART0_BAUD
-		int "BAUD rate"
-		default 115200
-		---help---
-			The configured BAUD of the UART.
-
-	config A64_UART0_BITS
-		int "Character size"
-		default 8
-		range 8 9
-		---help---
-			The number of bits.  Must be either 8 or 9.
-
-	config A64_UART0_PARITY
-		int "Parity setting"
-		range 0 2
-		default 0
-		---help---
-			0=No parity, 1=Odd parity, 2=Even parity
-
-	config A64_UART0_2STOP
-		int "Use 2 stop bits"
-		default 0
-		range 0 1
-		---help---
-			1=Two stop bits
-
-endif # A64_UART0
-
-#####################################################################
 
 config A64_UART1
 	bool "UART 1"
@@ -125,8 +74,6 @@ config A64_UART1
 	---help---
 		Select to enable support for UART1.
 
-#####################################################################
-
 config A64_UART2
 	bool "UART 2"
 	default n
@@ -135,8 +82,6 @@ config A64_UART2
 	---help---
 		Select to enable support for UART2.
 
-#####################################################################
-
 config A64_UART3
 	bool "UART 3"
 	default n
@@ -144,8 +89,6 @@ config A64_UART3
 	select ARCH_HAVE_SERIAL_TERMIOS
 	---help---
 		Select to enable support for UART3.
-
-#####################################################################
 
 config A64_UART4
 	bool "UART 4"
