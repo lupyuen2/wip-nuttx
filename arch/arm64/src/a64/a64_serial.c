@@ -54,38 +54,38 @@
 
 /* UART0 Settings should be same as U-Boot Bootloader */
 
-#ifndef CONFIG_UART0_BAUD
-#  define CONFIG_UART0_BAUD 115200
+#ifndef CONFIG_A64_UART0_BAUD
+#  define CONFIG_A64_UART0_BAUD 115200
 #endif
 
-#ifndef CONFIG_UART0_BITS
-#  define CONFIG_UART0_BITS 8
+#ifndef CONFIG_A64_UART0_BITS
+#  define CONFIG_A64_UART0_BITS 8
 #endif
 
-#ifndef CONFIG_UART0_PARITY
-#  define CONFIG_UART0_PARITY 0
+#ifndef CONFIG_A64_UART0_PARITY
+#  define CONFIG_A64_UART0_PARITY 0
 #endif
 
-#ifndef CONFIG_UART0_2STOP
-#  define CONFIG_UART0_2STOP 0
+#ifndef CONFIG_A64_UART0_2STOP
+#  define CONFIG_A64_UART0_2STOP 0
 #endif
 
-#ifndef CONFIG_UART0_RXBUFSIZE
-#  define CONFIG_UART0_RXBUFSIZE 256
+#ifndef CONFIG_A64_UART0_RXBUFSIZE
+#  define CONFIG_A64_UART0_RXBUFSIZE 64
 #endif
 
-#ifndef CONFIG_UART0_TXBUFSIZE
-#  define CONFIG_UART0_TXBUFSIZE 256
+#ifndef CONFIG_A64_UART0_TXBUFSIZE
+#  define CONFIG_A64_UART0_TXBUFSIZE 64
 #endif
 
 //// TODO
 #define CONFIG_A64_UART3
-#define CONFIG_UART3_RXBUFSIZE 256
-#define CONFIG_UART3_TXBUFSIZE 256
-#define CONFIG_UART3_BAUD 115200
-#define CONFIG_UART3_BITS 8
-#define CONFIG_UART3_PARITY 0
-#define CONFIG_UART3_2STOP 0
+#define CONFIG_A64_UART3_RXBUFSIZE 64
+#define CONFIG_A64_UART3_TXBUFSIZE 64
+#define CONFIG_A64_UART3_BAUD 115200
+#define CONFIG_A64_UART3_BITS 8
+#define CONFIG_A64_UART3_PARITY 0
+#define CONFIG_A64_UART3_2STOP 0
 #define CONFIG_A64_UART3_BASE      0x01C28C00  /* A64 UART3 Base Address */
 #define CONFIG_A64_UART3_IRQ       35          /* A64 UART3 IRQ */
 
@@ -1153,10 +1153,10 @@ static struct a64_uart_port_s g_uart0priv =
 {
   .data   =
     {
-      .baud_rate  = CONFIG_UART0_BAUD,
-      .parity     = CONFIG_UART0_PARITY,
-      .bits       = CONFIG_UART0_BITS,
-      .stopbits2  = CONFIG_UART0_2STOP
+      .baud_rate  = CONFIG_A64_UART0_BAUD,
+      .parity     = CONFIG_A64_UART0_PARITY,
+      .bits       = CONFIG_A64_UART0_BITS,
+      .stopbits2  = CONFIG_A64_UART0_2STOP
     },
 
   .config =
@@ -1172,8 +1172,8 @@ static struct a64_uart_port_s g_uart0priv =
 
 /* UART0 I/O Buffers (Console) */
 
-static char                 g_uart0rxbuffer[CONFIG_UART0_RXBUFSIZE];
-static char                 g_uart0txbuffer[CONFIG_UART0_TXBUFSIZE];
+static char                 g_uart0rxbuffer[CONFIG_A64_UART0_RXBUFSIZE];
+static char                 g_uart0txbuffer[CONFIG_A64_UART0_TXBUFSIZE];
 
 /* UART0 Port Definition (Console) */
 
@@ -1181,13 +1181,13 @@ static struct uart_dev_s    g_uart0port =
 {
   .recv  =
     {
-      .size   = CONFIG_UART0_RXBUFSIZE,
+      .size   = CONFIG_A64_UART0_RXBUFSIZE,
       .buffer = g_uart0rxbuffer,
     },
 
   .xmit  =
     {
-      .size   = CONFIG_UART0_TXBUFSIZE,
+      .size   = CONFIG_A64_UART0_TXBUFSIZE,
       .buffer = g_uart0txbuffer,
     },
 
@@ -1205,10 +1205,10 @@ static struct a64_uart_port_s g_uart1priv =
 {
   .data   =
     {
-      .baud_rate  = CONFIG_UART1_BAUD,
-      .parity     = CONFIG_UART1_PARITY,
-      .bits       = CONFIG_UART1_BITS,
-      .stopbits2  = CONFIG_UART1_2STOP
+      .baud_rate  = CONFIG_A64_UART1_BAUD,
+      .parity     = CONFIG_A64_UART1_PARITY,
+      .bits       = CONFIG_A64_UART1_BITS,
+      .stopbits2  = CONFIG_A64_UART1_2STOP
     },
 
   .config =
@@ -1222,8 +1222,8 @@ static struct a64_uart_port_s g_uart1priv =
 
 /* UART1 I/O Buffers */
 
-static char                 g_uart1rxbuffer[CONFIG_UART1_RXBUFSIZE];
-static char                 g_uart1txbuffer[CONFIG_UART1_TXBUFSIZE];
+static char                 g_uart1rxbuffer[CONFIG_A64_UART1_RXBUFSIZE];
+static char                 g_uart1txbuffer[CONFIG_A64_UART1_TXBUFSIZE];
 
 /* UART1 Port Definition */
 
@@ -1231,13 +1231,13 @@ static struct uart_dev_s    g_uart1port =
 {
   .recv  =
     {
-      .size   = CONFIG_UART1_RXBUFSIZE,
+      .size   = CONFIG_A64_UART1_RXBUFSIZE,
       .buffer = g_uart1rxbuffer,
     },
 
   .xmit  =
     {
-      .size   = CONFIG_UART1_TXBUFSIZE,
+      .size   = CONFIG_A64_UART1_TXBUFSIZE,
       .buffer = g_uart1txbuffer,
     },
 
@@ -1255,10 +1255,10 @@ static struct a64_uart_port_s g_uart2priv =
 {
   .data   =
     {
-      .baud_rate  = CONFIG_UART2_BAUD,
-      .parity     = CONFIG_UART2_PARITY,
-      .bits       = CONFIG_UART2_BITS,
-      .stopbits2  = CONFIG_UART2_2STOP
+      .baud_rate  = CONFIG_A64_UART2_BAUD,
+      .parity     = CONFIG_A64_UART2_PARITY,
+      .bits       = CONFIG_A64_UART2_BITS,
+      .stopbits2  = CONFIG_A64_UART2_2STOP
     },
 
   .config =
@@ -1272,8 +1272,8 @@ static struct a64_uart_port_s g_uart2priv =
 
 /* UART2 I/O Buffers */
 
-static char                 g_uart2rxbuffer[CONFIG_UART2_RXBUFSIZE];
-static char                 g_uart2txbuffer[CONFIG_UART2_TXBUFSIZE];
+static char                 g_uart2rxbuffer[CONFIG_A64_UART2_RXBUFSIZE];
+static char                 g_uart2txbuffer[CONFIG_A64_UART2_TXBUFSIZE];
 
 /* UART2 Port Definition */
 
@@ -1281,13 +1281,13 @@ static struct uart_dev_s    g_uart2port =
 {
   .recv  =
     {
-      .size   = CONFIG_UART2_RXBUFSIZE,
+      .size   = CONFIG_A64_UART2_RXBUFSIZE,
       .buffer = g_uart2rxbuffer,
     },
 
   .xmit  =
     {
-      .size   = CONFIG_UART2_TXBUFSIZE,
+      .size   = CONFIG_A64_UART2_TXBUFSIZE,
       .buffer = g_uart2txbuffer,
     },
 
@@ -1305,10 +1305,10 @@ static struct a64_uart_port_s g_uart3priv =
 {
   .data   =
     {
-      .baud_rate  = CONFIG_UART3_BAUD,
-      .parity     = CONFIG_UART3_PARITY,
-      .bits       = CONFIG_UART3_BITS,
-      .stopbits2  = CONFIG_UART3_2STOP
+      .baud_rate  = CONFIG_A64_UART3_BAUD,
+      .parity     = CONFIG_A64_UART3_PARITY,
+      .bits       = CONFIG_A64_UART3_BITS,
+      .stopbits2  = CONFIG_A64_UART3_2STOP
     },
 
   .config =
@@ -1322,8 +1322,8 @@ static struct a64_uart_port_s g_uart3priv =
 
 /* UART3 I/O Buffers */
 
-static char                 g_uart3rxbuffer[CONFIG_UART3_RXBUFSIZE];
-static char                 g_uart3txbuffer[CONFIG_UART3_TXBUFSIZE];
+static char                 g_uart3rxbuffer[CONFIG_A64_UART3_RXBUFSIZE];
+static char                 g_uart3txbuffer[CONFIG_A64_UART3_TXBUFSIZE];
 
 /* UART3 Port Definition */
 
@@ -1331,13 +1331,13 @@ static struct uart_dev_s    g_uart3port =
 {
   .recv  =
     {
-      .size   = CONFIG_UART3_RXBUFSIZE,
+      .size   = CONFIG_A64_UART3_RXBUFSIZE,
       .buffer = g_uart3rxbuffer,
     },
 
   .xmit  =
     {
-      .size   = CONFIG_UART3_TXBUFSIZE,
+      .size   = CONFIG_A64_UART3_TXBUFSIZE,
       .buffer = g_uart3txbuffer,
     },
 
@@ -1355,10 +1355,10 @@ static struct a64_uart_port_s g_uart4priv =
 {
   .data   =
     {
-      .baud_rate  = CONFIG_UART4_BAUD,
-      .parity     = CONFIG_UART4_PARITY,
-      .bits       = CONFIG_UART4_BITS,
-      .stopbits2  = CONFIG_UART4_2STOP
+      .baud_rate  = CONFIG_A64_UART4_BAUD,
+      .parity     = CONFIG_A64_UART4_PARITY,
+      .bits       = CONFIG_A64_UART4_BITS,
+      .stopbits2  = CONFIG_A64_UART4_2STOP
     },
 
   .config =
@@ -1372,8 +1372,8 @@ static struct a64_uart_port_s g_uart4priv =
 
 /* UART4 I/O Buffers */
 
-static char                 g_uart4rxbuffer[CONFIG_UART4_RXBUFSIZE];
-static char                 g_uart4txbuffer[CONFIG_UART4_TXBUFSIZE];
+static char                 g_uart4rxbuffer[CONFIG_A64_UART4_RXBUFSIZE];
+static char                 g_uart4txbuffer[CONFIG_A64_UART4_TXBUFSIZE];
 
 /* UART4 Port Definition */
 
@@ -1381,13 +1381,13 @@ static struct uart_dev_s    g_uart4port =
 {
   .recv  =
     {
-      .size   = CONFIG_UART4_RXBUFSIZE,
+      .size   = CONFIG_A64_UART4_RXBUFSIZE,
       .buffer = g_uart4rxbuffer,
     },
 
   .xmit  =
     {
-      .size   = CONFIG_UART4_TXBUFSIZE,
+      .size   = CONFIG_A64_UART4_TXBUFSIZE,
       .buffer = g_uart4txbuffer,
     },
 
