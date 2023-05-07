@@ -52,6 +52,12 @@
 #include "a64_boot.h"
 #include "arm64_gic.h"
 
+#ifdef USE_SERIALDRIVER
+
+/***************************************************************************
+ * Pre-processor Definitions
+ ***************************************************************************/
+
 /* UART0 Settings should be same as U-Boot Bootloader */
 
 #ifndef CONFIG_UART0_BAUD
@@ -79,21 +85,8 @@
 #endif
 
 //// TODO
-#define CONFIG_A64_UART3
-#define CONFIG_UART3_RXBUFSIZE 256
-#define CONFIG_UART3_TXBUFSIZE 256
-#define CONFIG_UART3_BAUD 115200
-#define CONFIG_UART3_BITS 8
-#define CONFIG_UART3_PARITY 0
-#define CONFIG_UART3_2STOP 0
 #define CONFIG_A64_UART3_BASE      0x01C28C00  /* A64 UART3 Base Address */
 #define CONFIG_A64_UART3_IRQ       35          /* A64 UART3 IRQ */
-
-#ifdef USE_SERIALDRIVER
-
-/***************************************************************************
- * Pre-processor Definitions
- ***************************************************************************/
 
 /* UART0 is console and ttys0, follows U-Boot Bootloader */
 
