@@ -84,10 +84,6 @@
 #  define CONFIG_UART0_TXBUFSIZE 256
 #endif
 
-//// TODO
-#define CONFIG_A64_UART3_BASE      0x01C28C00  /* A64 UART3 Base Address */
-#define CONFIG_A64_UART3_IRQ       35          /* A64 UART3 IRQ */
-
 /* UART0 is console and ttys0, follows U-Boot Bootloader */
 
 #define CONSOLE_DEV     g_uart0port         /* UART0 is console */
@@ -113,17 +109,6 @@
 /***************************************************************************
  * Private Types
  ***************************************************************************/
-
-// struct up_dev_s
-// {
-//   uint32_t uartbase;  /* Base address of UART registers */
-//   uint32_t baud;      /* Configured baud */
-//   uint32_t ier;       /* Saved IER value */
-//   uint8_t  irq;       /* IRQ associated with this UART */
-//   uint8_t  parity;    /* 0=none, 1=odd, 2=even */
-//   uint8_t  bits;      /* Number of bits (7 or 8) */
-//   bool     stopbits2; /* true: Configure with 2 stop bits instead of 1 */
-// };
 
 /* A64 UART Configuration */
 
@@ -1154,10 +1139,10 @@ static struct a64_uart_port_s g_uart0priv =
 
   .config =
     {
-      .uart       = CONFIG_A64_UART0_BASE
+      .uart       = A64_UART0_ADDR
     },
 
-    .irq_num      = CONFIG_A64_UART0_IRQ,
+    .irq_num      = A64_UART0_IRQ,
     .is_console   = 1
 };
 
@@ -1206,10 +1191,10 @@ static struct a64_uart_port_s g_uart1priv =
 
   .config =
     {
-      .uart       = CONFIG_A64_UART1_BASE
+      .uart       = A64_UART1_ADDR
     },
 
-    .irq_num      = CONFIG_A64_UART1_IRQ,
+    .irq_num      = A64_UART1_IRQ,
     .is_console   = 0
 };
 
@@ -1256,10 +1241,10 @@ static struct a64_uart_port_s g_uart2priv =
 
   .config =
     {
-      .uart       = CONFIG_A64_UART2_BASE
+      .uart       = A64_UART2_ADDR
     },
 
-    .irq_num      = CONFIG_A64_UART2_IRQ,
+    .irq_num      = A64_UART2_IRQ,
     .is_console   = 0
 };
 
@@ -1306,10 +1291,10 @@ static struct a64_uart_port_s g_uart3priv =
 
   .config =
     {
-      .uart       = CONFIG_A64_UART3_BASE
+      .uart       = A64_UART3_ADDR
     },
 
-    .irq_num      = CONFIG_A64_UART3_IRQ,
+    .irq_num      = A64_UART3_IRQ,
     .is_console   = 0
 };
 
@@ -1356,10 +1341,10 @@ static struct a64_uart_port_s g_uart4priv =
 
   .config =
     {
-      .uart       = CONFIG_A64_UART4_BASE
+      .uart       = A64_UART4_ADDR
     },
 
-    .irq_num      = CONFIG_A64_UART4_IRQ,
+    .irq_num      = A64_UART4_IRQ,
     .is_console   = 0
 };
 
