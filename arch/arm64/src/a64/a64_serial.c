@@ -18,6 +18,15 @@
  *
  ***************************************************************************/
 
+/* Reference:
+ *
+ * "NuttX RTOS for PinePhone: UART Driver"
+ * https://lupyuen.github.io/articles/serial
+ *
+ * "A64 Page" refers to Allwinner A64 User Manual
+ * https://lupyuen.github.io/images/Allwinner_A64_User_Manual_V1.1.pdf
+ */
+
 /***************************************************************************
  * Included Files
  ***************************************************************************/
@@ -96,7 +105,9 @@
 
 #define UART_SCLK 24000000
 
-/* A64 UART Registers */
+/* A64 UART Registers and Bit Definitions ***********************************/
+
+/* A64 UART Registers (A64 Page 562) */
 
 #define UART_THR(uart_addr) (uart_addr + 0x00)  /* Tx Holding */
 #define UART_RBR(uart_addr) (uart_addr + 0x00)  /* Rx Buffer */
@@ -110,14 +121,14 @@
 #define UART_MSR(uart_addr) (uart_addr + 0x18)  /* Modem Status */
 #define UART_USR(uart_addr) (uart_addr + 0x7c)  /* UART Status */
 
-/* A64 UART Register Bit Definitions */
+/* A64 UART Register Bit Definitions (A64 Page 565) */
 
 #define UART_IER_ERBFI (1 << 0)  /* Enable Rx Data Interrupt */
 #define UART_IER_ETBEI (1 << 1)  /* Enable Tx Empty Interrupt */
 #define UART_LSR_DR    (1 << 0)  /* Rx Data Ready */
 #define UART_LSR_THRE  (1 << 5)  /* Tx Empty */
 
-/* A64 UART Interrupt Identity Register */
+/* A64 UART Interrupt Identity Register (A64 Page 565) */
 
 #define UART_IIR_IID_SHIFT        (0) /* Bits: 0-3: Interrupt ID */
 #define UART_IIR_IID_MASK         (15 << UART_IIR_IID_SHIFT)
@@ -134,7 +145,7 @@
 #  define UART_IIR_FEFLAG_DISABLE (0 << UART_IIR_FEFLAG_SHIFT)
 #  define UART_IIR_FEFLAG_ENABLE  (3 << UART_IIR_FEFLAG_SHIFT)
 
-/* A64 UART FIFO Control Register */
+/* A64 UART FIFO Control Register (A64 Page 567) */
 
 #define UART_FCR_FIFOE            (1 << 0)  /* Bit 0:  Enable FIFOs */
 #define UART_FCR_RFIFOR           (1 << 1)  /* Bit 1:  RCVR FIFO Reset */
@@ -154,7 +165,7 @@
 #  define UART_FCR_RT_HALF        (2 << UART_FCR_RT_SHIFT) /* FIFO 1/2 full */
 #  define UART_FCR_RT_MINUS2      (3 << UART_FCR_RT_SHIFT) /* FIFO-2 less than full */
 
-/* A64 UART Line Control Register */
+/* A64 UART Line Control Register (A64 Page 568) */
 
 #define UART_LCR_DLS_SHIFT        (0)       /* Bits 0-1: Data Length Select */
 #define UART_LCR_DLS_MASK         (3 << UART_LCR_DLS_SHIFT)
@@ -168,6 +179,26 @@
 #define UART_LCR_EPS              (1 << 4)  /* Bit 4:  Even Parity Select */
 #define UART_LCR_BC               (1 << 6)  /* Bit 6:  Break Control Bit */
 #define UART_LCR_DLAB             (1 << 7)  /* Bit 7:  Divisor Latch Access Bit */
+
+/* A64 CCU Registers and Bit Definitions ************************************/
+
+/* Bus Clock Gating Register 3 (A64 Page 104) */
+
+#define BUS_CLK_GATING_REG3 (A64_CCU_ADDR + 0x006C)
+#define UART0_GATING        (1 << 16)
+#define UART1_GATING        (1 << 17)
+#define UART2_GATING        (1 << 18)
+#define UART3_GATING        (1 << 19)
+#define UART4_GATING        (1 << 20)
+
+/* Bus Software Reset Register 4 (A64 Page 142) */
+
+#define BUS_SOFT_RST_REG4 (A64_CCU_ADDR + 0x02D8)
+#define UART0_RST         (1 << 16)
+#define UART1_RST         (1 << 17)
+#define UART2_RST         (1 << 18)
+#define UART3_RST         (1 << 19)
+#define UART4_RST         (1 << 20)
 
 /***************************************************************************
  * Private Types
@@ -360,21 +391,17 @@ static int up_setup(struct uart_dev_s *dev)
   uint32_t lcr;
 
   DEBUGASSERT(data != NULL);
-  // _info("baud_rate=%d\n", data->baud_rate);////
 
   /* Clear fifos */
 
-  // _info("Clear fifos"); ////  
   putreg32(UART_FCR_RFIFOR | UART_FCR_XFIFOR, UART_FCR(config->uart));
 
   /* Set trigger */
 
-  // _info("Set trigger"); ////
   putreg32(UART_FCR_FIFOE | UART_FCR_RT_HALF, UART_FCR(config->uart));
 
   /* Set up the IER */
 
-  // _info("Set up the IER"); ////
   data->ier = getreg32(UART_IER(config->uart));
 
   /* Set up the LCR */
@@ -417,12 +444,10 @@ static int up_setup(struct uart_dev_s *dev)
 
   /* Enter DLAB=1 */
 
-  // _info("Enter DLAB=1 and set BAUD divisor"); ////
-
   // Wait for UART not busy: UART_USR[0] must be zero
   for (;;) //TODO: Don't wait forever
     {
-      uint32_t status = getreg32(UART_USR(config->uart)); ////
+      uint32_t status = getreg32(UART_USR(config->uart));
       if ((status & 1) == 0) { break; }
     }
   
@@ -431,7 +456,7 @@ static int up_setup(struct uart_dev_s *dev)
   // Wait for UART not busy: UART_USR[0] must be zero
   for (;;) //TODO: Don't wait forever
     {
-      uint32_t status = getreg32(UART_USR(config->uart)); ////
+      uint32_t status = getreg32(UART_USR(config->uart));
       if ((status & 1) == 0) { break; }
     }
   
@@ -830,27 +855,23 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
   return a64_uart_txready(dev);
 }
 
+// TODO
+/****************************************************************************
+ * Name: a64_uart1config, uart2config, uart3config, uart4config
+ *
+ * Description:
+ *   Configure the UART (UART1, UART2, UART3, UART4).  Enable the clocking,
+ *   deassert the reset and configure the I/O pins.
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ****************************************************************************/
+
 #ifdef CONFIG_A64_UART1
 // TODO
 static int a64_uart1config(void)
 {
-  irqstate_t flags;
-  int ret;
-
-  /* Step 1: Enable power to UART1 */
-
-  flags   = enter_critical_section();
-#warning Missing logic
-
-  /* Step 2: Enable clocking to UART1 */
-#warning Missing logic
-
-  /* Step 3: Configure I/O pins */
-
-  a64_pio_config(PIO_UART1_TX);
-  a64_pio_config(PIO_UART1_RX);
-  leave_critical_section(flags);
-  return OK;
 };
 #endif /* CONFIG_A64_UART1 */
 
@@ -858,74 +879,18 @@ static int a64_uart1config(void)
 // TODO
 static int a64_uart2config(void)
 {
-  irqstate_t flags;
-  int ret;
-
-  /* Step 1: Enable power to UART2 */
-
-  flags   = enter_critical_section();
-#warning Missing logic
-
-  /* Step 2: Enable clocking on UART2 */
-#warning Missing logic
-
-  /* Step 3: Configure I/O pins */
-
-  a64_pio_config(PIO_UART2_TX);
-  a64_pio_config(PIO_UART2_RX);
-  leave_critical_section(flags);
-  return OK;
 };
 #endif /* CONFIG_A64_UART2 */
 
-// Enable clocking to UART3: Set UART3_GATING to High (Pass)
-// CCU Base Address: 0x01C20000
-// Bus Clock Gating Register3
-// Offset: 0x006C, Register Name: BUS_CLK_GATING_REG3
-// Bit 19
-// A64 User Manual Page 105
-#define BUS_CLK_GATING_REG3 (A64_CCU_ADDR + 0x006C)
-#define UART3_GATING (1 << 19)
-
-// Compare with UART0_GATING (Bit 16)
-#define UART0_GATING (1 << 16)
-
-// Deassert reset for UART3: Set UART3_RST to High
-// CCU Base Address: 0x01C20000
-// Bus Software Reset Register 4
-// Offset: 0x02D8, Register Name: BUS_SOFT_RST_REG4
-// Bit 19
-// A64 User Manual Page 142
-#define BUS_SOFT_RST_REG4 (A64_CCU_ADDR + 0x02D8)
-#define UART3_RST (1 << 19)
-
-// Compare with UART0_RST (Bit 16)
-#define UART0_RST (1 << 16)
-
-// PIO Base Address: 0x01C20800
-// PD Configure Register 0
-// Offset: 0x6C, Register Name: PD_CFG0_REG
-// Bits 0 to 2: PD0_SELECT
-// Bits 4 to 6: PD1_SELECT
-// A64 User Manual Page 385
-#define PD_CFG0_REG (A64_PIO_ADDR + 0x6C)
-#define PD0_SELECT (0b111 << 0)
-#define PD1_SELECT (0b111 << 4)
-
-// Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
-#define PIO_UART3_TX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN0)
-#define PIO_UART3_RX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
-
 #ifdef CONFIG_A64_UART3
-// TODO
 static int a64_uart3config(void)
 {
   irqstate_t flags;
   int ret;
 
-  /* Step 1: Enable power to UART3 */
+  flags = enter_critical_section();
 
-  flags   = enter_critical_section();
+  /* Enable clocking to UART */
 
   // Enable clocking to UART3: Set UART3_GATING to High (Pass)
   // CCU Base Address: 0x01C20000
@@ -941,6 +906,8 @@ static int a64_uart3config(void)
   // Compare with UART0_GATING (Bit 16)
   _info("Compare with UART0_GATING: addr=0x%x, val=0x%x\n", BUS_CLK_GATING_REG3, getreg32(BUS_CLK_GATING_REG3) & UART0_GATING);
 
+  /* Deassert reset for UART */
+
   // Deassert reset for UART3: Set UART3_RST to High
   // CCU Base Address: 0x01C20000
   // Bus Software Reset Register 4
@@ -954,6 +921,23 @@ static int a64_uart3config(void)
 
   // Compare with UART0_RST (Bit 16)
   _info("Compare with UART0_RST: addr=0x%x, val=0x%x\n", BUS_SOFT_RST_REG4, getreg32(BUS_SOFT_RST_REG4) & UART0_RST);
+
+  /* Configure I/O pins for UART */
+
+  ////TODO
+  // PIO Base Address: 0x01C20800
+  // PD Configure Register 0
+  // Offset: 0x6C, Register Name: PD_CFG0_REG
+  // Bits 0 to 2: PD0_SELECT
+  // Bits 4 to 6: PD1_SELECT
+  // A64 User Manual Page 385
+  #define PD_CFG0_REG (A64_PIO_ADDR + 0x6C)
+  #define PD0_SELECT (0b111 << 0)
+  #define PD1_SELECT (0b111 << 4)
+
+  // Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
+  #define PIO_UART3_TX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN0)
+  #define PIO_UART3_RX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
 
   // PIO Base Address: 0x01C20800
   // PD Configure Register 0
@@ -975,12 +959,6 @@ static int a64_uart3config(void)
   _info("Enable UART3 on PD0: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before0, after0);
   _info("Enable UART3 on PD1: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before1, after1);
 
-  /* Step 2: Enable clocking to UART3 */
-
-  /* Step 3: Configure I/O pins */
-
-  // a64_pio_config(PIO_UART3_TX);
-  // a64_pio_config(PIO_UART3_RX);
   leave_critical_section(flags);
   return OK;
 };
@@ -990,23 +968,6 @@ static int a64_uart3config(void)
 // TODO
 static int a64_uart4config(void)
 {
-  irqstate_t flags;
-  int ret;
-
-  /* Step 1: Enable power to UART4 */
-
-  flags   = enter_critical_section();
-#warning Missing logic
-
-  /* Step 2: Enable clocking on UART4 */
-#warning Missing logic
-
-  /* Step 3: Configure I/O pins */
-
-  a64_pio_config(PIO_UART4_TX);
-  a64_pio_config(PIO_UART4_RX);
-  leave_critical_section(flags);
-  return OK;
 };
 #endif /* CONFIG_A64_UART4 */
 
