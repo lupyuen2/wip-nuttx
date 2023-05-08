@@ -90,6 +90,12 @@
 #define TTYS0_DEV       g_uart0port         /* UART0 is ttyS0 */
 #define UART0_ASSIGNED  1
 
+/* A64 UART SCLK is the UART Input Clock.  Through experimentation, it has
+ * been found that the serial clock is OSC24M
+ */
+
+#define UART_SCLK 24000000
+
 /* A64 UART Registers */
 
 #define UART_THR(uart_addr) (uart_addr + 0x00)  /* Tx Holding */
@@ -180,14 +186,6 @@
 #define UART_LCR_BC               (1 << 6)  /* Bit 6:  Break Control Bit */
 #define UART_LCR_DLAB             (1 << 7)  /* Bit 7:  Divisor Latch Access Bit */
 
-/* SCLK is the UART input clock.
- *
- * Through experimentation, it has been found that the serial clock is
- * OSC24M
- */
-
-#define A64_SCLK 24000000
-
 /***************************************************************************
  * Private Types
  ***************************************************************************/
@@ -224,21 +222,20 @@ struct a64_uart_port_s
  * Private Functions
  ***************************************************************************/
 
-//// TODO
 /****************************************************************************
- * Name: a64_uartdl
+ * Name: a64_uart_divisor
  *
  * Description:
- *   Select a divider to produce the BAUD from the UART PCLK.
+ *   Select a divisor to produce the BAUD from the UART SCLK.
  *
- *     BAUD = PCLK / (16 * DL), or
- *     DL   = PCLK / BAUD / 16
+ *     BAUD = SCLK / (16 * DL), or
+ *     DL   = SCLK / BAUD / 16
  *
  ****************************************************************************/
 
-static inline uint32_t a64_uartdl(uint32_t baud)
+static inline uint32_t a64_uart_divisor(uint32_t baud)
 {
-  return A64_SCLK / (baud << 4);
+  return UART_SCLK / (baud << 4);
 }
 
 //// TODO
@@ -409,7 +406,7 @@ static int up_setup(struct uart_dev_s *dev)
 
   /* Clear fifos */
 
-  // _info("Clear fifos"); ////
+  // _info("Clear fifos"); ////  
   up_serialout(config, A1X_UART_FCR_OFFSET,
               (UART_FCR_RFIFOR | UART_FCR_XFIFOR));
 
@@ -487,7 +484,7 @@ static int up_setup(struct uart_dev_s *dev)
   uint32_t before0 = getreg32(config->uart + A1X_UART_DLH_OFFSET); ////
   uint32_t before1 = getreg32(config->uart + A1X_UART_DLL_OFFSET); ////
 
-  dl = a64_uartdl(data->baud_rate);
+  dl = a64_uart_divisor(data->baud_rate);
   up_serialout(config, A1X_UART_DLH_OFFSET, dl >> 8);
   up_serialout(config, A1X_UART_DLL_OFFSET, dl & 0xff);
 
@@ -707,8 +704,8 @@ static int a64_uart_receive(struct uart_dev_s *dev, unsigned int *status)
   const struct a64_uart_config *config = &port->config;
   uint32_t rbr;
 
-  *status = getreg32(UART_LSR(config->uart));
-  rbr     = getreg32(UART_RBR(config->uart));
+  *status = getreg8(UART_LSR(config->uart));
+  rbr     = getreg8(UART_RBR(config->uart));
   return rbr;
 }
 
