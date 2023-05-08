@@ -39,7 +39,7 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h> ////TODO
+#include <debug.h>
 
 #ifdef CONFIG_SERIAL_TERMIOS
 #  include <termios.h>
@@ -349,7 +349,6 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
               /* Read the modem status register (MSR) to clear */
 
               status = getreg32(UART_MSR(config->uart));
-              _info("MSR: %02" PRIx32 "\n", status);
               break;
             }
 
@@ -360,7 +359,6 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
               /* Read the line status register (LSR) to clear */
 
               status = getreg32(UART_LSR(config->uart));
-              _info("LSR: %02" PRIx32 "\n", status);
               break;
             }
 
