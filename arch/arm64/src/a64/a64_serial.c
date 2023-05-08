@@ -111,28 +111,28 @@
 
 /* A64 UART I/O Pins *******************************************************/
 
-/* UART1: PG6 and PG7 */
+/* UART1: PG6 and PG7 (Peripheral 2) */
 
 #ifdef CONFIG_A64_UART1
 #  define PIO_UART1_TX (PIO_PERIPH2 | PIO_PORT_PIOG | PIO_PIN6)
 #  define PIO_UART1_RX (PIO_PERIPH2 | PIO_PORT_PIOG | PIO_PIN7)
 #endif
 
-/* UART2: PB0 and PB1 */
+/* UART2: PB0 and PB1 (Peripheral 2) */
 
 #ifdef CONFIG_A64_UART2
 #  define PIO_UART2_TX (PIO_PERIPH2 | PIO_PORT_PIOB | PIO_PIN0)
 #  define PIO_UART2_RX (PIO_PERIPH2 | PIO_PORT_PIOB | PIO_PIN1)
 #endif
 
-/* UART3: PD0 and PD1 */
+/* UART3: PD0 and PD1 (Peripheral 3) */
 
 #ifdef CONFIG_A64_UART3
 #  define PIO_UART3_TX (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN0)
 #  define PIO_UART3_RX (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
 #endif
 
-/* UART4: PD2 and PD3 */
+/* UART4: PD2 and PD3 (Peripheral 3) */
 
 #ifdef CONFIG_A64_UART4
 #  define PIO_UART4_TX (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN2)
