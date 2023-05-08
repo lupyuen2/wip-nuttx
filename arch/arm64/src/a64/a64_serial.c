@@ -271,7 +271,6 @@ struct a64_uart_port_s
  * Private Functions
  ***************************************************************************/
 
-////TODO
 /***************************************************************************
  * Name: a64_uart_divisor
  *
@@ -281,10 +280,14 @@ struct a64_uart_port_s
  *     BAUD = SCLK / (16 * DL), or
  *     DL   = SCLK / BAUD / 16
  *
+ * Returned Value:
+ *   UART Divisor
+ *
  ***************************************************************************/
 
-static inline uint32_t a64_uart_divisor(uint32_t baud)
+static uint32_t a64_uart_divisor(uint32_t baud)
 {
+  DEBUGASSERT(baud != 0);
   return UART_SCLK / (baud << 4);
 }
 
@@ -908,13 +911,18 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
   return a64_uart_txready(dev);
 }
 
-////TODO: a64_uart_init(gating, rst, tx, rx)
 /***************************************************************************
- * Name: a64_uart1config, uart2config, uart3config, uart4config
+ * Name: a64_uart_init
  *
  * Description:
- *   Configure the UART (UART1, UART2, UART3, UART4).  Enable the clocking,
- *   deassert the reset and configure the I/O pins.
+ *   Configure the UART.  Enable the clocking, deassert the reset and
+ *   configure the I/O pins.
+ *
+ * Input Parameters:
+ *   gating - UART Gating Bit (e.g. UART1_GATING)
+ *   rst    - UART Reset Bit (e.g. UART1_RST)
+ *   tx     - UART Transmit Pin (e.g. PIO_UART1_TX)
+ *   rx     - UART Receive Pin (e.g. PIO_UART1_RX)
  *
  * Returned Value:
  *   Zero (OK) on success; a negated errno value is returned on any failure.
