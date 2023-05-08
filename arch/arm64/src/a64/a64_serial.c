@@ -105,6 +105,10 @@
 
 #define UART_SCLK 24000000
 
+/* Timeout for UART in milliseconds */
+
+#define UART_TIMEOUT_MS 100
+
 /* A64 UART I/O Pins ********************************************************/
 
 /* UART1: PG6 and PG7 */
@@ -157,6 +161,7 @@
 #define UART_IER_ETBEI (1 << 1)  /* Enable Tx Empty Interrupt */
 #define UART_LSR_DR    (1 << 0)  /* Rx Data Ready */
 #define UART_LSR_THRE  (1 << 5)  /* Tx Empty */
+#define UART_USR_BUSY  (1 << 0)  /* UART Busy */
 
 /* A64 UART Interrupt Identity Register (A64 Page 565) */
 
@@ -399,6 +404,42 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
   return OK;
 }
 
+/****************************************************************************
+ * Name: a64_uart_wait
+ *
+ * Description:
+ *   Wait for UART to be non-busy.
+ *
+ * Input Parameters:
+ *   None
+ *
+ * Returned Value:
+ *   Zero (OK) on success; ERROR if timeout.
+ *
+ ****************************************************************************/
+
+static int a64_uart_wait(struct uart_dev_s *dev)
+{
+  struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
+  const struct a64_uart_config *config = &port->config;
+  int i;
+
+  for (i = 0; i < UART_TIMEOUT_MS; i++)
+    {
+      uint32_t status = getreg32(UART_USR(config->uart));
+
+      if ((status & UART_USR_BUSY) == 0)
+        {
+          return OK; 
+        }
+
+      up_mdelay(1);
+    }
+
+  serr("UART timeout\n");
+  return ERROR;
+}
+
 /***************************************************************************
  * Name: a64_uart_setup
  *
@@ -422,6 +463,7 @@ static int a64_uart_setup(struct uart_dev_s *dev)
   struct a64_uart_data *data = &port->data;
   uint16_t dl;
   uint32_t lcr;
+  int ret;
 
   DEBUGASSERT(data != NULL);
 
@@ -475,22 +517,24 @@ static int a64_uart_setup(struct uart_dev_s *dev)
       lcr |= (UART_LCR_PEN | UART_LCR_EPS);
     }
 
-  /* Enter DLAB=1 */
+  /* Set DLAB when UART is not busy */
 
-  // Wait for UART not busy: UART_USR[0] must be zero
-  for (;;) ////TODO: Don't wait forever
+  ret = a64_uart_wait(dev);
+
+  if (ret < 0)
     {
-      uint32_t status = getreg32(UART_USR(config->uart));
-      if ((status & 1) == 0) { break; }
+      serr("UART wait failed, ret=%d\n", ret);
+      return ret;
     }
-  
+
   putreg32(lcr | UART_LCR_DLAB, UART_LCR(config->uart));
 
-  // Wait for UART not busy: UART_USR[0] must be zero
-  for (;;) ////TODO: Don't wait forever
+  ret = a64_uart_wait(dev);
+
+  if (ret < 0)
     {
-      uint32_t status = getreg32(UART_USR(config->uart));
-      if ((status & 1) == 0) { break; }
+      serr("UART wait failed, ret=%d\n", ret);
+      return ret;
     }
   
   /* Set the BAUD divisor */
@@ -498,6 +542,8 @@ static int a64_uart_setup(struct uart_dev_s *dev)
   dl = a64_uart_divisor(data->baud_rate);
   putreg32(dl >> 8,   UART_DLH(config->uart));
   putreg32(dl & 0xff, UART_DLL(config->uart));
+
+  // TODO: Check BAUD divisor
 
   /* Clear DLAB */
 
@@ -514,7 +560,7 @@ static int a64_uart_setup(struct uart_dev_s *dev)
 #  warning Missing logic
 #endif
 
-#endif
+#endif /* CONFIG_SUPPRESS_UART_CONFIG */
   return OK;
 }
 
@@ -538,7 +584,7 @@ static void a64_uart_shutdown(struct uart_dev_s *dev)
   /* Should never be called */
 
   UNUSED(dev);
-  sinfo("%s: call unexpected\n", __func__);
+  serr("%s: call unexpected\n", __func__);
 }
 
 /***************************************************************************
@@ -587,7 +633,7 @@ static int a64_uart_attach(struct uart_dev_s *dev)
     }
   else
     {
-      sinfo("error ret=%d\n", ret);
+      serr("error ret=%d\n", ret);
     }
 
   return ret;
@@ -888,14 +934,14 @@ static int a64_uart_init(uint32_t gating, uint32_t rst, pio_pinset_t tx, pio_pin
   ret = a64_pio_config(tx);
   if (ret < 0)
     {
-      sinfo("UART TX Pin config failed, ret=%d\n", ret);
+      serr("UART TX Pin config failed, ret=%d\n", ret);
     }
   else
     {
       ret = a64_pio_config(rx);
       if (ret < 0)
         {
-          sinfo("UART RX Pin config failed, ret=%d\n", ret);
+          serr("UART RX Pin config failed, ret=%d\n", ret);
         }
     }
 
@@ -1257,7 +1303,7 @@ void arm64_earlyserialinit(void)
 
   if (ret < 0)
     {
-      sinfo("UART1 config failed, ret=%d\n", ret);
+      serr("UART1 config failed, ret=%d\n", ret);
     }
 #endif /* CONFIG_A64_UART1 */
 
@@ -1268,7 +1314,7 @@ void arm64_earlyserialinit(void)
 
   if (ret < 0)
     {
-      sinfo("UART2 config failed, ret=%d\n", ret);
+      serr("UART2 config failed, ret=%d\n", ret);
     }
 #endif /* CONFIG_A64_UART2 */
 
@@ -1279,7 +1325,7 @@ void arm64_earlyserialinit(void)
 
   if (ret < 0)
     {
-      sinfo("UART3 config failed, ret=%d\n", ret);
+      serr("UART3 config failed, ret=%d\n", ret);
     }
 #endif /* CONFIG_A64_UART3 */
 
@@ -1290,7 +1336,7 @@ void arm64_earlyserialinit(void)
 
   if (ret < 0)
     {
-      sinfo("UART4 config failed, ret=%d\n", ret);
+      serr("UART4 config failed, ret=%d\n", ret);
     }
 #endif /* CONFIG_A64_UART4 */
 
@@ -1353,14 +1399,14 @@ void arm64_serialinit(void)
   ret = uart_register("/dev/console", &CONSOLE_DEV);
   if (ret < 0)
     {
-      sinfo("Register /dev/console failed, ret=%d\n", ret);
+      serr("Register /dev/console failed, ret=%d\n", ret);
     }
 
   ret = uart_register("/dev/ttyS0", &TTYS0_DEV);
 
   if (ret < 0)
     {
-      sinfo("Register /dev/ttyS0 failed, ret=%d\n", ret);
+      serr("Register /dev/ttyS0 failed, ret=%d\n", ret);
     }
 
 #ifdef TTYS1_DEV
@@ -1368,7 +1414,7 @@ void arm64_serialinit(void)
 
   if (ret < 0)
     {
-      sinfo("Register /dev/ttyS1 failed, ret=%d\n", ret);
+      serr("Register /dev/ttyS1 failed, ret=%d\n", ret);
     }
 #endif /* TTYS1_DEV */
 
@@ -1377,7 +1423,7 @@ void arm64_serialinit(void)
 
   if (ret < 0)
     {
-      sinfo("Register /dev/ttyS2 failed, ret=%d\n", ret);
+      serr("Register /dev/ttyS2 failed, ret=%d\n", ret);
     }
 #endif /* TTYS2_DEV */
 
@@ -1386,7 +1432,7 @@ void arm64_serialinit(void)
 
   if (ret < 0)
     {
-      sinfo("Register /dev/ttyS3 failed, ret=%d\n", ret);
+      serr("Register /dev/ttyS3 failed, ret=%d\n", ret);
     }
 #endif /* TTYS3_DEV */
 
@@ -1395,7 +1441,7 @@ void arm64_serialinit(void)
 
   if (ret < 0)
     {
-      sinfo("Register /dev/ttyS4 failed, ret=%d\n", ret);
+      serr("Register /dev/ttyS4 failed, ret=%d\n", ret);
     }
 #endif /* TTYS4_DEV */
 }
