@@ -97,6 +97,8 @@
 #define UART_IER(uart_addr) (uart_addr + 0x04)  /* Interrupt Enable */
 #define UART_IIR(uart_addr) (uart_addr + 0x08)  /* Interrupt Identity */
 #define UART_LSR(uart_addr) (uart_addr + 0x14)  /* Line Status */
+#define UART_MSR(uart_addr) (uart_addr + 0x18)  /* Modem Status */
+#define UART_USR(uart_addr) (uart_addr + 0x7c)  /* UART Status */
 
 /* A64 UART Register Bit Definitions */
 
@@ -241,16 +243,6 @@ static inline uint32_t a64_uartdl(uint32_t baud)
 
 //// TODO
 /****************************************************************************
- * Name: up_serialin
- ****************************************************************************/
-
-static inline uint32_t up_serialin(const struct a64_uart_config *config, int offset)
-{
-  return getreg32(config->uart + offset);
-}
-
-//// TODO
-/****************************************************************************
  * Name: up_serialout
  ****************************************************************************/
 
@@ -311,7 +303,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
     {
       /* Get the current UART status */
 
-      status = up_serialin(config, A1X_UART_IIR_OFFSET);
+      status = getreg32(UART_IIR(config->uart));
 
       /* Handle the interrupt by its interrupt ID field */
 
@@ -340,7 +332,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
             {
               /* Read the modem status register (MSR) to clear */
 
-              status = up_serialin(config, A1X_UART_MSR_OFFSET);
+              status = getreg32(UART_MSR(config->uart));
               _info("MSR: %02" PRIx32 "\n", status);
               break;
             }
@@ -351,7 +343,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
             {
               /* Read the line status register (LSR) to clear */
 
-              status = up_serialin(config, A1X_UART_LSR_OFFSET);
+              status = getreg32(UART_LSR(config->uart));
               _info("LSR: %02" PRIx32 "\n", status);
               break;
             }
@@ -367,7 +359,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
                * to clear the BUSY condition
                */
 
-              status = up_serialin(config, A1X_UART_USR_OFFSET);
+              status = getreg32(UART_USR(config->uart));
               break;
             }
 
@@ -430,7 +422,7 @@ static int up_setup(struct uart_dev_s *dev)
   /* Set up the IER */
 
   // _info("Set up the IER"); ////
-  data->ier = up_serialin(config, A1X_UART_IER_OFFSET);
+  data->ier = getreg32(UART_IER(config->uart));
 
   /* Set up the LCR */
 
@@ -715,8 +707,8 @@ static int a64_uart_receive(struct uart_dev_s *dev, unsigned int *status)
   const struct a64_uart_config *config = &port->config;
   uint32_t rbr;
 
-  *status = getreg8(UART_LSR(config->uart));
-  rbr     = getreg8(UART_RBR(config->uart));
+  *status = getreg32(UART_LSR(config->uart));
+  rbr     = getreg32(UART_RBR(config->uart));
   return rbr;
 }
 
