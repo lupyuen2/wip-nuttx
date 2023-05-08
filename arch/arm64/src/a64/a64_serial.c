@@ -184,7 +184,7 @@
  * OSC24M
  */
 
-#define A1X_SCLK 24000000
+#define A64_SCLK 24000000
 
 /***************************************************************************
  * Private Types
@@ -236,7 +236,7 @@ struct a64_uart_port_s
 
 static inline uint32_t a64_uartdl(uint32_t baud)
 {
-  return A1X_SCLK / (baud << 4);
+  return A64_SCLK / (baud << 4);
 }
 
 //// TODO
@@ -715,8 +715,8 @@ static int a64_uart_receive(struct uart_dev_s *dev, unsigned int *status)
   const struct a64_uart_config *config = &port->config;
   uint32_t rbr;
 
-  *status = up_serialin(config, A1X_UART_LSR_OFFSET);
-  rbr     = up_serialin(config, A1X_UART_RBR_OFFSET);
+  *status = getreg8(UART_LSR(config->uart));
+  rbr     = getreg8(UART_RBR(config->uart));
   return rbr;
 }
 
