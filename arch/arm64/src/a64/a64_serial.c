@@ -205,6 +205,7 @@ struct a64_uart_port_s
  * Private Functions
  ***************************************************************************/
 
+////TODO
 /****************************************************************************
  * Name: a64_uart_divisor
  *
@@ -883,8 +884,7 @@ static int a64_uart2config(void)
 // Offset: 0x006C, Register Name: BUS_CLK_GATING_REG3
 // Bit 19
 // A64 User Manual Page 105
-#define CCU_BASE_ADDR 0x01C20000
-#define BUS_CLK_GATING_REG3 (CCU_BASE_ADDR + 0x006C)
+#define BUS_CLK_GATING_REG3 (A64_CCU_ADDR + 0x006C)
 #define UART3_GATING (1 << 19)
 
 // Compare with UART0_GATING (Bit 16)
@@ -896,7 +896,7 @@ static int a64_uart2config(void)
 // Offset: 0x02D8, Register Name: BUS_SOFT_RST_REG4
 // Bit 19
 // A64 User Manual Page 142
-#define BUS_SOFT_RST_REG4 (CCU_BASE_ADDR + 0x02D8)
+#define BUS_SOFT_RST_REG4 (A64_CCU_ADDR + 0x02D8)
 #define UART3_RST (1 << 19)
 
 // Compare with UART0_RST (Bit 16)
@@ -908,8 +908,7 @@ static int a64_uart2config(void)
 // Bits 0 to 2: PD0_SELECT
 // Bits 4 to 6: PD1_SELECT
 // A64 User Manual Page 385
-#define PIO_BASE_ADDR 0x01C20800
-#define PD_CFG0_REG (PIO_BASE_ADDR + 0x6C)
+#define PD_CFG0_REG (A64_PIO_ADDR + 0x6C)
 #define PD0_SELECT (0b111 << 0)
 #define PD1_SELECT (0b111 << 4)
 
