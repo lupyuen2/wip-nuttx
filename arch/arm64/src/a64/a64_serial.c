@@ -916,52 +916,36 @@ static int a64_uart2config(void)
 static int a64_uart3config(void)
 {
   irqstate_t flags;
-  int ret;
+  int ret = OK;
 
   flags = enter_critical_section();
 
   /* Enable clocking to UART */
 
-  // Enable clocking to UART3: Set UART3_GATING to High (Pass)
-  // CCU Base Address: 0x01C20000
-  // Bus Clock Gating Register3
-  // Offset: 0x006C, Register Name: BUS_CLK_GATING_REG3
-  // Bit 19
-  // A64 User Manual Page 105
-  uint32_t before = getreg32(BUS_CLK_GATING_REG3) & UART3_GATING;
   modreg32(UART3_GATING, UART3_GATING, BUS_CLK_GATING_REG3);
-  uint32_t after = getreg32(BUS_CLK_GATING_REG3) & UART3_GATING;
-  _info("Enable clocking to UART3: Set UART3_GATING to High (Pass): addr=0x%x, before=0x%x, after=0x%x\n", BUS_CLK_GATING_REG3, before, after);
-
-  // Compare with UART0_GATING (Bit 16)
-  _info("Compare with UART0_GATING: addr=0x%x, val=0x%x\n", BUS_CLK_GATING_REG3, getreg32(BUS_CLK_GATING_REG3) & UART0_GATING);
 
   /* Deassert reset for UART */
 
-  // Deassert reset for UART3: Set UART3_RST to High
-  // CCU Base Address: 0x01C20000
-  // Bus Software Reset Register 4
-  // Offset: 0x02D8, Register Name: BUS_SOFT_RST_REG4
-  // Bit 19
-  // A64 User Manual Page 142
-  before = getreg32(BUS_SOFT_RST_REG4) & UART3_RST;
   modreg32(UART3_RST, UART3_RST, BUS_SOFT_RST_REG4);
-  after = getreg32(BUS_SOFT_RST_REG4) & UART3_RST;
-  _info("Deassert reset for UART3: Set UART3_RST to High: addr=0x%x, before=0x%x, after=0x%x\n", BUS_SOFT_RST_REG4, before, after);
-
-  // Compare with UART0_RST (Bit 16)
-  _info("Compare with UART0_RST: addr=0x%x, val=0x%x\n", BUS_SOFT_RST_REG4, getreg32(BUS_SOFT_RST_REG4) & UART0_RST);
 
   /* Configure I/O pins for UART */
 
-  // Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
   ret = a64_pio_config(PIO_UART3_TX);
-  DEBUGASSERT(ret == OK); ////TODO
-  ret = a64_pio_config(PIO_UART3_RX);
-  DEBUGASSERT(ret == OK); ////TODO
+  if (ret < 0)
+    {
+      sinfo("UART TX Pin config failed, ret=%d\n", ret);
+    }
+  else
+    {
+      ret = a64_pio_config(PIO_UART3_RX);
+      if (ret < 0)
+        {
+          sinfo("UART RX Pin config failed, ret=%d\n", ret);
+        }
+    }
 
   leave_critical_section(flags);
-  return OK;
+  return ret;
 };
 #endif /* CONFIG_A64_UART3 */
 
@@ -1047,7 +1031,7 @@ static struct uart_dev_s    g_uart0port =
 
 #endif /* CONFIG_A64_UART */
 
-#ifdef CONFIG_A64_UART1 ////
+#ifdef CONFIG_A64_UART1
 
 /* UART1 Port State */
 
@@ -1097,7 +1081,7 @@ static struct uart_dev_s    g_uart1port =
 
 #endif /* CONFIG_A64_UART1 */
 
-#ifdef CONFIG_A64_UART2 ////
+#ifdef CONFIG_A64_UART2
 
 /* UART2 Port State */
 
@@ -1147,7 +1131,7 @@ static struct uart_dev_s    g_uart2port =
 
 #endif /* CONFIG_A64_UART2 */
 
-#ifdef CONFIG_A64_UART3 ////
+#ifdef CONFIG_A64_UART3
 
 /* UART3 Port State */
 
@@ -1197,7 +1181,7 @@ static struct uart_dev_s    g_uart3port =
 
 #endif /* CONFIG_A64_UART3 */
 
-#ifdef CONFIG_A64_UART4 ////
+#ifdef CONFIG_A64_UART4
 
 /* UART4 Port State */
 
@@ -1319,7 +1303,7 @@ void arm64_earlyserialinit(void)
    * earlier by U-Boot Bootloader.
    */
 
-#ifdef CONFIG_A64_UART1 ////
+#ifdef CONFIG_A64_UART1
   /* Configure UART1 */
 
   ret = a64_uart1config();
@@ -1330,7 +1314,7 @@ void arm64_earlyserialinit(void)
     }
 #endif /* CONFIG_A64_UART1 */
 
-#ifdef CONFIG_A64_UART2 ////
+#ifdef CONFIG_A64_UART2
   /* Configure UART2 */
 
   ret = a64_uart2config();
@@ -1341,7 +1325,7 @@ void arm64_earlyserialinit(void)
     }
 #endif /* CONFIG_A64_UART2 */
 
-#ifdef CONFIG_A64_UART3 ////
+#ifdef CONFIG_A64_UART3
   /* Configure UART3 */
 
   ret = a64_uart3config();
@@ -1352,7 +1336,7 @@ void arm64_earlyserialinit(void)
     }
 #endif /* CONFIG_A64_UART3 */
 
-#ifdef CONFIG_A64_UART4 ////
+#ifdef CONFIG_A64_UART4
   /* Configure UART4 */
 
   ret = a64_uart4config();
