@@ -100,8 +100,12 @@
 
 #define UART_THR(uart_addr) (uart_addr + 0x00)  /* Tx Holding */
 #define UART_RBR(uart_addr) (uart_addr + 0x00)  /* Rx Buffer */
+#define UART_DLL(uart_addr) (uart_addr + 0x00)  /* Divisor Latch Low */
+#define UART_DLH(uart_addr) (uart_addr + 0x04)  /* Divisor Latch High */
 #define UART_IER(uart_addr) (uart_addr + 0x04)  /* Interrupt Enable */
 #define UART_IIR(uart_addr) (uart_addr + 0x08)  /* Interrupt Identity */
+#define UART_FCR(uart_addr) (uart_addr + 0x08)  /* FIFO Control */
+#define UART_LCR(uart_addr) (uart_addr + 0x0c)  /* Line Control */
 #define UART_LSR(uart_addr) (uart_addr + 0x14)  /* Line Status */
 #define UART_MSR(uart_addr) (uart_addr + 0x18)  /* Modem Status */
 #define UART_USR(uart_addr) (uart_addr + 0x7c)  /* UART Status */
@@ -238,18 +242,6 @@ static inline uint32_t a64_uart_divisor(uint32_t baud)
   return UART_SCLK / (baud << 4);
 }
 
-//// TODO
-/****************************************************************************
- * Name: up_serialout
- ****************************************************************************/
-
-static inline void up_serialout(const struct a64_uart_config *config, int offset,
-                                uint32_t value)
-{
-  putreg32(value, config->uart + offset);
-}
-
-#ifdef NOTUSED //// TODO
 /***************************************************************************
  * Name: a64_uart_irq_handler
  *
@@ -267,20 +259,6 @@ static inline void up_serialout(const struct a64_uart_config *config, int offset
  *   OK is always returned at present.
  *
  ***************************************************************************/
-#endif  // NOTUSED
-
-//// TODO
-/****************************************************************************
- * Name: a64_uart_irq_handler
- *
- * Description:
- *   This is the UART interrupt handler.  It will be invoked when an
- *   interrupt is received on the 'irq'.  It should call uart_xmitchars or
- *   uart_recvchars to perform the appropriate data transfers.  The
- *   interrupt handling logic must be able to map the 'arg' to the
- *   appropriate uart_dev_s structure in order to call these functions.
- *
- ****************************************************************************/
 
 static int a64_uart_irq_handler(int irq, void *context, void *arg)
 {
@@ -407,14 +385,12 @@ static int up_setup(struct uart_dev_s *dev)
   /* Clear fifos */
 
   // _info("Clear fifos"); ////  
-  up_serialout(config, A1X_UART_FCR_OFFSET,
-              (UART_FCR_RFIFOR | UART_FCR_XFIFOR));
+  putreg32(UART_FCR_RFIFOR | UART_FCR_XFIFOR, UART_FCR(config->uart));
 
   /* Set trigger */
 
   // _info("Set trigger"); ////
-  up_serialout(config, A1X_UART_FCR_OFFSET,
-              (UART_FCR_FIFOE | UART_FCR_RT_HALF));
+  putreg32(UART_FCR_FIFOE | UART_FCR_RT_HALF, UART_FCR(config->uart));
 
   /* Set up the IER */
 
@@ -470,7 +446,7 @@ static int up_setup(struct uart_dev_s *dev)
       if ((status & 1) == 0) { break; }
     }
   
-  up_serialout(config, A1X_UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
+  putreg32(lcr | UART_LCR_DLAB, UART_LCR(config->uart));
 
   // Wait for UART not busy: UART_USR[0] must be zero
   for (;;)
@@ -485,15 +461,15 @@ static int up_setup(struct uart_dev_s *dev)
   uint32_t before1 = getreg32(config->uart + A1X_UART_DLL_OFFSET); ////
 
   dl = a64_uart_divisor(data->baud_rate);
-  up_serialout(config, A1X_UART_DLH_OFFSET, dl >> 8);
-  up_serialout(config, A1X_UART_DLL_OFFSET, dl & 0xff);
+  putreg32(dl >> 8,   UART_DLH(config->uart));
+  putreg32(dl & 0xff, UART_DLL(config->uart));
 
   uint32_t after0 = getreg32(config->uart + A1X_UART_DLH_OFFSET); ////
   uint32_t after1 = getreg32(config->uart + A1X_UART_DLL_OFFSET); ////
 
   /* Clear DLAB */
 
-  up_serialout(config, A1X_UART_LCR_OFFSET, lcr);
+  putreg32(lcr, UART_LCR(config->uart));
   _info("Clear DLAB"); ////
 
   _info("addr=0x%x, before=0x%x, after=0x%x\n", config->uart + A1X_UART_DLH_OFFSET, before0, after0); ////
@@ -502,9 +478,8 @@ static int up_setup(struct uart_dev_s *dev)
   /* Configure the FIFOs */
 
   _info("Configure the FIFOs"); ////
-  up_serialout(config, A1X_UART_FCR_OFFSET,
-               (UART_FCR_RT_HALF | UART_FCR_XFIFOR | UART_FCR_RFIFOR |
-                UART_FCR_FIFOE));
+  putreg32(UART_FCR_RT_HALF | UART_FCR_XFIFOR | UART_FCR_RFIFOR |
+           UART_FCR_FIFOE, UART_FCR(config->uart));
 
   /* Enable Auto-Flow Control in the Modem Control Register */
 
