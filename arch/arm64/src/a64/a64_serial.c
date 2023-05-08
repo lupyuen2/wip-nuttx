@@ -105,6 +105,36 @@
 
 #define UART_SCLK 24000000
 
+/* A64 UART I/O Pins ********************************************************/
+
+/* UART1: PG6 and PG7 */
+
+#ifdef CONFIG_A64_UART1
+#  define PIO_UART1_TX (PIO_PERIPH3 | PIO_PORT_PIOG | PIO_PIN6)
+#  define PIO_UART1_RX (PIO_PERIPH3 | PIO_PORT_PIOG | PIO_PIN7)
+#endif
+
+/* UART2: PB0 and PB1 */
+
+#ifdef CONFIG_A64_UART2
+#  define PIO_UART2_TX (PIO_PERIPH3 | PIO_PORT_PIOB | PIO_PIN0)
+#  define PIO_UART2_RX (PIO_PERIPH3 | PIO_PORT_PIOB | PIO_PIN1)
+#endif
+
+/* UART3: PD0 and PD1 */
+
+#ifdef CONFIG_A64_UART3
+#  define PIO_UART3_TX (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN0)
+#  define PIO_UART3_RX (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
+#endif
+
+/* UART4: PD2 and PD3 */
+
+#ifdef CONFIG_A64_UART4
+#  define PIO_UART4_TX (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN2)
+#  define PIO_UART4_RX (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN3)
+#endif
+
 /* A64 UART Registers and Bit Definitions ***********************************/
 
 /* A64 UART Registers (A64 Page 562) */
@@ -924,40 +954,11 @@ static int a64_uart3config(void)
 
   /* Configure I/O pins for UART */
 
-  ////TODO
-  // PIO Base Address: 0x01C20800
-  // PD Configure Register 0
-  // Offset: 0x6C, Register Name: PD_CFG0_REG
-  // Bits 0 to 2: PD0_SELECT
-  // Bits 4 to 6: PD1_SELECT
-  // A64 User Manual Page 385
-  #define PD_CFG0_REG (A64_PIO_ADDR + 0x6C)
-  #define PD0_SELECT (0b111 << 0)
-  #define PD1_SELECT (0b111 << 4)
-
-  // Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
-  #define PIO_UART3_TX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN0)
-  #define PIO_UART3_RX  (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN1)
-
-  // PIO Base Address: 0x01C20800
-  // PD Configure Register 0
-  // Offset: 0x6C, Register Name: PD_CFG0_REG
-  // Bits 0 to 2: PD0_SELECT
-  // Bits 4 to 6: PD1_SELECT
-  // A64 User Manual Page 385
-  uint32_t before0 = getreg32(PD_CFG0_REG) & PD0_SELECT;
-  uint32_t before1 = getreg32(PD_CFG0_REG) & PD1_SELECT;
-
   // Enable UART3 on PD0 and PD1: PD0_SELECT and PD1_SELECT
   ret = a64_pio_config(PIO_UART3_TX);
-  DEBUGASSERT(ret == OK);
+  DEBUGASSERT(ret == OK); ////TODO
   ret = a64_pio_config(PIO_UART3_RX);
-  DEBUGASSERT(ret == OK);
-
-  uint32_t after0 = getreg32(PD_CFG0_REG) & PD0_SELECT;
-  uint32_t after1 = getreg32(PD_CFG0_REG) & PD1_SELECT;
-  _info("Enable UART3 on PD0: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before0, after0);
-  _info("Enable UART3 on PD1: PD0_SELECT: addr=0x%x, before=0x%x, after=0x%x\n", PD_CFG0_REG, before1, after1);
+  DEBUGASSERT(ret == OK); ////TODO
 
   leave_critical_section(flags);
   return OK;
