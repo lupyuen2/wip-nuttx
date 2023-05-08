@@ -401,17 +401,22 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
   return OK;
 }
 
-////TODO
-/****************************************************************************
- * Name: up_setup
+/***************************************************************************
+ * Name: a64_uart_setup
  *
  * Description:
  *   Configure the UART baud, bits, parity, fifos, etc. This method is
  *   called the first time that the serial port is opened.
  *
- ****************************************************************************/
+ * Input Parameters:
+ *   dev - UART Device
+ *
+ * Returned Value:
+ *   Zero (OK) on success; a negated errno value is returned on any failure.
+ *
+ ***************************************************************************/
 
-static int up_setup(struct uart_dev_s *dev)
+static int a64_uart_setup(struct uart_dev_s *dev)
 {
 #ifndef CONFIG_SUPPRESS_UART_CONFIG
   struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
@@ -475,7 +480,7 @@ static int up_setup(struct uart_dev_s *dev)
   /* Enter DLAB=1 */
 
   // Wait for UART not busy: UART_USR[0] must be zero
-  for (;;) //TODO: Don't wait forever
+  for (;;) ////TODO: Don't wait forever
     {
       uint32_t status = getreg32(UART_USR(config->uart));
       if ((status & 1) == 0) { break; }
@@ -484,7 +489,7 @@ static int up_setup(struct uart_dev_s *dev)
   putreg32(lcr | UART_LCR_DLAB, UART_LCR(config->uart));
 
   // Wait for UART not busy: UART_USR[0] must be zero
-  for (;;) //TODO: Don't wait forever
+  for (;;) ////TODO: Don't wait forever
     {
       uint32_t status = getreg32(UART_USR(config->uart));
       if ((status & 1) == 0) { break; }
@@ -492,27 +497,16 @@ static int up_setup(struct uart_dev_s *dev)
   
   /* Set the BAUD divisor */
 
-  uint32_t before0 = getreg32(UART_DLH(config->uart)); ////
-  uint32_t before1 = getreg32(UART_DLL(config->uart)); ////
-
   dl = a64_uart_divisor(data->baud_rate);
   putreg32(dl >> 8,   UART_DLH(config->uart));
   putreg32(dl & 0xff, UART_DLL(config->uart));
 
-  uint32_t after0 = getreg32(UART_DLH(config->uart)); ////
-  uint32_t after1 = getreg32(UART_DLL(config->uart)); ////
-
   /* Clear DLAB */
 
   putreg32(lcr, UART_LCR(config->uart));
-  _info("Clear DLAB"); ////
-
-  _info("addr=0x%x, before=0x%x, after=0x%x\n", UART_DLH(config->uart), before0, after0); ////
-  _info("addr=0x%x, before=0x%x, after=0x%x\n", UART_DLL(config->uart), before1, after1); ////
 
   /* Configure the FIFOs */
 
-  _info("Configure the FIFOs"); ////
   putreg32(UART_FCR_RT_HALF | UART_FCR_XFIFOR | UART_FCR_RFIFOR |
            UART_FCR_FIFOE, UART_FCR(config->uart));
 
@@ -524,28 +518,6 @@ static int up_setup(struct uart_dev_s *dev)
 
 #endif
   return OK;
-}
-
-/***************************************************************************
- * Name: a64_uart_setup
- *
- * Description:
- *   Set up the UART Port.
- *
- * Input Parameters:
- *   dev - UART Device
- *
- * Returned Value:
- *   OK is always returned at present.
- *
- ***************************************************************************/
-
-static int a64_uart_setup(struct uart_dev_s *dev)
-{
-  int ret = up_setup(dev);
-  DEBUGASSERT(ret == OK); ////TODO
-
-  return ret;
 }
 
 /***************************************************************************
@@ -885,7 +857,7 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
   return a64_uart_txready(dev);
 }
 
-// TODO
+////TODO: a64_uart_init(gating, rst, tx, rx)
 /****************************************************************************
  * Name: a64_uart1config, uart2config, uart3config, uart4config
  *
@@ -898,22 +870,6 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
  *
  ****************************************************************************/
 
-#ifdef CONFIG_A64_UART1
-// TODO
-static int a64_uart1config(void)
-{
-};
-#endif /* CONFIG_A64_UART1 */
-
-#ifdef CONFIG_A64_UART2
-// TODO
-static int a64_uart2config(void)
-{
-};
-#endif /* CONFIG_A64_UART2 */
-
-////TODO
-// a64_uart_init(gating, rst, tx, rx)
 static int a64_uart_init(uint32_t gating, uint32_t rst, pio_pinset_t tx, pio_pinset_t rx)
 {
   irqstate_t flags;
@@ -948,13 +904,6 @@ static int a64_uart_init(uint32_t gating, uint32_t rst, pio_pinset_t tx, pio_pin
   leave_critical_section(flags);
   return ret;
 };
-
-#ifdef CONFIG_A64_UART4
-// TODO
-static int a64_uart4config(void)
-{
-};
-#endif /* CONFIG_A64_UART4 */
 
 /***************************************************************************
  * Private Data
@@ -1306,7 +1255,7 @@ void arm64_earlyserialinit(void)
 #ifdef CONFIG_A64_UART1
   /* Configure UART1 */
 
-  ret = a64_uart1config();
+  ret = a64_uart_init(UART1_GATING, UART1_RST, PIO_UART1_TX, PIO_UART1_RX);
 
   if (ret < 0)
     {
@@ -1317,7 +1266,7 @@ void arm64_earlyserialinit(void)
 #ifdef CONFIG_A64_UART2
   /* Configure UART2 */
 
-  ret = a64_uart2config();
+  ret = a64_uart_init(UART2_GATING, UART2_RST, PIO_UART2_TX, PIO_UART2_RX);
 
   if (ret < 0)
     {
@@ -1339,7 +1288,7 @@ void arm64_earlyserialinit(void)
 #ifdef CONFIG_A64_UART4
   /* Configure UART4 */
 
-  ret = a64_uart4config();
+  ret = a64_uart_init(UART4_GATING, UART4_RST, PIO_UART4_TX, PIO_UART4_RX);
 
   if (ret < 0)
     {
