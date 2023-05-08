@@ -105,11 +105,11 @@
 
 #define UART_SCLK 24000000
 
-/* Timeout for UART in milliseconds */
+/* Timeout for UART Busy Wait, in milliseconds */
 
 #define UART_TIMEOUT_MS 100
 
-/* A64 UART I/O Pins ********************************************************/
+/* A64 UART I/O Pins *******************************************************/
 
 /* UART1: PG6 and PG7 */
 
@@ -139,7 +139,7 @@
 #  define PIO_UART4_RX (PIO_PERIPH3 | PIO_PORT_PIOD | PIO_PIN3)
 #endif
 
-/* A64 UART Registers and Bit Definitions ***********************************/
+/* A64 UART Registers and Bit Definitions **********************************/
 
 /* A64 UART Registers (A64 Page 562) */
 
@@ -215,7 +215,7 @@
 #define UART_LCR_BC               (1 << 6)  /* Bit 6:  Break Control Bit */
 #define UART_LCR_DLAB             (1 << 7)  /* Bit 7:  Divisor Latch Access Bit */
 
-/* A64 CCU Registers and Bit Definitions ************************************/
+/* A64 CCU Registers and Bit Definitions ***********************************/
 
 /* Bus Clock Gating Register 3 (A64 Page 104) */
 
@@ -272,7 +272,7 @@ struct a64_uart_port_s
  ***************************************************************************/
 
 ////TODO
-/****************************************************************************
+/***************************************************************************
  * Name: a64_uart_divisor
  *
  * Description:
@@ -281,7 +281,7 @@ struct a64_uart_port_s
  *     BAUD = SCLK / (16 * DL), or
  *     DL   = SCLK / BAUD / 16
  *
- ****************************************************************************/
+ ***************************************************************************/
 
 static inline uint32_t a64_uart_divisor(uint32_t baud)
 {
@@ -404,7 +404,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
   return OK;
 }
 
-/****************************************************************************
+/***************************************************************************
  * Name: a64_uart_wait
  *
  * Description:
@@ -416,7 +416,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
  * Returned Value:
  *   Zero (OK) on success; ERROR if timeout.
  *
- ****************************************************************************/
+ ***************************************************************************/
 
 static int a64_uart_wait(struct uart_dev_s *dev)
 {
@@ -551,9 +551,6 @@ static int a64_uart_setup(struct uart_dev_s *dev)
       _err("UART BAUD divisor failed\n");
       return ERROR;
     }
-
-  ////_info("UART_DLH=%d\n", getreg32(UART_DLH(config->uart)));////
-  ////_info("UART_DLL=%d\n", getreg32(UART_DLL(config->uart)));////
 
   /* Clear DLAB */
 
@@ -912,7 +909,7 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
 }
 
 ////TODO: a64_uart_init(gating, rst, tx, rx)
-/****************************************************************************
+/***************************************************************************
  * Name: a64_uart1config, uart2config, uart3config, uart4config
  *
  * Description:
@@ -922,9 +919,10 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
  * Returned Value:
  *   Zero (OK) on success; a negated errno value is returned on any failure.
  *
- ****************************************************************************/
+ ***************************************************************************/
 
-static int a64_uart_init(uint32_t gating, uint32_t rst, pio_pinset_t tx, pio_pinset_t rx)
+static int a64_uart_init(uint32_t gating, uint32_t rst, pio_pinset_t tx,
+                         pio_pinset_t rx)
 {
   irqstate_t flags;
   int ret = OK;
