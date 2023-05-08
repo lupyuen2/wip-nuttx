@@ -1364,6 +1364,7 @@ void arm64_earlyserialinit(void)
 #endif
 
   UNUSED(a64_uart_init);
+  UNUSED(ret);
 }
 
 /***************************************************************************
