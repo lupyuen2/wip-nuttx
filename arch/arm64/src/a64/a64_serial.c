@@ -114,12 +114,10 @@
 
 #define UART_IER_ERBFI (1 << 0)  /* Enable Rx Data Interrupt */
 #define UART_IER_ETBEI (1 << 1)  /* Enable Tx Empty Interrupt */
-#define UART_IIR_INTID (0b1111)  /* Interrupt ID */
 #define UART_LSR_DR    (1 << 0)  /* Rx Data Ready */
 #define UART_LSR_THRE  (1 << 5)  /* Tx Empty */
 
-////TODO
-/* UART Interrupt Identity Register */
+/* A64 UART Interrupt Identity Register */
 
 #define UART_IIR_IID_SHIFT        (0) /* Bits: 0-3: Interrupt ID */
 #define UART_IIR_IID_MASK         (15 << UART_IIR_IID_SHIFT)
@@ -136,7 +134,7 @@
 #  define UART_IIR_FEFLAG_DISABLE (0 << UART_IIR_FEFLAG_SHIFT)
 #  define UART_IIR_FEFLAG_ENABLE  (3 << UART_IIR_FEFLAG_SHIFT)
 
-/* UART FIFO Control Register */
+/* A64 UART FIFO Control Register */
 
 #define UART_FCR_FIFOE            (1 << 0)  /* Bit 0:  Enable FIFOs */
 #define UART_FCR_RFIFOR           (1 << 1)  /* Bit 1:  RCVR FIFO Reset */
@@ -156,7 +154,7 @@
 #  define UART_FCR_RT_HALF        (2 << UART_FCR_RT_SHIFT) /* FIFO 1/2 full */
 #  define UART_FCR_RT_MINUS2      (3 << UART_FCR_RT_SHIFT) /* FIFO-2 less than full */
 
-/* UART Line Control Register */
+/* A64 UART Line Control Register */
 
 #define UART_LCR_DLS_SHIFT        (0)       /* Bits 0-1: Data Length Select */
 #define UART_LCR_DLS_MASK         (3 << UART_LCR_DLS_SHIFT)
