@@ -119,25 +119,6 @@
 #define UART_LSR_THRE  (1 << 5)  /* Tx Empty */
 
 ////TODO
-/* Register offsets *********************************************************/
-
-#define A1X_UART_RBR_OFFSET       0x0000 /* UART Receive Buffer Register */
-#define A1X_UART_THR_OFFSET       0x0000 /* UART Transmit Holding Register */
-#define A1X_UART_DLL_OFFSET       0x0000 /* UART Divisor Latch Low Register */
-#define A1X_UART_DLH_OFFSET       0x0004 /* UART Divisor Latch High Register */
-#define A1X_UART_IER_OFFSET       0x0004 /* UART Interrupt Enable Register */
-#define A1X_UART_IIR_OFFSET       0x0008 /* UART Interrupt Identity Register */
-#define A1X_UART_FCR_OFFSET       0x0008 /* UART FIFO Control Register */
-#define A1X_UART_LCR_OFFSET       0x000c /* UART Line Control Register */
-#define A1X_UART_MCR_OFFSET       0x0010 /* UART Modem Control Register */
-#define A1X_UART_LSR_OFFSET       0x0014 /* UART Line Status Register */
-#define A1X_UART_MSR_OFFSET       0x0018 /* UART Modem Status Register */
-#define A1X_UART_SCH_OFFSET       0x001c /* UART Scratch Register */
-#define A1X_UART_USR_OFFSET       0x007c /* UART Status Register */
-#define A1X_UART_TFL_OFFSET       0x0080 /* UART Transmit FIFO Level */
-#define A1X_UART_RFL_OFFSET       0x0084 /* UART Receive FIFO Level */
-#define A1X_UART_HALT_OFFSET      0x00a4 /* UART Halt TX Register */
-
 /* UART Interrupt Identity Register */
 
 #define UART_IIR_IID_SHIFT        (0) /* Bits: 0-3: Interrupt ID */
@@ -440,40 +421,40 @@ static int up_setup(struct uart_dev_s *dev)
   // _info("Enter DLAB=1 and set BAUD divisor"); ////
 
   // Wait for UART not busy: UART_USR[0] must be zero
-  for (;;)
+  for (;;) //TODO: Don't wait forever
     {
-      uint32_t status = getreg32(config->uart + A1X_UART_USR_OFFSET); ////
+      uint32_t status = getreg32(UART_USR(config->uart)); ////
       if ((status & 1) == 0) { break; }
     }
   
   putreg32(lcr | UART_LCR_DLAB, UART_LCR(config->uart));
 
   // Wait for UART not busy: UART_USR[0] must be zero
-  for (;;)
+  for (;;) //TODO: Don't wait forever
     {
-      uint32_t status = getreg32(config->uart + A1X_UART_USR_OFFSET); ////
+      uint32_t status = getreg32(UART_USR(config->uart)); ////
       if ((status & 1) == 0) { break; }
     }
   
   /* Set the BAUD divisor */
 
-  uint32_t before0 = getreg32(config->uart + A1X_UART_DLH_OFFSET); ////
-  uint32_t before1 = getreg32(config->uart + A1X_UART_DLL_OFFSET); ////
+  uint32_t before0 = getreg32(UART_DLH(config->uart)); ////
+  uint32_t before1 = getreg32(UART_DLL(config->uart)); ////
 
   dl = a64_uart_divisor(data->baud_rate);
   putreg32(dl >> 8,   UART_DLH(config->uart));
   putreg32(dl & 0xff, UART_DLL(config->uart));
 
-  uint32_t after0 = getreg32(config->uart + A1X_UART_DLH_OFFSET); ////
-  uint32_t after1 = getreg32(config->uart + A1X_UART_DLL_OFFSET); ////
+  uint32_t after0 = getreg32(UART_DLH(config->uart)); ////
+  uint32_t after1 = getreg32(UART_DLL(config->uart)); ////
 
   /* Clear DLAB */
 
   putreg32(lcr, UART_LCR(config->uart));
   _info("Clear DLAB"); ////
 
-  _info("addr=0x%x, before=0x%x, after=0x%x\n", config->uart + A1X_UART_DLH_OFFSET, before0, after0); ////
-  _info("addr=0x%x, before=0x%x, after=0x%x\n", config->uart + A1X_UART_DLL_OFFSET, before1, after1); ////
+  _info("addr=0x%x, before=0x%x, after=0x%x\n", UART_DLH(config->uart), before0, after0); ////
+  _info("addr=0x%x, before=0x%x, after=0x%x\n", UART_DLL(config->uart), before1, after1); ////
 
   /* Configure the FIFOs */
 
