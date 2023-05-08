@@ -430,13 +430,13 @@ static int a64_uart_wait(struct uart_dev_s *dev)
 
       if ((status & UART_USR_BUSY) == 0)
         {
-          return OK; 
+          return OK;
         }
 
       up_mdelay(1);
     }
 
-  serr("UART timeout\n");
+  _err("UART timeout\n");
   return ERROR;
 }
 
@@ -523,7 +523,7 @@ static int a64_uart_setup(struct uart_dev_s *dev)
 
   if (ret < 0)
     {
-      serr("UART wait failed, ret=%d\n", ret);
+      _err("UART wait failed, ret=%d\n", ret);
       return ret;
     }
 
@@ -533,17 +533,27 @@ static int a64_uart_setup(struct uart_dev_s *dev)
 
   if (ret < 0)
     {
-      serr("UART wait failed, ret=%d\n", ret);
+      _err("UART wait failed, ret=%d\n", ret);
       return ret;
     }
-  
+
   /* Set the BAUD divisor */
 
   dl = a64_uart_divisor(data->baud_rate);
   putreg32(dl >> 8,   UART_DLH(config->uart));
   putreg32(dl & 0xff, UART_DLL(config->uart));
 
-  // TODO: Check BAUD divisor
+  /* Check the BAUD divisor */
+
+  if (getreg32(UART_DLH(config->uart)) != (dl >> 8) ||
+      getreg32(UART_DLL(config->uart)) != (dl & 0xff))
+    {
+      _err("UART BAUD divisor failed\n");
+      return ERROR;
+    }
+
+  ////_info("UART_DLH=%d\n", getreg32(UART_DLH(config->uart)));////
+  ////_info("UART_DLL=%d\n", getreg32(UART_DLL(config->uart)));////
 
   /* Clear DLAB */
 
@@ -584,7 +594,7 @@ static void a64_uart_shutdown(struct uart_dev_s *dev)
   /* Should never be called */
 
   UNUSED(dev);
-  serr("%s: call unexpected\n", __func__);
+  _err("%s: call unexpected\n", __func__);
 }
 
 /***************************************************************************
@@ -623,7 +633,7 @@ static int a64_uart_attach(struct uart_dev_s *dev)
 
   /* Set Interrupt Priority in Generic Interrupt Controller v2 */
 
-  arm64_gic_irq_set_priority(port->irq_num, IRQ_TYPE_LEVEL, 0);
+  arm64_gic_irq_set_priority(port->irq_num, 0, IRQ_TYPE_LEVEL);
 
   /* Enable UART Interrupt */
 
@@ -633,7 +643,7 @@ static int a64_uart_attach(struct uart_dev_s *dev)
     }
   else
     {
-      serr("error ret=%d\n", ret);
+      _err("IRQ attach failed, ret=%d\n", ret);
     }
 
   return ret;
@@ -934,14 +944,14 @@ static int a64_uart_init(uint32_t gating, uint32_t rst, pio_pinset_t tx, pio_pin
   ret = a64_pio_config(tx);
   if (ret < 0)
     {
-      serr("UART TX Pin config failed, ret=%d\n", ret);
+      _err("UART TX Pin config failed, ret=%d\n", ret);
     }
   else
     {
       ret = a64_pio_config(rx);
       if (ret < 0)
         {
-          serr("UART RX Pin config failed, ret=%d\n", ret);
+          _err("UART RX Pin config failed, ret=%d\n", ret);
         }
     }
 
@@ -1303,7 +1313,7 @@ void arm64_earlyserialinit(void)
 
   if (ret < 0)
     {
-      serr("UART1 config failed, ret=%d\n", ret);
+      _err("UART1 config failed, ret=%d\n", ret);
     }
 #endif /* CONFIG_A64_UART1 */
 
@@ -1314,7 +1324,7 @@ void arm64_earlyserialinit(void)
 
   if (ret < 0)
     {
-      serr("UART2 config failed, ret=%d\n", ret);
+      _err("UART2 config failed, ret=%d\n", ret);
     }
 #endif /* CONFIG_A64_UART2 */
 
@@ -1325,7 +1335,7 @@ void arm64_earlyserialinit(void)
 
   if (ret < 0)
     {
-      serr("UART3 config failed, ret=%d\n", ret);
+      _err("UART3 config failed, ret=%d\n", ret);
     }
 #endif /* CONFIG_A64_UART3 */
 
@@ -1336,7 +1346,7 @@ void arm64_earlyserialinit(void)
 
   if (ret < 0)
     {
-      serr("UART4 config failed, ret=%d\n", ret);
+      _err("UART4 config failed, ret=%d\n", ret);
     }
 #endif /* CONFIG_A64_UART4 */
 
@@ -1399,14 +1409,14 @@ void arm64_serialinit(void)
   ret = uart_register("/dev/console", &CONSOLE_DEV);
   if (ret < 0)
     {
-      serr("Register /dev/console failed, ret=%d\n", ret);
+      _err("Register /dev/console failed, ret=%d\n", ret);
     }
 
   ret = uart_register("/dev/ttyS0", &TTYS0_DEV);
 
   if (ret < 0)
     {
-      serr("Register /dev/ttyS0 failed, ret=%d\n", ret);
+      _err("Register /dev/ttyS0 failed, ret=%d\n", ret);
     }
 
 #ifdef TTYS1_DEV
@@ -1414,7 +1424,7 @@ void arm64_serialinit(void)
 
   if (ret < 0)
     {
-      serr("Register /dev/ttyS1 failed, ret=%d\n", ret);
+      _err("Register /dev/ttyS1 failed, ret=%d\n", ret);
     }
 #endif /* TTYS1_DEV */
 
@@ -1423,7 +1433,7 @@ void arm64_serialinit(void)
 
   if (ret < 0)
     {
-      serr("Register /dev/ttyS2 failed, ret=%d\n", ret);
+      _err("Register /dev/ttyS2 failed, ret=%d\n", ret);
     }
 #endif /* TTYS2_DEV */
 
@@ -1432,7 +1442,7 @@ void arm64_serialinit(void)
 
   if (ret < 0)
     {
-      serr("Register /dev/ttyS3 failed, ret=%d\n", ret);
+      _err("Register /dev/ttyS3 failed, ret=%d\n", ret);
     }
 #endif /* TTYS3_DEV */
 
@@ -1441,7 +1451,7 @@ void arm64_serialinit(void)
 
   if (ret < 0)
     {
-      serr("Register /dev/ttyS4 failed, ret=%d\n", ret);
+      _err("Register /dev/ttyS4 failed, ret=%d\n", ret);
     }
 #endif /* TTYS4_DEV */
 }
