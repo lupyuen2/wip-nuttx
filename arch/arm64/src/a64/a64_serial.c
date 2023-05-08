@@ -540,13 +540,13 @@ static int a64_uart_setup(struct uart_dev_s *dev)
   /* Set the BAUD divisor */
 
   dl = a64_uart_divisor(data->baud_rate);
-  putreg32(dl >> 8,   UART_DLH(config->uart));
-  putreg32(dl & 0xff, UART_DLL(config->uart));
+  putreg8(dl >> 8,   UART_DLH(config->uart));
+  putreg8(dl & 0xff, UART_DLL(config->uart));
 
   /* Check the BAUD divisor */
 
-  if (getreg32(UART_DLH(config->uart)) != (dl >> 8) ||
-      getreg32(UART_DLL(config->uart)) != (dl & 0xff))
+  if (getreg8(UART_DLH(config->uart)) != (dl >> 8) ||
+      getreg8(UART_DLL(config->uart)) != (dl & 0xff))
     {
       _err("UART BAUD divisor failed\n");
       return ERROR;
