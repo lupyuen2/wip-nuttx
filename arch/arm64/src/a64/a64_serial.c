@@ -106,64 +106,7 @@
 #define UART_LSR_DR    (1 << 0)  /* Rx Data Ready */
 #define UART_LSR_THRE  (1 << 5)  /* Tx Empty */
 
-/***************************************************************************
- * Private Types
- ***************************************************************************/
-
-/* A64 UART Configuration */
-
-struct a64_uart_config
-{
-  unsigned long uart;  /* UART Base Address */
-};
-
-/* A64 UART Device Data */
-
-struct a64_uart_data
-{
-  uint32_t baud_rate;  /* UART Baud Rate */
-  uint32_t ier;        /* Saved IER value */
-  uint8_t  parity;     /* 0=none, 1=odd, 2=even */
-  uint8_t  bits;       /* Number of bits (7 or 8) */
-  bool     stopbits2;  /* true: Configure with 2 stop bits instead of 1 */
-};
-
-/* A64 UART Port */
-
-struct a64_uart_port_s
-{
-  struct a64_uart_data data;     /* UART Device Data */
-  struct a64_uart_config config; /* UART Configuration */
-  unsigned int irq_num;          /* UART IRQ Number */
-  bool is_console;               /* 1 if this UART is console */
-};
-
-/***************************************************************************
- * Private Functions
- ***************************************************************************/
-
-#ifdef NOTUSED //// TODO
-/***************************************************************************
- * Name: a64_uart_irq_handler
- *
- * Description:
- *   This is the common UART interrupt handler.  It should call
- *   uart_xmitchars or uart_recvchars to perform the appropriate data
- *   transfers.
- *
- * Input Parameters:
- *   irq     - IRQ Number
- *   context - Interrupt Context
- *   arg     - UART Device
- *
- * Returned Value:
- *   OK is always returned at present.
- *
- ***************************************************************************/
-#endif  // NOTUSED
-
-//// TODO
-
+////TODO
 /* Register offsets *********************************************************/
 
 #define A1X_UART_RBR_OFFSET       0x0000 /* UART Receive Buffer Register */
@@ -243,8 +186,45 @@ struct a64_uart_port_s
 
 #define A1X_SCLK 24000000
 
+/***************************************************************************
+ * Private Types
+ ***************************************************************************/
+
+/* A64 UART Configuration */
+
+struct a64_uart_config
+{
+  unsigned long uart;  /* UART Base Address */
+};
+
+/* A64 UART Device Data */
+
+struct a64_uart_data
+{
+  uint32_t baud_rate;  /* UART Baud Rate */
+  uint32_t ier;        /* Saved IER value */
+  uint8_t  parity;     /* 0=none, 1=odd, 2=even */
+  uint8_t  bits;       /* Number of bits (7 or 8) */
+  bool     stopbits2;  /* true: Configure with 2 stop bits instead of 1 */
+};
+
+/* A64 UART Port */
+
+struct a64_uart_port_s
+{
+  struct a64_uart_data data;     /* UART Device Data */
+  struct a64_uart_config config; /* UART Configuration */
+  unsigned int irq_num;          /* UART IRQ Number */
+  bool is_console;               /* 1 if this UART is console */
+};
+
+/***************************************************************************
+ * Private Functions
+ ***************************************************************************/
+
+//// TODO
 /****************************************************************************
- * Name: a1x_uartdl
+ * Name: a64_uartdl
  *
  * Description:
  *   Select a divider to produce the BAUD from the UART PCLK.
@@ -259,6 +239,7 @@ static inline uint32_t a64_uartdl(uint32_t baud)
   return A1X_SCLK / (baud << 4);
 }
 
+//// TODO
 /****************************************************************************
  * Name: up_serialin
  ****************************************************************************/
@@ -268,6 +249,7 @@ static inline uint32_t up_serialin(const struct a64_uart_config *config, int off
   return getreg32(config->uart + offset);
 }
 
+//// TODO
 /****************************************************************************
  * Name: up_serialout
  ****************************************************************************/
@@ -278,6 +260,27 @@ static inline void up_serialout(const struct a64_uart_config *config, int offset
   putreg32(value, config->uart + offset);
 }
 
+#ifdef NOTUSED //// TODO
+/***************************************************************************
+ * Name: a64_uart_irq_handler
+ *
+ * Description:
+ *   This is the common UART interrupt handler.  It should call
+ *   uart_xmitchars or uart_recvchars to perform the appropriate data
+ *   transfers.
+ *
+ * Input Parameters:
+ *   irq     - IRQ Number
+ *   context - Interrupt Context
+ *   arg     - UART Device
+ *
+ * Returned Value:
+ *   OK is always returned at present.
+ *
+ ***************************************************************************/
+#endif  // NOTUSED
+
+//// TODO
 /****************************************************************************
  * Name: a64_uart_irq_handler
  *
@@ -390,6 +393,7 @@ static int a64_uart_irq_handler(int irq, void *context, void *arg)
   return OK;
 }
 
+////TODO
 /****************************************************************************
  * Name: up_setup
  *
@@ -540,7 +544,7 @@ static int up_setup(struct uart_dev_s *dev)
 static int a64_uart_setup(struct uart_dev_s *dev)
 {
   int ret = up_setup(dev);
-  DEBUGASSERT(ret == OK);
+  DEBUGASSERT(ret == OK); ////TODO
 
   return ret;
 }
@@ -716,22 +720,6 @@ static int a64_uart_receive(struct uart_dev_s *dev, unsigned int *status)
   return rbr;
 }
 
-#ifdef NOTUSED ////
-static int a64_uart_receive(struct uart_dev_s *dev, unsigned int *status)
-{
-  const struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
-  const struct a64_uart_config *config = &port->config;
-
-  /* Status is always OK */
-
-  *status = 0;
-
-  /* Read received char from Receiver Buffer Register (UART_RBR) */
-
-  return getreg8(UART_RBR(config->uart));
-}
-#endif  // NOTUSED
-
 /***************************************************************************
  * Name: a64_uart_rxint
  *
@@ -812,29 +800,9 @@ static void a64_uart_send(struct uart_dev_s *dev, int ch)
   const struct a64_uart_port_s *port = (struct a64_uart_port_s *)dev->priv;
   const struct a64_uart_config *config = &port->config;
 
-////#define BUFFER_UART
-#ifdef BUFFER_UART
-  //// TODO: Fix the garbled output. Buffer the chars until we see CR or LF.
-  static char buf[256];
-  static int pos = 0;
-  if (ch != '>' && ch != '\r' && ch != '\n' && pos < sizeof(buf))
-    {
-      buf[pos] = ch;
-      pos += 1;
-      return;
-    }
-  for (int i = 0; i < pos; i++)
-    {
-      up_putc(buf[i]);      
-    }
-  pos = 0;
-  up_putc(ch);
-  UNUSED(config);
-#else
   /* Write char to Transmit Holding Register (UART_THR) */
 
   putreg8(ch, UART_THR(config->uart));
-#endif // BUFFER_UART
 }
 
 /***************************************************************************
