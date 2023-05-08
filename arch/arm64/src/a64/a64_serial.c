@@ -912,8 +912,9 @@ static int a64_uart2config(void)
 };
 #endif /* CONFIG_A64_UART2 */
 
-#ifdef CONFIG_A64_UART3
-static int a64_uart3config(void)
+////TODO
+// a64_uart_init(gating, rst, tx, rx)
+static int a64_uart_init(uint32_t gating, uint32_t rst, pio_pinset_t tx, pio_pinset_t rx)
 {
   irqstate_t flags;
   int ret = OK;
@@ -922,22 +923,22 @@ static int a64_uart3config(void)
 
   /* Enable clocking to UART */
 
-  modreg32(UART3_GATING, UART3_GATING, BUS_CLK_GATING_REG3);
+  modreg32(gating, gating, BUS_CLK_GATING_REG3);
 
   /* Deassert reset for UART */
 
-  modreg32(UART3_RST, UART3_RST, BUS_SOFT_RST_REG4);
+  modreg32(rst, rst, BUS_SOFT_RST_REG4);
 
   /* Configure I/O pins for UART */
 
-  ret = a64_pio_config(PIO_UART3_TX);
+  ret = a64_pio_config(tx);
   if (ret < 0)
     {
       sinfo("UART TX Pin config failed, ret=%d\n", ret);
     }
   else
     {
-      ret = a64_pio_config(PIO_UART3_RX);
+      ret = a64_pio_config(rx);
       if (ret < 0)
         {
           sinfo("UART RX Pin config failed, ret=%d\n", ret);
@@ -947,7 +948,6 @@ static int a64_uart3config(void)
   leave_critical_section(flags);
   return ret;
 };
-#endif /* CONFIG_A64_UART3 */
 
 #ifdef CONFIG_A64_UART4
 // TODO
@@ -1328,7 +1328,7 @@ void arm64_earlyserialinit(void)
 #ifdef CONFIG_A64_UART3
   /* Configure UART3 */
 
-  ret = a64_uart3config();
+  ret = a64_uart_init(UART3_GATING, UART3_RST, PIO_UART3_TX, PIO_UART3_RX);
 
   if (ret < 0)
     {
@@ -1353,6 +1353,8 @@ void arm64_earlyserialinit(void)
   CONSOLE_DEV.isconsole = true;
   a64_uart_setup(&CONSOLE_DEV);
 #endif
+
+  UNUSED(a64_uart_init);
 }
 
 /***************************************************************************
