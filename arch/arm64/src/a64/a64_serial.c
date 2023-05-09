@@ -1428,15 +1428,52 @@ void arm64_serialinit(void)
   ret = uart_register("/dev/console", &CONSOLE_DEV);
   if (ret < 0)
     {
-      sinfo("error at register dev/console, ret =%d\n", ret);
+      _err("Register /dev/console failed, ret=%d\n", ret);
     }
 
   ret = uart_register("/dev/ttyS0", &TTYS0_DEV);
 
   if (ret < 0)
     {
-      sinfo("error at register dev/ttyS0, ret =%d\n", ret);
+      _err("Register /dev/ttyS0 failed, ret=%d\n", ret);
     }
+
+#ifdef TTYS1_DEV
+  ret = uart_register("/dev/ttyS1", &TTYS1_DEV);
+
+  if (ret < 0)
+    {
+      _err("Register /dev/ttyS1 failed, ret=%d\n", ret);
+    }
+#endif /* TTYS1_DEV */
+
+#ifdef TTYS2_DEV
+  ret = uart_register("/dev/ttyS2", &TTYS2_DEV);
+
+  if (ret < 0)
+    {
+      _err("Register /dev/ttyS2 failed, ret=%d\n", ret);
+    }
+#endif /* TTYS2_DEV */
+
+#ifdef TTYS3_DEV
+  ret = uart_register("/dev/ttyS3", &TTYS3_DEV);
+
+  if (ret < 0)
+    {
+      _err("Register /dev/ttyS3 failed, ret=%d\n", ret);
+    }
+#endif /* TTYS3_DEV */
+
+#ifdef TTYS4_DEV
+  ret = uart_register("/dev/ttyS4", &TTYS4_DEV);
+
+  if (ret < 0)
+    {
+      _err("Register /dev/ttyS4 failed, ret=%d\n", ret);
+    }
+#endif /* TTYS4_DEV */
+
 #endif
 }
 
