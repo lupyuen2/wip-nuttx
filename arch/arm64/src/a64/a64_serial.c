@@ -1022,12 +1022,12 @@ static struct a64_uart_port_s g_uart0priv =
 
 /* UART0 I/O Buffers (Console) */
 
-static char                 g_uart0rxbuffer[CONFIG_UART0_RXBUFSIZE];
-static char                 g_uart0txbuffer[CONFIG_UART0_TXBUFSIZE];
+static char g_uart0rxbuffer[CONFIG_UART0_RXBUFSIZE];
+static char g_uart0txbuffer[CONFIG_UART0_TXBUFSIZE];
 
 /* UART0 Port Definition (Console) */
 
-static struct uart_dev_s    g_uart0port =
+static struct uart_dev_s g_uart0port =
 {
   .recv  =
     {
@@ -1072,12 +1072,12 @@ static struct a64_uart_port_s g_uart1priv =
 
 /* UART1 I/O Buffers */
 
-static char                 g_uart1rxbuffer[CONFIG_UART1_RXBUFSIZE];
-static char                 g_uart1txbuffer[CONFIG_UART1_TXBUFSIZE];
+static char g_uart1rxbuffer[CONFIG_UART1_RXBUFSIZE];
+static char g_uart1txbuffer[CONFIG_UART1_TXBUFSIZE];
 
 /* UART1 Port Definition */
 
-static struct uart_dev_s    g_uart1port =
+static struct uart_dev_s g_uart1port =
 {
   .recv  =
     {
@@ -1122,12 +1122,12 @@ static struct a64_uart_port_s g_uart2priv =
 
 /* UART2 I/O Buffers */
 
-static char                 g_uart2rxbuffer[CONFIG_UART2_RXBUFSIZE];
-static char                 g_uart2txbuffer[CONFIG_UART2_TXBUFSIZE];
+static char g_uart2rxbuffer[CONFIG_UART2_RXBUFSIZE];
+static char g_uart2txbuffer[CONFIG_UART2_TXBUFSIZE];
 
 /* UART2 Port Definition */
 
-static struct uart_dev_s    g_uart2port =
+static struct uart_dev_s g_uart2port =
 {
   .recv  =
     {
@@ -1172,12 +1172,12 @@ static struct a64_uart_port_s g_uart3priv =
 
 /* UART3 I/O Buffers */
 
-static char                 g_uart3rxbuffer[CONFIG_UART3_RXBUFSIZE];
-static char                 g_uart3txbuffer[CONFIG_UART3_TXBUFSIZE];
+static char g_uart3rxbuffer[CONFIG_UART3_RXBUFSIZE];
+static char g_uart3txbuffer[CONFIG_UART3_TXBUFSIZE];
 
 /* UART3 Port Definition */
 
-static struct uart_dev_s    g_uart3port =
+static struct uart_dev_s g_uart3port =
 {
   .recv  =
     {
@@ -1222,12 +1222,12 @@ static struct a64_uart_port_s g_uart4priv =
 
 /* UART4 I/O Buffers */
 
-static char                 g_uart4rxbuffer[CONFIG_UART4_RXBUFSIZE];
-static char                 g_uart4txbuffer[CONFIG_UART4_TXBUFSIZE];
+static char g_uart4rxbuffer[CONFIG_UART4_RXBUFSIZE];
+static char g_uart4txbuffer[CONFIG_UART4_TXBUFSIZE];
 
 /* UART4 Port Definition */
 
-static struct uart_dev_s    g_uart4port =
+static struct uart_dev_s g_uart4port =
 {
   .recv  =
     {
