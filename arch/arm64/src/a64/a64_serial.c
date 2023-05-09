@@ -268,6 +268,13 @@ struct a64_uart_port_s
 };
 
 /***************************************************************************
+ * Private Function Prototypes
+ ***************************************************************************/
+
+static void a64_uart_rxint(struct uart_dev_s *dev, bool enable);
+static void a64_uart_txint(struct uart_dev_s *dev, bool enable);
+
+/***************************************************************************
  * Private Functions
  ***************************************************************************/
 
@@ -591,10 +598,10 @@ static int a64_uart_setup(struct uart_dev_s *dev)
 
 static void a64_uart_shutdown(struct uart_dev_s *dev)
 {
-  /* Should never be called */
+  /* Disable the Receive and Transmit Interrupts */
 
-  UNUSED(dev);
-  _err("%s: call unexpected\n", __func__);
+  a64_uart_rxint(dev, false);
+  a64_uart_txint(dev, false);
 }
 
 /***************************************************************************
