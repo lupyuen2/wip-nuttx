@@ -937,11 +937,7 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
 static void a64_uart_wait_send(struct uart_dev_s *dev, int ch)
 {
   DEBUGASSERT(dev != NULL);
-
-  while (!a64_uart_txready(dev))
-    {
-    }
-
+  while (!a64_uart_txready(dev));
   a64_uart_send(dev, ch);
 }
 
