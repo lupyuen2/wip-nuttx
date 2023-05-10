@@ -1374,6 +1374,17 @@ void arm64_earlyserialinit(void)
   UNUSED(ret);
 }
 
+////TODO: Wait for UART TX to be ready, then transmit the character.
+static void a64_uart_wait_send(struct uart_dev_s *dev, int ch)
+{
+  DEBUGASSERT(dev != NULL);
+  while (!a64_uart_txready(dev))
+    {
+    }
+
+  a64_uart_send(dev, ch);
+}
+
 /***************************************************************************
  * Name: up_putc
  *
@@ -1400,10 +1411,10 @@ int up_putc(int ch)
     {
       /* Add CR */
 
-      a64_uart_send(dev, '\r');
+      a64_uart_wait_send(dev, '\r');
     }
 
-  a64_uart_send(dev, ch);
+  a64_uart_wait_send(dev, ch);
 #endif
   return ch;
 }
