@@ -919,6 +919,33 @@ static bool a64_uart_txempty(struct uart_dev_s *dev)
 }
 
 /***************************************************************************
+ * Name: a64_uart_wait_send
+ *
+ * Description:
+ *   Wait for Transmit FIFO until it is not full, then transmit the
+ *   character over UART.
+ *
+ * Input Parameters:
+ *   dev - UART Device
+ *   ch  - Character to be sent
+ *
+ * Returned Value:
+ *   None
+ *
+ ***************************************************************************/
+
+static void a64_uart_wait_send(struct uart_dev_s *dev, int ch)
+{
+  DEBUGASSERT(dev != NULL);
+
+  while (!a64_uart_txready(dev))
+    {
+    }
+
+  a64_uart_send(dev, ch);
+}
+
+/***************************************************************************
  * Name: a64_uart_init
  *
  * Description:
@@ -1372,17 +1399,6 @@ void arm64_earlyserialinit(void)
 
   UNUSED(a64_uart_init);
   UNUSED(ret);
-}
-
-////TODO: Wait for UART TX to be ready, then transmit the character.
-static void a64_uart_wait_send(struct uart_dev_s *dev, int ch)
-{
-  DEBUGASSERT(dev != NULL);
-  while (!a64_uart_txready(dev))
-    {
-    }
-
-  a64_uart_send(dev, ch);
 }
 
 /***************************************************************************
