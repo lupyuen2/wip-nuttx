@@ -8,7 +8,7 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
-  ## Run on every commit
+  ## Run on every commit to this branch
   push:
     branches: [ build ]
 
@@ -84,7 +84,7 @@ jobs:
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         
-    - name: Release
+    - name: Publish the GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: pinephone-nuttx-${{ steps.date.outputs.date }}
