@@ -69,16 +69,23 @@ jobs:
           >nuttx.S \
           2>&1
 
-    - name: Upload Build Outputs
+        ## Compress the NuttX Image to Image.gz
+        cp nuttx.bin Image
+        rm -f Image.gz
+        gzip Image
+
+    - name: Upload Build Outputs as Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: nuttx.zip
-        path: nuttx/nuttx/nuttx*
+        path: |
+          nuttx/nuttx/nuttx*
+          nuttx/nuttx/Image.gz
 
-    - name: Zip Build Outputs
+    - name: Zip Build Outputs for GitHub Release
       run: |
         cd nuttx/nuttx
-        zip nuttx.zip nuttx*
+        zip nuttx.zip nuttx* Image.gz
 
     - name: Get Current Date
       id: date
