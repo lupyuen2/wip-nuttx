@@ -4,9 +4,9 @@ name: Build PinePhone
 
 on:
 
-  ## Run every day at 0:00 UTC
+  ## Run every day at 0:30 UTC, because 0:00 UTC seems too busy for the scheduler
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '30 0 * * *'
 
   ## Run on every commit to this branch
   push:
