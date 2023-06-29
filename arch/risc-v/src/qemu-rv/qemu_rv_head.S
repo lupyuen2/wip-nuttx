@@ -40,8 +40,33 @@
   .global __start
 
 __start:
-
   /* Begin Test */
+
+    /* DO NOT MODIFY. Image header expected by Linux boot-loaders.
+     *
+     * This add instruction has no meaningful effect except that
+     * its opcode forms the magic "MZ" signature of a PE/COFF file
+     * that is required for UEFI applications.
+     *
+     * Some bootloaders check the magic "MZ" to see if the image is a valid
+     * Linux image. but modifying the bootLoader is unnecessary unless we
+     * need to do a customize secure boot. So we just put "MZ" in the
+     * header to make the bootloader happy.
+     */
+
+    li      s4, -0xd             /* Magic "MZ" signature */
+    j       real_start           /* Jump to kernel start */
+    /* TODO: Is this used? */
+    .quad   0x0                  /* Image load offset from start of RAM */
+    /* TODO: .quad   _e_initstack - __start */        /* Effective size of kernel image, little-endian */
+    /* TODO: .quad   __HEAD_FLAGS */         /* Informative flags, little-endian */
+    .quad   0                    /* reserved */
+    .quad   0                    /* reserved */
+    .quad   0                    /* reserved */
+    .ascii  "ARM\x64"            /* Magic number, "ARM\x64" */
+    .long   0                    /* reserved */
+
+real_start:
 
   /* Load UART Base Address to Register t0 */
   li  t0, 0x10000000
