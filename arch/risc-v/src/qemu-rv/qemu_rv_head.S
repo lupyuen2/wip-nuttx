@@ -59,16 +59,17 @@ __start:
 
   /* TODO: Is this used? */
   .quad   0x0                  /* Image load offset from start of RAM */
-  /* TODO: .quad   _e_initstack - __start */        /* Effective size of kernel image, little-endian */
-  /* TODO: .quad   __HEAD_FLAGS */         /* Kernel flags, little-endian */
+  .quad   0x1111111111111111 /* TODO:   _e_initstack - __start */        /* Effective size of kernel image, little-endian */
+  .quad   0x2222222222222222 /* TODO:   __HEAD_FLAGS */         /* Kernel flags, little-endian */
 
-  .long 0x2;              /* Version of this header */
+  /* TODO */
+  .long   0x2                    /* Version of this header */
 
   .long   0                      /* Reserved */
   .quad   0                      /* Reserved */
 
-  .ascii  "RISCV"                /* Magic number, "RISCV" */
-  .ascii  "RSC\x05"              /* Magic number 2, "RSC\x05" */
+  .ascii  "RISCV\x00\x00\x00"    /* Magic number, "RISCV" (8 bytes) */
+  .ascii  "RSC\x05"              /* Magic number 2, "RSC\x05" (4 bytes) */
 
   .long   0                      /* Reserved for PE COFF offset */
 
