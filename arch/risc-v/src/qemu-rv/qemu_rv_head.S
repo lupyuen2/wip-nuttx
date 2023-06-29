@@ -48,17 +48,17 @@ __start:
 
   /* Load `1` to Register t1 */
   li  t1, 0x31
-  /* Store Register t1 to UART Base Address, Offset 0 */
+  /* Store byte from Register t1 to UART Base Address, Offset 0 */
   sb  t1, 0(t0)
 
   /* Load `2` to Register t1 */
   li  t1, 0x32
-  /* Store Register t1 to UART Base Address, Offset 0 */
+  /* Store byte from Register t1 to UART Base Address, Offset 0 */
   sb  t1, 0(t0)
 
   /* Load `3` to Register t1 */
   li  t1, 0x33
-  /* Store Register t1 to UART Base Address, Offset 0 */
+  /* Store byte from Register t1 to UART Base Address, Offset 0 */
   sb  t1, 0(t0)
 
   /* End Test */
