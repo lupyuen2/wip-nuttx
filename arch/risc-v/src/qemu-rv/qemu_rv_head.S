@@ -41,6 +41,28 @@
 
 __start:
 
+  /* Begin Test */
+
+  /* Load UART Base Address to Register t0 */
+  li  t0, 0x10000000
+
+  /* Load `1` to Register t1 */
+  li  t1, 0x31
+  /* Store Register t1 to UART Base Address, Offset 0 */
+  sb  t1, 0(t0)
+
+  /* Load `2` to Register t1 */
+  li  t1, 0x32
+  /* Store Register t1 to UART Base Address, Offset 0 */
+  sb  t1, 0(t0)
+
+  /* Load `3` to Register t1 */
+  li  t1, 0x33
+  /* Store Register t1 to UART Base Address, Offset 0 */
+  sb  t1, 0(t0)
+
+  /* End Test */
+
   /* Load mhartid (cpuid) */
 
   csrr a0, mhartid
