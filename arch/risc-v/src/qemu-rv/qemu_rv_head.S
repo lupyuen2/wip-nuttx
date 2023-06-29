@@ -42,29 +42,35 @@
 __start:
   /* Begin Test */
 
-    /* DO NOT MODIFY. Image header expected by Linux boot-loaders.
-     *
-     * This add instruction has no meaningful effect except that
-     * its opcode forms the magic "MZ" signature of a PE/COFF file
-     * that is required for UEFI applications.
-     *
-     * Some bootloaders check the magic "MZ" to see if the image is a valid
-     * Linux image. but modifying the bootLoader is unnecessary unless we
-     * need to do a customize secure boot. So we just put "MZ" in the
-     * header to make the bootloader happy.
-     */
+  /* DO NOT MODIFY. Image header expected by Linux boot-loaders.
+   *
+   * This add instruction has no meaningful effect except that
+   * its opcode forms the magic "MZ" signature of a PE/COFF file
+    * that is required for UEFI applications.
+    *
+    * Some bootloaders check the magic "MZ" to see if the image is a valid
+    * Linux image. but modifying the bootLoader is unnecessary unless we
+    * need to do a customize secure boot. So we just put "MZ" in the
+    * header to make the bootloader happy.
+    */
 
-    li      s4, -0xd             /* Magic "MZ" signature */
-    j       real_start           /* Jump to kernel start */
-    /* TODO: Is this used? */
-    .quad   0x0                  /* Image load offset from start of RAM */
-    /* TODO: .quad   _e_initstack - __start */        /* Effective size of kernel image, little-endian */
-    /* TODO: .quad   __HEAD_FLAGS */         /* Informative flags, little-endian */
-    .quad   0                    /* reserved */
-    .quad   0                    /* reserved */
-    .quad   0                    /* reserved */
-    .ascii  "ARM\x64"            /* Magic number, "ARM\x64" */
-    .long   0                    /* reserved */
+  li      s4, -0xd               /* Magic "MZ" signature */
+  j       real_start             /* Jump to Kernel Start */
+
+  /* TODO: Is this used? */
+  .quad   0x0                  /* Image load offset from start of RAM */
+  /* TODO: .quad   _e_initstack - __start */        /* Effective size of kernel image, little-endian */
+  /* TODO: .quad   __HEAD_FLAGS */         /* Kernel flags, little-endian */
+
+  .long 0x2;              /* Version of this header */
+
+  .long   0                      /* Reserved */
+  .quad   0                      /* Reserved */
+
+  .ascii  "RISCV"                /* Magic number, "RISCV" */
+  .ascii  "RSC\x05"              /* Magic number 2, "RSC\x05" */
+
+  .long   0                      /* Reserved for PE COFF offset */
 
 real_start:
 
