@@ -54,13 +54,14 @@ __start:
     * header to make the bootloader happy.
     */
 
-  li      s4, -0xd               /* Magic "MZ" signature */
+  li      s4, -0xd               /* Magic Signature "MZ" */
   j       real_start             /* Jump to Kernel Start */
+  .long   0                      /* Pad Executable Code to 8 bytes */
 
   /* TODO: Is this used? */
   .quad   0x1111111111111111 /* TODO: 0x0 */ /* Image load offset from start of RAM */
   .quad   0x2222222222222222 /* TODO:   _e_initstack - __start */        /* Effective size of kernel image, little-endian */
-  .quad   0x3333333333333333 /* TODO:   __HEAD_FLAGS */         /* Kernel flags, little-endian */
+  .quad   0x3333333333333333 /* TODO: 0x0 */         /* Kernel flags, little-endian */
 
   /* TODO */
   .long   0x2                    /* Version of this header */
