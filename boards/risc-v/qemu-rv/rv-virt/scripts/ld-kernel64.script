@@ -20,9 +20,12 @@
 
 MEMORY
 {
-    kflash (rx) : ORIGIN = 0x80000000, LENGTH = 2048K   /* w/ cache */
-    ksram (rwx) : ORIGIN = 0x80200000, LENGTH = 2048K   /* w/ cache */
-    pgram (rwx) : ORIGIN = 0x80400000, LENGTH = 4096K   /* w/ cache */
+    /* Previously 0x80000000 */
+    kflash (rx) : ORIGIN = 0x44000000, LENGTH = 2048K   /* w/ cache */
+    /* Previously 0x80200000 */
+    ksram (rwx) : ORIGIN = 0x44200000, LENGTH = 2048K   /* w/ cache */
+    /* Previously 0x80400000 */
+    pgram (rwx) : ORIGIN = 0x44400000, LENGTH = 4096K   /* w/ cache */
 }
 
 OUTPUT_ARCH("riscv")
@@ -42,7 +45,8 @@ __pgheap_size = LENGTH(pgram);
 
 SECTIONS
 {
-  . = 0x80000000;
+  /* Previously 0x80000000 */
+  . = 0x44000000;
 
   .text :
     {
