@@ -42,37 +42,32 @@
 __start:
   /* Begin Test */
 
-  /* DO NOT MODIFY. Image header expected by Linux boot-loaders.
+  /* DO NOT MODIFY. Image Header expected by Linux bootloaders.
    *
-   * This add instruction has no meaningful effect except that
+   * This `li` instruction has no meaningful effect except that
    * its opcode forms the magic "MZ" signature of a PE/COFF file
-    * that is required for UEFI applications.
-    *
-    * Some bootloaders check the magic "MZ" to see if the image is a valid
-    * Linux image. but modifying the bootLoader is unnecessary unless we
-    * need to do a customize secure boot. So we just put "MZ" in the
-    * header to make the bootloader happy.
-    */
+   * that is required for UEFI applications.
+   *
+   * Some bootloaders check the magic "MZ" to see if the image is a valid
+   * Linux image. But modifying the bootLoader is unnecessary unless we
+   * need to do a customized secure boot. So we just put "MZ" in the
+   * header to make the bootloader happy.
+   */
 
-  li      s4, -0xd               /* Magic Signature "MZ" */
-  j       real_start             /* Jump to Kernel Start */
-  .long   0                      /* Pad Executable Code to 8 bytes */
-
+  li      s4, -0xd             /* Magic Signature "MZ" (2 bytes) */
+  j       real_start           /* Jump to Kernel Start (2 bytes) */
+  .long   0                    /* Executable Code padded to 8 bytes */
   /* TODO: Is this used? */
-  .quad   0x1111111111111111 /* TODO: 0x0 */ /* Image load offset from start of RAM */
-  .quad   0x2222222222222222 /* TODO:   _e_initstack - __start */        /* Effective size of kernel image, little-endian */
-  .quad   0x3333333333333333 /* TODO: 0x0 */         /* Kernel flags, little-endian */
-
-  /* TODO */
-  .long   0x2                    /* Version of this header */
-
-  .long   0                      /* Reserved */
-  .quad   0                      /* Reserved */
-
-  .ascii  "RISCV\x00\x00\x00"    /* Magic number, "RISCV" (8 bytes) */
-  .ascii  "RSC\x05"              /* Magic number 2, "RSC\x05" (4 bytes) */
-
-  .long   0                      /* Reserved for PE COFF offset */
+  .quad   0x0                  /* Image load offset from start of RAM */
+  /* TODO: _e_initstack - __start */
+  .quad   171644               /* Effective size of kernel image, little-endian */
+  .quad   0x0                  /* Kernel flags, little-endian */
+  .long   0x2                  /* Version of this header */
+  .long   0                    /* Reserved */
+  .quad   0                    /* Reserved */
+  .ascii  "RISCV\x00\x00\x00"  /* Magic number, "RISCV" (8 bytes) */
+  .ascii  "RSC\x05"            /* Magic number 2, "RSC\x05" (4 bytes) */
+  .long   0                    /* Reserved for PE COFF offset */
 
 real_start:
 
