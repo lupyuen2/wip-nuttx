@@ -54,7 +54,7 @@ __start:
    * header to make the bootloader happy.
    */
 
-  li      s4, -0xd             /* Magic Signature "MZ" (2 bytes) */
+  c.li    s4, -13              /* Magic Signature "MZ" (2 bytes) */
   j       real_start           /* Jump to Kernel Start (2 bytes) */
   .long   0                    /* Executable Code padded to 8 bytes */
   .quad   0x200000             /* Image load offset from start of RAM */
