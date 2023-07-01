@@ -57,8 +57,7 @@ __start:
   li      s4, -0xd             /* Magic Signature "MZ" (2 bytes) */
   j       real_start           /* Jump to Kernel Start (2 bytes) */
   .long   0                    /* Executable Code padded to 8 bytes */
-  /* TODO: Is this used? */
-  .quad   0x0                  /* Image load offset from start of RAM */
+  .quad   0x200000             /* Image load offset from start of RAM */
   /* TODO: _e_initstack - __start */
   .quad   171644               /* Effective size of kernel image, little-endian */
   .quad   0x0                  /* Kernel flags, little-endian */

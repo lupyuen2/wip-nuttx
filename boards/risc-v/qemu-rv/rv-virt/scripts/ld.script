@@ -21,7 +21,7 @@
 SECTIONS
 {
   /* Previously 0x80000000 */
-  . = 0x44000000;
+  . = 0x40200000;
 
   .text :
     {
