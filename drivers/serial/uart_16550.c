@@ -764,6 +764,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   /* Enter DLAB=1 */
 
+  *(volatile uint8_t *)0x10000000 = 'e';////
   u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
   /* Set the BAUD divisor */
@@ -778,6 +779,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   /* Configure the FIFOs */
 
+  *(volatile uint8_t *)0x10000000 = 'f';////
   u16550_serialout(priv, UART_FCR_OFFSET,
                    (UART_FCR_RXTRIGGER_8 | UART_FCR_TXRST | UART_FCR_RXRST |
                     UART_FCR_FIFOEN));
@@ -797,6 +799,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   mcr |= UART_MCR_RTS;
 
+  *(volatile uint8_t *)0x10000000 = 'g';////
   u16550_serialout(priv, UART_MCR_OFFSET, mcr);
 #endif /* defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL) */
 
@@ -1604,8 +1607,9 @@ static void u16550_txint(struct uart_dev_s *dev, bool enable)
 
 static bool u16550_txready(struct uart_dev_s *dev)
 {
-  FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
-  return ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) != 0);
+  return true;
+  ////FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
+  ////return ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) != 0);
 }
 
 /****************************************************************************
@@ -1633,7 +1637,7 @@ static bool u16550_txempty(struct uart_dev_s *dev)
 #ifdef HAVE_16550_CONSOLE
 static void u16550_putc(FAR struct u16550_s *priv, int ch)
 {
-  while ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) == 0);
+  ////while ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) == 0);
   u16550_serialout(priv, UART_THR_OFFSET, (uart_datawidth_t)ch);
 }
 #endif
