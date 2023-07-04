@@ -705,7 +705,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
   *(volatile uint8_t *)0x10000000 = 'c';////
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
-  uint16_t div;
+  ////uint16_t div;
   uint32_t lcr;
 #if defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL)
   uint32_t mcr;
@@ -765,17 +765,17 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
   /* Enter DLAB=1 */
 
   *(volatile uint8_t *)0x10000000 = 'e';////
-  u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
+  ////u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
   /* Set the BAUD divisor */
 
-  div = u16550_divisor(priv);
-  u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
-  u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
+  ////div = u16550_divisor(priv);
+  ////u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
+  ////u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
 
   /* Clear DLAB */
 
-  u16550_serialout(priv, UART_LCR_OFFSET, lcr);
+  ////u16550_serialout(priv, UART_LCR_OFFSET, lcr);
 
   /* Configure the FIFOs */
 
@@ -1637,8 +1637,10 @@ static bool u16550_txempty(struct uart_dev_s *dev)
 #ifdef HAVE_16550_CONSOLE
 static void u16550_putc(FAR struct u16550_s *priv, int ch)
 {
+  *(volatile uint8_t *)0x10000000 = 'h';////
   ////while ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) == 0);
   u16550_serialout(priv, UART_THR_OFFSET, (uart_datawidth_t)ch);
+  *(volatile uint8_t *)0x10000000 = 'i';////
 }
 #endif
 

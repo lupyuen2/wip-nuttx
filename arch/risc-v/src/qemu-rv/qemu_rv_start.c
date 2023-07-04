@@ -118,18 +118,19 @@ void qemu_rv_start(int mhartid)
 #endif
 
   *(volatile uint8_t *)0x10000000 = 'F';////
-  showprogress('A');
+  ////showprogress('A');
 
 #ifdef USE_EARLYSERIALINIT
   *(volatile uint8_t *)0x10000000 = 'G';////
-  riscv_earlyserialinit();
+  ////riscv_earlyserialinit();
 #endif
 
-  showprogress('B');
+  *(volatile uint8_t *)0x10000000 = 'H';////
+  ////showprogress('B');
 
   /* Do board initialization */
 
-  showprogress('C');
+  ////showprogress('C');
 
 #ifdef CONFIG_BUILD_KERNEL
   /* Setup page tables for kernel and enable MMU */
@@ -139,13 +140,13 @@ void qemu_rv_start(int mhartid)
 
   /* Call nx_start() */
 
-  *(volatile uint8_t *)0x10000000 = 'H';////
+  *(volatile uint8_t *)0x10000000 = 'I';////
   nx_start();
 
 cpux:
 
 #ifdef CONFIG_SMP
-  *(volatile uint8_t *)0x10000000 = 'I';////
+  *(volatile uint8_t *)0x10000000 = 'J';////
   riscv_cpu_boot(mhartid);
 #endif
 
