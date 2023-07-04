@@ -91,8 +91,16 @@ real_start:
   /* End Test */
 
   /* Load mhartid (cpuid) */
-  /* We assume that OpenSBI has passed Hart ID (value 1) in Register a0 */
   /* Previously: csrr a0, mhartid */
+
+  /* We assume that OpenSBI has passed Hart ID (value 1) in Register a0. */
+  /* But NuttX expects Hart ID to start at 0, so we subtract 1. */
+  addi a0, a0, -1
+
+  /* Print the Hart ID */
+  addi t1, a0, 0x30
+  /* Store byte from Register t1 to UART Base Address, Offset 0 */
+  sb   t1, 0(t0)
 
   /* Set stack pointer to the idle thread stack */
 
