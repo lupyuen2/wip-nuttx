@@ -108,6 +108,10 @@ real_start:
   la   sp, QEMU_RV_IDLESTACK_TOP
   j    2f
 1:
+  /* Print `4` */
+  li  t0, 0x10000000
+  li  t1, 0x34
+  sb  t1, 0(t0)
 
   /* Load the number of CPUs that the kernel supports */
 
@@ -125,6 +129,11 @@ real_start:
   wfi
 
 3:
+  /* Print `5` */
+  li  t0, 0x10000000
+  li  t1, 0x35
+  sb  t1, 0(t0)
+
   /* To get g_cpu_basestack[mhartid], must get g_cpu_basestack first */
 
   la   t0, g_cpu_basestack
@@ -153,6 +162,10 @@ real_start:
   add  sp, sp, t0
 
 2:
+  /* Print `6` */
+  li  t0, 0x10000000
+  li  t1, 0x36
+  sb  t1, 0(t0)
 
   /* Disable all interrupts (i.e. timer, external) in mie */
 
@@ -162,6 +175,11 @@ real_start:
   la   t0, __trap_vec
   csrw stvec, t0
   /* Previously: csrw mtvec, t0 */
+
+  /* Print `7` */
+  li  t0, 0x10000000
+  li  t1, 0x37
+  sb  t1, 0(t0)
 
   /* Jump to qemu_rv_start */
 
