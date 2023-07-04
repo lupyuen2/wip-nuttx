@@ -150,7 +150,7 @@ cpux:
   riscv_cpu_boot(mhartid);
 #endif
 
-  *(volatile uint8_t *)0x10000000 = 'J';////
+  *(volatile uint8_t *)0x10000000 = 'K';////
   while (true)
     {
       asm("WFI");
