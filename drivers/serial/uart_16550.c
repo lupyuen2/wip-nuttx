@@ -1715,13 +1715,13 @@ void u16550_serialinit(void)
 int up_putc(int ch)
 {
   FAR struct u16550_s *priv = (FAR struct u16550_s *)CONSOLE_DEV.priv;
-  irqstate_t flags;
+  ////irqstate_t flags;
 
   /* All interrupts must be disabled to prevent re-entrancy and to prevent
    * interrupts from firing in the serial driver code.
    */
 
-  flags = enter_critical_section();
+  ////flags = enter_critical_section();
 
   /* Check for LF */
 
@@ -1733,7 +1733,7 @@ int up_putc(int ch)
     }
 
   u16550_putc(priv, ch);
-  leave_critical_section(flags);
+  ////leave_critical_section(flags);
 
   return ch;
 }

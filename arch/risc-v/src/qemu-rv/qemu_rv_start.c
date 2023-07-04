@@ -118,7 +118,7 @@ void qemu_rv_start(int mhartid)
 #endif
 
   *(volatile uint8_t *)0x10000000 = 'F';////
-  ////showprogress('A');
+  showprogress('A');
 
 #ifdef USE_EARLYSERIALINIT
   *(volatile uint8_t *)0x10000000 = 'G';////
@@ -126,11 +126,11 @@ void qemu_rv_start(int mhartid)
 #endif
 
   *(volatile uint8_t *)0x10000000 = 'H';////
-  ////showprogress('B');
+  showprogress('B');
 
   /* Do board initialization */
 
-  ////showprogress('C');
+  showprogress('C');
 
 #ifdef CONFIG_BUILD_KERNEL
   /* Setup page tables for kernel and enable MMU */
