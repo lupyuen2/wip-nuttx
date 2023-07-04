@@ -702,6 +702,7 @@ static inline uint32_t u16550_divisor(FAR struct u16550_s *priv)
 
 static int u16550_setup(FAR struct uart_dev_s *dev)
 {
+  *(volatile uint8_t *)0x10000000 = 'c';////
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   uint16_t div;
@@ -806,6 +807,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 #endif
 
 #endif
+  *(volatile uint8_t *)0x10000000 = 'd';////
   return OK;
 }
 
@@ -1655,6 +1657,7 @@ static void u16550_putc(FAR struct u16550_s *priv, int ch)
 
 void u16550_earlyserialinit(void)
 {
+  *(volatile uint8_t *)0x10000000 = 'a';////
   /* Configuration whichever one is the console */
 
 #ifdef CONSOLE_DEV
@@ -1663,6 +1666,7 @@ void u16550_earlyserialinit(void)
   u16550_setup(&CONSOLE_DEV);
 #endif
 #endif
+  *(volatile uint8_t *)0x10000000 = 'b';////
 }
 
 /****************************************************************************
