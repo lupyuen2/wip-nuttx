@@ -122,7 +122,7 @@ void qemu_rv_start(int mhartid)
 
 #ifdef USE_EARLYSERIALINIT
   *(volatile uint8_t *)0x10000000 = 'G';////
-  riscv_earlyserialinit();
+  ////riscv_earlyserialinit();
 #endif
 
   *(volatile uint8_t *)0x10000000 = 'H';////
