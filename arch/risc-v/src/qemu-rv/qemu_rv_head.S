@@ -91,8 +91,8 @@ real_start:
   /* End Test */
 
   /* Load mhartid (cpuid) */
-
-  csrr a0, mhartid
+  /* We assume that OpenSBI has passed Hart ID (value 1) in Register a0 */
+  /* Previously: csrr a0, mhartid */
 
   /* Set stack pointer to the idle thread stack */
 
@@ -112,7 +112,8 @@ real_start:
   /* If a0 (mhartid) >= t1 (the number of CPUs), stop here */
 
   blt  a0, t1, 3f
-  csrw mie, zero
+  csrw sie, zero
+  /* Previously: csrw mie, zero */
   wfi
 
 3:
@@ -147,10 +148,12 @@ real_start:
 
   /* Disable all interrupts (i.e. timer, external) in mie */
 
-	csrw	mie, zero
+	csrw	sie, zero
+	/* Previously: csrw	mie, zero */
 
   la   t0, __trap_vec
-  csrw mtvec, t0
+  csrw stvec, t0
+  /* Previously: csrw mtvec, t0 */
 
   /* Jump to qemu_rv_start */
 
