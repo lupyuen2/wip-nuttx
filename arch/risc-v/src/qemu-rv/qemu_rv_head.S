@@ -156,8 +156,8 @@ real_start:
 
   /* Disable all interrupts (i.e. timer, external) in mie */
 
-	csrw	sie, zero
-	/* Previously: csrw	mie, zero */
+  csrw	sie, zero
+  /* Previously: csrw	mie, zero */
 
   la   t0, __trap_vec
   csrw stvec, t0
