@@ -122,7 +122,7 @@ void qemu_rv_start(int mhartid)
 
 #ifdef USE_EARLYSERIALINIT
   *(volatile uint8_t *)0x10000000 = 'G';////
-  ////riscv_earlyserialinit();
+  riscv_earlyserialinit();
 #endif
 
   *(volatile uint8_t *)0x10000000 = 'H';////
@@ -165,6 +165,8 @@ cpux:
 
 void qemu_rv_start(int mhartid)
 {
+  qemu_rv_start_s(mhartid); ////
+#ifdef TODO ////
   /* NOTE: still in M-mode */
 
   if (0 == mhartid)
@@ -224,6 +226,7 @@ void qemu_rv_start(int mhartid)
       "mret \n"
       :: "r" (mhartid)
   );
+#endif //// TODO
 }
 #endif
 
