@@ -1607,9 +1607,8 @@ static void u16550_txint(struct uart_dev_s *dev, bool enable)
 
 static bool u16550_txready(struct uart_dev_s *dev)
 {
-  return true;
-  ////FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
-  ////return ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) != 0);
+  FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
+  return ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) != 0);
 }
 
 /****************************************************************************
@@ -1637,10 +1636,8 @@ static bool u16550_txempty(struct uart_dev_s *dev)
 #ifdef HAVE_16550_CONSOLE
 static void u16550_putc(FAR struct u16550_s *priv, int ch)
 {
-  *(volatile uint8_t *)0x10000000 = 'h';////
-  ////while ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) == 0);
+  while ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) == 0);
   u16550_serialout(priv, UART_THR_OFFSET, (uart_datawidth_t)ch);
-  *(volatile uint8_t *)0x10000000 = 'i';////
 }
 #endif
 
