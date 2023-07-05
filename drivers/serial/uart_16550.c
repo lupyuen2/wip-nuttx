@@ -713,17 +713,22 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   /* Clear fifos */
 
+  *(volatile uint8_t *)0x10000000 = 'd';////
   u16550_serialout(priv, UART_FCR_OFFSET,
                    (UART_FCR_RXRST | UART_FCR_TXRST));
 
+#ifdef TODO ////
   /* Set trigger */
 
+  *(volatile uint8_t *)0x10000000 = 'e';////
   u16550_serialout(priv, UART_FCR_OFFSET,
                    (UART_FCR_FIFOEN | UART_FCR_RXTRIGGER_8));
 
   /* Set up the IER */
 
+  *(volatile uint8_t *)0x10000000 = 'f';////
   priv->ier = u16550_serialin(priv, UART_IER_OFFSET);
+#endif //// TODO
 
   /* Set up the LCR */
 
@@ -762,27 +767,29 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
       lcr |= (UART_LCR_PEN | UART_LCR_EPS);
     }
 
+#ifdef TODO ////
   /* Enter DLAB=1 */
 
-  *(volatile uint8_t *)0x10000000 = 'e';////
-  ////u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
+  *(volatile uint8_t *)0x10000000 = 'g';////
+  u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
   /* Set the BAUD divisor */
 
-  ////div = u16550_divisor(priv);
-  ////u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
-  ////u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
+  div = u16550_divisor(priv);
+  u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
+  u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
 
   /* Clear DLAB */
 
-  ////u16550_serialout(priv, UART_LCR_OFFSET, lcr);
+  u16550_serialout(priv, UART_LCR_OFFSET, lcr);
 
   /* Configure the FIFOs */
 
-  *(volatile uint8_t *)0x10000000 = 'f';////
+  *(volatile uint8_t *)0x10000000 = 'h';////
   u16550_serialout(priv, UART_FCR_OFFSET,
                    (UART_FCR_RXTRIGGER_8 | UART_FCR_TXRST | UART_FCR_RXRST |
                     UART_FCR_FIFOEN));
+#endif //// TODO
 
   /* Set up the auto flow control */
 
@@ -799,7 +806,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   mcr |= UART_MCR_RTS;
 
-  *(volatile uint8_t *)0x10000000 = 'g';////
+  *(volatile uint8_t *)0x10000000 = 'i';////
   u16550_serialout(priv, UART_MCR_OFFSET, mcr);
 #endif /* defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL) */
 
@@ -810,7 +817,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 #endif
 
 #endif
-  *(volatile uint8_t *)0x10000000 = 'd';////
+  *(volatile uint8_t *)0x10000000 = 'j';////
   return OK;
 }
 
