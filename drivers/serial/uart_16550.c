@@ -794,6 +794,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
   /* Set up the auto flow control */
 
 #if defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL)
+  *(volatile uint8_t *)0x10000000 = 'i';////
   mcr = u16550_serialin(priv, UART_MCR_OFFSET);
   if (priv->flow)
     {
@@ -806,18 +807,19 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   mcr |= UART_MCR_RTS;
 
-  *(volatile uint8_t *)0x10000000 = 'i';////
+  *(volatile uint8_t *)0x10000000 = 'j';////
   u16550_serialout(priv, UART_MCR_OFFSET, mcr);
 #endif /* defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL) */
 
   /* Reconfigure DMA Rx timeout value */
 
 #ifdef HAVE_16550_UART_DMA
+  *(volatile uint8_t *)0x10000000 = 'k';////
   u16550_dmarxconfig(dev);
 #endif
 
 #endif
-  *(volatile uint8_t *)0x10000000 = 'j';////
+  *(volatile uint8_t *)0x10000000 = 'l';////
   return OK;
 }
 
