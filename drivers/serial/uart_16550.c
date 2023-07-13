@@ -703,6 +703,7 @@ static inline uint32_t u16550_divisor(FAR struct u16550_s *priv)
 static int u16550_setup(FAR struct uart_dev_s *dev)
 {
   *(volatile uint8_t *)0x10000000 = 'c';////
+#ifdef TODO ////
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   ////uint16_t div;
@@ -819,6 +820,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 #endif
 
 #endif
+#endif //// TODO
   *(volatile uint8_t *)0x10000000 = 'l';////
   return OK;
 }
