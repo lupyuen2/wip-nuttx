@@ -601,6 +601,7 @@ static uart_dev_t g_uart3port =
 static inline uart_datawidth_t u16550_serialin(FAR struct u16550_s *priv,
                                                int offset)
 {
+  if (priv == NULL || priv->uartbase != 0x10000000) { *(volatile uint8_t *)0x10000000 = '!'; } ////
   DEBUGASSERT(priv != NULL); DEBUGASSERT(priv->uartbase == 0x10000000); ////
 #ifdef CONFIG_SERIAL_UART_ARCH_MMIO
   return *((FAR volatile uart_datawidth_t *)priv->uartbase + offset);
@@ -616,6 +617,7 @@ static inline uart_datawidth_t u16550_serialin(FAR struct u16550_s *priv,
 static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
                                     uart_datawidth_t value)
 {
+  if (priv == NULL || priv->uartbase != 0x10000000) { *(volatile uint8_t *)0x10000000 = '!'; } ////
   DEBUGASSERT(priv != NULL); DEBUGASSERT(priv->uartbase == 0x10000000); ////
 #ifdef CONFIG_SERIAL_UART_ARCH_MMIO
   *((FAR volatile uart_datawidth_t *)priv->uartbase + offset) = value;
