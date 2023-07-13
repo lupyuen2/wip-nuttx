@@ -165,6 +165,8 @@ cpux:
 
 void qemu_rv_start(int mhartid)
 {
+  DEBUGASSERT(mhartid == 0); ////
+  if (0 == mhartid) { qemu_rv_clear_bss(); } ////
   qemu_rv_start_s(mhartid); ////
 #ifdef TODO ////
   /* NOTE: still in M-mode */
