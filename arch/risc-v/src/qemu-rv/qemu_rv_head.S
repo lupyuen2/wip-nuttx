@@ -172,8 +172,9 @@ real_start:
   csrw	sie, zero
   /* Previously: csrw	mie, zero */
 
-  la   t0, __trap_vec
-  csrw stvec, t0
+  /* Don't load the Interrupt Vector Table, use OpenSBI for crash logging */
+  /* la   t0, __trap_vec */
+  /* csrw stvec, t0 */
   /* Previously: csrw mtvec, t0 */
 
   /* Print `7` */
