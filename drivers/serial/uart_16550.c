@@ -1652,25 +1652,8 @@ static bool u16550_txempty(struct uart_dev_s *dev)
 #ifdef HAVE_16550_CONSOLE
 static void u16550_putc(FAR struct u16550_s *priv, int ch)
 {
-  *(volatile uint8_t *)0x10000000 = 'm';////
-#define TEST_UART_ADDR ////
-#ifdef TEST_UART_ADDR ////
-  uint64_t addr = (uint64_t)((FAR volatile uart_datawidth_t *)0x10000000 + UART_LSR_OFFSET);
-  *(volatile uint8_t *)0x10000000 = '0' + CONFIG_16550_REGINCR;////
-  *(volatile uint8_t *)0x10000000 = '0' + UART_LSR_INCR;////
-  *(volatile uint8_t *)0x10000000 = '0' + UART_LSR_OFFSET;////
-  *(volatile uint8_t *)0x10000000 = '0' + (addr % 0xff);////
-  // while ((*(volatile uint8_t *)(0x10000000 + UART_LSR_OFFSET) & UART_LSR_THRE) == 0) {
-  //   static int counter = 0;
-  //   if (counter++ == 10) { break; }
-  //   *(volatile uint8_t *)0x10000000 = 'o';////
-  // }
-#endif //// TEST_UART_ADDR
-
-  *(volatile uint8_t *)0x10000000 = 'p';////
   while ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) == 0);
   u16550_serialout(priv, UART_THR_OFFSET, (uart_datawidth_t)ch);
-  *(volatile uint8_t *)0x10000000 = 'q';////
 }
 #endif
 
