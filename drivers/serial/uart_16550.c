@@ -1660,11 +1660,11 @@ static void u16550_putc(FAR struct u16550_s *priv, int ch)
   *(volatile uint8_t *)0x10000000 = '0' + UART_LSR_INCR;////
   *(volatile uint8_t *)0x10000000 = '0' + UART_LSR_OFFSET;////
   *(volatile uint8_t *)0x10000000 = '0' + (addr % 0xff);////
-  while ((*(volatile uint8_t *)(0x10000000 + UART_LSR_OFFSET) & UART_LSR_THRE) == 0) {
-    static int counter = 0;
-    if (counter++ == 10) { break; }
-    *(volatile uint8_t *)0x10000000 = 'o';////
-  }
+  // while ((*(volatile uint8_t *)(0x10000000 + UART_LSR_OFFSET) & UART_LSR_THRE) == 0) {
+  //   static int counter = 0;
+  //   if (counter++ == 10) { break; }
+  //   *(volatile uint8_t *)0x10000000 = 'o';////
+  // }
 #endif //// TEST_UART_ADDR
 
   *(volatile uint8_t *)0x10000000 = 'p';////
