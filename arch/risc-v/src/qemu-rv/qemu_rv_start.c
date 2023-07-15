@@ -166,9 +166,7 @@ cpux:
 void qemu_rv_start(int mhartid)
 {
   DEBUGASSERT(mhartid == 0); ////
-  if (0 == mhartid) { qemu_rv_clear_bss(); } ////
-  qemu_rv_start_s(mhartid); ////
-#ifdef TODO ////
+
   /* NOTE: still in M-mode */
 
   if (0 == mhartid)
@@ -177,28 +175,29 @@ void qemu_rv_start(int mhartid)
 
       /* Initialize the per CPU areas */
 
-      riscv_percpu_add_hart(mhartid);
+      //// TODO
+      ////riscv_percpu_add_hart(mhartid);
     }
 
   /* Disable MMU and enable PMP */
 
   WRITE_CSR(satp, 0x0);
-  WRITE_CSR(pmpaddr0, 0x3fffffffffffffull);
-  WRITE_CSR(pmpcfg0, 0xf);
+  ////WRITE_CSR(pmpaddr0, 0x3fffffffffffffull);
+  ////WRITE_CSR(pmpcfg0, 0xf);
 
   /* Set exception and interrupt delegation for S-mode */
 
-  WRITE_CSR(medeleg, 0xffff);
-  WRITE_CSR(mideleg, 0xffff);
+  ////WRITE_CSR(medeleg, 0xffff);
+  ////WRITE_CSR(mideleg, 0xffff);
 
   /* Allow to write satp from S-mode */
 
-  CLEAR_CSR(mstatus, MSTATUS_TVM);
+  ////CLEAR_CSR(mstatus, MSTATUS_TVM);
 
   /* Set mstatus to S-mode and enable SUM */
 
-  CLEAR_CSR(mstatus, ~MSTATUS_MPP_MASK);
-  SET_CSR(mstatus, MSTATUS_MPPS | SSTATUS_SUM);
+  ////CLEAR_CSR(mstatus, ~MSTATUS_MPP_MASK);
+  ////SET_CSR(mstatus, MSTATUS_MPPS | SSTATUS_SUM);
 
   /* Set the trap vector for S-mode */
 
@@ -206,7 +205,7 @@ void qemu_rv_start(int mhartid)
 
   /* Set the trap vector for M-mode */
 
-  WRITE_CSR(mtvec, (uintptr_t)__trap_vec_m);
+  ////WRITE_CSR(mtvec, (uintptr_t)__trap_vec_m);
 
   if (0 == mhartid)
     {
@@ -214,21 +213,24 @@ void qemu_rv_start(int mhartid)
        * before entering to S-mode
        */
 
-      up_mtimer_initialize();
+      //// TODO
+      ////up_mtimer_initialize();
     }
 
   /* Set mepc to the entry */
 
-  WRITE_CSR(mepc, (uintptr_t)qemu_rv_start_s);
+  ////WRITE_CSR(mepc, (uintptr_t)qemu_rv_start_s);
 
   /* Set a0 to mhartid explicitly and enter to S-mode */
 
-  asm volatile (
-      "mv a0, %0 \n"
-      "mret \n"
-      :: "r" (mhartid)
-  );
-#endif //// TODO
+  ////asm volatile (
+  ////    "mv a0, %0 \n"
+  ////    "mret \n"
+  ////    :: "r" (mhartid)
+  ////);
+
+  //// Jump to S-Mode Init ourselves
+  qemu_rv_start_s(mhartid); ////
 }
 #endif
 
