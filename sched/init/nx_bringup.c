@@ -296,7 +296,7 @@ static inline void nx_start_application(void)
 
   ret = exec_spawn(CONFIG_INIT_FILEPATH, argv, NULL,
                    CONFIG_INIT_SYMTAB, CONFIG_INIT_NEXPORTS, NULL, &attr);
-  sinfo("ret=%d\n", ret);
+  sinfo("ret=%d\n", ret);////
 #endif
   posix_spawnattr_destroy(&attr);
   DEBUGASSERT(ret > 0);
