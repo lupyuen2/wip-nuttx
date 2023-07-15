@@ -702,11 +702,9 @@ static inline uint32_t u16550_divisor(FAR struct u16550_s *priv)
 
 static int u16550_setup(FAR struct uart_dev_s *dev)
 {
-  *(volatile uint8_t *)0x10000000 = 'c';////
-#ifdef TODO ////
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
-  ////uint16_t div;
+  uint16_t div;
   uint32_t lcr;
 #if defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL)
   uint32_t mcr;
@@ -714,22 +712,17 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   /* Clear fifos */
 
-  *(volatile uint8_t *)0x10000000 = 'd';////
   u16550_serialout(priv, UART_FCR_OFFSET,
                    (UART_FCR_RXRST | UART_FCR_TXRST));
 
-#ifdef TODO ////
   /* Set trigger */
 
-  *(volatile uint8_t *)0x10000000 = 'e';////
   u16550_serialout(priv, UART_FCR_OFFSET,
                    (UART_FCR_FIFOEN | UART_FCR_RXTRIGGER_8));
 
   /* Set up the IER */
 
-  *(volatile uint8_t *)0x10000000 = 'f';////
   priv->ier = u16550_serialin(priv, UART_IER_OFFSET);
-#endif //// TODO
 
   /* Set up the LCR */
 
@@ -768,10 +761,8 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
       lcr |= (UART_LCR_PEN | UART_LCR_EPS);
     }
 
-#ifdef TODO ////
   /* Enter DLAB=1 */
 
-  *(volatile uint8_t *)0x10000000 = 'g';////
   u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
   /* Set the BAUD divisor */
@@ -786,16 +777,13 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   /* Configure the FIFOs */
 
-  *(volatile uint8_t *)0x10000000 = 'h';////
   u16550_serialout(priv, UART_FCR_OFFSET,
                    (UART_FCR_RXTRIGGER_8 | UART_FCR_TXRST | UART_FCR_RXRST |
                     UART_FCR_FIFOEN));
-#endif //// TODO
 
   /* Set up the auto flow control */
 
 #if defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL)
-  *(volatile uint8_t *)0x10000000 = 'i';////
   mcr = u16550_serialin(priv, UART_MCR_OFFSET);
   if (priv->flow)
     {
@@ -808,20 +796,16 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   mcr |= UART_MCR_RTS;
 
-  *(volatile uint8_t *)0x10000000 = 'j';////
   u16550_serialout(priv, UART_MCR_OFFSET, mcr);
 #endif /* defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL) */
 
   /* Reconfigure DMA Rx timeout value */
 
 #ifdef HAVE_16550_UART_DMA
-  *(volatile uint8_t *)0x10000000 = 'k';////
   u16550_dmarxconfig(dev);
 #endif
 
 #endif
-#endif //// TODO
-  *(volatile uint8_t *)0x10000000 = 'l';////
   return OK;
 }
 
@@ -1618,7 +1602,6 @@ static void u16550_txint(struct uart_dev_s *dev, bool enable)
 
 static bool u16550_txready(struct uart_dev_s *dev)
 {
-  return true;
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   return ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) != 0);
 }
