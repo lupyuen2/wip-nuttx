@@ -175,8 +175,7 @@ void qemu_rv_start(int mhartid)
 
       /* Initialize the per CPU areas */
 
-      //// TODO
-      ////riscv_percpu_add_hart(mhartid);
+      riscv_percpu_add_hart(mhartid);
     }
 
   /* Disable MMU and enable PMP */
