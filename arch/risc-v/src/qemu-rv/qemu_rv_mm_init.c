@@ -269,6 +269,7 @@ void qemu_rv_kernel_mappings(void)
   binfo("map kernel data\n");
   map_region(KSRAM_START, KSRAM_START, KSRAM_SIZE, MMU_KDATA_FLAGS);
 
+#ifdef NOTUSED
   /* Added RAM Disk */
   //// From nuttx/boards/risc-v/litex/arty_a7/include/board_memorymap.h
   /* ramdisk (RW) */
@@ -277,6 +278,7 @@ void qemu_rv_kernel_mappings(void)
   _info("map RAM Disk\n");
   map_region((uintptr_t)__ramdisk_start, (uintptr_t)__ramdisk_start, (uintptr_t)__ramdisk_size, MMU_KDATA_FLAGS);
   _info("map RAM Disk done\n");
+#endif  // NOTUSED
 
 #ifdef CONFIG_ARCH_MMU_TYPE_SV39
 
