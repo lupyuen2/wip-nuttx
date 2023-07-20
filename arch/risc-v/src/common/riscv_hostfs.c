@@ -53,7 +53,7 @@
 
 static long host_call(unsigned int nbr, void *parm, size_t size)
 {
-  _info("nbr=0x%x, parm=%p, size=%ld\n", nbr, parm, size);////
+  //_info("nbr=0x%x, parm=%p, size=%ld\n", nbr, parm, size);////
 
 #ifdef CONFIG_RISCV_SEMIHOSTING_HOSTFS_CACHE_COHERENCE
   up_clean_dcache(parm, parm + size);
