@@ -269,12 +269,17 @@ void qemu_rv_kernel_mappings(void)
   binfo("map kernel data\n");
   map_region(KSRAM_START, KSRAM_START, KSRAM_SIZE, MMU_KDATA_FLAGS);
 
-#ifdef NOTUSED
-  /* Added RAM Disk */
+  // Added RAM Disk
   //// From nuttx/boards/risc-v/litex/arty_a7/include/board_memorymap.h
   /* ramdisk (RW) */
   extern uint8_t          __ramdisk_start[];
   extern uint8_t          __ramdisk_size[];
+  // Copy 0x84000000 to __ramdisk_start (__ramdisk_size bytes)
+  // TODO: RAM Disk must not exceed __ramdisk_size bytes
+  memcpy((void *)__ramdisk_start, (void *)0x84000000, (size_t)__ramdisk_size);
+
+#ifdef NOTUSED
+  /* Added RAM Disk */
   _info("map RAM Disk\n");
   map_region((uintptr_t)__ramdisk_start, (uintptr_t)__ramdisk_start, (uintptr_t)__ramdisk_size, MMU_KDATA_FLAGS);
   _info("map RAM Disk done\n");
