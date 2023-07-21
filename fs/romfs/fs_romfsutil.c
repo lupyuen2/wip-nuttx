@@ -96,6 +96,13 @@ static inline uint32_t romfs_swap32(uint32_t value)
 
 static uint32_t romfs_devread32(struct romfs_mountpt_s *rm, int ndx)
 {
+  //// Stop if RAM Disk Memory is too small
+  extern uint8_t __ramdisk_start[]; ////
+  extern uint8_t __ramdisk_size[]; ////
+  if (&rm->rm_buffer[ndx] > __ramdisk_start + (size_t)__ramdisk_size)
+    { _err("RAM Disk Memory too smol! Expecting %p, got %p\n", __ramdisk_start + (size_t)__ramdisk_size, &rm->rm_buffer[ndx]); };
+  DEBUGASSERT(&rm->rm_buffer[ndx] < __ramdisk_start + (size_t)__ramdisk_size); ////
+
   /* Extract the value */
 
   uint32_t value = *(FAR uint32_t *)&rm->rm_buffer[ndx];
@@ -109,6 +116,7 @@ static uint32_t romfs_devread32(struct romfs_mountpt_s *rm, int ndx)
 }
 #else
 // New version of romfs_devread32
+// Crashes with Misaligned Address exception
 /****************************************************************************
  * Name: romfs_devread32
  *
