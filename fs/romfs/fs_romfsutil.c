@@ -63,60 +63,6 @@ struct romfs_entryname_s
  * Private Functions
  ****************************************************************************/
 
-#define OLD_DEVREAD //// 
-#ifdef OLD_DEVREAD ////
-// Old version of romfs_devread32
-// https://github.com/lupyuen2/wip-pinephone-nuttx/commit/18e5e75008a73e7bec70c10fd64c6f46d2e0bdb4
-/****************************************************************************
- * Name: romfs_swap32
- *
- * Description:
- *   Convert the 32-bit big endian value to little endian
- *
- ****************************************************************************/
-
-#ifndef CONFIG_ENDIAN_BIG
-static inline uint32_t romfs_swap32(uint32_t value)
-{
-  return ((((value) & 0x000000ff) << 24) | (((value) & 0x0000ff00) << 8) |
-          (((value) & 0x00ff0000) >>  8) | (((value) & 0xff000000) >> 24));
-}
-#endif
-
-/****************************************************************************
- * Name: romfs_devread32
- *
- * Description:
- *   Read the big-endian 32-bit value from the mount device buffer
- *
- * Assumption:
- *   All values are aligned to 32-bit boundaries
- *
- ****************************************************************************/
-
-static uint32_t romfs_devread32(struct romfs_mountpt_s *rm, int ndx)
-{
-  //// Stop if RAM Disk Memory is too small
-  extern uint8_t __ramdisk_start[]; ////
-  extern uint8_t __ramdisk_size[]; ////
-  if (&rm->rm_buffer[ndx] > __ramdisk_start + (size_t)__ramdisk_size)
-    { _err("RAM Disk Memory too smol! Expecting %p, got %p\n", __ramdisk_start + (size_t)__ramdisk_size, &rm->rm_buffer[ndx]); };
-  DEBUGASSERT(&rm->rm_buffer[ndx] < __ramdisk_start + (size_t)__ramdisk_size); ////
-
-  /* Extract the value */
-
-  uint32_t value = *(FAR uint32_t *)&rm->rm_buffer[ndx];
-
-  /* Value is begin endian -- return the native host endian-ness. */
-#ifdef CONFIG_ENDIAN_BIG
-  return value;
-#else
-  return romfs_swap32(value);
-#endif
-}
-#else
-// New version of romfs_devread32
-// Crashes with Misaligned Address exception
 /****************************************************************************
  * Name: romfs_devread32
  *
@@ -130,6 +76,13 @@ static uint32_t romfs_devread32(struct romfs_mountpt_s *rm, int ndx)
 
 static uint32_t romfs_devread32(FAR struct romfs_mountpt_s *rm, int ndx)
 {
+  //// Stop if RAM Disk Memory is too small
+  extern uint8_t __ramdisk_start[]; ////
+  extern uint8_t __ramdisk_size[]; ////
+  if (&rm->rm_buffer[ndx] > __ramdisk_start + (size_t)__ramdisk_size)
+    { _err("RAM Disk Memory too smol! Expecting %p, got %p\n", __ramdisk_start + (size_t)__ramdisk_size, &rm->rm_buffer[ndx]); };
+  DEBUGASSERT(&rm->rm_buffer[ndx] < __ramdisk_start + (size_t)__ramdisk_size); ////
+
   /* This should not read past the end of the sector since the directory
    * entries are aligned at 16-byte boundaries.
    */
@@ -139,7 +92,6 @@ static uint32_t romfs_devread32(FAR struct romfs_mountpt_s *rm, int ndx)
           (((uint32_t)rm->rm_buffer[ndx + 2] & 0xff) << 8) |
            ((uint32_t)rm->rm_buffer[ndx + 3] & 0xff));
 }
-#endif  // OLD_DEVREAD
 
 /****************************************************************************
  * Name: romfs_checkentry
