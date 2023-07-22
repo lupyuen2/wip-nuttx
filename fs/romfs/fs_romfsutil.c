@@ -76,6 +76,13 @@ struct romfs_entryname_s
 
 static uint32_t romfs_devread32(FAR struct romfs_mountpt_s *rm, int ndx)
 {
+  //// Stop if RAM Disk Memory is too small
+  extern uint8_t __ramdisk_start[]; ////
+  extern uint8_t __ramdisk_size[]; ////
+  if (&rm->rm_buffer[ndx] > __ramdisk_start + (size_t)__ramdisk_size)
+    { _err("RAM Disk Memory too smol! Expecting %p, got %p\n", __ramdisk_start + (size_t)__ramdisk_size, &rm->rm_buffer[ndx]); };
+  DEBUGASSERT(&rm->rm_buffer[ndx] < __ramdisk_start + (size_t)__ramdisk_size); ////
+
   /* This should not read past the end of the sector since the directory
    * entries are aligned at 16-byte boundaries.
    */
