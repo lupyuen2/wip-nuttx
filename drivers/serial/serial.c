@@ -1174,6 +1174,7 @@ static ssize_t uart_read(FAR struct file *filep,
 static ssize_t uart_write(FAR struct file *filep, FAR const char *buffer,
                           size_t buflen)
 {
+  infodumpbuffer("uart_write", (const uint8_t *)buffer, buflen);////
   FAR struct inode *inode    = filep->f_inode;
   FAR uart_dev_t   *dev      = inode->i_private;
   ssize_t           nwritten = buflen;
