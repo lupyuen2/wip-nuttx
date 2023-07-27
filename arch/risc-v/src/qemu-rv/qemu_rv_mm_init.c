@@ -43,7 +43,7 @@
 /* Map the whole I/O memory with vaddr = paddr mappings */
 
 #define MMU_IO_BASE     (0x00000000)
-#define MMU_IO_SIZE     (0x80000000)
+#define MMU_IO_SIZE     (0x40000000)
 
 #ifdef CONFIG_ARCH_MMU_TYPE_SV32
 

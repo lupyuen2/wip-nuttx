@@ -33,7 +33,7 @@
 
 /* DDR start address */
 
-#define QEMURV_DDR_BASE   (0x80000000)
+#define QEMURV_DDR_BASE   (0x40000000)
 #define QEMURV_DDR_SIZE   (0x40000000)
 
 /* Kernel code memory (RX) */
