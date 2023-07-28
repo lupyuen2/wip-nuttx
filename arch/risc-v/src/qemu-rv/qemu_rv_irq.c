@@ -180,7 +180,7 @@ void up_enable_irq(int irq)
 
       /* Set enable bit for the irq */
 
-      if (0 <= extirq && extirq <= 63)
+      if (0 <= extirq && extirq <= 63) ////TODO: Why 63?
         {
           modifyreg32(QEMU_RV_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
@@ -195,6 +195,7 @@ void up_enable_irq(int irq)
 
 irqstate_t up_irq_enable(void)
 {
+  _info("\n");////
   irqstate_t oldstat;
 
   /* Enable external interrupts (mie/sie) */
