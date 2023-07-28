@@ -55,12 +55,14 @@
 
 void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 {
+  *(volatile uint8_t *)0x10000000 = '%';////
   int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
 
   /* Firstly, check if the irq is machine external interrupt */
 
   if (RISCV_IRQ_EXT == irq)
     {
+      *(volatile uint8_t *)0x10000000 = '^';////
       uintptr_t val = getreg32(QEMU_RV_PLIC_CLAIM);
 
       /* Add the value to nuttx irq which is offset to the mext */
@@ -72,6 +74,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 
   if (RISCV_IRQ_EXT != irq)
     {
+      *(volatile uint8_t *)0x10000000 = '&';////
       /* Deliver the IRQ */
 
       regs = riscv_doirq(irq, regs);
@@ -79,6 +82,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 
   if (RISCV_IRQ_EXT <= irq)
     {
+      *(volatile uint8_t *)0x10000000 = '*';////
       /* Then write PLIC_CLAIM to clear pending in PLIC */
 
       putreg32(irq - RISCV_IRQ_EXT, QEMU_RV_PLIC_CLAIM);
