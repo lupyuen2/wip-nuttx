@@ -151,12 +151,14 @@ void up_enable_irq(int irq)
 
   if (irq == RISCV_IRQ_SOFT)
     {
+      _info("RISCV_IRQ_SOFT=%d\n", RISCV_IRQ_SOFT);////
       /* Read m/sstatus & set machine software interrupt enable in m/sie */
 
       SET_CSR(CSR_IE, IE_SIE);
     }
   else if (irq == RISCV_IRQ_TIMER)
     {
+      _info("RISCV_IRQ_TIMER=%d\n", RISCV_IRQ_TIMER);////
       /* Read m/sstatus & set timer interrupt enable in m/sie */
 
       SET_CSR(CSR_IE, IE_TIE);
@@ -164,6 +166,7 @@ void up_enable_irq(int irq)
 #ifdef CONFIG_BUILD_KERNEL
   else if (irq == RISCV_IRQ_MTIMER)
     {
+      _info("RISCV_IRQ_MTIMER=%d\n", RISCV_IRQ_MTIMER);////
       /* Read m/sstatus & set timer interrupt enable in m/sie */
 
       SET_CSR(mie, MIE_MTIE);
