@@ -189,6 +189,10 @@ void up_enable_irq(int irq)
           modifyreg32(QEMU_RV_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
           ////Test other contexts
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT0 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT1 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
           modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT2 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
           modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT3 + (4 * (extirq / 32)),
