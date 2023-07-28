@@ -26,6 +26,7 @@
 
 #include <stdint.h>
 #include <assert.h>
+#include <debug.h>////
 
 #include <nuttx/irq.h>
 #include <nuttx/addrenv.h>
@@ -57,6 +58,7 @@
 
 uintptr_t *riscv_doirq(int irq, uintptr_t *regs)
 {
+  _info("irq=%d\n", irq);////
   board_autoled_on(LED_INIRQ);
 #ifdef CONFIG_SUPPRESS_INTERRUPTS
   PANIC();
