@@ -146,6 +146,7 @@ void up_disable_irq(int irq)
 
 void up_enable_irq(int irq)
 {
+  _info("irq=%d\n", irq);////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
@@ -171,6 +172,7 @@ void up_enable_irq(int irq)
   else if (irq > RISCV_IRQ_EXT)
     {
       extirq = irq - RISCV_IRQ_EXT;
+      _info("extirq=%d, RISCV_IRQ_EXT=%d\n", extirq, RISCV_IRQ_EXT);////
 
       /* Set enable bit for the irq */
 
@@ -184,6 +186,7 @@ void up_enable_irq(int irq)
           PANIC();
         }
     }
+  else { _info("***NOT ENABLED: irq=%d\n", irq); }////
 }
 
 irqstate_t up_irq_enable(void)
