@@ -179,7 +179,7 @@ void qemu_rv_start(int mhartid)
   /* Set exception and interrupt delegation for S-mode */
 
   ////WRITE_CSR(medeleg, 0xffff);
-  ////WRITE_CSR(mideleg, 0xffff);
+  ////WRITE_CSR(mideleg, 0xffff);  ////TODO: Delegate M-Mode Interrupts to S-Mode
 
   /* Allow to write satp from S-mode */
 
