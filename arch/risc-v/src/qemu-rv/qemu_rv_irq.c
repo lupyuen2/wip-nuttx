@@ -129,7 +129,7 @@ void up_disable_irq(int irq)
 
       /* Clear enable bit for the irq */
 
-      if (0 <= extirq && extirq <= 63)
+      if (0 <= extirq && extirq <= 63) ////TODO: Why 63?
         {
           modifyreg32(QEMU_RV_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       1 << (extirq % 32), 0);
