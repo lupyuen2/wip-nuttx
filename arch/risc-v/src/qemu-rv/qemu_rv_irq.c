@@ -93,6 +93,9 @@ void up_irqinitialize(void)
 
   up_irq_enable();
 #endif
+
+  ////Testing
+  for (id = RISCV_IRQ_EXT + 1; id < 89; id++) { up_enable_irq(id); } ////
 }
 
 /****************************************************************************
@@ -105,6 +108,7 @@ void up_irqinitialize(void)
 
 void up_disable_irq(int irq)
 {
+  _info("irq=%d\n", irq);////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
