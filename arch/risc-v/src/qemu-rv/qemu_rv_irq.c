@@ -186,13 +186,23 @@ void up_enable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63) ////TODO: Why 63?
         {
-          ////TODO: What about QEMU_RV_PLIC_ENABLE2? Why 32?
           modifyreg32(QEMU_RV_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
-          ////Testing
-          modifyreg32(QEMU_RV_PLIC_ENABLE2 + (4 * (extirq / 32)),////
-                      0, 1 << (extirq % 32));////
-          ////TODO: Test other contexts
+          ////Test other contexts
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT2 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT3 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT4 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT5 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT6 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT7 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
+          modifyreg32(QEMU_RV_PLIC_ENABLE_CONTEXT8 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
         }
       else
         {
