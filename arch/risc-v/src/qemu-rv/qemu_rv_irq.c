@@ -65,6 +65,7 @@ void up_irqinitialize(void)
 
   int id;
 
+  ////TODO: Why 52 PLIC Interrupts?
   for (id = 1; id <= 52; id++)
     {
       putreg32(1, (uintptr_t)(QEMU_RV_PLIC_PRIORITY + 4 * id));
