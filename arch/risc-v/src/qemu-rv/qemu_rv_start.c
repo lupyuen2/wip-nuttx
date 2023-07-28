@@ -104,7 +104,6 @@ void qemu_rv_start(int mhartid)
 {
   /* Configure FPU */
 
-  *(volatile uint8_t *)0x10000000 = 'D';////
   riscv_fpuconfig();
 
   if (mhartid > 0)
@@ -113,19 +112,15 @@ void qemu_rv_start(int mhartid)
     }
 
 #ifndef CONFIG_BUILD_KERNEL
-  *(volatile uint8_t *)0x10000000 = 'E';////
   qemu_rv_clear_bss();
 #endif
 
-  *(volatile uint8_t *)0x10000000 = 'F';////
   showprogress('A');
 
 #ifdef USE_EARLYSERIALINIT
-  *(volatile uint8_t *)0x10000000 = 'G';////
   riscv_earlyserialinit();
 #endif
 
-  *(volatile uint8_t *)0x10000000 = 'H';////
   showprogress('B');
 
   /* Do board initialization */
@@ -140,17 +135,14 @@ void qemu_rv_start(int mhartid)
 
   /* Call nx_start() */
 
-  *(volatile uint8_t *)0x10000000 = 'I';////
   nx_start();
 
 cpux:
 
 #ifdef CONFIG_SMP
-  *(volatile uint8_t *)0x10000000 = 'J';////
   riscv_cpu_boot(mhartid);
 #endif
 
-  *(volatile uint8_t *)0x10000000 = 'K';////
   while (true)
     {
       asm("WFI");
