@@ -73,6 +73,7 @@ static uint32_t g_stimer_pending = false;
 
 static int qemu_rv_ssoft_interrupt(int irq, void *context, void *arg)
 {
+  *(volatile uint8_t *)0x10000000 = '!';////
   /* Cleaer Supervisor Software Interrupt */
 
   CLEAR_CSR(sip, SIP_SSIP);
@@ -187,6 +188,7 @@ void up_mtimer_initialize(void)
 
 void qemu_rv_mtimer_interrupt(void)
 {
+  *(volatile uint8_t *)0x10000000 = '@';////
   uint64_t current;
   uint64_t next;
 

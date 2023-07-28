@@ -202,7 +202,7 @@ void qemu_rv_start(int mhartid)
        * before entering to S-mode
        */
 
-      up_mtimer_initialize();
+      ////up_mtimer_initialize();
     }
 
   /* Set mepc to the entry */
