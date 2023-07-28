@@ -54,6 +54,7 @@
 
 void uart_xmitchars(FAR uart_dev_t *dev)
 {
+  *(volatile uint8_t *)0x10000000 = 'D';////
   uint16_t nbytes = 0;
 
 #ifdef CONFIG_SMP
@@ -62,6 +63,7 @@ void uart_xmitchars(FAR uart_dev_t *dev)
 
   /* Send while we still have data in the TX buffer & room in the fifo */
 
+  if (uart_txready(dev)) { *(volatile uint8_t *)0x10000000 = 'E'; }////
   while (dev->xmit.head != dev->xmit.tail && uart_txready(dev))
     {
       /* Send the next byte */
