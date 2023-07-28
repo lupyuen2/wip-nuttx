@@ -930,7 +930,6 @@ static void u16550_detach(FAR struct uart_dev_s *dev)
 
 static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 {
-  *(volatile uint8_t *)0x10000000 = '#';////
   FAR struct uart_dev_s *dev = (struct uart_dev_s *)arg;
   FAR struct u16550_s *priv;
   uint32_t status;
