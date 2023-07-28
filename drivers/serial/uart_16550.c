@@ -1550,7 +1550,7 @@ static void u16550_dmatxavail(FAR struct uart_dev_s *dev)
 
 static void u16550_send(struct uart_dev_s *dev, int ch)
 {
-  *(volatile uint8_t *)0x10000000 = 'E';////
+  *(volatile uint8_t *)0x10000000 = 'F';////
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   u16550_serialout(priv, UART_THR_OFFSET, (uart_datawidth_t)ch);
 }
