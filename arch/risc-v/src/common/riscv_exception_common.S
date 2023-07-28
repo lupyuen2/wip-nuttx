@@ -75,6 +75,14 @@
   .align  8
 
 exception_common:
+  /* Begin Debug */
+  /* Load UART Base Address to Register t0 */
+  li  t0, 0x10000000
+  /* Load `#` to Register t1 */
+  li  t1, 0x23
+  /* Store byte from Register t1 to UART Base Address, Offset 0 */
+  sb  t1, 0(t0)
+  /* End Debug */
 
 #ifdef CONFIG_ARCH_KERNEL_STACK
   /* Take the kernel stack into use */
