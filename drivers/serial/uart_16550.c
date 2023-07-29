@@ -972,6 +972,8 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
             #define UART_IIR_RX_TIMEOUT	0x0c /* OMAP RX Timeout interrupt */
             #define UART_IIR_XOFF		0x10 /* OMAP XOFF/Special Character */
             #define UART_IIR_CTS_RTS_DSR	0x20 /* OMAP CTS/RTS/DSR Change */
+            bool rx_timeout = (status & 0x3f) == UART_IIR_RX_TIMEOUT;
+            if (rx_timeout) { *(volatile uint8_t *)0x10000000 = 'C'; }////
             if (status & UART_IIR_MSI) { *(volatile uint8_t *)0x10000000 = '4'; }////
             if (status & UART_IIR_THRI) { *(volatile uint8_t *)0x10000000 = '5'; }////
             if (status & UART_IIR_RDI) { *(volatile uint8_t *)0x10000000 = '6'; }////
