@@ -972,6 +972,7 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
           case UART_IIR_INTID_RDA:
           case UART_IIR_INTID_CTI:
             {
+              *(volatile uint8_t *)0x10000000 = '+';////
               uart_recvchars(dev);
               break;
             }
