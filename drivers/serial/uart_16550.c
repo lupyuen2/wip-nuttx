@@ -930,7 +930,7 @@ static void u16550_detach(FAR struct uart_dev_s *dev)
 
 static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 {
-  *(volatile uint8_t *)0x10000000 = '#';////
+  ////*(volatile uint8_t *)0x10000000 = '#';////
   FAR struct uart_dev_s *dev = (struct uart_dev_s *)arg;
   FAR struct u16550_s *priv;
   uint32_t status;
@@ -961,6 +961,7 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
            * pending interrupt
            */
 
+          static int i = 0; if (i++ % 1000 == 1) { *(volatile uint8_t *)0x10000000 = '0'; }////
           break;
         }
 
@@ -991,6 +992,7 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           case UART_IIR_INTID_MSI:
             {
+              *(volatile uint8_t *)0x10000000 = '1';////
               /* Read the modem status register (MSR) to clear */
 
               status = u16550_serialin(priv, UART_MSR_OFFSET);
@@ -1002,6 +1004,7 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           case UART_IIR_INTID_RLS:
             {
+              *(volatile uint8_t *)0x10000000 = '2';////
               /* Read the line status register (LSR) to clear */
 
               status = u16550_serialin(priv, UART_LSR_OFFSET);
@@ -1013,6 +1016,7 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           default:
             {
+              *(volatile uint8_t *)0x10000000 = '3';////
               serr("ERROR: Unexpected IIR: %02"PRIx32"\n", status);
               break;
             }
