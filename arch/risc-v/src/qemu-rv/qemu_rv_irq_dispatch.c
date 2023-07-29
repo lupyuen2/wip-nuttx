@@ -26,6 +26,7 @@
 
 #include <stdint.h>
 #include <assert.h>
+#include <debug.h>///
 
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
@@ -79,6 +80,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 
   if (RISCV_IRQ_EXT <= irq)
     {
+      _info("irq=%d, RISCV_IRQ_EXT=%d\n", irq, RISCV_IRQ_EXT);////
       /* Then write PLIC_CLAIM to clear pending in PLIC */
 
       putreg32(irq - RISCV_IRQ_EXT, QEMU_RV_PLIC_CLAIM);

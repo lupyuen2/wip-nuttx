@@ -93,9 +93,6 @@ void up_irqinitialize(void)
 
   up_irq_enable();
 #endif
-
-  ////Testing: Enable all interrupts, all contexts
-  // for (id = RISCV_IRQ_EXT + 1; id < 89; id++) { up_enable_irq(id); } ////
 }
 
 /****************************************************************************

@@ -961,7 +961,7 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
            * pending interrupt
            */
 
-          static int i = 0; if (i++ % 1000 == 1) { *(volatile uint8_t *)0x10000000 = '0'; }////
+          static int i = 0; if (i++ % 10000 == 1) { *(volatile uint8_t *)0x10000000 = '0'; }////
           break;
         }
 
