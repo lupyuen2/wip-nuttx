@@ -963,25 +963,26 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           ////Begin
           static int i = 0; if (i++ % 1000000 == 1) {
-            *(volatile uint8_t *)0x10000000 = '0';
-            #define UART_IIR_MSI		0x00 /* Modem status interrupt */
-            #define UART_IIR_THRI		0x02 /* Transmitter holding register empty */
-            #define UART_IIR_RDI		0x04 /* Receiver data interrupt */
-            #define UART_IIR_RLSI		0x06 /* Receiver line status interrupt */
-            #define UART_IIR_BUSY		0x07 /* DesignWare APB Busy Detect */
-            #define UART_IIR_RX_TIMEOUT	0x0c /* OMAP RX Timeout interrupt */
-            #define UART_IIR_XOFF		0x10 /* OMAP XOFF/Special Character */
-            #define UART_IIR_CTS_RTS_DSR	0x20 /* OMAP CTS/RTS/DSR Change */
-            bool rx_timeout = (status & 0x3f) == UART_IIR_RX_TIMEOUT;
-            if (rx_timeout) { *(volatile uint8_t *)0x10000000 = 'C'; }////
-            if (status & UART_IIR_MSI) { *(volatile uint8_t *)0x10000000 = '4'; }////
-            if (status & UART_IIR_THRI) { *(volatile uint8_t *)0x10000000 = '5'; }////
-            if (status & UART_IIR_RDI) { *(volatile uint8_t *)0x10000000 = '6'; }////
-            if (status & UART_IIR_RLSI) { *(volatile uint8_t *)0x10000000 = '7'; }////
-            if (status & UART_IIR_BUSY) { *(volatile uint8_t *)0x10000000 = '8'; }////
-            if (status & UART_IIR_RX_TIMEOUT) { *(volatile uint8_t *)0x10000000 = '9'; }////
-            if (status & UART_IIR_XOFF) { *(volatile uint8_t *)0x10000000 = 'A'; }////
-            if (status & UART_IIR_CTS_RTS_DSR) { *(volatile uint8_t *)0x10000000 = 'B'; }////
+            *(volatile uint8_t *)0x10000000 = '.';
+            // *(volatile uint8_t *)0x10000000 = '0';
+            // #define UART_IIR_MSI		0x00 /* Modem status interrupt */
+            // #define UART_IIR_THRI		0x02 /* Transmitter holding register empty */
+            // #define UART_IIR_RDI		0x04 /* Receiver data interrupt */
+            // #define UART_IIR_RLSI		0x06 /* Receiver line status interrupt */
+            // #define UART_IIR_BUSY		0x07 /* DesignWare APB Busy Detect */
+            // #define UART_IIR_RX_TIMEOUT	0x0c /* OMAP RX Timeout interrupt */
+            // #define UART_IIR_XOFF		0x10 /* OMAP XOFF/Special Character */
+            // #define UART_IIR_CTS_RTS_DSR	0x20 /* OMAP CTS/RTS/DSR Change */
+            // bool rx_timeout = (status & 0x3f) == UART_IIR_RX_TIMEOUT;
+            // if (rx_timeout) { *(volatile uint8_t *)0x10000000 = 'C'; }////
+            // if (status & UART_IIR_MSI) { *(volatile uint8_t *)0x10000000 = '4'; }////
+            // if (status & UART_IIR_THRI) { *(volatile uint8_t *)0x10000000 = '5'; }////
+            // if (status & UART_IIR_RDI) { *(volatile uint8_t *)0x10000000 = '6'; }////
+            // if (status & UART_IIR_RLSI) { *(volatile uint8_t *)0x10000000 = '7'; }////
+            // if (status & UART_IIR_BUSY) { *(volatile uint8_t *)0x10000000 = '8'; }////
+            // if (status & UART_IIR_RX_TIMEOUT) { *(volatile uint8_t *)0x10000000 = '9'; }////
+            // if (status & UART_IIR_XOFF) { *(volatile uint8_t *)0x10000000 = 'A'; }////
+            // if (status & UART_IIR_CTS_RTS_DSR) { *(volatile uint8_t *)0x10000000 = 'B'; }////
           }////
           ////End
           break;
@@ -1005,7 +1006,7 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           case UART_IIR_INTID_THRE:
             {
-              *(volatile uint8_t *)0x10000000 = '-';////
+              ////*(volatile uint8_t *)0x10000000 = '-';////
               uart_xmitchars(dev);
               break;
             }
