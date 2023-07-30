@@ -1259,7 +1259,7 @@ static int u16550_receive(struct uart_dev_s *dev, unsigned int *status)
 
 static void u16550_rxint(struct uart_dev_s *dev, bool enable)
 {
-  _info("enable=%d\n", enable);////
+  ////_info("enable=%d\n", enable);////
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
 
 #ifdef HAVE_16550_UART_DMA
@@ -1580,7 +1580,7 @@ static void u16550_dmatxavail(FAR struct uart_dev_s *dev)
 
 static void u16550_send(struct uart_dev_s *dev, int ch)
 {
-  *(volatile uint8_t *)0x10000000 = 'F';////
+  ////*(volatile uint8_t *)0x10000000 = 'F';////
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   u16550_serialout(priv, UART_THR_OFFSET, (uart_datawidth_t)ch);
 }
@@ -1595,7 +1595,7 @@ static void u16550_send(struct uart_dev_s *dev, int ch)
 
 static void u16550_txint(struct uart_dev_s *dev, bool enable)
 {
-  _info("enable=%d\n", enable);////
+  ////_info("enable=%d\n", enable);////
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   irqstate_t flags;
 

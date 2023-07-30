@@ -154,7 +154,7 @@ static struct work_s g_serial_work;
 
 static int uart_putxmitchar(FAR uart_dev_t *dev, int ch, bool oktoblock)
 {
-  *(volatile uint8_t *)0x10000000 = 'A';////
+  ////*(volatile uint8_t *)0x10000000 = 'A';////
   irqstate_t flags;
   int nexthead;
   int ret;
@@ -1177,8 +1177,8 @@ static ssize_t uart_read(FAR struct file *filep,
 static ssize_t uart_write(FAR struct file *filep, FAR const char *buffer,
                           size_t buflen)
 {
-  infodumpbuffer("uart_write", (const uint8_t *)buffer, buflen);////
-  static bool first_time = true; if (first_time) { up_enable_irq(57); first_time = false; }////
+  ////infodumpbuffer("uart_write", (const uint8_t *)buffer, buflen);////
+  static int count = 0; if (count++ == 3) { up_enable_irq(57); }////
   FAR struct inode *inode    = filep->f_inode;
   FAR uart_dev_t   *dev      = inode->i_private;
   ssize_t           nwritten = buflen;
