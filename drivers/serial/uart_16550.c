@@ -868,7 +868,7 @@ static int u16550_attach(struct uart_dev_s *dev)
        * in the UART
        */
 
-      up_enable_irq(priv->irq);
+      ////up_enable_irq(priv->irq);
 
 #ifdef HAVE_16550_UART_DMA
       if (priv->chanrx)
