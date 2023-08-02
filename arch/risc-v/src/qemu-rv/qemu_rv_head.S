@@ -60,8 +60,8 @@ __start:
   .quad   0x200000             /* Image load offset from start of RAM */
   /* TODO: _e_initstack - __start */
   .quad   171644               /* Effective size of kernel image */
-  .quad   0x0                  /* Kernel flags, little-endian */
-  .long   0x2                  /* Version of this header */
+  .quad   0                    /* Kernel flags, little-endian */
+  .long   2                    /* Version of this header */
   .long   0                    /* Reserved */
   .quad   0                    /* Reserved */
   .ascii  "RISCV\x00\x00\x00"  /* Magic number, "RISCV" (8 bytes) */
