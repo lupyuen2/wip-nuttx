@@ -632,11 +632,14 @@ static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
 #endif
 }
 
+#define CONFIG_16550_SERIAL_WAIT_LCR //// TODO: JH7110 must wait till not busy before setting LCR
+#ifdef CONFIG_16550_SERIAL_WAIT_LCR
 /***************************************************************************
  * Name: u16550_wait
  *
  * Description:
- *   Wait until UART is not busy.
+ *   Wait until UART is not busy. This is needed before writing to LCR.
+ *   Otherwise we will get spurious interrupts on Synopsys DesignWare 8250.
  *
  * Input Parameters:
  *   priv: UART Struct
@@ -665,6 +668,7 @@ static int u16550_wait(FAR struct u16550_s *priv)
   _err("UART timeout\n");
   return ERROR;
 }
+#endif /* CONFIG_16550_SERIAL_WAIT_LCR */
 
 /****************************************************************************
  * Name: u16550_disableuartint
@@ -700,7 +704,6 @@ static inline void u16550_restoreuartint(FAR struct u16550_s *priv,
 static inline void u16550_enablebreaks(FAR struct u16550_s *priv,
                                        bool enable)
 {
-  int ret;
   uint32_t lcr = u16550_serialin(priv, UART_LCR_OFFSET);
 
   if (enable)
@@ -712,14 +715,14 @@ static inline void u16550_enablebreaks(FAR struct u16550_s *priv,
       lcr &= ~UART_LCR_BRK;
     }
 
+#ifdef CONFIG_16550_SERIAL_WAIT_LCR
   /* Wait till UART is not busy before setting LCR */
 
-  ret = u16550_wait(priv);
-
-  if (ret < 0)
+  if (u16550_wait(priv) < 0)
     {
-      _err("UART wait failed, ret=%d\n", ret);
+      _err("UART wait failed\n");
     }
+#endif /* CONFIG_16550_SERIAL_WAIT_LCR */
 
   u16550_serialout(priv, UART_LCR_OFFSET, lcr);
 }
@@ -756,7 +759,6 @@ static inline uint32_t u16550_divisor(FAR struct u16550_s *priv)
 
 static int u16550_setup(FAR struct uart_dev_s *dev)
 {
-  int ret;
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   uint16_t div;
@@ -816,15 +818,15 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
       lcr |= (UART_LCR_PEN | UART_LCR_EPS);
     }
 
+#ifdef CONFIG_16550_SERIAL_WAIT_LCR
   /* Wait till UART is not busy before setting LCR */
 
-  ret = u16550_wait(priv);
-
-  if (ret < 0)
+  if (u16550_wait(priv) < 0)
     {
-      _err("UART wait failed, ret=%d\n", ret);
-      return ret;
+      _err("UART wait failed\n");
+      return ERROR;
     }
+#endif /* CONFIG_16550_SERIAL_WAIT_LCR */
 
   /* Enter DLAB=1 */
 
@@ -838,12 +840,10 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   /* Wait till UART is not busy before setting LCR */
 
-  ret = u16550_wait(priv);
-
-  if (ret < 0)
+  if (u16550_wait(priv) < 0)
     {
-      _err("UART wait failed, ret=%d\n", ret);
-      return ret;
+      _err("UART wait failed\n");
+      return ERROR;
     }
 
   /* Clear DLAB */
