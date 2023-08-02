@@ -58,8 +58,7 @@ __start:
   j       real_start           /* Jump to Kernel Start (2 bytes) */
   .long   0                    /* Executable Code padded to 8 bytes */
   .quad   0x200000             /* Image load offset from start of RAM */
-  /* TODO: _e_initstack - __start */
-  .quad   171644               /* Effective size of kernel image */
+  .quad   _ebss - __start      /* Effective size of kernel image */
   .quad   0                    /* Kernel flags, little-endian */
   .long   2                    /* Version of this header */
   .long   0                    /* Reserved */
