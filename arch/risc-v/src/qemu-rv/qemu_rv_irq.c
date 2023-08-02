@@ -54,15 +54,6 @@ void up_irqinitialize(void)
   putreg32(0x0, QEMU_RV_PLIC_ENABLE1);
   putreg32(0x0, QEMU_RV_PLIC_ENABLE2);
 
-#ifdef NOTUSED
-  // Disable All Global Interrupts for Hart 1 Machine-Mode
-  // | 0x0C00_2080 | 4B | RW | Start Hart 1 M-Mode interrupt enables
-  #define QEMU_RV_PLIC_ENABLE1_MMODE   (QEMU_RV_PLIC_BASE + 0x002080)
-  #define QEMU_RV_PLIC_ENABLE2_MMODE   (QEMU_RV_PLIC_BASE + 0x002084)
-  putreg32(0x0, QEMU_RV_PLIC_ENABLE1_MMODE);
-  putreg32(0x0, QEMU_RV_PLIC_ENABLE2_MMODE);
-#endif  // NOTUSED
-
   /* Colorize the interrupt stack for debug purposes */
 
 #if defined(CONFIG_STACK_COLORATION) && CONFIG_ARCH_INTERRUPTSTACK > 15

@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <errno.h>
-#include <debug.h> ////
 
 #include <nuttx/board.h>
 
