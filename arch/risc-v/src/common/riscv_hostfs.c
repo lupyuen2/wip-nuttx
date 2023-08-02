@@ -31,8 +31,6 @@
 #include <string.h>
 #include <syscall.h>
 #include <unistd.h>
-#include <debug.h>////
-#include <assert.h>////
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -54,9 +52,6 @@
 
 static long host_call(unsigned int nbr, void *parm, size_t size)
 {
-  _info("nbr=0x%x, parm=%p, size=%ld\n", nbr, parm, size);////
-  DEBUGPANIC();//// Semihosting not supported
-
 #ifdef CONFIG_RISCV_SEMIHOSTING_HOSTFS_CACHE_COHERENCE
   up_clean_dcache(parm, parm + size);
 #endif

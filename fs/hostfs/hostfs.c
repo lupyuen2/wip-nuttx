@@ -239,7 +239,6 @@ static void hostfs_mkpath(FAR struct hostfs_mountpt_s  *fs,
 static int hostfs_open(FAR struct file *filep, FAR const char *relpath,
                        int oflags, mode_t mode)
 {
-  _info("relpath=%s, oflags=0x%x, mode=0x%x\n", relpath, oflags, mode);////
   FAR struct inode *inode;
   FAR struct hostfs_mountpt_s *fs;
   FAR struct hostfs_ofile_s  *hf;
@@ -825,7 +824,6 @@ static int hostfs_ftruncate(FAR struct file *filep, off_t length)
 static int hostfs_opendir(FAR struct inode *mountpt, FAR const char *relpath,
                           FAR struct fs_dirent_s **dir)
 {
-  _info("relpath=%s\n", relpath);////
   FAR struct hostfs_mountpt_s *fs;
   FAR struct hostfs_dir_s *hdir;
   char path[HOSTFS_MAX_PATH];
@@ -1179,7 +1177,6 @@ static int hostfs_statfs(FAR struct inode *mountpt, FAR struct statfs *buf)
 
 static int hostfs_unlink(FAR struct inode *mountpt, FAR const char *relpath)
 {
-  _info("relpath=%s\n", relpath);////
   FAR struct hostfs_mountpt_s *fs;
   char path[HOSTFS_MAX_PATH];
   int ret;
@@ -1220,7 +1217,6 @@ static int hostfs_unlink(FAR struct inode *mountpt, FAR const char *relpath)
 static int hostfs_mkdir(FAR struct inode *mountpt, FAR const char *relpath,
                         mode_t mode)
 {
-  _info("relpath=%s, mode=0x%x\n", relpath, mode);////
   FAR struct hostfs_mountpt_s *fs;
   char path[HOSTFS_MAX_PATH];
   int ret;
@@ -1260,7 +1256,6 @@ static int hostfs_mkdir(FAR struct inode *mountpt, FAR const char *relpath,
 
 int hostfs_rmdir(FAR struct inode *mountpt, FAR const char *relpath)
 {
-  _info("relpath=%s\n", relpath);////
   FAR struct hostfs_mountpt_s *fs;
   char path[HOSTFS_MAX_PATH];
   int ret;
@@ -1303,7 +1298,6 @@ int hostfs_rmdir(FAR struct inode *mountpt, FAR const char *relpath)
 int hostfs_rename(FAR struct inode *mountpt, FAR const char *oldrelpath,
                   FAR const char *newrelpath)
 {
-  _info("oldrelpath=%s, newrelpath=%s\n", oldrelpath, newrelpath);////
   FAR struct hostfs_mountpt_s *fs;
   char oldpath[HOSTFS_MAX_PATH];
   char newpath[HOSTFS_MAX_PATH];
@@ -1348,7 +1342,6 @@ int hostfs_rename(FAR struct inode *mountpt, FAR const char *oldrelpath,
 static int hostfs_stat(FAR struct inode *mountpt, FAR const char *relpath,
                        FAR struct stat *buf)
 {
-  _info("relpath=%s\n", relpath);////
   FAR struct hostfs_mountpt_s *fs;
   char path[HOSTFS_MAX_PATH];
   int ret;
@@ -1389,7 +1382,6 @@ static int hostfs_stat(FAR struct inode *mountpt, FAR const char *relpath,
 static int hostfs_chstat(FAR struct inode *mountpt, FAR const char *relpath,
                          FAR const struct stat *buf, int flags)
 {
-  _info("relpath=%s\n", relpath);////
   FAR struct hostfs_mountpt_s *fs;
   char path[HOSTFS_MAX_PATH];
   int ret;

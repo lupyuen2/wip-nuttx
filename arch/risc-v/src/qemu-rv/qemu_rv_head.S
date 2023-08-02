@@ -59,7 +59,7 @@ __start:
   .long   0                    /* Executable Code padded to 8 bytes */
   .quad   0x200000             /* Image load offset from start of RAM */
   /* TODO: _e_initstack - __start */
-  .quad   171644               /* Effective size of kernel image, little-endian */
+  .quad   171644               /* Effective size of kernel image */
   .quad   0x0                  /* Kernel flags, little-endian */
   .long   0x2                  /* Version of this header */
   .long   0                    /* Reserved */
@@ -70,37 +70,11 @@ __start:
 
 real_start:
 
-  /* Load UART Base Address to Register t0 */
-  li  t0, 0x10000000
+  /* We assume that OpenSBI has passed Hart ID (value 1) in Register a0.
+   * But NuttX expects Hart ID to start at 0, so we subtract 1.
+   */
 
-  /* Load `1` to Register t1 */
-  li  t1, 0x31
-  /* Store byte from Register t1 to UART Base Address, Offset 0 */
-  sb  t1, 0(t0)
-
-  /* Load `2` to Register t1 */
-  li  t1, 0x32
-  /* Store byte from Register t1 to UART Base Address, Offset 0 */
-  sb  t1, 0(t0)
-
-  /* Load `3` to Register t1 */
-  li  t1, 0x33
-  /* Store byte from Register t1 to UART Base Address, Offset 0 */
-  sb  t1, 0(t0)
-
-  /* End Test */
-
-  /* Load mhartid (cpuid) */
-  /* Previously: csrr a0, mhartid */
-
-  /* We assume that OpenSBI has passed Hart ID (value 1) in Register a0. */
-  /* But NuttX expects Hart ID to start at 0, so we subtract 1. */
   addi a0, a0, -1
-
-  /* Print the Hart ID */
-  addi t1, a0, 0x30
-  /* Store byte from Register t1 to UART Base Address, Offset 0 */
-  sb   t1, 0(t0)
 
   /* Set stack pointer to the idle thread stack */
 
@@ -108,10 +82,6 @@ real_start:
   la   sp, QEMU_RV_IDLESTACK_TOP
   j    2f
 1:
-  /* Print `4` */
-  li  t0, 0x10000000
-  li  t1, 0x34
-  sb  t1, 0(t0)
 
   /* Load the number of CPUs that the kernel supports */
 
@@ -121,20 +91,14 @@ real_start:
   li   t1, 1
 #endif
 
-  /* If a0 (mhartid) >= t1 (the number of CPUs), stop here */
+  /* If a0 (hartid) >= t1 (the number of CPUs), stop here */
 
   blt  a0, t1, 3f
   csrw sie, zero
-  /* Previously: csrw mie, zero */
   wfi
 
 3:
-  /* Print `5` */
-  li  t0, 0x10000000
-  li  t1, 0x35
-  sb  t1, 0(t0)
-
-  /* To get g_cpu_basestack[mhartid], must get g_cpu_basestack first */
+  /* To get g_cpu_basestack[hartid], must get g_cpu_basestack first */
 
   la   t0, g_cpu_basestack
 
@@ -162,24 +126,13 @@ real_start:
   add  sp, sp, t0
 
 2:
-  /* Print `6` */
-  li  t0, 0x10000000
-  li  t1, 0x36
-  sb  t1, 0(t0)
 
-  /* Disable all interrupts (i.e. timer, external) in mie */
+  /* Disable all interrupts (i.e. timer, external) in sie */
 
   csrw	sie, zero
-  /* Previously: csrw	mie, zero */
 
   la   t0, __trap_vec
   csrw stvec, t0
-  /* Previously: csrw mtvec, t0 */
-
-  /* Print `7` */
-  li  t0, 0x10000000
-  li  t1, 0x37
-  sb  t1, 0(t0)
 
   /* Jump to qemu_rv_start */
 
