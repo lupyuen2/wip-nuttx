@@ -74,8 +74,7 @@ void up_irqinitialize(void)
 
   int id;
 
-  ////TODO: Why 52 PLIC Interrupts?
-  for (id = 1; id <= NR_IRQS; id++) //// Changed 52 to NR_IRQS
+  for (id = 1; id <= NR_IRQS; id++)
     {
       putreg32(1, (uintptr_t)(QEMU_RV_PLIC_PRIORITY + 4 * id));
     }
@@ -114,7 +113,6 @@ void up_irqinitialize(void)
 
 void up_disable_irq(int irq)
 {
-  _info("irq=%d\n", irq);////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
@@ -135,7 +133,7 @@ void up_disable_irq(int irq)
 
       /* Clear enable bit for the irq */
 
-      if (0 <= extirq && extirq <= 63) ////TODO: Why 63?
+      if (0 <= extirq && extirq <= 63)
         {
           modifyreg32(QEMU_RV_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       1 << (extirq % 32), 0);
@@ -157,28 +155,24 @@ void up_disable_irq(int irq)
 
 void up_enable_irq(int irq)
 {
-  _info("irq=%d\n", irq);////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
     {
-      _info("RISCV_IRQ_SOFT=%d\n", RISCV_IRQ_SOFT);////
-      /* Read m/sstatus & set machine software interrupt enable in m/sie */
+      /* Read sstatus & set machine software interrupt enable in sie */
 
       SET_CSR(CSR_IE, IE_SIE);
     }
   else if (irq == RISCV_IRQ_TIMER)
     {
-      _info("RISCV_IRQ_TIMER=%d\n", RISCV_IRQ_TIMER);////
-      /* Read m/sstatus & set timer interrupt enable in m/sie */
+      /* Read sstatus & set timer interrupt enable in sie */
 
       SET_CSR(CSR_IE, IE_TIE);
     }
 #ifdef CONFIG_BUILD_KERNEL
   else if (irq == RISCV_IRQ_MTIMER)
     {
-      _info("RISCV_IRQ_MTIMER=%d\n", RISCV_IRQ_MTIMER);////
-      /* Read m/sstatus & set timer interrupt enable in m/sie */
+      /* Read sstatus & set timer interrupt enable in mie */
 
       SET_CSR(mie, MIE_MTIE);
     }
@@ -186,11 +180,10 @@ void up_enable_irq(int irq)
   else if (irq > RISCV_IRQ_EXT)
     {
       extirq = irq - RISCV_IRQ_EXT;
-      _info("extirq=%d, RISCV_IRQ_EXT=%d\n", extirq, RISCV_IRQ_EXT);////
 
       /* Set enable bit for the irq */
 
-      if (0 <= extirq && extirq <= 63) ////TODO: Why 63?
+      if (0 <= extirq && extirq <= 63)
         {
           modifyreg32(QEMU_RV_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
@@ -200,19 +193,17 @@ void up_enable_irq(int irq)
           PANIC();
         }
     }
-  else { _info("***NOT ENABLED: irq=%d\n", irq); }////
 }
 
 irqstate_t up_irq_enable(void)
 {
-  _info("\n");////
   irqstate_t oldstat;
 
-  /* Enable external interrupts (mie/sie) */
+  /* Enable external interrupts (sie) */
 
   SET_CSR(CSR_IE, IE_EIE);
 
-  /* Read and enable global interrupts (M/SIE) in m/sstatus */
+  /* Read and enable global interrupts (sie) in sstatus */
 
   oldstat = READ_AND_SET_CSR(CSR_STATUS, STATUS_IE);
 
