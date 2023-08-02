@@ -106,8 +106,6 @@ int mount_ramdisk(void);
 
 void board_late_initialize(void)
 {
-  _info("\n");////
-
   // Mount the RAM Disk
   mount_ramdisk();
 
