@@ -830,17 +830,11 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
-#ifdef TODO  //// What is the UART Clock for JH7110?
   /* Set the BAUD divisor */
 
   div = u16550_divisor(priv);
   u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
   u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
-#else
-  uint32_t dlm = u16550_serialin(priv, UART_DLM_OFFSET);
-  uint32_t dll = u16550_serialin(priv, UART_DLL_OFFSET);
-  uint32_t baud = priv->baud;
-#endif  //// TODO
 
   /* Wait till UART is not busy before setting LCR */
 
@@ -887,7 +881,6 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 #endif
 
 #endif
-  _info("dlm=%d, dll=%d, baud=%d\n", dlm, dll, baud);////
   return OK;
 }
 
