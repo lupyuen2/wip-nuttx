@@ -52,6 +52,14 @@
 
 #ifdef CONFIG_16550_UART
 
+/***************************************************************************
+ * Pre-processor Definitions
+ ***************************************************************************/
+
+/* Timeout for UART Busy Wait, in milliseconds */
+
+#define UART_TIMEOUT_MS 100
+
 /****************************************************************************
  * Private Types
  ****************************************************************************/
@@ -624,6 +632,40 @@ static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
 #endif
 }
 
+/***************************************************************************
+ * Name: u16550_wait
+ *
+ * Description:
+ *   Wait until UART is not busy.
+ *
+ * Input Parameters:
+ *   priv: UART Struct
+ *
+ * Returned Value:
+ *   Zero (OK) on success; ERROR if timeout.
+ *
+ ***************************************************************************/
+
+static int u16550_wait(FAR struct u16550_s *priv)
+{
+  int i;
+
+  for (i = 0; i < UART_TIMEOUT_MS; i++)
+    {
+      uint32_t status = u16550_serialin(priv, UART_USR_OFFSET);
+
+      if ((status & UART_USR_BUSY) == 0)
+        {
+          return OK;
+        }
+
+      up_mdelay(1);
+    }
+
+  _err("UART timeout\n");
+  return ERROR;
+}
+
 /****************************************************************************
  * Name: u16550_disableuartint
  ****************************************************************************/
@@ -658,6 +700,7 @@ static inline void u16550_restoreuartint(FAR struct u16550_s *priv,
 static inline void u16550_enablebreaks(FAR struct u16550_s *priv,
                                        bool enable)
 {
+  int ret;
   uint32_t lcr = u16550_serialin(priv, UART_LCR_OFFSET);
 
   if (enable)
@@ -667,6 +710,15 @@ static inline void u16550_enablebreaks(FAR struct u16550_s *priv,
   else
     {
       lcr &= ~UART_LCR_BRK;
+    }
+
+  /* Wait till UART is not busy before setting LCR */
+
+  ret = u16550_wait(priv);
+
+  if (ret < 0)
+    {
+      _err("UART wait failed, ret=%d\n", ret);
     }
 
   u16550_serialout(priv, UART_LCR_OFFSET, lcr);
@@ -704,6 +756,7 @@ static inline uint32_t u16550_divisor(FAR struct u16550_s *priv)
 
 static int u16550_setup(FAR struct uart_dev_s *dev)
 {
+  int ret;
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   uint16_t div;
@@ -763,6 +816,16 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
       lcr |= (UART_LCR_PEN | UART_LCR_EPS);
     }
 
+  /* Wait till UART is not busy before setting LCR */
+
+  ret = u16550_wait(priv);
+
+  if (ret < 0)
+    {
+      _err("UART wait failed, ret=%d\n", ret);
+      return ret;
+    }
+
   /* Enter DLAB=1 */
 
   u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
@@ -772,6 +835,16 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
   div = u16550_divisor(priv);
   u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
   u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
+
+  /* Wait till UART is not busy before setting LCR */
+
+  ret = u16550_wait(priv);
+
+  if (ret < 0)
+    {
+      _err("UART wait failed, ret=%d\n", ret);
+      return ret;
+    }
 
   /* Clear DLAB */
 

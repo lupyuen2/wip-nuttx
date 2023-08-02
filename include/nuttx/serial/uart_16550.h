@@ -184,6 +184,7 @@
 #define UART_LSR_INCR          5 /* Line Status Register */
 #define UART_MSR_INCR          6 /* Modem Status Register */
 #define UART_SCR_INCR          7 /* Scratch Pad Register */
+#define UART_USR_INCR          31 /* UART Status Register */
 
 #define UART_RBR_OFFSET        (CONFIG_16550_REGINCR*UART_RBR_INCR)
 #define UART_THR_OFFSET        (CONFIG_16550_REGINCR*UART_THR_INCR)
@@ -197,6 +198,7 @@
 #define UART_LSR_OFFSET        (CONFIG_16550_REGINCR*UART_LSR_INCR)
 #define UART_MSR_OFFSET        (CONFIG_16550_REGINCR*UART_MSR_INCR)
 #define UART_SCR_OFFSET        (CONFIG_16550_REGINCR*UART_SCR_INCR)
+#define UART_USR_OFFSET        (CONFIG_16550_REGINCR*UART_USR_INCR)
 
 /* Register bit definitions *************************************************/
 
@@ -297,6 +299,10 @@
 /* SCR Scratch Pad Register */
 
 #define UART_SCR_MASK                (0xff)    /* Bits 0-7: SCR data */
+
+/* USR UART Status Register */
+
+#define UART_USR_BUSY                (1 << 0)  /* Bit 0: UART Busy */
 
 /****************************************************************************
  * Public Types
