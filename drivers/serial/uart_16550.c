@@ -630,8 +630,7 @@ static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
 #endif
 }
 
-#define CONFIG_16550_SERIAL_WAIT_LCR //// TODO: JH7110 must wait till UART is not busy before setting LCR
-#ifdef CONFIG_16550_SERIAL_WAIT_LCR
+#ifdef CONFIG_16550_WAIT_LCR
 /***************************************************************************
  * Name: u16550_wait
  *
@@ -666,7 +665,7 @@ static int u16550_wait(FAR struct u16550_s *priv)
   _err("UART timeout\n");
   return ERROR;
 }
-#endif /* CONFIG_16550_SERIAL_WAIT_LCR */
+#endif /* CONFIG_16550_WAIT_LCR */
 
 /****************************************************************************
  * Name: u16550_disableuartint
@@ -713,14 +712,14 @@ static inline void u16550_enablebreaks(FAR struct u16550_s *priv,
       lcr &= ~UART_LCR_BRK;
     }
 
-#ifdef CONFIG_16550_SERIAL_WAIT_LCR
+#ifdef CONFIG_16550_WAIT_LCR
   /* Wait till UART is not busy before setting LCR */
 
   if (u16550_wait(priv) < 0)
     {
       _err("UART wait failed\n");
     }
-#endif /* CONFIG_16550_SERIAL_WAIT_LCR */
+#endif /* CONFIG_16550_WAIT_LCR */
 
   u16550_serialout(priv, UART_LCR_OFFSET, lcr);
 }
@@ -816,7 +815,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
       lcr |= (UART_LCR_PEN | UART_LCR_EPS);
     }
 
-#ifdef CONFIG_16550_SERIAL_WAIT_LCR
+#ifdef CONFIG_16550_WAIT_LCR
   /* Wait till UART is not busy before setting LCR */
 
   if (u16550_wait(priv) < 0)
@@ -824,7 +823,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
       _err("UART wait failed\n");
       return ERROR;
     }
-#endif /* CONFIG_16550_SERIAL_WAIT_LCR */
+#endif /* CONFIG_16550_WAIT_LCR */
 
   /* Enter DLAB=1 */
 
@@ -836,6 +835,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
   u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
   u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
 
+#ifdef CONFIG_16550_WAIT_LCR
   /* Wait till UART is not busy before setting LCR */
 
   if (u16550_wait(priv) < 0)
@@ -843,6 +843,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
       _err("UART wait failed\n");
       return ERROR;
     }
+#endif /* CONFIG_16550_WAIT_LCR */
 
   /* Clear DLAB */
 
