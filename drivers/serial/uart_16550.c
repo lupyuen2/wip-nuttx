@@ -609,7 +609,6 @@ static uart_dev_t g_uart3port =
 static inline uart_datawidth_t u16550_serialin(FAR struct u16550_s *priv,
                                                int offset)
 {
-  DEBUGASSERT(priv->uartbase == 0x10000000);////
 #ifdef CONFIG_SERIAL_UART_ARCH_MMIO
   return *((FAR volatile uart_datawidth_t *)priv->uartbase + offset);
 #else
@@ -624,7 +623,6 @@ static inline uart_datawidth_t u16550_serialin(FAR struct u16550_s *priv,
 static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
                                     uart_datawidth_t value)
 {
-  DEBUGASSERT(priv->uartbase == 0x10000000);////
 #ifdef CONFIG_SERIAL_UART_ARCH_MMIO
   *((FAR volatile uart_datawidth_t *)priv->uartbase + offset) = value;
 #else
@@ -632,7 +630,7 @@ static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
 #endif
 }
 
-#define CONFIG_16550_SERIAL_WAIT_LCR //// TODO: JH7110 must wait till not busy before setting LCR
+#define CONFIG_16550_SERIAL_WAIT_LCR //// TODO: JH7110 must wait till UART is not busy before setting LCR
 #ifdef CONFIG_16550_SERIAL_WAIT_LCR
 /***************************************************************************
  * Name: u16550_wait
@@ -941,7 +939,7 @@ static int u16550_attach(struct uart_dev_s *dev)
        * in the UART
        */
 
-      ////up_enable_irq(priv->irq);
+      up_enable_irq(priv->irq);
 
 #ifdef HAVE_16550_UART_DMA
       if (priv->chanrx)
@@ -1003,7 +1001,6 @@ static void u16550_detach(FAR struct uart_dev_s *dev)
 
 static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 {
-  ////*(volatile uint8_t *)0x10000000 = '#';////
   FAR struct uart_dev_s *dev = (struct uart_dev_s *)arg;
   FAR struct u16550_s *priv;
   uint32_t status;
@@ -1034,30 +1031,6 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
            * pending interrupt
            */
 
-          ////Begin
-          static int i = 0; if (i++ % 1000000 == 1) {
-            *(volatile uint8_t *)0x10000000 = '.';
-            // *(volatile uint8_t *)0x10000000 = '0';
-            // #define UART_IIR_MSI		0x00 /* Modem status interrupt */
-            // #define UART_IIR_THRI		0x02 /* Transmitter holding register empty */
-            // #define UART_IIR_RDI		0x04 /* Receiver data interrupt */
-            // #define UART_IIR_RLSI		0x06 /* Receiver line status interrupt */
-            // #define UART_IIR_BUSY		0x07 /* DesignWare APB Busy Detect */
-            // #define UART_IIR_RX_TIMEOUT	0x0c /* OMAP RX Timeout interrupt */
-            // #define UART_IIR_XOFF		0x10 /* OMAP XOFF/Special Character */
-            // #define UART_IIR_CTS_RTS_DSR	0x20 /* OMAP CTS/RTS/DSR Change */
-            // bool rx_timeout = (status & 0x3f) == UART_IIR_RX_TIMEOUT;
-            // if (rx_timeout) { *(volatile uint8_t *)0x10000000 = 'C'; }////
-            // if (status & UART_IIR_MSI) { *(volatile uint8_t *)0x10000000 = '4'; }////
-            // if (status & UART_IIR_THRI) { *(volatile uint8_t *)0x10000000 = '5'; }////
-            // if (status & UART_IIR_RDI) { *(volatile uint8_t *)0x10000000 = '6'; }////
-            // if (status & UART_IIR_RLSI) { *(volatile uint8_t *)0x10000000 = '7'; }////
-            // if (status & UART_IIR_BUSY) { *(volatile uint8_t *)0x10000000 = '8'; }////
-            // if (status & UART_IIR_RX_TIMEOUT) { *(volatile uint8_t *)0x10000000 = '9'; }////
-            // if (status & UART_IIR_XOFF) { *(volatile uint8_t *)0x10000000 = 'A'; }////
-            // if (status & UART_IIR_CTS_RTS_DSR) { *(volatile uint8_t *)0x10000000 = 'B'; }////
-          }////
-          ////End
           break;
         }
 
@@ -1070,7 +1043,6 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
           case UART_IIR_INTID_RDA:
           case UART_IIR_INTID_CTI:
             {
-              *(volatile uint8_t *)0x10000000 = '+';////
               uart_recvchars(dev);
               break;
             }
@@ -1079,7 +1051,6 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           case UART_IIR_INTID_THRE:
             {
-              ////*(volatile uint8_t *)0x10000000 = '-';////
               uart_xmitchars(dev);
               break;
             }
@@ -1088,7 +1059,6 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           case UART_IIR_INTID_MSI:
             {
-              *(volatile uint8_t *)0x10000000 = '1';////
               /* Read the modem status register (MSR) to clear */
 
               status = u16550_serialin(priv, UART_MSR_OFFSET);
@@ -1100,7 +1070,6 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           case UART_IIR_INTID_RLS:
             {
-              *(volatile uint8_t *)0x10000000 = '2';////
               /* Read the line status register (LSR) to clear */
 
               status = u16550_serialin(priv, UART_LSR_OFFSET);
@@ -1112,7 +1081,6 @@ static int u16550_interrupt(int irq, FAR void *context, FAR void *arg)
 
           default:
             {
-              *(volatile uint8_t *)0x10000000 = '3';////
               serr("ERROR: Unexpected IIR: %02"PRIx32"\n", status);
               break;
             }
@@ -1332,7 +1300,6 @@ static int u16550_receive(struct uart_dev_s *dev, unsigned int *status)
 
 static void u16550_rxint(struct uart_dev_s *dev, bool enable)
 {
-  ////_info("enable=%d\n", enable);////
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
 
 #ifdef HAVE_16550_UART_DMA
@@ -1653,7 +1620,6 @@ static void u16550_dmatxavail(FAR struct uart_dev_s *dev)
 
 static void u16550_send(struct uart_dev_s *dev, int ch)
 {
-  ////*(volatile uint8_t *)0x10000000 = 'F';////
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   u16550_serialout(priv, UART_THR_OFFSET, (uart_datawidth_t)ch);
 }
@@ -1668,7 +1634,6 @@ static void u16550_send(struct uart_dev_s *dev, int ch)
 
 static void u16550_txint(struct uart_dev_s *dev, bool enable)
 {
-  ////_info("enable=%d\n", enable);////
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   irqstate_t flags;
 

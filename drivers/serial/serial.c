@@ -291,7 +291,7 @@ static int uart_putxmitchar(FAR uart_dev_t *dev, int ch, bool oktoblock)
 
 static inline void uart_putc(FAR uart_dev_t *dev, int ch)
 {
-  *(volatile uint8_t *)0x10000000 = 'B';////
+  ////*(volatile uint8_t *)0x10000000 = 'B';////
   while (!uart_txready(dev))
     {
     }
@@ -307,7 +307,7 @@ static inline ssize_t uart_irqwrite(FAR uart_dev_t *dev,
                                     FAR const char *buffer,
                                     size_t buflen)
 {
-  *(volatile uint8_t *)0x10000000 = 'C';////
+  ////*(volatile uint8_t *)0x10000000 = 'C';////
   ssize_t ret = buflen;
 
   /* Force each character through the low level interface */
@@ -1178,7 +1178,7 @@ static ssize_t uart_write(FAR struct file *filep, FAR const char *buffer,
                           size_t buflen)
 {
   ////infodumpbuffer("uart_write", (const uint8_t *)buffer, buflen);////
-  static int count = 0; if (count++ == 3) { up_enable_irq(57); }////
+  ////static int count = 0; if (count++ == 3) { up_enable_irq(57); }////
   FAR struct inode *inode    = filep->f_inode;
   FAR uart_dev_t   *dev      = inode->i_private;
   ssize_t           nwritten = buflen;
