@@ -45,7 +45,7 @@
 
 void up_irqinitialize(void)
 {
-  /* Disable Machine interrupts */
+  /* Disable S-Mode interrupts */
 
   up_irq_save();
 
@@ -108,13 +108,13 @@ void up_disable_irq(int irq)
 
   if (irq == RISCV_IRQ_SOFT)
     {
-      /* Read m/sstatus & clear machine software interrupt enable in m/sie */
+      /* Read sstatus & clear software interrupt enable in sie */
 
       CLEAR_CSR(CSR_IE, IE_SIE);
     }
   else if (irq == RISCV_IRQ_TIMER)
     {
-      /* Read m/sstatus & clear timer interrupt enable in m/sie */
+      /* Read sstatus & clear timer interrupt enable in sie */
 
       CLEAR_CSR(CSR_IE, IE_TIE);
     }
@@ -150,7 +150,7 @@ void up_enable_irq(int irq)
 
   if (irq == RISCV_IRQ_SOFT)
     {
-      /* Read sstatus & set machine software interrupt enable in sie */
+      /* Read sstatus & set software interrupt enable in sie */
 
       SET_CSR(CSR_IE, IE_SIE);
     }
