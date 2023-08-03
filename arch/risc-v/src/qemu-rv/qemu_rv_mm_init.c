@@ -49,28 +49,6 @@
 #define MMU_IO_BASE     (0x00000000)
 #define MMU_IO_SIZE     (0x40000000)
 
-#ifdef CONFIG_ARCH_MMU_TYPE_SV32
-
-/* Physical and virtual addresses to page tables (vaddr = paddr mapping) */
-
-#define PGT_L1_PBASE    (uintptr_t)&m_l1_pgtable
-#define PGT_L2_PBASE    (uintptr_t)&m_l2_pgtable
-#define PGT_L1_VBASE    PGT_L1_PBASE
-#define PGT_L2_VBASE    PGT_L2_PBASE
-
-#define PGT_L1_SIZE     (1024)       /* Enough to map 4 GiB */
-#define PGT_L2_SIZE     (3072)       /* Enough to map 12 MiB */
-
-#define SLAB_COUNT      (sizeof(m_l2_pgtable) / RV_MMU_PAGE_SIZE)
-
-#define KMM_PAGE_SIZE   RV_MMU_L2_PAGE_SIZE
-#define KMM_PBASE       PGT_L2_PBASE   
-#define KMM_PBASE_IDX   2   
-#define KMM_SPBASE      PGT_L1_PBASE
-#define KMM_SPBASE_IDX  1
-
-#elif CONFIG_ARCH_MMU_TYPE_SV39
-
 /* Physical and virtual addresses to page tables (vaddr = paddr mapping) */
 
 #define PGT_L1_PBASE    (uintptr_t)&m_l1_pgtable
@@ -92,10 +70,6 @@
 #define KMM_SPBASE      PGT_L2_PBASE
 #define KMM_SPBASE_IDX  2
 
-#else
-#error No valid MMU defined.
-#endif
-
 /****************************************************************************
  * Private Types
  ****************************************************************************/
@@ -115,9 +89,7 @@ typedef struct pgalloc_slab_s pgalloc_slab_t;
 
 static size_t         m_l1_pgtable[PGT_L1_SIZE] locate_data(".pgtables");
 static size_t         m_l2_pgtable[PGT_L2_SIZE] locate_data(".pgtables");
-#ifdef CONFIG_ARCH_MMU_TYPE_SV39
 static size_t         m_l3_pgtable[PGT_L3_SIZE] locate_data(".pgtables");
-#endif
 
 /* Kernel mappings (L1 base) */
 
@@ -273,8 +245,6 @@ void qemu_rv_kernel_mappings(void)
   binfo("map kernel data\n");
   map_region(KSRAM_START, KSRAM_START, KSRAM_SIZE, MMU_KDATA_FLAGS);
 
-#ifdef CONFIG_ARCH_MMU_TYPE_SV39
-
   /* Connect the L1 and L2 page tables for the kernel text and data */
 
   binfo("connect the L1 and L2 page tables\n");
@@ -285,10 +255,6 @@ void qemu_rv_kernel_mappings(void)
   binfo("map the page pool\n");
   mmu_ln_map_region(2, PGT_L2_VBASE, PGPOOL_START, PGPOOL_START, PGPOOL_SIZE,
                     MMU_KDATA_FLAGS);
-#elif CONFIG_ARCH_MMU_TYPE_SV32
-  binfo("map the page pool\n");
-  map_region(PGPOOL_START, PGPOOL_START, PGPOOL_SIZE, MMU_KDATA_FLAGS);
-#endif
 }
 
 /****************************************************************************
