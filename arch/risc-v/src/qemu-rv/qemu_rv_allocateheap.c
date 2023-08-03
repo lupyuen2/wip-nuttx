@@ -86,11 +86,7 @@
  *
  ****************************************************************************/
 
-#ifdef CONFIG_BUILD_KERNEL
 void up_allocate_kheap(void **heap_start, size_t *heap_size)
-#else
-void up_allocate_heap(void **heap_start, size_t *heap_size)
-#endif /* CONFIG_BUILD_KERNEL */
 {
 #if defined(CONFIG_BUILD_PROTECTED) && defined(CONFIG_MM_KERNEL_HEAP)
   /* Get the size and position of the user-space heap.

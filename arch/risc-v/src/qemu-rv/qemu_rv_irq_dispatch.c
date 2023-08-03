@@ -39,11 +39,7 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-#ifdef CONFIG_ARCH_RV32
-#  define RV_IRQ_MASK 27
-#else
-#  define RV_IRQ_MASK 59
-#endif
+#define RV_IRQ_MASK 59
 
 /****************************************************************************
  * Public Functions

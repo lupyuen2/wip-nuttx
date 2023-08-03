@@ -160,14 +160,6 @@ void up_enable_irq(int irq)
 
       SET_CSR(CSR_IE, IE_TIE);
     }
-#ifdef CONFIG_BUILD_KERNEL
-  else if (irq == RISCV_IRQ_MTIMER)
-    {
-      /* Read sstatus & set timer interrupt enable in mie */
-
-      SET_CSR(mie, MIE_MTIE);
-    }
-#endif
   else if (irq > RISCV_IRQ_EXT)
     {
       extirq = irq - RISCV_IRQ_EXT;
