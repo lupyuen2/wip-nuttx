@@ -47,8 +47,6 @@
  ****************************************************************************/
 
 extern void __trap_vec(void);
-extern void __trap_vec_m(void);
-extern void up_mtimer_initialize(void);
 
 /****************************************************************************
  * Public Data
@@ -97,10 +95,6 @@ void jh7110_start_s(int mhartid)
       goto cpux;
     }
 
-#ifndef CONFIG_BUILD_KERNEL
-  jh7110_clear_bss();
-#endif
-
   showprogress('A');
 
 #ifdef USE_EARLYSERIALINIT
@@ -113,11 +107,9 @@ void jh7110_start_s(int mhartid)
 
   showprogress('C');
 
-#ifdef CONFIG_BUILD_KERNEL
   /* Setup page tables for kernel and enable MMU */
 
   jh7110_mm_init();
-#endif
 
   /* Call nx_start() */
 
