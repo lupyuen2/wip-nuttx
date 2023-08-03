@@ -33,7 +33,7 @@
 
 /* Interrupt Priority */
 
-#define JH7110_PLIC_PRIORITY    (JH7110_PLIC_BASE + 0x000000)
+#define JH7110_PLIC_PRIORITY  (JH7110_PLIC_BASE + 0x000000)
 
 /* Hart 1 S-Mode Interrupt Enable */
 
