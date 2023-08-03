@@ -31,7 +31,6 @@
 
 #include "qemu_rv_memorymap.h"
 
-#include "hardware/qemu_rv_clint.h"
 #include "hardware/qemu_rv_memorymap.h"
 #include "hardware/qemu_rv_plic.h"
 

@@ -40,7 +40,6 @@
 #include "riscv_mtimer.h"
 #include "riscv_percpu.h"
 #include "hardware/qemu_rv_memorymap.h"
-#include "hardware/qemu_rv_clint.h"
 
 /****************************************************************************
  * Pre-processor Definitions
