@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/jh7110/rv-virt/include/board_memorymap.h
+ * boards/risc-v/jh7110/star64/include/board_memorymap.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_RISCV_QEMURV_RVVIRT_INCLUDE_BOARD_MEMORYMAP_H
-#define __BOARDS_RISCV_QEMURV_RVVIRT_INCLUDE_BOARD_MEMORYMAP_H
+#ifndef __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_MEMORYMAP_H
+#define __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_MEMORYMAP_H
 
 /****************************************************************************
  * Included Files
@@ -33,8 +33,8 @@
 
 /* DDR start address */
 
-#define QEMURV_DDR_BASE   (0x40200000)
-#define QEMURV_DDR_SIZE   (0x40000000)
+#define JH7110_DDR_BASE   (0x40200000)
+#define JH7110_DDR_SIZE   (0x40000000)
 
 /* Kernel code memory (RX) */
 
@@ -55,7 +55,7 @@
 #define PGPOOL_SIZE     (uintptr_t)__pgheap_size
 #define PGPOOL_END      (PGPOOL_START + PGPOOL_SIZE)
 
-/* Ramdisk */
+/* Ramdisk (RW) */
 
 #define RAMDISK_START   (uintptr_t)__ramdisk_start
 #define RAMDISK_SIZE    (uintptr_t)__ramdisk_size
@@ -85,4 +85,4 @@ extern uint8_t          __pgheap_size[];
 extern uint8_t          __ramdisk_start[];
 extern uint8_t          __ramdisk_size[];
 
-#endif /* __BOARDS_RISC_V_QEMURV_RVVIRT_INCLUDE_BOARD_MEMORYMAP_H */
+#endif /* __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_MEMORYMAP_H */
