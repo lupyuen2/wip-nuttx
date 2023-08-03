@@ -40,7 +40,6 @@
   .global __start
 
 __start:
-  /* Begin Test */
 
   /* DO NOT MODIFY. Image Header expected by Linux bootloaders.
    *
