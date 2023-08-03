@@ -172,18 +172,18 @@
 
 /* Register offsets *********************************************************/
 
-#define UART_RBR_INCR          0 /* (DLAB =0) Receiver Buffer Register */
-#define UART_THR_INCR          0 /* (DLAB =0) Transmit Holding Register */
-#define UART_DLL_INCR          0 /* (DLAB =1) Divisor Latch LSB */
-#define UART_DLM_INCR          1 /* (DLAB =1) Divisor Latch MSB */
-#define UART_IER_INCR          1 /* (DLAB =0) Interrupt Enable Register */
-#define UART_IIR_INCR          2 /* Interrupt ID Register */
-#define UART_FCR_INCR          2 /* FIFO Control Register */
-#define UART_LCR_INCR          3 /* Line Control Register */
-#define UART_MCR_INCR          4 /* Modem Control Register */
-#define UART_LSR_INCR          5 /* Line Status Register */
-#define UART_MSR_INCR          6 /* Modem Status Register */
-#define UART_SCR_INCR          7 /* Scratch Pad Register */
+#define UART_RBR_INCR          0  /* (DLAB =0) Receiver Buffer Register */
+#define UART_THR_INCR          0  /* (DLAB =0) Transmit Holding Register */
+#define UART_DLL_INCR          0  /* (DLAB =1) Divisor Latch LSB */
+#define UART_DLM_INCR          1  /* (DLAB =1) Divisor Latch MSB */
+#define UART_IER_INCR          1  /* (DLAB =0) Interrupt Enable Register */
+#define UART_IIR_INCR          2  /* Interrupt ID Register */
+#define UART_FCR_INCR          2  /* FIFO Control Register */
+#define UART_LCR_INCR          3  /* Line Control Register */
+#define UART_MCR_INCR          4  /* Modem Control Register */
+#define UART_LSR_INCR          5  /* Line Status Register */
+#define UART_MSR_INCR          6  /* Modem Status Register */
+#define UART_SCR_INCR          7  /* Scratch Pad Register */
 #define UART_USR_INCR          31 /* UART Status Register */
 
 #define UART_RBR_OFFSET        (CONFIG_16550_REGINCR*UART_RBR_INCR)
