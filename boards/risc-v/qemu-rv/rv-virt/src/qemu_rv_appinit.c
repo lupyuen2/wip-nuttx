@@ -39,6 +39,8 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+/* Ramdisk Definition */
+
 #define SECTORSIZE   512
 #define NSECTORS(b)  (((b) + SECTORSIZE - 1) / SECTORSIZE)
 #define RAMDISK_DEVICE_MINOR 0
