@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/include/jh7110irq.h
+ * arch/risc-v/include/jh7110/chip.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,19 +18,7 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_INCLUDE_JH7110IRQ_H
-#define __ARCH_RISCV_INCLUDE_JH7110IRQ_H
+#ifndef __ARCH_RISCV_INCLUDE_JH7110_CHIP_H
+#define __ARCH_RISCV_INCLUDE_JH7110_CHIP_H
 
-/****************************************************************************
- * Included Files
- ****************************************************************************/
-
-/****************************************************************************
- * Pre-processor Definitions
- ****************************************************************************/
-
-/* Map RISC-V exception code to NuttX IRQ */
-
-#define NR_IRQS (RISCV_IRQ_SEXT + 127)
-
-#endif /* __ARCH_RISCV_INCLUDE_JH7110IRQ_H */
+#endif /* __ARCH_RISCV_INCLUDE_JH7110_CHIP_H */

@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_irq_dispatch.c
+ * boards/risc-v/jh7110/rv-virt/include/board.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,67 +18,61 @@
  *
  ****************************************************************************/
 
+#ifndef __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_H
+#define __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_H
+
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
 #include <nuttx/config.h>
 
-#include <stdint.h>
-#include <assert.h>
-
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <sys/types.h>
-
-#include "riscv_internal.h"
-#include "hardware/jh7110_memorymap.h"
-#include "hardware/jh7110_plic.h"
-
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define RV_IRQ_MASK 59
+#define LED_STARTED       0  /* N/A */
+#define LED_HEAPALLOCATE  1  /* N/A */
+#define LED_IRQSENABLED   2  /* N/A */
+#define LED_STACKCREATED  3  /* N/A */
+#define LED_INIRQ         4  /* N/A */
+#define LED_SIGNAL        5  /* N/A */
+#define LED_ASSERTION     6  /* N/A */
+#define LED_PANIC         7  /* N/A */
+#define LED_CPU           8  /* LED */
 
 /****************************************************************************
- * Public Functions
+ * Public Types
  ****************************************************************************/
+
+#ifndef __ASSEMBLY__
 
 /****************************************************************************
- * riscv_dispatch_irq
+ * Public Data
  ****************************************************************************/
 
-void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
+#undef EXTERN
+#if defined(__cplusplus)
+#define EXTERN extern "C"
+extern "C"
 {
-  int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
+#else
+#define EXTERN extern
+#endif
 
-  /* Firstly, check if the irq is machine external interrupt */
+/****************************************************************************
+ * Public Function Prototypes
+ ****************************************************************************/
 
-  if (RISCV_IRQ_EXT == irq)
-    {
-      uintptr_t val = getreg32(JH7110_PLIC_CLAIM);
+/****************************************************************************
+ * Name: jh7110_boardinitialize
+ ****************************************************************************/
 
-      /* Add the value to nuttx irq which is offset to the mext */
+void jh7110_boardinitialize(void);
 
-      irq += val;
-    }
-
-  /* EXT means no interrupt */
-
-  if (RISCV_IRQ_EXT != irq)
-    {
-      /* Deliver the IRQ */
-
-      regs = riscv_doirq(irq, regs);
-    }
-
-  if (RISCV_IRQ_EXT <= irq)
-    {
-      /* Then write PLIC_CLAIM to clear pending in PLIC */
-
-      putreg32(irq - RISCV_IRQ_EXT, JH7110_PLIC_CLAIM);
-    }
-
-  return regs;
+#undef EXTERN
+#if defined(__cplusplus)
 }
+#endif
+#endif /* __ASSEMBLY__ */
+#endif /* __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_H */

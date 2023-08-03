@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/qemu-rv/qemu_rv_allocateheap.c
+ * arch/risc-v/src/jh7110/jh7110_allocateheap.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -102,7 +102,7 @@ void up_allocate_kheap(void **heap_start, size_t *heap_size)
   *heap_size  = usize;
 
   /* Allow user-mode access to the user heap memory in PMP
-   * is already done in qemu_rv_userspace().
+   * is already done in jh7110_userspace().
    */
 
 #else

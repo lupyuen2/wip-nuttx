@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/qemu-rv/qemu_rv_head.S
+ * arch/risc-v/src/jh7110/jh7110_head.S
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -78,7 +78,7 @@ real_start:
   /* Set stack pointer to the idle thread stack */
 
   bnez a0, 1f
-  la   sp, QEMU_RV_IDLESTACK_TOP
+  la   sp, JH7110_IDLESTACK_TOP
   j    2f
 1:
 
@@ -133,9 +133,9 @@ real_start:
   la   t0, __trap_vec
   csrw stvec, t0
 
-  /* Jump to qemu_rv_start */
+  /* Jump to jh7110_start */
 
-  jal  x1, qemu_rv_start
+  jal  x1, jh7110_start
 
   /* We shouldn't return from _start */
 

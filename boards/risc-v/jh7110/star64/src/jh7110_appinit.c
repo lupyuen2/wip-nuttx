@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/qemu-rv/rv-virt/src/qemu_rv_appinit.c
+ * boards/risc-v/jh7110/rv-virt/src/jh7110_appinit.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with

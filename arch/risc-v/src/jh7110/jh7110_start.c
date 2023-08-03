@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/qemu-rv/qemu_rv_start.c
+ * arch/risc-v/src/jh7110/jh7110_start.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -30,7 +30,7 @@
 
 #include "riscv_internal.h"
 #include "chip.h"
-#include "qemu_rv_mm_init.h"
+#include "jh7110_mm_init.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -58,17 +58,17 @@ extern void up_mtimer_initialize(void);
  * for CPU0 and this value is used in up_initial_state()
  */
 
-uintptr_t g_idle_topstack = QEMU_RV_IDLESTACK_TOP;
+uintptr_t g_idle_topstack = JH7110_IDLESTACK_TOP;
 
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
 
 /****************************************************************************
- * Name: qemu_rv_clear_bss
+ * Name: jh7110_clear_bss
  ****************************************************************************/
 
-void qemu_rv_clear_bss(void)
+void jh7110_clear_bss(void)
 {
   uint32_t *dest;
 
@@ -83,10 +83,10 @@ void qemu_rv_clear_bss(void)
 }
 
 /****************************************************************************
- * Name: qemu_rv_start
+ * Name: jh7110_start
  ****************************************************************************/
 
-void qemu_rv_start_s(int mhartid)
+void jh7110_start_s(int mhartid)
 {
   /* Configure FPU */
 
@@ -98,7 +98,7 @@ void qemu_rv_start_s(int mhartid)
     }
 
 #ifndef CONFIG_BUILD_KERNEL
-  qemu_rv_clear_bss();
+  jh7110_clear_bss();
 #endif
 
   showprogress('A');
@@ -116,7 +116,7 @@ void qemu_rv_start_s(int mhartid)
 #ifdef CONFIG_BUILD_KERNEL
   /* Setup page tables for kernel and enable MMU */
 
-  qemu_rv_mm_init();
+  jh7110_mm_init();
 #endif
 
   /* Call nx_start() */
@@ -136,16 +136,16 @@ cpux:
 }
 
 /****************************************************************************
- * Name: qemu_rv_start
+ * Name: jh7110_start
  ****************************************************************************/
 
-void qemu_rv_start(int mhartid)
+void jh7110_start(int mhartid)
 {
   DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
 
   if (0 == mhartid)
     {
-      qemu_rv_clear_bss();
+      jh7110_clear_bss();
 
       /* Initialize the per CPU areas */
 
@@ -162,7 +162,7 @@ void qemu_rv_start(int mhartid)
 
   /* Start S-mode */
 
-  qemu_rv_start_s(mhartid);
+  jh7110_start_s(mhartid);
 }
 
 void riscv_earlyserialinit(void)

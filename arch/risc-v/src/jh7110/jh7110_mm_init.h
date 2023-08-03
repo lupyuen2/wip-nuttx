@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_irq_dispatch.c
+ * arch/risc-v/src/jh7110/jh7110_mm_init.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,67 +18,41 @@
  *
  ****************************************************************************/
 
+#ifndef __ARCH_RISC_V_SRC_JH7110_JH7110_MM_INIT_H
+#define __ARCH_RISC_V_SRC_JH7110_JH7110_MM_INIT_H
+
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
 #include <nuttx/config.h>
 
-#include <stdint.h>
-#include <assert.h>
-
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <sys/types.h>
-
-#include "riscv_internal.h"
-#include "hardware/jh7110_memorymap.h"
-#include "hardware/jh7110_plic.h"
+#include "riscv_mmu.h"
 
 /****************************************************************************
- * Pre-processor Definitions
- ****************************************************************************/
-
-#define RV_IRQ_MASK 59
-
-/****************************************************************************
- * Public Functions
+ * Public Functions Prototypes
  ****************************************************************************/
 
 /****************************************************************************
- * riscv_dispatch_irq
+ * Name: jh7110_kernel_mappings
+ *
+ * Description:
+ *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up the kernel
+ *  MMU mappings.
+ *
  ****************************************************************************/
 
-void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
-{
-  int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
+void jh7110_kernel_mappings(void);
 
-  /* Firstly, check if the irq is machine external interrupt */
+/****************************************************************************
+ * Name: jh7110_mm_init
+ *
+ * Description:
+ *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up kernel MMU
+ *  mappings. Function also sets the first address environment (satp value).
+ *
+ ****************************************************************************/
 
-  if (RISCV_IRQ_EXT == irq)
-    {
-      uintptr_t val = getreg32(JH7110_PLIC_CLAIM);
+void jh7110_mm_init(void);
 
-      /* Add the value to nuttx irq which is offset to the mext */
-
-      irq += val;
-    }
-
-  /* EXT means no interrupt */
-
-  if (RISCV_IRQ_EXT != irq)
-    {
-      /* Deliver the IRQ */
-
-      regs = riscv_doirq(irq, regs);
-    }
-
-  if (RISCV_IRQ_EXT <= irq)
-    {
-      /* Then write PLIC_CLAIM to clear pending in PLIC */
-
-      putreg32(irq - RISCV_IRQ_EXT, JH7110_PLIC_CLAIM);
-    }
-
-  return regs;
-}
+#endif /* __ARCH_RISC_V_SRC_JH7110_JH7110_MM_INIT_H */

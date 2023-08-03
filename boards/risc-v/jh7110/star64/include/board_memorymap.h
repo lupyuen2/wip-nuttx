@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/qemu-rv/rv-virt/include/board_memorymap.h
+ * boards/risc-v/jh7110/rv-virt/include/board_memorymap.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with

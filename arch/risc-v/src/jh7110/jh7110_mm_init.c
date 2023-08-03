@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/qemu-rv/qemu_rv_mm_init.c
+ * arch/risc-v/src/jh7110/jh7110_mm_init.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -31,7 +31,7 @@
 
 #include <arch/board/board_memorymap.h>
 
-#include "qemu_rv_memorymap.h"
+#include "jh7110_memorymap.h"
 
 #include "riscv_internal.h"
 #include "riscv_mmu.h"
@@ -211,7 +211,7 @@ static void map_region(uintptr_t paddr, uintptr_t vaddr, size_t size,
  ****************************************************************************/
 
 /****************************************************************************
- * Name: qemu_rv_kernel_mappings
+ * Name: jh7110_kernel_mappings
  *
  * Description:
  *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up the kernel
@@ -219,7 +219,7 @@ static void map_region(uintptr_t paddr, uintptr_t vaddr, size_t size,
  *
  ****************************************************************************/
 
-void qemu_rv_kernel_mappings(void)
+void jh7110_kernel_mappings(void)
 {
   /* Initialize slab allocator for the L2/L3 page tables */
 
@@ -258,7 +258,7 @@ void qemu_rv_kernel_mappings(void)
 }
 
 /****************************************************************************
- * Name: qemu_rv_mm_init
+ * Name: jh7110_mm_init
  *
  * Description:
  *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up kernel MMU
@@ -266,7 +266,7 @@ void qemu_rv_kernel_mappings(void)
  *
  ****************************************************************************/
 
-void qemu_rv_mm_init(void)
+void jh7110_mm_init(void)
 {
   /* Copy Ramdisk from U-Boot Ramdisk Load Address */
 
@@ -275,7 +275,7 @@ void qemu_rv_mm_init(void)
 
   /* Setup the kernel mappings */
 
-  qemu_rv_kernel_mappings();
+  jh7110_kernel_mappings();
 
   /* Enable MMU (note: system is still in M-mode) */
 

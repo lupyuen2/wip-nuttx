@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/hardware/jh7110_plic.h
+ * arch/risc-v/src/jh7110/jh7110_memorymap.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,34 +18,28 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_PLIC_H
-#define __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_PLIC_H
+#ifndef __ARCH_RISCV_SRC_JH7110_JH7110_MEMORYMAP_H
+#define __ARCH_RISCV_SRC_JH7110_JH7110_MEMORYMAP_H
 
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include "riscv_common_memorymap.h"
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Interrupt Priority */
+/* Idle thread stack starts from _ebss */
 
-#define JH7110_PLIC_PRIORITY    (JH7110_PLIC_BASE + 0x000000)
+#ifndef __ASSEMBLY__
+#define JH7110_IDLESTACK_BASE  (uintptr_t)_ebss
+#else
+#define JH7110_IDLESTACK_BASE  _ebss
+#endif
 
-/* Hart 1 S-Mode Interrupt Enable */
+#define JH7110_IDLESTACK_SIZE (CONFIG_IDLETHREAD_STACKSIZE & ~3)
+#define JH7110_IDLESTACK_TOP  (JH7110_IDLESTACK_BASE + JH7110_IDLESTACK_SIZE)
 
-#define JH7110_PLIC_ENABLE1   (JH7110_PLIC_BASE + 0x002100)
-#define JH7110_PLIC_ENABLE2   (JH7110_PLIC_BASE + 0x002104)
-
-/* Hart 1 S-Mode Priority Threshold */
-
-#define JH7110_PLIC_THRESHOLD (JH7110_PLIC_BASE + 0x202000)
-
-/* Hart 1 S-Mode Claim / Complete */
-
-#define JH7110_PLIC_CLAIM     (JH7110_PLIC_BASE + 0x202004)
-
-#endif /* __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_PLIC_H */
+#endif /* __ARCH_RISCV_SRC_JH7110_JH7110_MEMORYMAP_H */
