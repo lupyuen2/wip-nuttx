@@ -30,8 +30,60 @@
 #include <errno.h>
 
 #include <nuttx/board.h>
-
+#include <nuttx/drivers/ramdisk.h>
 #include <sys/mount.h>
+#include <sys/boardctl.h>
+#include <arch/board/board_memorymap.h>
+
+/****************************************************************************
+ * Pre-processor Definitions
+ ****************************************************************************/
+
+#define SECTORSIZE   512
+#define NSECTORS(b)  (((b) + SECTORSIZE - 1) / SECTORSIZE)
+#define RAMDISK_DEVICE_MINOR 0
+
+/****************************************************************************
+ * Private Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Name: mount_ramdisk
+ *
+ * Description:
+ *  Mount a ramdisk defined in the ld.script to /dev/ramX.  The ramdisk is
+ *  intended to contain a romfs with applications which can be spawned at
+ *  runtime.
+ *
+ * Returned Value:
+ *   OK is returned on success.
+ *   -ERRORNO is returned on failure.
+ *
+ ****************************************************************************/
+
+int mount_ramdisk(void)
+{
+  int ret;
+  struct boardioc_romdisk_s desc;
+
+  desc.minor    = RAMDISK_DEVICE_MINOR;
+  desc.nsectors = NSECTORS((ssize_t)__ramdisk_size);
+  desc.sectsize = SECTORSIZE;
+  desc.image    = __ramdisk_start;
+
+  ret = boardctl(BOARDIOC_ROMDISK, (uintptr_t)&desc);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "Ramdisk register failed: %s\n", strerror(errno));
+      syslog(LOG_ERR, "Ramdisk mountpoint /dev/ram%d\n",
+                                          RAMDISK_DEVICE_MINOR);
+      syslog(LOG_ERR, "Ramdisk length %lu, origin %lx\n",
+                                          (ssize_t)__ramdisk_size,
+                                          (uintptr_t)__ramdisk_start);
+    }
+
+  return ret;
+}
 
 /****************************************************************************
  * Public Functions
@@ -79,11 +131,6 @@ int board_app_initialize(uintptr_t arg)
 #endif
 }
 
-//// Added RAM Disk
-//// From nuttx/boards/risc-v/litex/arty_a7/src/litex_appinit.c
-
-int mount_ramdisk(void);
-
 /****************************************************************************
  * Name: board_late_initialize
  *
@@ -105,7 +152,8 @@ int mount_ramdisk(void);
 
 void board_late_initialize(void)
 {
-  // Mount the RAM Disk
+  /* Mount the RAM Disk */
+
   mount_ramdisk();
 
   /* Perform board-specific initialization */
@@ -115,62 +163,4 @@ void board_late_initialize(void)
   mount(NULL, "/proc", "procfs", 0, NULL);
 
 #endif
-}
-
-//// From nuttx/boards/risc-v/litex/arty_a7/include/board_memorymap.h
-
-/* ramdisk (RW) */
-extern uint8_t          __ramdisk_start[];
-extern uint8_t          __ramdisk_size[];
-
-//// From nuttx/boards/risc-v/litex/arty_a7/src/litex_ramdisk.c
-
-#include <arch/board/board_memorymap.h>
-#include <nuttx/drivers/ramdisk.h>
-#include <sys/boardctl.h>
-
-#ifndef CONFIG_BUILD_KERNEL
-#error "Ramdisk usage is intended to be used with kernel build only"
-#endif
-
-#define SECTORSIZE   512
-#define NSECTORS(b)  (((b) + SECTORSIZE - 1) / SECTORSIZE)
-#define RAMDISK_DEVICE_MINOR 0
-
-/****************************************************************************
- * Name: litex_mount_ramdisk
- *
- * Description:
- *  Mount a ramdisk defined in the ld-kernel.script to /dev/ramX.
- *  The ramdisk is intended to contain a romfs with applications which can
- *  be spawned at runtime.
- *
- * Returned Value:
- *   OK is returned on success.
- *   -ERRORNO is returned on failure.
- *
- ****************************************************************************/
-
-int mount_ramdisk(void)
-{
-  int ret;
-  struct boardioc_romdisk_s desc;
-
-  desc.minor    = RAMDISK_DEVICE_MINOR;
-  desc.nsectors = NSECTORS((ssize_t)__ramdisk_size);
-  desc.sectsize = SECTORSIZE;
-  desc.image    = __ramdisk_start;
-
-  ret = boardctl(BOARDIOC_ROMDISK, (uintptr_t)&desc);
-  if (ret < 0)
-    {
-      syslog(LOG_ERR, "Ramdisk register failed: %s\n", strerror(errno));
-      syslog(LOG_ERR, "Ramdisk mountpoint /dev/ram%d\n",
-                                          RAMDISK_DEVICE_MINOR);
-      syslog(LOG_ERR, "Ramdisk length %lu, origin %lx\n",
-                                          (ssize_t)__ramdisk_size,
-                                          (uintptr_t)__ramdisk_start);
-    }
-
-  return ret;
 }

@@ -55,15 +55,10 @@
 #define PGPOOL_SIZE     (uintptr_t)__pgheap_size
 #define PGPOOL_END      (PGPOOL_START + PGPOOL_SIZE)
 
-/* User flash */
+/* Ramdisk */
 
-#define UFLASH_START    (uintptr_t)__uflash_start
-#define UFLASH_SIZE     (uintptr_t)__uflash_size
-
-/* User RAM */
-
-#define USRAM_START     (uintptr_t)__usram_start
-#define USRAM_SIZE      (uintptr_t)__usram_size
+#define RAMDISK_START   (uintptr_t)__ramdisk_start
+#define RAMDISK_SIZE    (uintptr_t)__ramdisk_size
 
 /****************************************************************************
  * Public Data
@@ -85,14 +80,9 @@ extern uint8_t          __ksram_end[];
 extern uint8_t          __pgheap_start[];
 extern uint8_t          __pgheap_size[];
 
-/* User code memory (RX) */
+/* Ramdisk (RW) */
 
-extern uint8_t          __uflash_start[];
-extern uint8_t          __uflash_size[];
-
-/* User RAM (RW) */
-
-extern uint8_t          __usram_start[];
-extern uint8_t          __usram_size[];
+extern uint8_t          __ramdisk_start[];
+extern uint8_t          __ramdisk_size[];
 
 #endif /* __BOARDS_RISC_V_QEMURV_RVVIRT_INCLUDE_BOARD_MEMORYMAP_H */

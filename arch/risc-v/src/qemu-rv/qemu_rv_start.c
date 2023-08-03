@@ -23,7 +23,6 @@
  ****************************************************************************/
 
 #include <nuttx/config.h>
-
 #include <nuttx/init.h>
 #include <nuttx/arch.h>
 #include <nuttx/serial/uart_16550.h>
@@ -31,10 +30,7 @@
 
 #include "riscv_internal.h"
 #include "chip.h"
-
-#ifdef CONFIG_BUILD_KERNEL
-#  include "qemu_rv_mm_init.h"
-#endif
+#include "qemu_rv_mm_init.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -46,19 +42,27 @@
 #define showprogress(c)
 #endif
 
-#if defined (CONFIG_BUILD_KERNEL) && !defined (CONFIG_ARCH_USE_S_MODE)
-#  error "Target requires kernel in S-mode, enable CONFIG_ARCH_USE_S_MODE"
-#endif
-
 /****************************************************************************
  * Extern Function Declarations
  ****************************************************************************/
 
-#ifdef CONFIG_BUILD_KERNEL
 extern void __trap_vec(void);
 extern void __trap_vec_m(void);
 extern void up_mtimer_initialize(void);
-#endif
+
+/****************************************************************************
+ * Public Data
+ ****************************************************************************/
+
+/* NOTE: g_idle_topstack needs to point the top of the idle stack
+ * for CPU0 and this value is used in up_initial_state()
+ */
+
+uintptr_t g_idle_topstack = QEMU_RV_IDLESTACK_TOP;
+
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
 
 /****************************************************************************
  * Name: qemu_rv_clear_bss
@@ -79,28 +83,10 @@ void qemu_rv_clear_bss(void)
 }
 
 /****************************************************************************
- * Public Data
- ****************************************************************************/
-
-/* NOTE: g_idle_topstack needs to point the top of the idle stack
- * for CPU0 and this value is used in up_initial_state()
- */
-
-uintptr_t g_idle_topstack = QEMU_RV_IDLESTACK_TOP;
-
-/****************************************************************************
- * Public Functions
- ****************************************************************************/
-
-/****************************************************************************
  * Name: qemu_rv_start
  ****************************************************************************/
 
-#ifdef CONFIG_BUILD_KERNEL
 void qemu_rv_start_s(int mhartid)
-#else
-void qemu_rv_start(int mhartid)
-#endif
 {
   /* Configure FPU */
 
@@ -149,8 +135,6 @@ cpux:
     }
 }
 
-#ifdef CONFIG_BUILD_KERNEL
-
 /****************************************************************************
  * Name: qemu_rv_start
  ****************************************************************************/
@@ -180,7 +164,6 @@ void qemu_rv_start(int mhartid)
 
   qemu_rv_start_s(mhartid);
 }
-#endif
 
 void riscv_earlyserialinit(void)
 {
