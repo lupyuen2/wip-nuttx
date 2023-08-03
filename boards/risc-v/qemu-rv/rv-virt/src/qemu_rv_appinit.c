@@ -76,10 +76,9 @@ int mount_ramdisk(void)
     {
       syslog(LOG_ERR, "Ramdisk register failed: %s\n", strerror(errno));
       syslog(LOG_ERR, "Ramdisk mountpoint /dev/ram%d\n",
-                                          RAMDISK_DEVICE_MINOR);
+             RAMDISK_DEVICE_MINOR);
       syslog(LOG_ERR, "Ramdisk length %lu, origin %lx\n",
-                                          (ssize_t)__ramdisk_size,
-                                          (uintptr_t)__ramdisk_start);
+             (ssize_t)__ramdisk_size, (uintptr_t)__ramdisk_start);
     }
 
   return ret;
