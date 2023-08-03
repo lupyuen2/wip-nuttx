@@ -31,12 +31,6 @@
 
 /* Map RISC-V exception code to NuttX IRQ */
 
-//// "JH7110 Interrupt Connections" says that Global Interrupts are 0 to 126 (127 total interrupts)
-//// https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/interrupt_connections.html
 #define NR_IRQS (RISCV_IRQ_SEXT + 127)
-
-////#define QEMU_RV_IRQ_UART0  (RISCV_IRQ_MEXT + 10)
-
-////#define NR_IRQS (QEMU_RV_IRQ_UART0 + 1)
 
 #endif /* __ARCH_RISCV_INCLUDE_QEMU_RV_IRQ_H */
