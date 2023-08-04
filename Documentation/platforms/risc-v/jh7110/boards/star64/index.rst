@@ -30,7 +30,7 @@ Features
 Serial Console
 ==============
 
-A **USB Serial Adapter** (like `CH340G Serial Console <https://pine64.com/product/serial-console-woodpecker-edition/>`_)
+A **USB Serial Adapter** (like `CH340G Serial Adapter <https://pine64.com/product/serial-console-woodpecker-edition/>`_)
 is required to run NuttX on Star64.
 
 Connect the USB Serial Adapter to Star64's **GPIO Header** at:
@@ -39,8 +39,8 @@ Connect the USB Serial Adapter to Star64's **GPIO Header** at:
 USB Serial GPIO Header
 ========== ===========
 GND        Pin 6 (GND)
-RX         Pin 8 (TX)
-TX         Pin 10 (RX)
+RX         Pin 8 (UART0 TX)
+TX         Pin 10 (UART0 RX)
 ========== ===========
 
 On the USB Serial Adapter, set the **Voltage Level** to 3V3.
@@ -51,13 +51,11 @@ at **115.2 kbps**.
 
 NuttX will appear in the Serial Console when it boots on Star64.
 
-TODO
-
 RISC-V Toolchain
 ================
 
-Before building NuttX for Star64, download the **RISC-V Toolchain ``riscv64-unknown-elf``**
-from `SiFive Freedom RISC-V Tools <https://github.com/sifive/freedom-tools/releases/tag/v2020.12.0>`_.
+Before building NuttX for Star64, download the **RISC-V Toolchain riscv64-unknown-elf**
+from `SiFive RISC-V Tools <https://github.com/sifive/freedom-tools/releases/tag/v2020.12.0>`_.
 
 Add the downloaded toolchain ``riscv64-unknown-elf-toolchain-.../bin``
 to the ``PATH`` Environment Variable.
@@ -96,7 +94,7 @@ This produces the NuttX Kernel ``nuttx.bin``.  Next, build the NuttX Apps Filesy
 
 This generates the Initial RAM Disk ``initrd``.
 
-Download the **`Device Tree jh7110-visionfive-v2.dtb  <https://github.com/starfive-tech/VisionFive2/releases/download/VF2_v3.1.5/jh7110-visionfive-v2.dtb>`_**
+Download the `Device Tree jh7110-visionfive-v2.dtb <https://github.com/starfive-tech/VisionFive2/releases/download/VF2_v3.1.5/jh7110-visionfive-v2.dtb>`_
 from `StarFive VisionFive2 Software Releases <https://github.com/starfive-tech/VisionFive2/releases>`_
 into the ``nuttx`` folder.
 
@@ -175,7 +173,7 @@ Booting
 =======
 
 NuttX boots on Star64 via a microSD Card. To prepare the microSD Card, download the
-**`microSD Card Image sdcard.img <https://github.com/dreemurrs-embedded/Jumpdrive/releases>`_**
+`microSD Image sdcard.img <https://github.com/starfive-tech/VisionFive2/releases/download/VF2_v3.1.5/sdcard.img>`_
 from `StarFive VisionFive2 Software Releases <https://github.com/starfive-tech/VisionFive2/releases>`_.
 
 Write the downloaded image to a microSD Card with
