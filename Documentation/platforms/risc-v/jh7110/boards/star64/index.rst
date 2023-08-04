@@ -194,6 +194,9 @@ To see the available commands in NuttShell:
 
    $ help
 
+`Booting NuttX over TFTP <https://lupyuen.github.io/articles/tftp>`_
+is also supported on Star64.
+
 Configurations
 ==============
 
