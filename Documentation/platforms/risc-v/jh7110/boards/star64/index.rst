@@ -101,7 +101,7 @@ into the ``nuttx`` folder.
 Inside the ``nuttx`` folder, create a Text File named ``nuttx.its``
 with the following content:
 
-.. code:: console
+::
 
    /dts-v1/;
 
