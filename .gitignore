@@ -63,3 +63,4 @@ tools/gdb/__pycache__
 /build
 init.S
 initrd
+boards/risc-v/jh7110/star64/scripts/ld.script.tmp

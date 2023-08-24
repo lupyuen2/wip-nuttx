@@ -167,3 +167,5 @@ void board_late_initialize(void)
 
   // Test HDMI
 }
+
+#include "../../../../../hdmi/hdmi.c"
