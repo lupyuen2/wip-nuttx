@@ -166,6 +166,9 @@ void board_late_initialize(void)
 #endif
 
   // Test HDMI
+  int sf_vop_probe(void);
+  int ret = sf_vop_probe();
+  DEBUGASSERT(ret == 0);
 }
 
 #include "../../../../../hdmi/hdmi.c"
