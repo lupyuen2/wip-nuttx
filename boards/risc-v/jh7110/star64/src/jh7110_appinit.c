@@ -164,4 +164,6 @@ void board_late_initialize(void)
   mount(NULL, "/proc", "procfs", 0, NULL);
 
 #endif
+
+  // Test HDMI
 }
