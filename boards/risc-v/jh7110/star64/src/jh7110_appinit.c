@@ -171,4 +171,16 @@ void board_late_initialize(void)
   DEBUGASSERT(ret == 0);
 }
 
+// Display Subsystem Base Address
+// https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/memory_map_display.html
+#define DISPLAY_BASE_ADDRESS (0x29400000)
+
+// CRG Base Address
+// https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/memory_map_display.html
+#define CRG_BASE_ADDRESS     (DISPLAY_BASE_ADDRESS + 0x1C0000)
+
+// Enable Clock
+// https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/dom_vout_crg.html
+#define CLK_ICG (1 << 31)
+
 #include "../../../../../hdmi/hdmi.c"
