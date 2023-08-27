@@ -34,6 +34,7 @@
 #include <sys/mount.h>
 #include <sys/boardctl.h>
 #include <arch/board/board_memorymap.h>
+#include "riscv_internal.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -164,6 +165,31 @@ void board_late_initialize(void)
   mount(NULL, "/proc", "procfs", 0, NULL);
 
 #endif
+
+  // Power up the Display Controller
+  // TODO: Switch to constants
+  putreg32(0x10, 0x1703000c);
+  putreg32(0xff, 0x17030044);
+  putreg32(0x05, 0x17030044);
+  putreg32(0x50, 0x17030044);
+  putreg32(0x80000000, 0x13020028);
+  putreg32(0x80000000, 0x1302004c);
+  putreg32(0x80000000, 0x13020098);
+  putreg32(0x80000000, 0x1302009c);
+  putreg32(0x80000000, 0x130200e8);
+  putreg32(0x80000000, 0x130200f0);
+  putreg32(0x80000000, 0x130200f4);
+  putreg32(0x80000000, 0x130200f8);
+  putreg32(0x80000000, 0x130200fc);
+
+  // TODO: Modify register with modifyreg32(addr, clearbits, setbits)
+  // mw 130202fc 0x7e7f600 1
+
+  // TODO: Modify register with modifyreg32(addr, clearbits, setbits)
+  // mw 13020308 0xfb9fffff 1
+
+  // TODO: Verfy that Display Controller is up with getreg32
+  // md 295C0000 0x20
 
   // Test HDMI
   int test_hdmi(void);
