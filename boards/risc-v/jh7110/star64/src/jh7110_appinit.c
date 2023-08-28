@@ -215,16 +215,20 @@ void board_late_initialize(void)
 // DOM VOUT Control Registers
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/dom_vout_crg.html
 
-#define clk_u0_dc8200_clk_pix0 (CRG_BASE_ADDRESS + 0x1c)
-#define clk_u0_dc8200_clk_pix1 (CRG_BASE_ADDRESS + 0x20)
-#define clk_u0_dc8200_clk_axi  (CRG_BASE_ADDRESS + 0x10)
-#define clk_u0_dc8200_clk_core (CRG_BASE_ADDRESS + 0x14)
-#define clk_u0_dc8200_clk_ahb  (CRG_BASE_ADDRESS + 0x18)
+#define clk_u0_dc8200_clk_axi   (CRG_BASE_ADDRESS + 0x10)
+#define clk_u0_dc8200_clk_core  (CRG_BASE_ADDRESS + 0x14)
+#define clk_u0_dc8200_clk_ahb   (CRG_BASE_ADDRESS + 0x18)
+#define clk_u0_dc8200_clk_pix0  (CRG_BASE_ADDRESS + 0x1c)
+#define clk_u0_dc8200_clk_pix1  (CRG_BASE_ADDRESS + 0x20)
+#define clk_u0_hdmi_tx_clk_mclk (CRG_BASE_ADDRESS + 0x3c)
+#define clk_u0_hdmi_tx_clk_bclk (CRG_BASE_ADDRESS + 0x40)
+#define clk_u0_hdmi_tx_clk_sys  (CRG_BASE_ADDRESS + 0x44)
 #define CLK_ICG (1 << 31)
 
 #define Software_RESET_assert0_addr_assert_sel (CRG_BASE_ADDRESS + 0x38)
-#define rstn_u0_dc8200_rstn_axi  (1 << 0)
-#define rstn_u0_dc8200_rstn_ahb  (1 << 1)
-#define rstn_u0_dc8200_rstn_core (1 << 2)
+#define rstn_u0_dc8200_rstn_axi   (1 << 0)
+#define rstn_u0_dc8200_rstn_ahb   (1 << 1)
+#define rstn_u0_dc8200_rstn_core  (1 << 2)
+#define rstn_u0_hdmi_tx_rstn_hdmi (1 << 9)
 
 #include "../../../../../hdmi/hdmi.c"
