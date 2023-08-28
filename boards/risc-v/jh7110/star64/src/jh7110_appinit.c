@@ -212,11 +212,19 @@ void board_late_initialize(void)
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/memory_map_display.html
 #define CRG_BASE_ADDRESS     (DISPLAY_BASE_ADDRESS + 0x1C0000)
 
-// Enable Clock
+// DOM VOUT Control Registers
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/dom_vout_crg.html
+
+#define clk_u0_dc8200_clk_pix0 (CRG_BASE_ADDRESS + 0x1c)
+#define clk_u0_dc8200_clk_pix1 (CRG_BASE_ADDRESS + 0x20)
+#define clk_u0_dc8200_clk_axi  (CRG_BASE_ADDRESS + 0x10)
+#define clk_u0_dc8200_clk_core (CRG_BASE_ADDRESS + 0x14)
+#define clk_u0_dc8200_clk_ahb  (CRG_BASE_ADDRESS + 0x18)
 #define CLK_ICG (1 << 31)
 
-// https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/dom_vout_crg.html
-#define clk_u0_dc8200_clk_pix0 (CRG_BASE_ADDRESS + 0x1c)
+#define Software_RESET_assert0_addr_assert_sel (CRG_BASE_ADDRESS + 0x38)
+#define rstn_u0_dc8200_rstn_axi  (1 << 0)
+#define rstn_u0_dc8200_rstn_ahb  (1 << 1)
+#define rstn_u0_dc8200_rstn_core (1 << 2)
 
 #include "../../../../../hdmi/hdmi.c"
