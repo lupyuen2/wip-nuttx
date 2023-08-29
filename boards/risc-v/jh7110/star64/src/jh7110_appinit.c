@@ -206,30 +206,36 @@ void board_late_initialize(void)
 
 // Display Subsystem Base Address
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/memory_map_display.html
-#define DISPLAY_BASE_ADDRESS (0x29400000)
+#define DISPLAY_BASE_ADDRESS     (0x29400000)
+
+// DC8200 AHB0 Base Address
+// https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/memory_map_display.html
+#define DC8200_AHB0_BASE_ADDRESS (DISPLAY_BASE_ADDRESS + 0x000000)
 
 // U0_HDMITX Base Address
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/system_memory_map.html
-#define U0_HDMITX_Base_Address (0x29590000)
+#define U0_HDMITX_BASE_ADDRESS   (DISPLAY_BASE_ADDRESS + 0x190000)
 
 // DOM VOUT Control Registers
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/memory_map_display.html
-#define CRG_BASE_ADDRESS     (DISPLAY_BASE_ADDRESS + 0x1C0000)
+#define VOUT_CRG_BASE_ADDRESS    (DISPLAY_BASE_ADDRESS + 0x1C0000)
 
 // DOM VOUT Control Registers
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/dom_vout_crg.html
 
-#define clk_u0_dc8200_clk_axi   (CRG_BASE_ADDRESS + 0x10)
-#define clk_u0_dc8200_clk_core  (CRG_BASE_ADDRESS + 0x14)
-#define clk_u0_dc8200_clk_ahb   (CRG_BASE_ADDRESS + 0x18)
-#define clk_u0_dc8200_clk_pix0  (CRG_BASE_ADDRESS + 0x1c)
-#define clk_u0_dc8200_clk_pix1  (CRG_BASE_ADDRESS + 0x20)
-#define clk_u0_hdmi_tx_clk_mclk (CRG_BASE_ADDRESS + 0x3c)
-#define clk_u0_hdmi_tx_clk_bclk (CRG_BASE_ADDRESS + 0x40)
-#define clk_u0_hdmi_tx_clk_sys  (CRG_BASE_ADDRESS + 0x44)
+#define clk_u0_dc8200_clk_axi   (VOUT_CRG_BASE_ADDRESS + 0x10)
+#define clk_u0_dc8200_clk_core  (VOUT_CRG_BASE_ADDRESS + 0x14)
+#define clk_u0_dc8200_clk_ahb   (VOUT_CRG_BASE_ADDRESS + 0x18)
+#define clk_u0_dc8200_clk_pix0  (VOUT_CRG_BASE_ADDRESS + 0x1c)
+#define clk_u0_dc8200_clk_pix1  (VOUT_CRG_BASE_ADDRESS + 0x20)
+#define clk_u0_hdmi_tx_clk_mclk (VOUT_CRG_BASE_ADDRESS + 0x3c)
+#define clk_u0_hdmi_tx_clk_bclk (VOUT_CRG_BASE_ADDRESS + 0x40)
+#define clk_u0_hdmi_tx_clk_sys  (VOUT_CRG_BASE_ADDRESS + 0x44)
 #define CLK_ICG (1 << 31)
 
-#define Software_RESET_assert0_addr_assert_sel (CRG_BASE_ADDRESS + 0x38)
+// TODO: This is incorrect! Reset is actually at 295C0048
+#error TODO: This is incorrect! Reset is actually at 295C0048
+#define Software_RESET_assert0_addr_assert_sel (VOUT_CRG_BASE_ADDRESS + 0x38)
 #define rstn_u0_dc8200_rstn_axi   (1 << 0)
 #define rstn_u0_dc8200_rstn_ahb   (1 << 1)
 #define rstn_u0_dc8200_rstn_core  (1 << 2)
