@@ -208,6 +208,10 @@ void board_late_initialize(void)
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/memory_map_display.html
 #define DISPLAY_BASE_ADDRESS (0x29400000)
 
+// U0_HDMITX Base Address
+// https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/system_memory_map.html
+#define U0_HDMITX_Base_Address (0x29590000)
+
 // DOM VOUT Control Registers
 // https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/memory_map_display.html
 #define CRG_BASE_ADDRESS     (DISPLAY_BASE_ADDRESS + 0x1C0000)
