@@ -166,11 +166,11 @@ void board_late_initialize(void)
 
 #endif
 
-  // Verfy that Display Controller is down
+  // Verify that Video Output / Display Subsystem is down
   uint32_t val = getreg32(0x295C0000);
   DEBUGASSERT(val == 0);
 
-  // Power up the Display Controller
+  // Power up the Video Output / Display Subsystem
   // TODO: Switch to constants
   putreg32(0x10, 0x1703000c);
   putreg32(0xff, 0x17030044);
@@ -194,9 +194,29 @@ void board_late_initialize(void)
   // Clear Bit 26: rstn_u0_sft7110_noc_bus_reset_disp_axi_n
   modifyreg32(0x13020308, 1 << 26, 0);  // Addr, Clear Bits, Set Bits
 
-  // Verfy that Display Controller is up
+  // Verify that Video Output / Display Subsystem is up
   val = getreg32(0x295C0000);
   DEBUGASSERT(val == 4);
+
+// ## Enable the VOUT HDMI Clocks
+// mw 295C0010 0x80000000 1
+// mw 295C0014 0x80000000 1
+// mw 295C0018 0x80000000 1
+// mw 295C001c 0x80000000 1
+// mw 295C0020 0x80000000 1
+// mw 295C003c 0x80000000 1
+// mw 295C0040 0x80000000 1
+// mw 295C0044 0x80000000 1
+
+// ## Deassert the VOUT HDMI Resets.
+// ## We deassert all Resets for now.
+// mw 295C0048 0 1
+
+// ## Dump the Hardware Revision
+// md 29400024 1
+
+// ## Dump the Chip ID
+// md 29400030 1
 
   // Test HDMI
   int test_hdmi(void);
