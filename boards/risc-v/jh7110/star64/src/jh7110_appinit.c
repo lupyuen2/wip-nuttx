@@ -232,9 +232,9 @@ void board_late_initialize(void)
   DEBUGASSERT(revision != 0 && chip_id != 0);
 
   // Test HDMI
-  // int test_hdmi(void);
-  // int ret = test_hdmi();
-  // DEBUGASSERT(ret == 0);
+  int test_hdmi(void);
+  int ret = test_hdmi();
+  DEBUGASSERT(ret == 0);
 }
 
 // Display Subsystem Base Address
@@ -273,4 +273,4 @@ void board_late_initialize(void)
 #define rstn_u0_dc8200_rstn_core  (1 << 2)
 #define rstn_u0_hdmi_tx_rstn_hdmi (1 << 9)
 
-// #include "../../../../../hdmi/hdmi.c"
+#include "../../../../../hdmi/hdmi.c"
