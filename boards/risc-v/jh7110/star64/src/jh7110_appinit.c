@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <errno.h>
+#include <debug.h>
 
 #include <nuttx/board.h>
 #include <nuttx/drivers/ramdisk.h>
@@ -170,22 +171,25 @@ void board_late_initialize(void)
   uint32_t val = getreg32(0x295C0000);
   DEBUGASSERT(val == 0);
 
-  // Power up the Video Output / Display Subsystem
+  // Power Up the Power Management Unit for Video Output / Display Subsystem
   // TODO: Switch to constants
   putreg32(0x10, 0x1703000c);
   putreg32(0xff, 0x17030044);
   putreg32(0x05, 0x17030044);
   putreg32(0x50, 0x17030044);
-  putreg32(0x80000000, 0x13020028);
-  putreg32(0x80000000, 0x1302004c);
-  putreg32(0x80000000, 0x13020098);
-  putreg32(0x80000000, 0x1302009c);
-  putreg32(0x80000000, 0x130200e8);
-  putreg32(0x80000000, 0x130200f0);
-  putreg32(0x80000000, 0x130200f4);
-  putreg32(0x80000000, 0x130200f8);
-  putreg32(0x80000000, 0x130200fc);
 
+  // Enable the Clocks for Video Output / Display Subsystem
+  modifyreg32(0x13020028, 0, 1 << 31);  // Addr, Clear Bits, Set Bits
+  modifyreg32(0x1302004c, 0, 1 << 31);
+  modifyreg32(0x13020098, 0, 1 << 31);
+  modifyreg32(0x1302009c, 0, 1 << 31);
+  modifyreg32(0x130200e8, 0, 1 << 31);
+  modifyreg32(0x130200f0, 0, 1 << 31);
+  modifyreg32(0x130200f4, 0, 1 << 31);
+  modifyreg32(0x130200f8, 0, 1 << 31);
+  modifyreg32(0x130200fc, 0, 1 << 31);
+
+  // Deassert the Resets for Video Output / Display Subsystem
   // Software RESET 1 Address Selector: Offset 0x2fc
   // Clear Bit 11: rstn_u0_dom_vout_top_rstn_dom_vout_top_rstn_vout_src
   modifyreg32(0x130202fc, 1 << 11, 0);  // Addr, Clear Bits, Set Bits
@@ -198,30 +202,33 @@ void board_late_initialize(void)
   val = getreg32(0x295C0000);
   DEBUGASSERT(val == 4);
 
-// ## Enable the VOUT HDMI Clocks
-// mw 295C0010 0x80000000 1
-// mw 295C0014 0x80000000 1
-// mw 295C0018 0x80000000 1
-// mw 295C001c 0x80000000 1
-// mw 295C0020 0x80000000 1
-// mw 295C003c 0x80000000 1
-// mw 295C0040 0x80000000 1
-// mw 295C0044 0x80000000 1
+  // Enable the Clocks for DC8200 Display Controller (HDMI)
+  modifyreg32(0x295C0010, 0, 1 << 31);  // Addr, Clear Bits, Set Bits
+  modifyreg32(0x295C0014, 0, 1 << 31);
+  modifyreg32(0x295C0018, 0, 1 << 31);
+  modifyreg32(0x295C001c, 0, 1 << 31);
+  modifyreg32(0x295C0020, 0, 1 << 31);
+  modifyreg32(0x295C003c, 0, 1 << 31);
+  modifyreg32(0x295C0040, 0, 1 << 31);
+  modifyreg32(0x295C0044, 0, 1 << 31);
 
-// ## Deassert the VOUT HDMI Resets.
-// ## We deassert all Resets for now.
-// mw 295C0048 0 1
+  // Deassert the Resets for DC8200 Display Controller (HDMI)
+  modifyreg32(
+    0x295C0048,  // Addr
+    (1 << 0) | (1 << 1) | (1 << 2) | (1 << 9),  // Clear Bits
+    0  // Set Bits
+  );
 
-// ## Dump the Hardware Revision
-// md 29400024 1
-
-// ## Dump the Chip ID
-// md 29400030 1
+  // Verify that Hardware Revision and Chip ID are non-zero
+  uint32_t revision = getreg32(0x29400024);
+  uint32_t chip_id = getreg32(0x29400030);
+  _info("revision=0x%x, chip_id=0x%x", revision, chip_id);
+  DEBUGASSERT(revision != 0 && chip_id != 0);
 
   // Test HDMI
-  int test_hdmi(void);
-  int ret = test_hdmi();
-  DEBUGASSERT(ret == 0);
+  // int test_hdmi(void);
+  // int ret = test_hdmi();
+  // DEBUGASSERT(ret == 0);
 }
 
 // Display Subsystem Base Address
@@ -253,12 +260,11 @@ void board_late_initialize(void)
 #define clk_u0_hdmi_tx_clk_sys  (VOUT_CRG_BASE_ADDRESS + 0x44)
 #define CLK_ICG (1 << 31)
 
-// TODO: This is incorrect! Reset is actually at 295C0048
-#error TODO: This is incorrect! Reset is actually at 295C0048
-#define Software_RESET_assert0_addr_assert_sel (VOUT_CRG_BASE_ADDRESS + 0x38)
+// Note: Reset is actually at 295C0048, not 295C0038!
+#define Software_RESET_assert0_addr_assert_sel (VOUT_CRG_BASE_ADDRESS + 0x48)
 #define rstn_u0_dc8200_rstn_axi   (1 << 0)
 #define rstn_u0_dc8200_rstn_ahb   (1 << 1)
 #define rstn_u0_dc8200_rstn_core  (1 << 2)
 #define rstn_u0_hdmi_tx_rstn_hdmi (1 << 9)
 
-#include "../../../../../hdmi/hdmi.c"
+// #include "../../../../../hdmi/hdmi.c"
