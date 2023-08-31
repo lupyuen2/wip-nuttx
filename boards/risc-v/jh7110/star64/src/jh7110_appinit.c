@@ -178,6 +178,9 @@ void board_late_initialize(void)
   putreg32(0x05, 0x17030044);
   putreg32(0x50, 0x17030044);
 
+  // Wait 50 milliseconds for Power Up
+  up_mdelay(50);
+
   // Enable the Clocks for Video Output / Display Subsystem
   modifyreg32(0x13020028, 0, 1 << 31);  // Addr, Clear Bits, Set Bits
   modifyreg32(0x1302004c, 0, 1 << 31);
