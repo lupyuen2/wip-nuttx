@@ -205,13 +205,9 @@ void board_late_initialize(void)
   // Clear Bit 26: rstn_u0_sft7110_noc_bus_reset_disp_axi_n
   modifyreg32(0x13020308, 1 << 26, 0);  // Addr, Clear Bits, Set Bits
 
-  up_mdelay(50);////
-
   // Verify that Video Output / Display Subsystem is up
   val = getreg32(0x295C0000);
   DEBUGASSERT(val == 4);
-
-  up_mdelay(50);////
 
   // Enable the Clocks for DC8200 Display Controller (HDMI)
   modifyreg32(0x295C0010, 0, 1 << 31);  // Addr, Clear Bits, Set Bits
@@ -222,8 +218,6 @@ void board_late_initialize(void)
   modifyreg32(0x295C003c, 0, 1 << 31);
   modifyreg32(0x295C0040, 0, 1 << 31);
   modifyreg32(0x295C0044, 0, 1 << 31);
-
-  up_mdelay(50);////
 
   // Deassert the Resets for DC8200 Display Controller (HDMI)
   modifyreg32(
