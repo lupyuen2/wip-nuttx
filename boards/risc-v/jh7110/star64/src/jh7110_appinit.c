@@ -231,7 +231,8 @@ void board_late_initialize(void)
   _info("revision=0x%x, chip_id=0x%x", revision, chip_id);
   DEBUGASSERT(revision != 0 && chip_id != 0);
 
-  // Dump the HDMI Status. Check for Hot Plug (1 << 7)
+  // Read the HDMI Status
+  // TODO: Check for Hot Plug (1 << 7)
   uint32_t hdmi_status = getreg32(0x29590000 + (0xc8 * 4));
   _info("hdmi_status=0x%x\n", hdmi_status);
 
