@@ -231,7 +231,16 @@ void board_late_initialize(void)
   _info("revision=0x%x, chip_id=0x%x", revision, chip_id);
   DEBUGASSERT(revision != 0 && chip_id != 0);
 
-  // Test HDMI
+  // Dump the HDMI Status. Check for Hot Plug (1 << 7)
+  uint32_t hdmi_status = getreg32(0x29590000 + (0xc8 * 4));
+  _info("hdmi_status=0x%x\n", hdmi_status);
+
+  // TODO: Enable HDMI
+  // TODO: Set the Clock Source of u0_dc8200.clk_pix0 to clk_dc8200_pix0
+  // TODO: Set the Clock Rate of dc8200_pix0 to 148.5 MHz (HDMI Clock)
+  // TODO: Bunch of Mystery Writes to DC8200 AHB0
+  // TODO: How to write to Framebuffer?
+  // TODO: Test HDMI
   int test_hdmi(void);
   int ret = test_hdmi();
   DEBUGASSERT(ret == 0);
