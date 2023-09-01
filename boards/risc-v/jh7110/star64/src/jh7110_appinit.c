@@ -225,8 +225,8 @@ void board_late_initialize(void)
   // TODO: Power up ALDO3 and ALDO5 on the External Power Management IC
   // (X-Powers AXP15060 PMIC over I2C)
 
-  // Wait 50 milliseconds for Power Up
-  up_mdelay(50);
+  // Wait 500 milliseconds for Power Up
+  up_mdelay(500);
 
   // Verify that Hardware Revision and Chip ID are non-zero
   uint32_t revision = getreg32(0x29400024);
