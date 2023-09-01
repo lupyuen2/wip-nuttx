@@ -222,6 +222,8 @@ void board_late_initialize(void)
     0  // Set Bits
   );
 
+  // TODO: Power up ALDO3 and ALDO5 on the External Power Management IC
+
   // Wait 50 milliseconds for Power Up
   up_mdelay(50);
 
