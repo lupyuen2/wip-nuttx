@@ -63,3 +63,4 @@ tools/gdb/__pycache__
 /build
 init.S
 initrd
+scheme.S
