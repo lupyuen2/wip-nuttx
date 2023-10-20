@@ -235,7 +235,7 @@ int test_opensbi(void)
   sbi_ecall(SBI_EXT_0_1_CONSOLE_PUTCHAR, 0, '2', 0, 0, 0, 0, 0);
   sbi_ecall(SBI_EXT_0_1_CONSOLE_PUTCHAR, 0, '3', 0, 0, 0, 0, 0);
 
-  // TODO: Why does this return SBI_ERR_NOT_SUPPORTED?
+  // TODO: Not supported by SBI v0.2, this will return SBI_ERR_NOT_SUPPORTED
   // Print `456` to Debug Console.
   // Call sbi_debug_console_write: EID 0x4442434E, FID 0
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/src/ext-debug-console.adoc#function-console-write-fid-0
@@ -252,7 +252,7 @@ int test_opensbi(void)
   // DEBUGASSERT(sret.error == SBI_SUCCESS);
   // DEBUGASSERT(sret.value == strlen(str));
 
-  // TODO: Why does this return SBI_ERR_NOT_SUPPORTED?
+  // TODO: Not supported by SBI v0.2, this will return SBI_ERR_NOT_SUPPORTED
   // Print `789` to Debug Console.
   // Call sbi_debug_console_write_byte: EID 0x4442434E, FID 2
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/src/ext-debug-console.adoc#function-console-write-byte-fid-2
