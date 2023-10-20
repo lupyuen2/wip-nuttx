@@ -214,8 +214,8 @@ void board_late_initialize(void)
 // SBI Return Type. From
 // https://github.com/riscv-software-src/opensbi/blob/master/firmware/payloads/test_main.c
 struct sbiret {
-	unsigned long error;
-	unsigned long value;
+  unsigned long error;
+  unsigned long value;
 };
 
 static struct sbiret sbi_ecall(unsigned int extid, unsigned int fid,
@@ -240,10 +240,10 @@ int test_opensbi(void)
   // Call sbi_debug_console_write: EID 0x4442434E, FID 0
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/src/ext-debug-console.adoc#function-console-write-fid-0
   const char *str = "456";
-	struct sbiret sret = sbi_ecall(
+  struct sbiret sret = sbi_ecall(
     SBI_EXT_DBCN,  // Extension ID
     SBI_EXT_DBCN_CONSOLE_WRITE,  // Function ID
-		strlen(str),         // Number of bytes
+    strlen(str),         // Number of bytes
     (unsigned long)str,  // Address Low
     0,                   // Address High
     0, 0, 0              // Unused
@@ -274,7 +274,7 @@ static struct sbiret sbi_ecall(unsigned int extid, unsigned int fid,
                                   uintptr_t parm2, uintptr_t parm3,
                                   uintptr_t parm4, uintptr_t parm5)
 {
-	struct sbiret ret;
+  struct sbiret ret;
   register long r0 asm("a0") = (long)(parm0);
   register long r1 asm("a1") = (long)(parm1);
   register long r2 asm("a2") = (long)(parm2);
@@ -292,8 +292,8 @@ static struct sbiret sbi_ecall(unsigned int extid, unsigned int fid,
      : "memory"
      );
 
-	ret.error = r0;
-	ret.value = r1;
+  ret.error = r0;
+  ret.value = r1;
   return ret;
 }
 
