@@ -324,10 +324,27 @@ int test_opensbi(void)
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_SPEC_VERSION, 0, 0, 0, 0, 0, 0);
   _info("get_spec_version: value=0x%x, error=%d\n", sret.value, sret.error);
 
+  sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_IMP_ID, 0, 0, 0, 0, 0, 0);
+  _info("sbi_get_impl_id: value=0x%x, error=%d\n", sret.value, sret.error);
+
+  sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_IMP_VERSION, 0, 0, 0, 0, 0, 0);
+  _info("sbi_get_impl_version: value=0x%x, error=%d\n", sret.value, sret.error);
+
+  sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MVENDORID, 0, 0, 0, 0, 0, 0);
+  _info("sbi_get_mvendorid: value=0x%x, error=%d\n", sret.value, sret.error);
+
+  sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MARCHID, 0, 0, 0, 0, 0, 0);
+  _info("sbi_get_marchid: value=0x%x, error=%d\n", sret.value, sret.error);
+
+  sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MIMPID, 0, 0, 0, 0, 0, 0);
+  _info("sbi_get_mimpid: value=0x%x, error=%d\n", sret.value, sret.error);
+
   // Call sbi_hart_get_status: EID 0x48534D "HSM", FID 2
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#93-function-hart-get-status-fid-2
-  sret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_GET_STATUS, 0, 0, 0, 0, 0, 0);
-  _info("hart_get_status: value=0x%x, error=%d\n", sret.value, sret.error);
+  for (uintptr_t hart = 0; hart < 6; hart++) {
+    sret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_GET_STATUS, hart, 0, 0, 0, 0, 0);
+    _info("hart_get_status[%d]: value=0x%x, error=%d\n", hart, sret.value, sret.error);
+  }
 
   // Call sbi_set_timer: EID 0x54494D45 "TIME", FID 0
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#61-function-set-timer-fid-0
@@ -376,7 +393,17 @@ clk u5_dw_i2c_clk_apb already disabled
 BC123test_opensbi: debug_console_write: value=0x0, error=-2
 test_opensbi: debug_console_write_byte: value=0x0, error=-2
 test_opensbi: get_spec_version: value=0x1000000, error=0
-test_opensbi: hart_get_status: value=0x1, error=0
+test_opensbi: sbi_get_impl_id: value=0x1, error=0
+test_opensbi: sbi_get_impl_version: value=0x10002, error=0
+test_opensbi: sbi_get_mvendorid: value=0x489, error=0
+test_opensbi: sbi_get_marchid: value=0x7, error=0
+test_opensbi: sbi_get_mimpid: value=0x4210427, error=0
+test_opensbi: hart_get_status[0]: value=0x1, error=0
+test_opensbi: hart_get_status[1]: value=0x0, error=0
+test_opensbi: hart_get_status[2]: value=0x1, error=0
+test_opensbi: hart_get_status[3]: value=0x1, error=0
+test_opensbi: hart_get_status[4]: value=0x1, error=0
+test_opensbi: hart_get_status[5]: value=0x0, error=-3
 test_opensbi: set_timer: value=0x0, error=0
 
 NuttShell (NSH) NuttX-12.0.3
