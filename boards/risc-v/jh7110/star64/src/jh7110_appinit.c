@@ -171,6 +171,7 @@ void board_late_initialize(void)
   int ret = test_opensbi();
   DEBUGASSERT(ret == OK);
 }
+
 // SBI Definitions
 // https://github.com/riscv-software-src/opensbi/blob/master/include/sbi/sbi_ecall_interface.h
 
@@ -195,10 +196,65 @@ void board_late_initialize(void)
 #define SBI_EXT_SUSP				0x53555350
 #define SBI_EXT_CPPC				0x43505043
 
+/* SBI function IDs for BASE extension*/
+#define SBI_EXT_BASE_GET_SPEC_VERSION		0x0
+#define SBI_EXT_BASE_GET_IMP_ID			0x1
+#define SBI_EXT_BASE_GET_IMP_VERSION		0x2
+#define SBI_EXT_BASE_PROBE_EXT			0x3
+#define SBI_EXT_BASE_GET_MVENDORID		0x4
+#define SBI_EXT_BASE_GET_MARCHID		0x5
+#define SBI_EXT_BASE_GET_MIMPID			0x6
+
+/* SBI function IDs for TIME extension*/
+#define SBI_EXT_TIME_SET_TIMER			0x0
+
+/* SBI function IDs for IPI extension*/
+#define SBI_EXT_IPI_SEND_IPI			0x0
+
+/* SBI function IDs for RFENCE extension*/
+#define SBI_EXT_RFENCE_REMOTE_FENCE_I		0x0
+#define SBI_EXT_RFENCE_REMOTE_SFENCE_VMA	0x1
+#define SBI_EXT_RFENCE_REMOTE_SFENCE_VMA_ASID	0x2
+#define SBI_EXT_RFENCE_REMOTE_HFENCE_GVMA_VMID	0x3
+#define SBI_EXT_RFENCE_REMOTE_HFENCE_GVMA	0x4
+#define SBI_EXT_RFENCE_REMOTE_HFENCE_VVMA_ASID	0x5
+#define SBI_EXT_RFENCE_REMOTE_HFENCE_VVMA	0x6
+
+/* SBI function IDs for HSM extension */
+#define SBI_EXT_HSM_HART_START			0x0
+#define SBI_EXT_HSM_HART_STOP			0x1
+#define SBI_EXT_HSM_HART_GET_STATUS		0x2
+#define SBI_EXT_HSM_HART_SUSPEND		0x3
+
+/* SBI function IDs for SRST extension */
+#define SBI_EXT_SRST_RESET			0x0
+
+/* SBI function IDs for PMU extension */
+#define SBI_EXT_PMU_NUM_COUNTERS	0x0
+#define SBI_EXT_PMU_COUNTER_GET_INFO	0x1
+#define SBI_EXT_PMU_COUNTER_CFG_MATCH	0x2
+#define SBI_EXT_PMU_COUNTER_START	0x3
+#define SBI_EXT_PMU_COUNTER_STOP	0x4
+#define SBI_EXT_PMU_COUNTER_FW_READ	0x5
+#define SBI_EXT_PMU_COUNTER_FW_READ_HI	0x6
+
 /* SBI function IDs for DBCN extension */
 #define SBI_EXT_DBCN_CONSOLE_WRITE		0x0
 #define SBI_EXT_DBCN_CONSOLE_READ		0x1
 #define SBI_EXT_DBCN_CONSOLE_WRITE_BYTE		0x2
+
+/* SBI function IDs for SUSP extension */
+#define SBI_EXT_SUSP_SUSPEND			0x0
+
+#define SBI_SUSP_SLEEP_TYPE_SUSPEND		0x0
+#define SBI_SUSP_SLEEP_TYPE_LAST		SBI_SUSP_SLEEP_TYPE_SUSPEND
+#define SBI_SUSP_PLATFORM_SLEEP_START		0x80000000
+
+/* SBI function IDs for CPPC extension */
+#define SBI_EXT_CPPC_PROBE			0x0
+#define SBI_EXT_CPPC_READ			0x1
+#define SBI_EXT_CPPC_READ_HI			0x2
+#define SBI_EXT_CPPC_WRITE			0x3
 
 /* SBI return error codes */
 #define SBI_SUCCESS				0
@@ -237,7 +293,7 @@ int test_opensbi(void)
 
   // TODO: Not supported by SBI v1.0, this will return SBI_ERR_NOT_SUPPORTED
   // Print `456` to Debug Console.
-  // Call sbi_debug_console_write: EID 0x4442434E, FID 0
+  // Call sbi_debug_console_write: EID 0x4442434E "DBCN", FID 0
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/src/ext-debug-console.adoc#function-console-write-fid-0
   const char *str = "456";
   struct sbiret sret = sbi_ecall(
@@ -248,20 +304,35 @@ int test_opensbi(void)
     0,                   // Address High
     0, 0, 0              // Unused
   );
-  _info("sret.value=%d, sret.error=%d\n", sret.value, sret.error);
+  _info("debug_console_write: value=0x%x, error=%d\n", sret.value, sret.error);
   // DEBUGASSERT(sret.error == SBI_SUCCESS);
   // DEBUGASSERT(sret.value == strlen(str));
 
   // TODO: Not supported by SBI v1.0, this will return SBI_ERR_NOT_SUPPORTED
   // Print `789` to Debug Console.
-  // Call sbi_debug_console_write_byte: EID 0x4442434E, FID 2
+  // Call sbi_debug_console_write_byte: EID 0x4442434E "DBCN", FID 2
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/src/ext-debug-console.adoc#function-console-write-byte-fid-2
   sret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE_BYTE, '7', 0, 0, 0, 0, 0);
   sret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE_BYTE, '8', 0, 0, 0, 0, 0);
   sret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE_BYTE, '9', 0, 0, 0, 0, 0);
-  _info("sret.value=%d, sret.error=%d\n", sret.value, sret.error);
+  _info("debug_console_write_byte: value=0x%x, error=%d\n", sret.value, sret.error);
   // DEBUGASSERT(sret.error == SBI_SUCCESS);
   // DEBUGASSERT(sret.value == strlen(str));
+
+  // Call sbi_get_spec_version: EID 0x10, FID 0
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#41-function-get-sbi-specification-version-fid-0
+  sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_SPEC_VERSION, 0, 0, 0, 0, 0, 0);
+  _info("get_spec_version: value=0x%x, error=%d\n", sret.value, sret.error);
+
+  // Call sbi_hart_get_status: EID 0x48534D "HSM", FID 2
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#93-function-hart-get-status-fid-2
+  sret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_GET_STATUS, 0, 0, 0, 0, 0, 0);
+  _info("hart_get_status: value=0x%x, error=%d\n", sret.value, sret.error);
+
+  // Call sbi_set_timer: EID 0x54494D45 "TIME", FID 0
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#61-function-set-timer-fid-0
+  sret = sbi_ecall(SBI_EXT_TIME, SBI_EXT_TIME_SET_TIMER, 0, 0, 0, 0, 0, 0);
+  _info("set_timer: value=0x%x, error=%d\n", sret.value, sret.error);
 
   return OK;
 }
@@ -302,8 +373,11 @@ Starting kernel ...
 
 clk u5_dw_i2c_clk_core already disabled
 clk u5_dw_i2c_clk_apb already disabled
-BC123test_opensbi: sret.value=0, sret.error=-2
-test_opensbi: sret.value=0, sret.error=-2
+BC123test_opensbi: debug_console_write: value=0x0, error=-2
+test_opensbi: debug_console_write_byte: value=0x0, error=-2
+test_opensbi: get_spec_version: value=0x1000000, error=0
+test_opensbi: hart_get_status: value=0x1, error=0
+test_opensbi: set_timer: value=0x0, error=0
 
 NuttShell (NSH) NuttX-12.0.3
 nsh> 
