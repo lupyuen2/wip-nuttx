@@ -283,9 +283,9 @@ struct sbiret {
 };
 
 static struct sbiret sbi_ecall(unsigned int extid, unsigned int fid,
-                                  uintptr_t parm0, uintptr_t parm1,
-                                  uintptr_t parm2, uintptr_t parm3,
-                                  uintptr_t parm4, uintptr_t parm5);
+                               uintptr_t parm0, uintptr_t parm1,
+                               uintptr_t parm2, uintptr_t parm3,
+                               uintptr_t parm4, uintptr_t parm5);
 
 // Make an ecall to OpenSBI. Based on
 // https://github.com/riscv-software-src/opensbi/blob/master/firmware/payloads/test_main.c
@@ -408,9 +408,9 @@ int test_opensbi(void)
 // https://github.com/apache/nuttx/blob/master/arch/risc-v/src/common/supervisor/riscv_sbi.c#L52-L77
 // https://github.com/riscv-software-src/opensbi/blob/master/firmware/payloads/test_main.c
 static struct sbiret sbi_ecall(unsigned int extid, unsigned int fid,
-                                  uintptr_t parm0, uintptr_t parm1,
-                                  uintptr_t parm2, uintptr_t parm3,
-                                  uintptr_t parm4, uintptr_t parm5)
+                               uintptr_t parm0, uintptr_t parm1,
+                               uintptr_t parm2, uintptr_t parm3,
+                               uintptr_t parm4, uintptr_t parm5)
 {
   struct sbiret ret;
   register long r0 asm("a0") = (long)(parm0);
