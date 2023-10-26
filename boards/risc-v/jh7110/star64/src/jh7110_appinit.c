@@ -387,14 +387,17 @@ int test_opensbi(void)
   sret = sbi_ecall(SBI_EXT_TIME, SBI_EXT_TIME_SET_TIMER, 0, 0, 0, 0, 0, 0);
   _info("set_timer: value=0x%x, error=%d\n", sret.value, sret.error);
 
-  // (EID #0x53525354 "SRST")
+  // System Reset: Shutdown
+  // Call sbi_system_reset: EID 0x53525354 "SRST", FID 0
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#101-function-system-reset-fid-0
   // sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_SHUTDOWN, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
   // _info("sbi_system_reset[shutdown]: value=0x%x, error=%d\n", sret.value, sret.error);
 
+  // System Reset: Cold Reboot
   // sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_COLD_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
   // _info("sbi_system_reset[cold_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
 
+  // System Reset: Warm Reboot
   sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_WARM_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
   _info("sbi_system_reset[warm_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
 
