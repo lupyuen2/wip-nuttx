@@ -390,13 +390,13 @@ int test_opensbi(void)
   // (EID #0x53525354 "SRST")
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#101-function-system-reset-fid-0
   // sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_SHUTDOWN, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
-  // _info("sbi_system_reset: value=0x%x, error=%d\n", sret.value, sret.error);
+  // _info("sbi_system_reset[shutdown]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_COLD_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
-  // _info("sbi_system_reset: value=0x%x, error=%d\n", sret.value, sret.error);
+  // _info("sbi_system_reset[cold_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_WARM_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
-  _info("sbi_system_reset: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("sbi_system_reset[warm_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   return OK;
 }
@@ -454,7 +454,7 @@ test_opensbi: hart_get_status[3]: value=0x1, error=0
 test_opensbi: hart_get_status[4]: value=0x1, error=0
 test_opensbi: hart_get_status[5]: value=0x0, error=-3
 test_opensbi: set_timer: value=0x0, error=0
-test_opensbi: sbi_system_reset: value=0x0, error=-2
+test_opensbi: sbi_system_reset[warm_reboot]: value=0x0, error=-2
 
 NuttShell (NSH) NuttX-12.0.3
 nsh> 
