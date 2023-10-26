@@ -337,41 +337,41 @@ int test_opensbi(void)
   // Call sbi_get_impl_id: EID 0x10, FID 1
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#42-function-get-sbi-implementation-id-fid-1
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_IMP_ID, 0, 0, 0, 0, 0, 0);
-  _info("sbi_get_impl_id: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("get_impl_id: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // Get SBI Implementation Version
   // Call sbi_get_impl_version: EID 0x10, FID 2
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#43-function-get-sbi-implementation-version-fid-2
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_IMP_VERSION, 0, 0, 0, 0, 0, 0);
-  _info("sbi_get_impl_version: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("get_impl_version: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // Get Machine Vendor ID
   // Call sbi_get_mvendorid: EID 0x10, FID 4
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#45-function-get-machine-vendor-id-fid-4
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MVENDORID, 0, 0, 0, 0, 0, 0);
-  _info("sbi_get_mvendorid: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("get_mvendorid: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // Get Machine Architecture ID
   // Call sbi_get_marchid: EID 0x10, FID 5
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#46-function-get-machine-architecture-id-fid-5
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MARCHID, 0, 0, 0, 0, 0, 0);
-  _info("sbi_get_marchid: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("get_marchid: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // Get Machine Implementation ID
   // Call sbi_get_mimpid: EID 0x10, FID 6
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#47-function-get-machine-implementation-id-fid-6
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MIMPID, 0, 0, 0, 0, 0, 0);
-  _info("sbi_get_mimpid: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("get_mimpid: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // Probe SBI Extension: Base Extension
   // Call sbi_probe_extension: EID 0x10, FID 3
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#44-function-probe-sbi-extension-fid-3
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_PROBE_EXT, SBI_EXT_BASE, 0, 0, 0, 0, 0);
-  _info("sbi_probe_extension[0x10]: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("probe_extension[0x10]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // Probe SBI Extension: Debug Console Extension
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_PROBE_EXT, SBI_EXT_DBCN, 0, 0, 0, 0, 0);
-  _info("sbi_probe_extension[0x4442434E]: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("probe_extension[0x4442434E]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // HART Get Status
   // Call sbi_hart_get_status: EID 0x48534D "HSM", FID 2
@@ -391,15 +391,15 @@ int test_opensbi(void)
   // Call sbi_system_reset: EID 0x53525354 "SRST", FID 0
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#101-function-system-reset-fid-0
   // sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_SHUTDOWN, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
-  // _info("sbi_system_reset[shutdown]: value=0x%x, error=%d\n", sret.value, sret.error);
+  // _info("system_reset[shutdown]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // System Reset: Cold Reboot
   // sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_COLD_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
-  // _info("sbi_system_reset[cold_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
+  // _info("system_reset[cold_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // System Reset: Warm Reboot
   sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_WARM_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
-  _info("sbi_system_reset[warm_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
+  _info("system_reset[warm_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   return OK;
 }
@@ -443,13 +443,13 @@ clk u5_dw_i2c_clk_apb already disabled
 BC123test_opensbi: debug_console_write: value=0x0, error=-2
 test_opensbi: debug_console_write_byte: value=0x0, error=-2
 test_opensbi: get_spec_version: value=0x1000000, error=0
-test_opensbi: sbi_get_impl_id: value=0x1, error=0
-test_opensbi: sbi_get_impl_version: value=0x10002, error=0
-test_opensbi: sbi_get_mvendorid: value=0x489, error=0
-test_opensbi: sbi_get_marchid: value=0x7, error=0
-test_opensbi: sbi_get_mimpid: value=0x4210427, error=0
-test_opensbi: sbi_probe_extension[0x10]: value=0x1, error=0
-test_opensbi: sbi_probe_extension[0x4442434E]: value=0x0, error=0
+test_opensbi: get_impl_id: value=0x1, error=0
+test_opensbi: get_impl_version: value=0x10002, error=0
+test_opensbi: get_mvendorid: value=0x489, error=0
+test_opensbi: get_marchid: value=0x7, error=0
+test_opensbi: get_mimpid: value=0x4210427, error=0
+test_opensbi: probe_extension[0x10]: value=0x1, error=0
+test_opensbi: probe_extension[0x4442434E]: value=0x0, error=0
 test_opensbi: hart_get_status[0]: value=0x1, error=0
 test_opensbi: hart_get_status[1]: value=0x0, error=0
 test_opensbi: hart_get_status[2]: value=0x1, error=0
@@ -457,7 +457,7 @@ test_opensbi: hart_get_status[3]: value=0x1, error=0
 test_opensbi: hart_get_status[4]: value=0x1, error=0
 test_opensbi: hart_get_status[5]: value=0x0, error=-3
 test_opensbi: set_timer: value=0x0, error=0
-test_opensbi: sbi_system_reset[warm_reboot]: value=0x0, error=-2
+test_opensbi: system_reset[warm_reboot]: value=0x0, error=-2
 
 NuttShell (NSH) NuttX-12.0.3
 nsh> 
