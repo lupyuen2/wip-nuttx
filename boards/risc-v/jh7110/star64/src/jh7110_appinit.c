@@ -319,25 +319,38 @@ int test_opensbi(void)
   // DEBUGASSERT(sret.error == SBI_SUCCESS);
   // DEBUGASSERT(sret.value == strlen(str));
 
+  // Get SBI Spec Version
   // Call sbi_get_spec_version: EID 0x10, FID 0
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#41-function-get-sbi-specification-version-fid-0
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_SPEC_VERSION, 0, 0, 0, 0, 0, 0);
   _info("get_spec_version: value=0x%x, error=%d\n", sret.value, sret.error);
 
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#42-function-get-sbi-implementation-id-fid-1
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_IMP_ID, 0, 0, 0, 0, 0, 0);
   _info("sbi_get_impl_id: value=0x%x, error=%d\n", sret.value, sret.error);
 
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#43-function-get-sbi-implementation-version-fid-2
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_IMP_VERSION, 0, 0, 0, 0, 0, 0);
   _info("sbi_get_impl_version: value=0x%x, error=%d\n", sret.value, sret.error);
 
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#45-function-get-machine-vendor-id-fid-4
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MVENDORID, 0, 0, 0, 0, 0, 0);
   _info("sbi_get_mvendorid: value=0x%x, error=%d\n", sret.value, sret.error);
 
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#46-function-get-machine-architecture-id-fid-5
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MARCHID, 0, 0, 0, 0, 0, 0);
   _info("sbi_get_marchid: value=0x%x, error=%d\n", sret.value, sret.error);
 
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#47-function-get-machine-implementation-id-fid-6
   sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_MIMPID, 0, 0, 0, 0, 0, 0);
   _info("sbi_get_mimpid: value=0x%x, error=%d\n", sret.value, sret.error);
+
+  // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#44-function-probe-sbi-extension-fid-3
+  sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_PROBE_EXT, SBI_EXT_BASE, 0, 0, 0, 0, 0);
+  _info("sbi_probe_extension[0x10]: value=0x%x, error=%d\n", sret.value, sret.error);
+
+  sret = sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_PROBE_EXT, SBI_EXT_DBCN, 0, 0, 0, 0, 0);
+  _info("sbi_probe_extension[0x4442434E]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // Call sbi_hart_get_status: EID 0x48534D "HSM", FID 2
   // https://github.com/riscv-non-isa/riscv-sbi-doc/blob/v1.0.0/riscv-sbi.adoc#93-function-hart-get-status-fid-2
@@ -398,6 +411,8 @@ test_opensbi: sbi_get_impl_version: value=0x10002, error=0
 test_opensbi: sbi_get_mvendorid: value=0x489, error=0
 test_opensbi: sbi_get_marchid: value=0x7, error=0
 test_opensbi: sbi_get_mimpid: value=0x4210427, error=0
+test_opensbi: sbi_probe_extension[0x10]: value=0x1, error=0
+test_opensbi: sbi_probe_extension[0x4442434E]: value=0x0, error=0
 test_opensbi: hart_get_status[0]: value=0x1, error=0
 test_opensbi: hart_get_status[1]: value=0x0, error=0
 test_opensbi: hart_get_status[2]: value=0x1, error=0
