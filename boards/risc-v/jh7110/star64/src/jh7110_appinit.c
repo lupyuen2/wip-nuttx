@@ -325,7 +325,7 @@ int test_opensbi(void)
   sret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE_BYTE, '9', 0, 0, 0, 0, 0);
   _info("debug_console_write_byte: value=0x%x, error=%d\n", sret.value, sret.error);
   // DEBUGASSERT(sret.error == SBI_SUCCESS);
-  // DEBUGASSERT(sret.value == strlen(str));
+  // DEBUGASSERT(sret.value == 0);
 
   // Get SBI Spec Version
   // Call sbi_get_spec_version: EID 0x10, FID 0
