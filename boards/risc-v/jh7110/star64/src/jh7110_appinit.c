@@ -398,8 +398,8 @@ int test_opensbi(void)
   // _info("system_reset[cold_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   // System Reset: Warm Reboot
-  sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_WARM_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
-  _info("system_reset[warm_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
+  // sret = sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, SBI_SRST_RESET_TYPE_WARM_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
+  // _info("system_reset[warm_reboot]: value=0x%x, error=%d\n", sret.value, sret.error);
 
   return OK;
 }
