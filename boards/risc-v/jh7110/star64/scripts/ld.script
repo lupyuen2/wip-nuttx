@@ -23,7 +23,7 @@ MEMORY
     kflash (rx) : ORIGIN = 0x50200000, LENGTH = 2048K   /* w/ cache */
     ksram (rwx) : ORIGIN = 0x50400000, LENGTH = 2048K   /* w/ cache */
     pgram (rwx) : ORIGIN = 0x50600000, LENGTH = 4096K   /* w/ cache */
-    ramdisk (rwx) : ORIGIN = 0x50A00000, LENGTH = 6M   /* w/ cache */
+    ramdisk (rwx) : ORIGIN = 0x50A00000, LENGTH = 16M   /* w/ cache */
 }
 
 OUTPUT_ARCH("riscv")
