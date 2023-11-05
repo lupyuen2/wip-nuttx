@@ -47,7 +47,7 @@
 /* Map the whole I/O memory with vaddr = paddr mappings */
 
 #define MMU_IO_BASE     (0x00000000)
-#define MMU_IO_SIZE     (0x40000000)
+#define MMU_IO_SIZE     (0x50000000)
 
 /* Physical and virtual addresses to page tables (vaddr = paddr mapping) */
 
