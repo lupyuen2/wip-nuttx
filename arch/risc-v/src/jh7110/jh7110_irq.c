@@ -45,12 +45,15 @@
 
 void up_irqinitialize(void)
 {
+  _info("a\n");////
   /* Disable S-Mode interrupts */
 
+  _info("b\n");////
   up_irq_save();
 
   /* Disable all global interrupts */
 
+  _info("c\n");////
   putreg32(0x0, JH7110_PLIC_ENABLE1);
   putreg32(0x0, JH7110_PLIC_ENABLE2);
 
@@ -63,6 +66,7 @@ void up_irqinitialize(void)
 
   /* Set priority for all global interrupts to 1 (lowest) */
 
+  _info("d\n");////
   int id;
 
   for (id = 1; id <= NR_IRQS; id++)
@@ -72,10 +76,12 @@ void up_irqinitialize(void)
 
   /* Set irq threshold to 0 (permits all global interrupts) */
 
+  _info("e\n");////
   putreg32(0, JH7110_PLIC_THRESHOLD);
 
   /* Attach the common interrupt handler */
 
+  _info("f\n");////
   riscv_exception_attach();
 
 #ifdef CONFIG_SMP
@@ -90,6 +96,7 @@ void up_irqinitialize(void)
 
   /* And finally, enable interrupts */
 
+  _info("g\n");////
   up_irq_enable();
 #endif
 }
