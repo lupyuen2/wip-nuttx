@@ -146,6 +146,7 @@ void up_disable_irq(int irq)
 
 void up_enable_irq(int irq)
 {
+  _info("irq=%d\n", irq); ////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
