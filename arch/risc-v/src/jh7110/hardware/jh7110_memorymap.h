@@ -27,6 +27,6 @@
 
 /* Register Base Address ****************************************************/
 
-#define JH7110_PLIC_BASE    0x0c000000
+#define JH7110_PLIC_BASE    0xe0000000
 
 #endif /* __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_MEMORYMAP_H */
