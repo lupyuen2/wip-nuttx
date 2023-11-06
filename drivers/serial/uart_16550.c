@@ -918,7 +918,7 @@ static void u16550_shutdown(struct uart_dev_s *dev)
 
 static int u16550_attach(struct uart_dev_s *dev)
 {
-  FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
+  //// TODO: FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   int ret;
 
 #ifdef CONFIG_CLK
@@ -934,7 +934,8 @@ static int u16550_attach(struct uart_dev_s *dev)
 
   /* Attach and enable the IRQ */
 
-  ret = irq_attach(priv->irq, u16550_interrupt, dev);
+  ret = 0;//// TODO
+  //// TODO: ret = irq_attach(priv->irq, u16550_interrupt, dev);
 #ifndef CONFIG_ARCH_NOINTC
   if (ret == OK)
     {
@@ -942,7 +943,7 @@ static int u16550_attach(struct uart_dev_s *dev)
        * in the UART
        */
 
-      up_enable_irq(priv->irq);
+      //// TODO: up_enable_irq(priv->irq);
 
 #ifdef HAVE_16550_UART_DMA
       if (priv->chanrx)
