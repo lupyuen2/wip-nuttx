@@ -37,14 +37,14 @@
 
 #include <arch/board/board.h>
 
-#include "hardware/bl602_hbn.h"
-#include "hardware/bl602_uart.h"
+////#include "hardware/bl602_hbn.h"
+////#include "hardware/bl602_uart.h"
 
 #include "bl602_lowputc.h"
-#include "bl602_gpio.h"
-#include "bl602_hbn.h"
+////#include "bl602_gpio.h"
+////#include "bl602_hbn.h"
 #include "riscv_internal.h"
-#include "bl602_config.h"
+////#include "bl602_config.h"
 #include "chip.h"
 
 /****************************************************************************
