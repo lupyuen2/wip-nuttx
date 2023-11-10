@@ -38,13 +38,13 @@
 #include <nuttx/fs/ioctl.h>
 #include <nuttx/serial/tioctl.h>
 
-#include "bl602_lowputc.h"
-#include "bl602_gpio.h"
+////#include "bl602_lowputc.h"
+////#include "bl602_gpio.h"
 
-#include "hardware/bl602_uart.h"
-#include "hardware/bl602_glb.h"
+////#include "hardware/bl602_uart.h"
+////#include "hardware/bl602_glb.h"
 #include "riscv_internal.h"
-#include "bl602_config.h"
+////#include "bl602_config.h"
 #include "chip.h"
 
 /****************************************************************************

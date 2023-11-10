@@ -28,4 +28,4 @@ HEAD_ASRC = jh7110_head.S
 CHIP_CSRCS  = jh7110_start.c jh7110_irq_dispatch.c jh7110_irq.c
 CHIP_CSRCS += jh7110_timerisr.c jh7110_allocateheap.c
 CHIP_CSRCS += jh7110_mm_init.c jh7110_pgalloc.c
-CHIP_CSRCS += bl602_lowputc.c bl602_serial.c
+CHIP_CSRCS += bl602_serial.c
