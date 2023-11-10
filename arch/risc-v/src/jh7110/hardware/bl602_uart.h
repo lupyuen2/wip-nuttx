@@ -37,7 +37,7 @@
 /* UART0 and 1 are the same so create this helper for register offsets */
 
 ////#define BL602_UART_BASE(n)    (BL602_UART0_BASE + (n * (BL602_UART1_BASE - BL602_UART0_BASE)))
-#define BL602_UART_BASE(n) BL602_UART0_BASE ////
+#define BL602_UART_BASE(n) (BL602_UART0_BASE + n - n) ////
 
 /* Register offsets *********************************************************/
 
