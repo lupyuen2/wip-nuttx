@@ -901,3 +901,5 @@ int up_putc(int ch)
   return ch;
 }
 #endif
+
+void bl602_uart_configure(const struct uart_config_s *config) {} ////TODO
