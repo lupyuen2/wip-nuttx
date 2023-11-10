@@ -477,6 +477,7 @@ static FAR void *local_memmove(FAR void *dest, FAR const void *src, size_t count
         {
           d -= 1;
           s -= 1;
+          ////TODO: Very strange. This needs to be volatile or C Compiler will replace this by memcpy.
           volatile char c = *s;
           *d = c;
         }
