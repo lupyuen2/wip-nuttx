@@ -35,6 +35,7 @@
 #include "riscv_internal.h"
 #include "chip.h"
 #include "jh7110_mm_init.h"
+#include "jh7110_memorymap.h"
 
 ////TODO
 static void jh7110_copy_ramdisk(void);
@@ -196,10 +197,10 @@ static void jh7110_copy_ramdisk(void)
   extern uint8_t _edata[];
   extern uint8_t _sbss[];
   extern uint8_t _ebss[];
-  _info("_edata=%p, _sbss=%p, _ebss=%p\n", (void *)_edata, (void *)_sbss, (void *)_ebss);
+  _info("_edata=%p, _sbss=%p, _ebss=%p, JH7110_IDLESTACK_TOP=%p\n", (void *)_edata, (void *)_sbss, (void *)_ebss, JH7110_IDLESTACK_TOP);
   const char *header = "-rom1fs-";
   uint8_t *ramdisk_addr = NULL;
-  for (void *addr = _edata; addr < (void *)_ebss - strlen(header); addr++)
+  for (uint8_t *addr = _edata; addr < (uint8_t *)JH7110_IDLESTACK_TOP + (65 * 1024); addr++)
     {
       if (memcmp(addr, header, strlen(header)) == 0)
         {
@@ -208,7 +209,10 @@ static void jh7110_copy_ramdisk(void)
         }
     }
   _info("ramdisk_addr=%p\n", ramdisk_addr);
+  if (ramdisk_addr == NULL) { _info("Missing RAM Disk"); }
   DEBUGASSERT(ramdisk_addr != NULL);  // Missing RAM Disk
+  if (ramdisk_addr <= (uint8_t *)JH7110_IDLESTACK_TOP) { _info("RAM Disk must be after Idle Stack"); }
+  DEBUGASSERT(ramdisk_addr > (uint8_t *)JH7110_IDLESTACK_TOP);  // RAM Disk must be after Idle Stack
   // ramdisk_addr = 0x50200000 + 0x200288 = 0x50400288
   // _ebss = 50407000
   // __kflash_start = 50200000
