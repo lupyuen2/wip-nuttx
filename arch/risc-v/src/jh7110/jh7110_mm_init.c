@@ -40,10 +40,6 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Ramdisk Load Address from U-Boot */
-
-#define RAMDISK_ADDR_R  (0x46100000)
-
 /* Map the whole I/O memory with vaddr = paddr mappings */
 
 #define MMU_IO_BASE     (0x00000000)
@@ -268,11 +264,6 @@ void jh7110_kernel_mappings(void)
 
 void jh7110_mm_init(void)
 {
-  /* Copy Ramdisk from U-Boot Ramdisk Load Address */
-
-  memcpy((void *)__ramdisk_start, (void *)RAMDISK_ADDR_R,
-         (size_t)__ramdisk_size);
-
   /* Setup the kernel mappings */
 
   jh7110_kernel_mappings();

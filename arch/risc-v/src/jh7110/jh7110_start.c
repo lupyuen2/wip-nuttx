@@ -26,11 +26,18 @@
 #include <nuttx/init.h>
 #include <nuttx/arch.h>
 #include <nuttx/serial/uart_16550.h>
+
+#include <debug.h>
+
 #include <arch/board/board.h>
+#include <arch/board/board_memorymap.h>
 
 #include "riscv_internal.h"
 #include "chip.h"
 #include "jh7110_mm_init.h"
+
+////TODO
+static void jh7110_copy_ramdisk(void);
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -137,6 +144,12 @@ void jh7110_start(int mhartid)
 
   if (0 == mhartid)
     {
+      /* Copy the RAM Disk */
+
+      jh7110_copy_ramdisk();
+
+      /* Clear the BSS */
+
       jh7110_clear_bss();
 
       /* Initialize the per CPU areas */
@@ -165,4 +178,54 @@ void riscv_earlyserialinit(void)
 void riscv_serialinit(void)
 {
   bl602_serialinit();
+}
+
+////TODO
+/* Ramdisk Load Address from U-Boot */
+
+#define RAMDISK_ADDR_R  (0x46100000)
+
+static void jh7110_copy_ramdisk(void)
+{
+  /* Copy Ramdisk from U-Boot Ramdisk Load Address */
+  // memcpy((void *)__ramdisk_start, (void *)RAMDISK_ADDR_R,
+  //        (size_t)__ramdisk_size);
+
+  // From https://docs.kernel.org/filesystems/romfs.html
+  // After _edata, search for "-rom1fs-". This is the RAM Disk Address.
+  extern uint8_t _edata[];
+  extern uint8_t _sbss[];
+  extern uint8_t _ebss[];
+  _info("_edata=%p, _sbss=%p, _ebss=%p\n", (void *)_edata, (void *)_sbss, (void *)_ebss);
+  const char *header = "-rom1fs-";
+  uint8_t *ramdisk_addr = NULL;
+  for (void *addr = _edata; addr < (void *)_ebss - strlen(header); addr++)
+    {
+      if (memcmp(addr, header, strlen(header)) == 0)
+        {
+          ramdisk_addr = addr;
+          break;
+        }
+    }
+  _info("ramdisk_addr=%p\n", ramdisk_addr);
+  DEBUGASSERT(ramdisk_addr != NULL);  // Missing RAM Disk
+  // ramdisk_addr = 0x50200000 + 0x200288 = 0x50400288
+  // _ebss = 50407000
+  // __kflash_start = 50200000
+
+  // Read the Filesystem Size from the next 4 bytes, in Big Endian
+  // Add 0x1F0 to Filesystem Size
+  const uint32_t size =
+    (ramdisk_addr[8] << 24) + 
+    (ramdisk_addr[9] << 16) + 
+    (ramdisk_addr[10] << 8) + 
+    ramdisk_addr[11] + 
+    0x1F0;
+  _info("size=%d\n", size);
+
+  // Filesystem Size must be less than RAM Disk Memory Region
+  DEBUGASSERT(size <= (size_t)__ramdisk_size);
+
+  // Copy the Filesystem Size to RAM Disk Start
+  memcpy((void *)__ramdisk_start, ramdisk_addr, size);
 }
