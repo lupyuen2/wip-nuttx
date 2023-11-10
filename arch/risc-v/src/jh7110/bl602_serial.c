@@ -47,6 +47,9 @@
 ////#include "bl602_config.h"
 #include "chip.h"
 
+////TODO
+#define HAVE_SERIAL_CONSOLE 1
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -885,6 +888,7 @@ void bl602_serialinit(void)
 #ifdef HAVE_SERIAL_CONSOLE
 int up_putc(int ch)
 {
+  struct bl602_uart_s *priv = (struct bl602_uart_s *)CONSOLE_DEV.priv;
   irqstate_t flags = enter_critical_section();
 
   /* Check for LF */
@@ -893,13 +897,14 @@ int up_putc(int ch)
     {
       /* Add CR */
 
-      riscv_lowputc('\r');
+      bl602_send(priv, '\r');
     }
 
-  riscv_lowputc(ch);
+  bl602_send(priv, ch);
   leave_critical_section(flags);
   return ch;
 }
 #endif
 
-void bl602_uart_configure(const struct uart_config_s *config) {} ////TODO
+////TODO
+void bl602_uart_configure(const struct uart_config_s *config) {}
