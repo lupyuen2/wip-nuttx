@@ -79,8 +79,6 @@
  * provide some minimal implementation of up_putc.
  */
 
-#ifdef USE_SERIALDRIVER
-
 /* Which UART with be tty0/console and which tty1?  The console will always
  * be ttyS0.  If there is no console then will use the lowest numbered UART.
  */
@@ -113,8 +111,6 @@
  * stub implementations of riscv_earlyserialinit(), riscv_serialinit(), and
  * up_putc().
  */
-
-#ifdef HAVE_UART_DEVICE
 
 /****************************************************************************
  * Private Types
@@ -808,10 +804,8 @@ static bool bl602_txempty(struct uart_dev_s *dev)
  * Public Functions
  ****************************************************************************/
 
-#ifdef USE_EARLYSERIALINIT
-
 /****************************************************************************
- * Name: riscv_earlyserialinit
+ * Name: bl602_earlyserialinit
  *
  * Description:
  *   Performs the low level UART initialization early in debug so that the
@@ -822,7 +816,7 @@ static bool bl602_txempty(struct uart_dev_s *dev)
  *
  ****************************************************************************/
 
-void riscv_earlyserialinit(void)
+void bl602_earlyserialinit(void)
 {
 #ifdef HAVE_SERIAL_CONSOLE
   /* Configuration whichever one is the console */
@@ -831,10 +825,9 @@ void riscv_earlyserialinit(void)
   bl602_setup(&CONSOLE_DEV);
 #endif
 }
-#endif
 
 /****************************************************************************
- * Name: riscv_serialinit
+ * Name: bl602_serialinit
  *
  * Description:
  *   Register serial console and serial ports.  This assumes
@@ -842,7 +835,7 @@ void riscv_earlyserialinit(void)
  *
  ****************************************************************************/
 
-void riscv_serialinit(void)
+void bl602_serialinit(void)
 {
   int  i;
   char devname[16];
@@ -885,9 +878,9 @@ void riscv_serialinit(void)
  *
  ****************************************************************************/
 
+#ifdef HAVE_SERIAL_CONSOLE
 int up_putc(int ch)
 {
-#ifdef HAVE_SERIAL_CONSOLE
   irqstate_t flags = enter_critical_section();
 
   /* Check for LF */
@@ -901,61 +894,6 @@ int up_putc(int ch)
 
   riscv_lowputc(ch);
   leave_critical_section(flags);
+  return ch;
+}
 #endif
-  return ch;
-}
-
-/****************************************************************************
- * Name: riscv_earlyserialinit, riscv_serialinit, and up_putc
- *
- * Description:
- *   stubs that may be needed.  These stubs would be used if all UARTs are
- *   disabled.  In that case, the logic in common/up_initialize() is not
- *   smart enough to know that there are not UARTs and will still expect
- *   these interfaces to be provided.
- *
- ****************************************************************************/
-
-#else /* HAVE_UART_DEVICE */
-void riscv_earlyserialinit(void)
-{
-}
-
-void riscv_serialinit(void)
-{
-}
-
-int up_putc(int ch)
-{
-  return ch;
-}
-
-#endif /* HAVE_UART_DEVICE */
-#else  /* USE_SERIALDRIVER */
-
-/****************************************************************************
- * Name: up_putc
- *
- * Description:
- *   Provide priority, low-level access to support OS debug writes
- *
- ****************************************************************************/
-
-int up_putc(int ch)
-{
-#ifdef HAVE_SERIAL_CONSOLE
-  /* Check for LF */
-
-  if (ch == '\n')
-    {
-      /* Add CR */
-
-      riscv_lowputc('\r');
-    }
-
-  riscv_lowputc(ch);
-#endif
-  return ch;
-}
-
-#endif /* USE_SERIALDRIVER */
