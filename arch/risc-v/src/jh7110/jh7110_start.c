@@ -156,13 +156,3 @@ void jh7110_start(int mhartid)
 
   jh7110_start_s(mhartid);
 }
-
-void riscv_earlyserialinit(void)
-{
-  u16550_earlyserialinit();
-}
-
-void riscv_serialinit(void)
-{
-  u16550_serialinit();
-}
