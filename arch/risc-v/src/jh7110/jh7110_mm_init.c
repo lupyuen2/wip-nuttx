@@ -43,7 +43,7 @@
 /* Map the whole I/O memory with vaddr = paddr mappings */
 
 #define MMU_IO_BASE     (0x00000000)
-#define MMU_IO_SIZE     (0xf0000000)
+#define MMU_IO_SIZE     (0x50000000)
 
 /* Physical and virtual addresses to page tables (vaddr = paddr mapping) */
 
@@ -232,6 +232,10 @@ void jh7110_kernel_mappings(void)
   binfo("map I/O regions\n");
   mmu_ln_map_region(1, PGT_L1_VBASE, MMU_IO_BASE, MMU_IO_BASE,
                     MMU_IO_SIZE, MMU_IO_FLAGS);
+
+  // Map PLIC
+  mmu_ln_map_region(1, PGT_L1_VBASE, 0xE0000000, 0xE0000000,
+                    0x10000000, MMU_IO_FLAGS);
 
   /* Map the kernel text and data for L2/L3 */
 
