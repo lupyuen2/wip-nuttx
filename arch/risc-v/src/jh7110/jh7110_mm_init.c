@@ -230,29 +230,35 @@ void jh7110_kernel_mappings(void)
   /* Map I/O region, use enough large page tables for the IO region. */
 
   binfo("map I/O regions\n");
+  _info("map I/O regions\n");////
   mmu_ln_map_region(1, PGT_L1_VBASE, MMU_IO_BASE, MMU_IO_BASE,
                     MMU_IO_SIZE, MMU_IO_FLAGS);
 
   // Map PLIC
+  _info("map PLIC\n");////
   mmu_ln_map_region(1, PGT_L1_VBASE, 0xE0000000, 0xE0000000,
                     0x10000000, MMU_IO_FLAGS);
 
   /* Map the kernel text and data for L2/L3 */
 
   binfo("map kernel text\n");
+  _info("map kernel text\n");////
   map_region(KFLASH_START, KFLASH_START, KFLASH_SIZE, MMU_KTEXT_FLAGS);
 
   binfo("map kernel data\n");
+  _info("map kernel data\n");////
   map_region(KSRAM_START, KSRAM_START, KSRAM_SIZE, MMU_KDATA_FLAGS);
 
   /* Connect the L1 and L2 page tables for the kernel text and data */
 
   binfo("connect the L1 and L2 page tables\n");
+  _info("connect the L1 and L2 page tables\n");////
   mmu_ln_setentry(1, PGT_L1_VBASE, PGT_L2_PBASE, KFLASH_START, PTE_G);
 
   /* Map the page pool */
 
   binfo("map the page pool\n");
+  _info("map the page pool\n");////
   mmu_ln_map_region(2, PGT_L2_VBASE, PGPOOL_START, PGPOOL_START, PGPOOL_SIZE,
                     MMU_KDATA_FLAGS);
 }
