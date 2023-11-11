@@ -23,6 +23,7 @@
  ****************************************************************************/
 
 #include <assert.h>
+#include <debug.h>
 
 #include <nuttx/config.h>
 #include <nuttx/arch.h>
@@ -62,6 +63,7 @@ static const size_t g_pgt_sizes[] =
 void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
                      uintptr_t vaddr, uint32_t mmuflags)
 {
+  _info("ptlevel=%d, lnvaddr=%p, paddr=%p, vaddr=%p, mmuflags=0x%x\n", ptlevel, lnvaddr, paddr, vaddr, mmuflags);////
   uintptr_t *lntable = (uintptr_t *)lnvaddr;
   uint32_t   index;
 
@@ -138,6 +140,7 @@ void mmu_ln_restore(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t vaddr,
 void mmu_ln_map_region(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
                        uintptr_t vaddr, size_t size, uint32_t mmuflags)
 {
+  _info("ptlevel=%d, lnvaddr=%p, paddr=%p, vaddr=%p, size=0x%x, mmuflags=0x%x\n", ptlevel, lnvaddr, paddr, vaddr, size, mmuflags);////
   uintptr_t end_paddr = paddr + size;
   size_t    page_size = g_pgt_sizes[ptlevel - 1];
 

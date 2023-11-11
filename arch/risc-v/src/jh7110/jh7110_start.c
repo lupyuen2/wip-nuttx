@@ -232,16 +232,16 @@ static void jh7110_copy_ramdisk(void)
   // Filesystem Size must be less than RAM Disk Memory Region
   DEBUGASSERT(size <= (size_t)__ramdisk_size);
 
-  _info("Before Copy: ramdisk_addr=%p\n", ramdisk_addr);////
-  verify_image(ramdisk_addr);////
+  // _info("Before Copy: ramdisk_addr=%p\n", ramdisk_addr);////
+  // verify_image(ramdisk_addr);////
 
   // Copy the Filesystem Size to RAM Disk Start
   // Warning: __ramdisk_start overlaps with ramdisk_addr + size
   // memmove is aliased to memcpy, so we implement memmove ourselves
   local_memmove((void *)__ramdisk_start, ramdisk_addr, size);
 
-  _info("After Copy: __ramdisk_start=%p\n", __ramdisk_start);////
-  verify_image(__ramdisk_start);////
+  // _info("After Copy: __ramdisk_start=%p\n", __ramdisk_start);////
+  // verify_image(__ramdisk_start);////
 }
 
 // grep --binary-files=text -b -o A initrd >/tmp/a
