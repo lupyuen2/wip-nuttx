@@ -235,11 +235,11 @@ void jh7110_kernel_mappings(void)
                     MMU_IO_SIZE, MMU_IO_FLAGS);
 
   // Map PLIC
-  _info("map PLIC\n");////
-  mmu_ln_map_region(1, PGT_L1_VBASE, 0xC0000000, 0xC0000000,
-                    0x40000000, MMU_IO_FLAGS);
+  // _info("map PLIC as L1\n");////
   // mmu_ln_map_region(1, PGT_L1_VBASE, 0xE0000000, 0xE0000000,
-  //                   0x10000000, MMU_IO_FLAGS);
+  //                   0x10000000, MMU_IO_FLAGS); // Fails because misaligned
+  // mmu_ln_map_region(1, PGT_L1_VBASE, 0xC0000000, 0xC0000000,
+  //                   0x40000000, MMU_IO_FLAGS); // But 0xC0000000 is used by apps
 
   /* Map the kernel text and data for L2/L3 */
 
@@ -250,6 +250,10 @@ void jh7110_kernel_mappings(void)
   binfo("map kernel data\n");
   _info("map kernel data\n");////
   map_region(KSRAM_START, KSRAM_START, KSRAM_SIZE, MMU_KDATA_FLAGS);
+
+  // Map PLIC
+  _info("map PLIC as L2\n");////
+  map_region(0xE0000000, 0xE0000000, 0x10000000, MMU_IO_FLAGS);////
 
   /* Connect the L1 and L2 page tables for the kernel text and data */
 
