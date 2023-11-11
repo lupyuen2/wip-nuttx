@@ -56,8 +56,8 @@ void up_irqinitialize(void)
 
   /* Disable all global interrupts */
 
-  ////putreg32(0x0, JH7110_PLIC_ENABLE1);
-  ////putreg32(0x0, JH7110_PLIC_ENABLE2);
+  putreg32(0x0, JH7110_PLIC_ENABLE1);
+  putreg32(0x0, JH7110_PLIC_ENABLE2);
 
   /* Colorize the interrupt stack for debug purposes */
 
@@ -72,17 +72,17 @@ void up_irqinitialize(void)
 
   for (id = 1; id <= NR_IRQS; id++)
     {
-      ////putreg32(1, (uintptr_t)(JH7110_PLIC_PRIORITY + 4 * id));
+      putreg32(1, (uintptr_t)(JH7110_PLIC_PRIORITY + 4 * id));
     }
 
   /* Set irq threshold to 0 (permits all global interrupts) */
 
-  ////putreg32(0, JH7110_PLIC_THRESHOLD);
+  putreg32(0, JH7110_PLIC_THRESHOLD);
 
 #ifdef CONFIG_SMP
   /* Clear RISCV_IPI for CPU0 */
 
-  ////putreg32(0, RISCV_IPI);
+  putreg32(0, RISCV_IPI);
 
   up_enable_irq(RISCV_IRQ_SOFT);
 #endif
@@ -128,8 +128,8 @@ void up_disable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63)
         {
-          ////modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
-                      ////1 << (extirq % 32), 0);
+          modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
+                      1 << (extirq % 32), 0);
         }
       else
         {
@@ -171,8 +171,8 @@ void up_enable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63)
         {
-          ////modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
-                      ////0, 1 << (extirq % 32));
+          modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
+                      0, 1 << (extirq % 32));
         }
       else
         {
