@@ -236,8 +236,10 @@ void jh7110_kernel_mappings(void)
 
   // Map PLIC
   _info("map PLIC\n");////
-  mmu_ln_map_region(1, PGT_L1_VBASE, 0xE0000000, 0xE0000000,
-                    0x10000000, MMU_IO_FLAGS);
+  mmu_ln_map_region(1, PGT_L1_VBASE, 0xC0000000, 0xC0000000,
+                    0x40000000, MMU_IO_FLAGS);
+  // mmu_ln_map_region(1, PGT_L1_VBASE, 0xE0000000, 0xE0000000,
+  //                   0x10000000, MMU_IO_FLAGS);
 
   /* Map the kernel text and data for L2/L3 */
 

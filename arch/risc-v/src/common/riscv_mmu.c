@@ -63,7 +63,7 @@ static const size_t g_pgt_sizes[] =
 void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
                      uintptr_t vaddr, uint32_t mmuflags)
 {
-  _info("ptlevel=%d, lnvaddr=%p, paddr=%p, vaddr=%p, mmuflags=0x%x\n", ptlevel, lnvaddr, paddr, vaddr, mmuflags);////
+  if (ptlevel != 3) { _info("ptlevel=%d, lnvaddr=%p, paddr=%p, vaddr=%p, mmuflags=0x%x\n", ptlevel, lnvaddr, paddr, vaddr, mmuflags); }////
   uintptr_t *lntable = (uintptr_t *)lnvaddr;
   uint32_t   index;
 
