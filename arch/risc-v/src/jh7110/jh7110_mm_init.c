@@ -50,13 +50,16 @@
 #define PGT_L1_PBASE    (uintptr_t)&m_l1_pgtable
 #define PGT_L2_PBASE    (uintptr_t)&m_l2_pgtable
 #define PGT_L3_PBASE    (uintptr_t)&m_l3_pgtable
+#define PGT_INT_L2_PBASE (uintptr_t)&m_int_l2_pgtable
 #define PGT_L1_VBASE    PGT_L1_PBASE
 #define PGT_L2_VBASE    PGT_L2_PBASE
 #define PGT_L3_VBASE    PGT_L3_PBASE
+#define PGT_INT_L2_VBASE PGT_INT_L2_PBASE
 
 #define PGT_L1_SIZE     (512)  /* Enough to map 512 GiB */
 #define PGT_L2_SIZE     (512)  /* Enough to map 1 GiB */
 #define PGT_L3_SIZE     (1024) /* Enough to map 4 MiB (2MiB x 2) */
+#define PGT_INT_L2_SIZE (512)  /* Enough to map 1 GiB */
 
 #define SLAB_COUNT      (sizeof(m_l3_pgtable) / RV_MMU_PAGE_SIZE)
 
@@ -86,6 +89,7 @@ typedef struct pgalloc_slab_s pgalloc_slab_t;
 static size_t         m_l1_pgtable[PGT_L1_SIZE] locate_data(".pgtables");
 static size_t         m_l2_pgtable[PGT_L2_SIZE] locate_data(".pgtables");
 static size_t         m_l3_pgtable[PGT_L3_SIZE] locate_data(".pgtables");
+static size_t         m_int_l2_pgtable[PGT_INT_L2_SIZE] locate_data(".pgtables");
 
 /* Kernel mappings (L1 base) */
 
@@ -234,12 +238,23 @@ void jh7110_kernel_mappings(void)
   mmu_ln_map_region(1, PGT_L1_VBASE, MMU_IO_BASE, MMU_IO_BASE,
                     MMU_IO_SIZE, MMU_IO_FLAGS);
 
-  // Map PLIC
-  _info("map PLIC as L1\n");////
-  mmu_ln_map_region(1, PGT_L1_VBASE, 0xC0000000, 0xC0000000,
-                    0x40000000, MMU_IO_FLAGS);
+  // Map PLIC as L1
+  // _info("map PLIC as L1\n");////
+  // This will waste a whole chunk of L1 Addresses (Size 0x4000 0000) just for PLIC:
+  // mmu_ln_map_region(1, PGT_L1_VBASE, 0xC0000000, 0xC0000000,
+  //                   0x40000000, MMU_IO_FLAGS);
+  // This fails silently because it's misaligned:
   // mmu_ln_map_region(1, PGT_L1_VBASE, 0xE0000000, 0xE0000000,
-  //                   0x10000000, MMU_IO_FLAGS); // Fails silently because misaligned
+  //                   0x10000000, MMU_IO_FLAGS);
+
+  // Map PLIC as Interrupt L2
+  _info("map PLIC as Interrupt L2\n");////
+  mmu_ln_map_region(2, PGT_INT_L2_PBASE, 0xE0000000, 0xE0000000, 0x10000000,
+                    MMU_IO_FLAGS);
+
+  // Connect the L1 and Interrupt L2 page tables for PLIC
+  _info("connect the L1 and Interrupt L2 page tables for PLIC\n");////
+  mmu_ln_setentry(1, PGT_L1_VBASE, PGT_INT_L2_PBASE, 0xE0000000, PTE_G);
 
   /* Map the kernel text and data for L2/L3 */
 
@@ -250,10 +265,6 @@ void jh7110_kernel_mappings(void)
   binfo("map kernel data\n");
   _info("map kernel data\n");////
   map_region(KSRAM_START, KSRAM_START, KSRAM_SIZE, MMU_KDATA_FLAGS);
-
-  // Map PLIC
-  // _info("map PLIC as L2\n");////
-  // map_region(0xE0000000, 0xE0000000, 0x10000000, MMU_IO_FLAGS);////
 
   /* Connect the L1 and L2 page tables for the kernel text and data */
 
