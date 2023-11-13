@@ -101,6 +101,7 @@ void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
   /* Save it */
 
   lntable[index] = (paddr | mmuflags);
+  // _info("index=%p, paddr=%p, mmuflags=0x%x, pte_addr=%p, pte_val=%p\n", index, paddr << RV_MMU_PTE_PPN_SHIFT, mmuflags, lntable+index, paddr | mmuflags);////
 
   /* Update with memory by flushing the cache(s) */
 
