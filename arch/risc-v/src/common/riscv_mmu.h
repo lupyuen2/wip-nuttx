@@ -171,6 +171,7 @@ static inline uintptr_t mmu_satp_reg(uintptr_t pgbase, uint16_t asid)
   reg  = ((RV_MMU_SATP_MODE << SATP_MODE_SHIFT) & SATP_MODE_MASK);
   reg |= (((uintptr_t)asid << SATP_ASID_SHIFT) & SATP_ASID_MASK);
   reg |= ((SATP_ADDR_TO_PPN(pgbase) << SATP_PPN_SHIFT) & SATP_PPN_MASK);
+  _info("pgbase=%p, asid=0x%x, reg=%p\n", pgbase, asid, reg);////
   return reg;
 }
 
@@ -187,6 +188,7 @@ static inline uintptr_t mmu_satp_reg(uintptr_t pgbase, uint16_t asid)
 
 static inline void mmu_write_satp(uintptr_t reg)
 {
+  _info("reg=%p\n", reg);////
   __asm__ __volatile__
     (
       "csrw satp, %0\n"
