@@ -64,3 +64,4 @@ tools/gdb/__pycache__
 Image
 initrd
 init.S
+hello.S
