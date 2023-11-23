@@ -35,17 +35,17 @@
 
 #define JH7110_PLIC_PRIORITY  (JH7110_PLIC_BASE + 0x000000)
 
-/* Hart 1 S-Mode Interrupt Enable */
+/* Hart 0 S-Mode Interrupt Enable */
 
-#define JH7110_PLIC_ENABLE1   (JH7110_PLIC_BASE + 0x002100)
-#define JH7110_PLIC_ENABLE2   (JH7110_PLIC_BASE + 0x002104)
+#define JH7110_PLIC_ENABLE1   (JH7110_PLIC_BASE + 0x002080)
+#define JH7110_PLIC_ENABLE2   (JH7110_PLIC_BASE + 0x002084)
 
-/* Hart 1 S-Mode Priority Threshold */
+/* Hart 0 S-Mode Priority Threshold */
 
-#define JH7110_PLIC_THRESHOLD (JH7110_PLIC_BASE + 0x202000)
+#define JH7110_PLIC_THRESHOLD (JH7110_PLIC_BASE + 0x201000)
 
-/* Hart 1 S-Mode Claim / Complete */
+/* Hart 0 S-Mode Claim / Complete */
 
-#define JH7110_PLIC_CLAIM     (JH7110_PLIC_BASE + 0x202004)
+#define JH7110_PLIC_CLAIM     (JH7110_PLIC_BASE + 0x201004)
 
 #endif /* __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_PLIC_H */

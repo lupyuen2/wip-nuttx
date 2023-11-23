@@ -167,7 +167,11 @@ static const struct uart_ops_s g_uart_ops =
   .txempty = bl602_txempty,
 };
 
-#define BL602_IRQ_UART0 57 ////TODO
+// UART3 Int = (IRQ_NUM_BASE + 4)
+// IRQ_NUM_BASE = 16
+// RISC-V IRQ = 20
+// NuttX IRQ = 45 (Offset by 25)
+#define BL602_IRQ_UART0 45 ////TODO
 
 /* I/O buffers */
 
@@ -392,17 +396,16 @@ static void bl602_shutdown(struct uart_dev_s *dev)
 
 static int bl602_attach(struct uart_dev_s *dev)
 {
-  return 0;   ////TODO
-  // int                  ret;
-  // struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  int                  ret;
+  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
 
-  // ret = irq_attach(priv->irq, __uart_interrupt, (void *)dev);
-  // if (ret == OK)
-  //   {
-  //     up_enable_irq(priv->irq);
-  //   }
+  ret = irq_attach(priv->irq, __uart_interrupt, (void *)dev);
+  if (ret == OK)
+    {
+      up_enable_irq(priv->irq);
+    }
 
-  // return ret;
+  return ret;
 }
 
 /****************************************************************************
@@ -417,16 +420,15 @@ static int bl602_attach(struct uart_dev_s *dev)
 
 static void bl602_detach(struct uart_dev_s *dev)
 {
-  ////TODO
-  // struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
 
-  // /* Disable interrupts */
+  /* Disable interrupts */
 
-  // up_disable_irq(priv->irq);
+  up_disable_irq(priv->irq);
 
-  // /* Detach from the interrupt */
+  /* Detach from the interrupt */
 
-  // irq_detach(priv->irq);
+  irq_detach(priv->irq);
 }
 
 /****************************************************************************
