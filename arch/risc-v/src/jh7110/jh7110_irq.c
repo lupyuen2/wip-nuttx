@@ -52,7 +52,7 @@ void up_irqinitialize(void)
 
   /* Attach the common interrupt handler */
 
-  riscv_exception_attach();
+  //// TODO: riscv_exception_attach();
 
   /* Disable all global interrupts */
 
@@ -78,6 +78,10 @@ void up_irqinitialize(void)
   /* Set irq threshold to 0 (permits all global interrupts) */
 
   putreg32(0, JH7110_PLIC_THRESHOLD);
+
+  /* Attach the common interrupt handler */
+
+  riscv_exception_attach(); //// TODO: Should move earlier
 
 #ifdef CONFIG_SMP
   /* Clear RISCV_IPI for CPU0 */

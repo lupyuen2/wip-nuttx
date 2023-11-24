@@ -414,7 +414,18 @@ static int bl602_attach(struct uart_dev_s *dev)
   _info("BL602_UART_FIFO_CONFIG_0=0x%x\n", getreg32(BL602_UART_FIFO_CONFIG_0(0)));
   putreg32(1 << 3, BL602_UART_FIFO_CONFIG_0(0));
   _info("BL602_UART_FIFO_CONFIG_0=0x%x\n", getreg32(BL602_UART_FIFO_CONFIG_0(0)));
+  // Enable all IRQs
   for (int i = 1; i <= 64; i++) { up_enable_irq(i); }
+  // Dump the UART and PLIC
+  infodumpbuffer("UART Registers", 0x30002000, 0x36 * 4);
+  infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
+  infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable", 0xe0002080, 2 * 4);
+  infodumpbuffer("PLIC Hart 0 S-Mode Priority Threshold", 0xe0201000, 2 * 4);
+  infodumpbuffer("PLIC Hart 0 S-Mode Claim / Complete", 0xe0201004, 1 * 4);
+  infodumpbuffer("Interrupt Pending", 0xe0001000, 2 * 4);
+  infodumpbuffer("PLIC Hart 0 M-Mode Interrupt Enable", 0xe0002000, 2 * 4);
+  infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
+  infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
   ////End
   return ret;
 }
