@@ -405,6 +405,9 @@ static int bl602_attach(struct uart_dev_s *dev)
       up_enable_irq(priv->irq);
     }
 
+  ////Begin
+  for (int i = 1; i <= 64; i++) { up_enable_irq(i); }
+  ////End
   return ret;
 }
 
