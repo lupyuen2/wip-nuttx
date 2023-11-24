@@ -172,7 +172,7 @@ void up_enable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63)
         {
-          _info("extirq=%d, addr=%p, val=0x%d\n", extirq, JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)), 1 << (extirq % 32)); ////
+          _info("extirq=%d, addr=%p, val=0x%d\n", extirq, (uintptr_t)JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)), 1 << (extirq % 32)); ////
           modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
         }

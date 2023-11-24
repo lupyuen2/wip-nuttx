@@ -406,6 +406,10 @@ static int bl602_attach(struct uart_dev_s *dev)
     }
 
   ////Begin
+  _info("BL602_UART_INT_STS=0x%x\n", getreg32(BL602_UART_INT_STS(0)));
+  _info("BL602_UART_INT_MASK=0x%x\n", getreg32(BL602_UART_INT_MASK(0)));
+  _info("BL602_UART_INT_CLEAR=0x%x\n", getreg32(BL602_UART_INT_CLEAR(0)));
+  _info("BL602_UART_INT_EN=0x%x\n", getreg32(BL602_UART_INT_EN(0)));
   for (int i = 1; i <= 64; i++) { up_enable_irq(i); }
   ////End
   return ret;
