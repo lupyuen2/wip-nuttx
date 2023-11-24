@@ -420,6 +420,7 @@ static int bl602_attach(struct uart_dev_s *dev)
   // Dump the UART and PLIC
   infodumpbuffer("UART Registers", 0x30002000, 0x36 * 4);
   infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
+  infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable", 0xe0002080, 2 * 4);
   infodumpbuffer("PLIC Hart 0 S-Mode Priority Threshold", 0xe0201000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 S-Mode Claim / Complete", 0xe0201004, 1 * 4);
@@ -434,6 +435,7 @@ static int bl602_attach(struct uart_dev_s *dev)
   // }
   putreg32(1, (uintptr_t)0xe0000050); // IRQ 20
   infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
+  infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);
   ////End
   return ret;
 }
