@@ -59,6 +59,13 @@ void up_irqinitialize(void)
   putreg32(0x0, JH7110_PLIC_ENABLE1);
   putreg32(0x0, JH7110_PLIC_ENABLE2);
 
+  ////Begin: From arch/risc-v/src/c906/c906_irq.c
+  /* Clear pendings in PLIC */
+
+  uintptr_t val = getreg32(JH7110_PLIC_CLAIM);
+  putreg32(val, JH7110_PLIC_CLAIM);
+  ////End
+
   /* Colorize the interrupt stack for debug purposes */
 
 #if defined(CONFIG_STACK_COLORATION) && CONFIG_ARCH_INTERRUPTSTACK > 15
