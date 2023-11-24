@@ -91,6 +91,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
       /* Then write PLIC_CLAIM to clear pending in PLIC */
 
       putreg32(irq - RISCV_IRQ_EXT, JH7110_PLIC_CLAIM);
+      infodumpbuffer("After Claim", 0xe0001000, 2 * 4);////
     }
 
   return regs;
