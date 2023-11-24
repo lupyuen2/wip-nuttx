@@ -68,12 +68,13 @@ void up_irqinitialize(void)
 
   /* Set priority for all global interrupts to 1 (lowest) */
 
-  int id;
+  ////TODO
+  // int id;
 
-  for (id = 1; id <= NR_IRQS; id++)
-    {
-      putreg32(1, (uintptr_t)(JH7110_PLIC_PRIORITY + 4 * id));
-    }
+  // for (id = 1; id <= NR_IRQS; id++)
+  //   {
+  //     putreg32(1, (uintptr_t)(JH7110_PLIC_PRIORITY + 4 * id));
+  //   }
 
   /* Set irq threshold to 0 (permits all global interrupts) */
 

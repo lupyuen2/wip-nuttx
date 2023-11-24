@@ -429,10 +429,9 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
-  for (uintptr_t addr=0xe0000004; addr < 0xe0000004 + (0x50 * 4); addr+=4) {
-    putreg32(1, addr);
-  }
-  putreg32(1, (uintptr_t)0xe0000004); // IRQ 1
+  // for (uintptr_t addr=0xe0000004; addr < 0xe0000004 + (0x50 * 4); addr+=4) {
+  //   putreg32(1, addr);
+  // }
   putreg32(1, (uintptr_t)0xe0000050); // IRQ 20
   infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
   ////End

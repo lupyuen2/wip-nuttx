@@ -59,6 +59,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
   if (RISCV_IRQ_EXT == irq)
     {
       uintptr_t val = getreg32(JH7110_PLIC_CLAIM);
+      _info("irq=%d, claim=%p\n", irq, val);////
 
       /* Add the value to nuttx irq which is offset to the mext */
 
