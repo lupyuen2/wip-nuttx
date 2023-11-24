@@ -432,7 +432,8 @@ static int bl602_attach(struct uart_dev_s *dev)
   for (uintptr_t addr=0xe0000004; addr < 0xe0000004 + (0x50 * 4); addr+=4) {
     putreg32(1, addr);
   }
-  putreg32(1, (uintptr_t)0xe0000004);
+  putreg32(1, (uintptr_t)0xe0000004); // IRQ 1
+  putreg32(1, (uintptr_t)0xe0000050); // IRQ 20
   infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
   ////End
   return ret;
