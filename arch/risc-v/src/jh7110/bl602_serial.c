@@ -415,8 +415,8 @@ static int bl602_attach(struct uart_dev_s *dev)
   putreg32(1 << 3, BL602_UART_FIFO_CONFIG_0(0));
   _info("BL602_UART_FIFO_CONFIG_0=0x%x\n", getreg32(BL602_UART_FIFO_CONFIG_0(0)));
   // Enable all IRQs
-  _info("Enable all IRQs\n");
-  for (int i = 1; i <= 64; i++) { up_enable_irq(i); }
+  // _info("Enable all IRQs\n");
+  // for (int i = 1; i <= 64; i++) { up_enable_irq(i); }
   // Dump the UART and PLIC
   infodumpbuffer("UART Registers", 0x30002000, 0x36 * 4);
   infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
