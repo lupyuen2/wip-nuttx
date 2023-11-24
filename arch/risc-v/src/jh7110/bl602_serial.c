@@ -402,7 +402,7 @@ static int bl602_attach(struct uart_dev_s *dev)
   ret = irq_attach(priv->irq, __uart_interrupt, (void *)dev);
   if (ret == OK)
     {
-      ////TODO: up_enable_irq(priv->irq);
+      up_enable_irq(priv->irq);
     }
 
   ////Begin
