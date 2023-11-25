@@ -451,11 +451,39 @@ void test_interrupt_priority(void)
   uint32_t before1 = *(volatile uint32_t *) 0xe0000050;
   uint32_t before2 = *(volatile uint32_t *) 0xe0000054;
 
+  // Set the Interrupt Priority
   *(volatile uint32_t *) 0xe0000050 = 1;
+
+  // Flush the cache
+  __asm__ __volatile__
+    (
+      "sfence.vma x0, x0\n"
+      "fence rw, rw\n"
+      "fence.i\n"
+      ::: "memory"
+    );
 
   // Read the values after setting Interrupt Priority
   uint32_t after1 = *(volatile uint32_t *) 0xe0000050;
+  // Flush the cache
+  __asm__ __volatile__
+    (
+      "sfence.vma x0, x0\n"
+      "fence rw, rw\n"
+      "fence.i\n"
+      ::: "memory"
+    );
+
   uint32_t after2 = *(volatile uint32_t *) 0xe0000054;
+  // Flush the cache
+  __asm__ __volatile__
+    (
+      "sfence.vma x0, x0\n"
+      "fence rw, rw\n"
+      "fence.i\n"
+      ::: "memory"
+    );
+
   _info("before1=%u, before2=%u, after1=%u, after2=%u\n", before1, before2, after1, after2);
 }
 
