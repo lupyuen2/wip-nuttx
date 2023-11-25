@@ -429,9 +429,9 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
   // Test Interrupt Priority
-  _info("Test Interrupt Priority 2\n");
-  void test_interrupt_priority2(void);
-  test_interrupt_priority2();
+  _info("Test Interrupt Priority\n");
+  void test_interrupt_priority(void);
+  test_interrupt_priority();
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
   // for (uintptr_t addr=0xe0000004; addr < 0xe0000004 + (0x50 * 4); addr+=4) {
@@ -449,14 +449,19 @@ void test_interrupt_priority(void)
 {
   // Read the values before setting Interrupt Priority
   uint32_t before1 = *(volatile uint32_t *) 0xe0000050UL;
+  up_udelay(10 * 1000);
   uint32_t before2 = *(volatile uint32_t *) 0xe0000054UL;
+  up_udelay(10 * 1000);
 
   // Set the Interrupt Priority
   *(volatile uint32_t *) 0xe0000050UL = 1;
+  up_udelay(10 * 1000);
 
   // Read the values after setting Interrupt Priority
   uint32_t after1 = *(volatile uint32_t *) 0xe0000050UL;
+  up_udelay(10 * 1000);
   uint32_t after2 = *(volatile uint32_t *) 0xe0000054UL;
+  up_udelay(10 * 1000);
   _info("before1=%u, before2=%u, after1=%u, after2=%u\n", before1, before2, after1, after2);
 }
 
@@ -483,8 +488,7 @@ void test_interrupt_priority2(void)
       // *(volatile uint32_t *) 0xe0000050UL = 1;
       "li   t0, 0xe0000000\n"  // PLIC Base Address
       "li   t1, 0x01\n"        // Value 1
-      ////"sw   t1, 0x50(t0)\n"    // Write to Offset 0x50
-      "sb   t1, 0x50(t0)\n"    // Write Byte to Offset 0x50
+      "sw   t1, 0x50(t0)\n"    // Write to Offset 0x50
 
       // Read the values after setting Interrupt Priority
       // A0 = *(volatile uint32_t *) 0xe0000050UL;
@@ -502,7 +506,7 @@ void test_interrupt_priority2(void)
 
       ::: "memory"
     );  
-    // Prints [before1][before2][after1][after2]
+    // Prints [before1][before2][after1][after2]: 0011
 }
 
 /****************************************************************************
