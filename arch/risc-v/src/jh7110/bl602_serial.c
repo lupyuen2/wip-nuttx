@@ -447,20 +447,27 @@ static int bl602_attach(struct uart_dev_s *dev)
 // Test the setting of PLIC Interrupt Priority
 void test_interrupt_priority(void)
 {
+  static uint32_t before1 = 0xFF;
+  static uint32_t before2 = 0xFF;
+  static uint32_t after1 = 0xFF;
+  static uint32_t after2 = 0xFF;
+
   // Read the values before setting Interrupt Priority
-  uint32_t before1 = *(volatile uint32_t *) 0xe0000050UL;
+  before1 = *(volatile uint32_t *) 0xe0000050UL;
   up_udelay(10 * 1000);
-  uint32_t before2 = *(volatile uint32_t *) 0xe0000054UL;
+  before2 = *(volatile uint32_t *) 0xe0000054UL;
   up_udelay(10 * 1000);
 
   // Set the Interrupt Priority
   *(volatile uint32_t *) 0xe0000050UL = 1;
   up_udelay(10 * 1000);
+  *(volatile uint32_t *) 0xe0000054UL = 0;
+  up_udelay(10 * 1000);
 
   // Read the values after setting Interrupt Priority
-  uint32_t after1 = *(volatile uint32_t *) 0xe0000050UL;
+  after1 = *(volatile uint32_t *) 0xe0000050UL;
   up_udelay(10 * 1000);
-  uint32_t after2 = *(volatile uint32_t *) 0xe0000054UL;
+  after2 = *(volatile uint32_t *) 0xe0000054UL;
   up_udelay(10 * 1000);
   _info("before1=%u, before2=%u, after1=%u, after2=%u\n", before1, before2, after1, after2);
 }
