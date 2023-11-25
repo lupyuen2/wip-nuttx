@@ -428,6 +428,10 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Hart 0 M-Mode Interrupt Enable", 0xe0002000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
+  // Test Interrupt Priority
+  _info("Test Interrupt Priority\n");
+  void test_interrupt_priority(void);
+  test_interrupt_priority();
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
   // for (uintptr_t addr=0xe0000004; addr < 0xe0000004 + (0x50 * 4); addr+=4) {
@@ -438,6 +442,21 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);
   ////End
   return ret;
+}
+
+// Test the setting of PLIC Interrupt Priority
+void test_interrupt_priority(void)
+{
+  // Read the values before setting Interrupt Priority
+  uint32_t before1 = *(volatile uint32_t *) 0xe0000050;
+  uint32_t before2 = *(volatile uint32_t *) 0xe0000054;
+
+  *(volatile uint32_t *) 0xe0000050 = 1;
+
+  // Read the values after setting Interrupt Priority
+  uint32_t after1 = *(volatile uint32_t *) 0xe0000050;
+  uint32_t after2 = *(volatile uint32_t *) 0xe0000054;
+  _info("before1=%u, before2=%u, after1=%u, after2=%u\n", before1, before2, after1, after2);
 }
 
 /****************************************************************************
