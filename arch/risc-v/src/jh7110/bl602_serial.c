@@ -429,9 +429,9 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
   // Test Interrupt Priority
-  _info("Test Interrupt Priority\n");
-  void test_interrupt_priority(void);
-  test_interrupt_priority();
+  _info("Test Interrupt Priority 2\n");
+  void test_interrupt_priority2(void);
+  test_interrupt_priority2();
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
   // for (uintptr_t addr=0xe0000004; addr < 0xe0000004 + (0x50 * 4); addr+=4) {
@@ -448,43 +448,60 @@ static int bl602_attach(struct uart_dev_s *dev)
 void test_interrupt_priority(void)
 {
   // Read the values before setting Interrupt Priority
-  uint32_t before1 = *(volatile uint32_t *) 0xe0000050;
-  uint32_t before2 = *(volatile uint32_t *) 0xe0000054;
+  uint32_t before1 = *(volatile uint32_t *) 0xe0000050UL;
+  uint32_t before2 = *(volatile uint32_t *) 0xe0000054UL;
 
   // Set the Interrupt Priority
-  *(volatile uint32_t *) 0xe0000050 = 1;
-
-  // Flush the cache
-  __asm__ __volatile__
-    (
-      "sfence.vma x0, x0\n"
-      "fence rw, rw\n"
-      "fence.i\n"
-      ::: "memory"
-    );
+  *(volatile uint32_t *) 0xe0000050UL = 1;
 
   // Read the values after setting Interrupt Priority
-  uint32_t after1 = *(volatile uint32_t *) 0xe0000050;
-  // Flush the cache
-  __asm__ __volatile__
-    (
-      "sfence.vma x0, x0\n"
-      "fence rw, rw\n"
-      "fence.i\n"
-      ::: "memory"
-    );
-
-  uint32_t after2 = *(volatile uint32_t *) 0xe0000054;
-  // Flush the cache
-  __asm__ __volatile__
-    (
-      "sfence.vma x0, x0\n"
-      "fence rw, rw\n"
-      "fence.i\n"
-      ::: "memory"
-    );
-
+  uint32_t after1 = *(volatile uint32_t *) 0xe0000050UL;
+  uint32_t after2 = *(volatile uint32_t *) 0xe0000054UL;
   _info("before1=%u, before2=%u, after1=%u, after2=%u\n", before1, before2, after1, after2);
+}
+
+// Test in RISC-V Assembly the setting of PLIC Interrupt Priority
+void test_interrupt_priority2(void)
+{
+  __asm__ __volatile__
+    (  
+      // Read the values before setting Interrupt Priority
+      // A0 = *(volatile uint32_t *) 0xe0000050UL;
+      // A1 = *(volatile uint32_t *) 0xe0000054UL;
+      "li   t0, 0xe0000000\n"  // PLIC Base Address
+      "lw   a0, 0x50(t0)\n"    // Read A0 from Offset 0x50
+      "lw   a1, 0x54(t0)\n"    // Read A0 from Offset 0x54
+
+      // Print the values
+      "li   t0, 0x30002000\n"  // UART3 Base Address
+      "addi t1, a0, 0x30\n"    // Add `0` to A0
+      "sb   t1, 0x88(t0)\n"    // Write to UART TX
+      "addi t1, a1, 0x30\n"    // Add `0` to A1
+      "sb   t1, 0x88(t0)\n"    // Write to UART TX
+
+      // Set the Interrupt Priority in RISC-V Assembly
+      // *(volatile uint32_t *) 0xe0000050UL = 1;
+      "li   t0, 0xe0000000\n"  // PLIC Base Address
+      "li   t1, 0x01\n"        // Value 1
+      "sw   t1, 0x50(t0)\n"    // Write to Offset 0x50
+
+      // Read the values after setting Interrupt Priority
+      // A0 = *(volatile uint32_t *) 0xe0000050UL;
+      // A0 = *(volatile uint32_t *) 0xe0000054UL;
+      "li   t0, 0xe0000000\n"  // PLIC Base Address
+      "lw   a0, 0x50(t0)\n"    // Read A0 from Offset 0x50
+      "lw   a1, 0x54(t0)\n"    // Read A0 from Offset 0x54
+
+      // Print the values
+      "li   t0, 0x30002000\n"  // UART3 Base Address
+      "addi t1, a0, 0x30\n"    // Add `0` to A0
+      "sb   t1, 0x88(t0)\n"    // Write to UART TX
+      "addi t1, a1, 0x30\n"    // Add `0` to A1
+      "sb   t1, 0x88(t0)\n"    // Write to UART TX
+
+      ::: "memory"
+    );  
+    // Prints [before1][before2][after1][after2]
 }
 
 /****************************************************************************
