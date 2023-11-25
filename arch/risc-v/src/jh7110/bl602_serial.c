@@ -483,7 +483,8 @@ void test_interrupt_priority2(void)
       // *(volatile uint32_t *) 0xe0000050UL = 1;
       "li   t0, 0xe0000000\n"  // PLIC Base Address
       "li   t1, 0x01\n"        // Value 1
-      "sw   t1, 0x50(t0)\n"    // Write to Offset 0x50
+      ////"sw   t1, 0x50(t0)\n"    // Write to Offset 0x50
+      "sb   t1, 0x50(t0)\n"    // Write Byte to Offset 0x50
 
       // Read the values after setting Interrupt Priority
       // A0 = *(volatile uint32_t *) 0xe0000050UL;
