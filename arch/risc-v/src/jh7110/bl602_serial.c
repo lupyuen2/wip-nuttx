@@ -459,9 +459,9 @@ void test_interrupt_priority(void)
   static uint32_t after2 = 0xFF;
 
   // Disable MMU
-  _info("Disable MMU\n");
-  uintptr_t satp = mmu_read_satp();
-  mmu_write_satp(0);
+  // _info("Disable MMU\n");
+  // uintptr_t satp = mmu_read_satp();
+  // mmu_write_satp(0);
 
   // Read the values before setting Interrupt Priority
   before1 = *(volatile uint32_t *) 0xe0000050UL;
@@ -475,8 +475,8 @@ void test_interrupt_priority(void)
   after2 = *(volatile uint32_t *) 0xe0000054UL;
 
   // Enable MMU
-  mmu_write_satp(satp);
-  _info("Enable MMU\n");
+  // mmu_write_satp(satp);
+  // _info("Enable MMU\n");
 
   // Dump before and after values
   _info("before1=%u, before2=%u, after1=%u, after2=%u\n", before1, before2, after1, after2);
