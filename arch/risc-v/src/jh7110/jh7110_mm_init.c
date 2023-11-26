@@ -239,22 +239,22 @@ void jh7110_kernel_mappings(void)
                     MMU_IO_SIZE, MMU_IO_FLAGS);
 
   // Map PLIC as L1
-  _info("map PLIC as L1\n");////
+  // _info("map PLIC as L1\n");////
   // This will waste a whole chunk of L1 Addresses (Size 0x4000 0000) just for PLIC:
-  mmu_ln_map_region(1, PGT_L1_VBASE, 0xC0000000, 0xC0000000,
-                    0x40000000, MMU_IO_FLAGS);
+  // mmu_ln_map_region(1, PGT_L1_VBASE, 0xC0000000, 0xC0000000,
+  //                   0x40000000, MMU_IO_FLAGS);
   // This fails silently because it's misaligned:
   // mmu_ln_map_region(1, PGT_L1_VBASE, 0xE0000000, 0xE0000000,
   //                   0x10000000, MMU_IO_FLAGS);
 
   // Map PLIC as Interrupt L2
-  // _info("map PLIC as Interrupt L2\n");////
-  // mmu_ln_map_region(2, PGT_INT_L2_PBASE, 0xE0000000, 0xE0000000, 0x10000000,
-  //                   MMU_IO_FLAGS);
+  _info("map PLIC as Interrupt L2\n");////
+  mmu_ln_map_region(2, PGT_INT_L2_PBASE, 0xE0000000, 0xE0000000, 0x10000000,
+                    MMU_IO_FLAGS);
 
   // Connect the L1 and Interrupt L2 page tables for PLIC
-  // _info("connect the L1 and Interrupt L2 page tables for PLIC\n");////
-  // mmu_ln_setentry(1, PGT_L1_VBASE, PGT_INT_L2_PBASE, 0xE0000000, PTE_G);
+  _info("connect the L1 and Interrupt L2 page tables for PLIC\n");////
+  mmu_ln_setentry(1, PGT_L1_VBASE, PGT_INT_L2_PBASE, 0xE0000000, PTE_G);
 
   /* Map the kernel text and data for L2/L3 */
 
