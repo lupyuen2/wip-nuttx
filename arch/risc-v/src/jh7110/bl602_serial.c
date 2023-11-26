@@ -379,6 +379,8 @@ static void bl602_shutdown(struct uart_dev_s *dev)
   modifyreg32(BL602_UART_URX_CONFIG(uart_idx), UART_URX_CONFIG_CR_EN, 0);
 }
 
+#include "riscv_mmu.h" ////TODO
+
 /****************************************************************************
  * Name: bl602_attach
  *
@@ -410,10 +412,12 @@ static int bl602_attach(struct uart_dev_s *dev)
   _info("BL602_UART_INT_MASK=0x%x\n", getreg32(BL602_UART_INT_MASK(0)));
   _info("BL602_UART_INT_CLEAR=0x%x\n", getreg32(BL602_UART_INT_CLEAR(0)));
   _info("BL602_UART_INT_EN=0x%x\n", getreg32(BL602_UART_INT_EN(0)));
+
   // Clear RX FIFO
   _info("BL602_UART_FIFO_CONFIG_0=0x%x\n", getreg32(BL602_UART_FIFO_CONFIG_0(0)));
   putreg32(1 << 3, BL602_UART_FIFO_CONFIG_0(0));
   _info("BL602_UART_FIFO_CONFIG_0=0x%x\n", getreg32(BL602_UART_FIFO_CONFIG_0(0)));
+
   // Enable all IRQs
   // _info("Enable all IRQs\n");
   // for (int i = 1; i <= 64; i++) { up_enable_irq(i); }
@@ -428,10 +432,12 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Hart 0 M-Mode Interrupt Enable", 0xe0002000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
+
   // Test Interrupt Priority
-  // _info("Test Interrupt Priority\n");
-  // void test_interrupt_priority(void);
-  // test_interrupt_priority();
+  _info("Test Interrupt Priority\n");
+  void test_interrupt_priority(void);
+  test_interrupt_priority();
+
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
   // for (uintptr_t addr=0xe0000004; addr < 0xe0000004 + (0x50 * 4); addr+=4) {
@@ -452,23 +458,27 @@ void test_interrupt_priority(void)
   static uint32_t after1 = 0xFF;
   static uint32_t after2 = 0xFF;
 
+  // Disable MMU
+  _info("Disable MMU\n");
+  uintptr_t satp = mmu_read_satp();
+  mmu_write_satp(0);
+
   // Read the values before setting Interrupt Priority
   before1 = *(volatile uint32_t *) 0xe0000050UL;
-  up_udelay(10 * 1000);
   before2 = *(volatile uint32_t *) 0xe0000054UL;
-  up_udelay(10 * 1000);
 
   // Set the Interrupt Priority
   *(volatile uint32_t *) 0xe0000050UL = 1;
-  up_udelay(10 * 1000);
-  *(volatile uint32_t *) 0xe0000054UL = 0;
-  up_udelay(10 * 1000);
 
   // Read the values after setting Interrupt Priority
   after1 = *(volatile uint32_t *) 0xe0000050UL;
-  up_udelay(10 * 1000);
   after2 = *(volatile uint32_t *) 0xe0000054UL;
-  up_udelay(10 * 1000);
+
+  // Enable MMU
+  mmu_write_satp(satp);
+  _info("Enable MMU\n");
+
+  // Dump before and after values
   _info("before1=%u, before2=%u, after1=%u, after2=%u\n", before1, before2, after1, after2);
 }
 

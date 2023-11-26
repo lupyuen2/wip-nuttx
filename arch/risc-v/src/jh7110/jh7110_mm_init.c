@@ -300,6 +300,7 @@ void jh7110_mm_init(void)
   binfo("mmu_enable: satp=%" PRIuPTR "\n", g_kernel_pgt_pbase);
   mmu_enable(g_kernel_pgt_pbase, 0);
 
+#ifdef NOTUSED
   ////Begin
   _info("Disable MMU\n");
   uintptr_t satp = mmu_read_satp();
@@ -312,4 +313,5 @@ void jh7110_mm_init(void)
   _info("Enable MMU\n");
   mmu_write_satp(satp);
   ////End
+#endif  // NOTUSED
 }
