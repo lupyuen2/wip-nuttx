@@ -418,9 +418,6 @@ static int bl602_attach(struct uart_dev_s *dev)
   putreg32(1 << 3, BL602_UART_FIFO_CONFIG_0(0));
   _info("BL602_UART_FIFO_CONFIG_0=0x%x\n", getreg32(BL602_UART_FIFO_CONFIG_0(0)));
 
-  // Enable all IRQs
-  // _info("Enable all IRQs\n");
-  // for (int i = 1; i <= 64; i++) { up_enable_irq(i); }
   // Dump the UART and PLIC
   infodumpbuffer("UART Registers", 0x30002000, 0x36 * 4);
   infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
@@ -440,9 +437,6 @@ static int bl602_attach(struct uart_dev_s *dev)
 
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
-  // for (uintptr_t addr=0xe0000004; addr < 0xe0000004 + (0x50 * 4); addr+=4) {
-  //   putreg32(1, addr);
-  // }
   putreg32(1, (uintptr_t)0xe0000050); // IRQ 20
   infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
   infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);
@@ -453,33 +447,23 @@ static int bl602_attach(struct uart_dev_s *dev)
 // Test the setting of PLIC Interrupt Priority
 void test_interrupt_priority(void)
 {
-  static uint32_t before1 = 0xFF;
-  static uint32_t before2 = 0xFF;
-  static uint32_t after1 = 0xFF;
-  static uint32_t after2 = 0xFF;
-
-  // Disable MMU
-  // _info("Disable MMU\n");
-  // uintptr_t satp = mmu_read_satp();
-  // mmu_write_satp(0);
-
   // Read the values before setting Interrupt Priority
-  before1 = *(volatile uint32_t *) 0xe0000050UL;
-  before2 = *(volatile uint32_t *) 0xe0000054UL;
+  uint32_t before50 = *(volatile uint32_t *) 0xe0000050UL;
+  uint32_t before54 = *(volatile uint32_t *) 0xe0000054UL;
 
   // Set the Interrupt Priority
+  // for 50 but NOT 54
   *(volatile uint32_t *) 0xe0000050UL = 1;
 
   // Read the values after setting Interrupt Priority
-  after1 = *(volatile uint32_t *) 0xe0000050UL;
-  after2 = *(volatile uint32_t *) 0xe0000054UL;
+  uint32_t after50 = *(volatile uint32_t *) 0xe0000050UL;
+  uint32_t after54 = *(volatile uint32_t *) 0xe0000054UL;
 
-  // Enable MMU
-  // mmu_write_satp(satp);
-  // _info("Enable MMU\n");
-
-  // Dump before and after values
-  _info("before1=%u, before2=%u, after1=%u, after2=%u\n", before1, before2, after1, after2);
+  // Dump before and after values:
+  // before50=0 before54=0
+  // after50=1  after54=1
+  // Why after54=1 ???
+  _info("before50=%u, before54=%u, after50=%u, after54=%u\n", before50, before54, after50, after54);
 }
 
 // Test in RISC-V Assembly the setting of PLIC Interrupt Priority

@@ -75,13 +75,14 @@ void up_irqinitialize(void)
 
   /* Set priority for all global interrupts to 1 (lowest) */
 
-  ////TODO
-  // int id;
+  int id;
 
-  // for (id = 1; id <= NR_IRQS; id++)
-  //   {
-  //     putreg32(1, (uintptr_t)(JH7110_PLIC_PRIORITY + 4 * id));
-  //   }
+  infodumpbuffer("PLIC Interrupt Priority: Before", 0xe0000004, 0x50 * 4); ////
+  for (id = 1; id <= NR_IRQS; id++)
+    {
+      putreg32(1, (uintptr_t)(JH7110_PLIC_PRIORITY + 4 * id));
+    }
+  infodumpbuffer("PLIC Interrupt Priority: After", 0xe0000004, 0x50 * 4); ////
 
   /* Set irq threshold to 0 (permits all global interrupts) */
 
@@ -184,9 +185,11 @@ void up_enable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63)
         {
+          infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable: Before", 0xe0002080, 2 * 4);////
           _info("extirq=%d, addr=%p, val=0x%d\n", extirq, (uintptr_t)JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)), 1 << (extirq % 32)); ////
           modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
+          infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable: After", 0xe0002080, 2 * 4);////
         }
       else
         {
