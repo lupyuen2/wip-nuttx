@@ -291,6 +291,12 @@ void jh7110_kernel_mappings(void)
 
 void jh7110_mm_init(void)
 {
+  ////Begin
+  _info("Test Interrupt Priority\n");
+  void test_interrupt_priority(void);
+  test_interrupt_priority();
+  ////End
+
   /* Setup the kernel mappings */
 
   jh7110_kernel_mappings();
