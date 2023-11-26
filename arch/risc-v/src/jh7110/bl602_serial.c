@@ -463,7 +463,8 @@ void test_interrupt_priority(void)
   // before50=0 before54=0
   // after50=1  after54=1
   // Why after54=1 ???
-  _info("before50=%u, before54=%u, after50=%u, after54=%u\n", before50, before54, after50, after54);
+  _info("before50=%u, before54=%u, after50=%u, after54=%u\n",
+    before50, before54, after50, after54);
 }
 
 // Test in RISC-V Assembly the setting of PLIC Interrupt Priority
