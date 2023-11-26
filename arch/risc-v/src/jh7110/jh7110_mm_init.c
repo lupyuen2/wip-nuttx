@@ -301,8 +301,15 @@ void jh7110_mm_init(void)
   mmu_enable(g_kernel_pgt_pbase, 0);
 
   ////Begin
+  _info("Disable MMU\n");
+  uintptr_t satp = mmu_read_satp();
+  mmu_write_satp(0);
+
   _info("Test Interrupt Priority\n");
   void test_interrupt_priority(void);
   test_interrupt_priority();
+
+  _info("Enable MMU\n");
+  mmu_write_satp(satp);
   ////End
 }
