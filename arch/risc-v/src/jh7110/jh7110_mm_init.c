@@ -291,12 +291,6 @@ void jh7110_kernel_mappings(void)
 
 void jh7110_mm_init(void)
 {
-  ////Begin
-  _info("Test Interrupt Priority\n");
-  void test_interrupt_priority(void);
-  test_interrupt_priority();
-  ////End
-
   /* Setup the kernel mappings */
 
   jh7110_kernel_mappings();
@@ -305,4 +299,10 @@ void jh7110_mm_init(void)
 
   binfo("mmu_enable: satp=%" PRIuPTR "\n", g_kernel_pgt_pbase);
   mmu_enable(g_kernel_pgt_pbase, 0);
+
+  ////Begin
+  _info("Test Interrupt Priority\n");
+  void test_interrupt_priority(void);
+  test_interrupt_priority();
+  ////End
 }
