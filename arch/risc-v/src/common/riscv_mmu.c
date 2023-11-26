@@ -100,17 +100,15 @@ void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
   /* Save it */
 
   lntable[index] = (paddr | mmuflags);
-#ifdef NOTUSED
   ////Begin
   if (mmuflags && PTE_R)
     {
-      lntable[index] = lntable[index] | (1 << 63); ////TODO: Strong Order
-      if (vaddr & 0xe0000000) { _info("vaddr=%p, lntable[index]=%p\n", vaddr, lntable[index]); }
-      if (!(lntable[index] & (1 << 63))) { _info("Strong Order not set\n"); } ////
-      DEBUGASSERT(lntable[index] & (1 << 63));////TODO: Extend mmuflags to uint64_t      
+      lntable[index] = lntable[index] | (1UL << 63); ////TODO: Strong Order
+      // if (vaddr & 0xe0000000) { _info("vaddr=%p, lntable[index]=%p\n", vaddr, lntable[index]); }
+      if (!(lntable[index] & (1UL << 63))) { _info("Strong Order not set\n"); } ////
+      // DEBUGASSERT(lntable[index] & (1UL << 63));////TODO: Extend mmuflags to uint64_t      
     }
   ////End
-#endif  // NOTUSED
 
   /* Update with memory by flushing the cache(s) */
 
