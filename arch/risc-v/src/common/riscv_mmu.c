@@ -100,6 +100,7 @@ void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
   /* Save it */
 
   lntable[index] = (paddr | mmuflags);
+#ifdef NOTUSED
   ////Begin
   if ((mmuflags & PTE_R) && (vaddr & 0xe0000000))
     {
@@ -109,6 +110,7 @@ void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
       // DEBUGASSERT(lntable[index] & (1UL << 63));////TODO: Extend mmuflags to uint64_t      
     }
   ////End
+#endif  // NOTUSED
 
   /* Update with memory by flushing the cache(s) */
 
