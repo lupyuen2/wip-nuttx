@@ -412,10 +412,6 @@ static int bl602_attach(struct uart_dev_s *dev)
   _info("BL602_UART_INT_MASK=0x%x\n", getreg32(BL602_UART_INT_MASK(0)));
   _info("BL602_UART_INT_CLEAR=0x%x\n", getreg32(BL602_UART_INT_CLEAR(0)));
   _info("BL602_UART_INT_EN=0x%x\n", getreg32(BL602_UART_INT_EN(0)));
-
-  // Clear RX FIFO
-  _info("BL602_UART_FIFO_CONFIG_0=0x%x\n", getreg32(BL602_UART_FIFO_CONFIG_0(0)));
-  putreg32(1 << 3, BL602_UART_FIFO_CONFIG_0(0));
   _info("BL602_UART_FIFO_CONFIG_0=0x%x\n", getreg32(BL602_UART_FIFO_CONFIG_0(0)));
 
   // Dump the UART and PLIC
