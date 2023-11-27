@@ -428,11 +428,8 @@ static int bl602_attach(struct uart_dev_s *dev)
 
   // Test Interrupt Priority
   _info("Test Interrupt Priority\n");
-  // void test_interrupt_priority(void);
-  // test_interrupt_priority();
-
-  void test_interrupt_priority_compact(void);
-  test_interrupt_priority_compact();
+  void test_interrupt_priority(void);
+  test_interrupt_priority();
 
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
