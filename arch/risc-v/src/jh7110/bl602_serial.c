@@ -428,8 +428,11 @@ static int bl602_attach(struct uart_dev_s *dev)
 
   // Test Interrupt Priority
   _info("Test Interrupt Priority\n");
-  void test_interrupt_priority(void);
-  test_interrupt_priority();
+  // void test_interrupt_priority(void);
+  // test_interrupt_priority();
+
+  void test_interrupt_priority_cache(void);
+  test_interrupt_priority_cache();
 
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
@@ -515,6 +518,83 @@ void test_interrupt_priority_assembly(void)
       "li   t0, 0xe0000000\n"  // PLIC Base Address
       "lw   a0, 0x50(t0)\n"    // Read A0 from Offset 0x50
       "lw   a1, 0x54(t0)\n"    // Read A0 from Offset 0x54
+
+      // Print the values
+      "li   t0, 0x30002000\n"  // UART3 Base Address
+      "addi t1, a0, 0x30\n"    // Add `0` to A0
+      "sb   t1, 0x88(t0)\n"    // Write to UART TX
+      "addi t1, a1, 0x30\n"    // Add `0` to A1
+      "sb   t1, 0x88(t0)\n"    // Write to UART TX
+
+      ::: "memory"
+    );  
+    // Prints [before1][before2][after1][after2]: 0011
+}
+
+// Test in RISC-V Assembly DCACHE / ICACHE the setting of PLIC Interrupt Priority
+void test_interrupt_priority_cache(void)
+{
+  __asm__ __volatile__
+    (  
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      // Read the values before setting Interrupt Priority
+      // A0 = *(volatile uint32_t *) 0xe0000050UL;
+      // A1 = *(volatile uint32_t *) 0xe0000054UL;
+      "li   t0, 0xe0000000\n"  // PLIC Base Address
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      "lw   a0, 0x50(t0)\n"    // Read A0 from Offset 0x50
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      "lw   a1, 0x54(t0)\n"    // Read A0 from Offset 0x54
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      // Print the values
+      "li   t0, 0x30002000\n"  // UART3 Base Address
+      "addi t1, a0, 0x30\n"    // Add `0` to A0
+      "sb   t1, 0x88(t0)\n"    // Write to UART TX
+      "addi t1, a1, 0x30\n"    // Add `0` to A1
+      "sb   t1, 0x88(t0)\n"    // Write to UART TX
+
+      // Set the Interrupt Priority in RISC-V Assembly
+      // *(volatile uint32_t *) 0xe0000050UL = 1;
+      "li   t0, 0xe0000000\n"  // PLIC Base Address
+      "li   t1, 0x01\n"        // Value 1
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      "sw   t1, 0x50(t0)\n"    // Write to Offset 0x50
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      // Read the values after setting Interrupt Priority
+      // A0 = *(volatile uint32_t *) 0xe0000050UL;
+      // A0 = *(volatile uint32_t *) 0xe0000054UL;
+      "li   t0, 0xe0000000\n"  // PLIC Base Address
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      "lw   a0, 0x50(t0)\n"    // Read A0 from Offset 0x50
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      "lw   a1, 0x54(t0)\n"    // Read A0 from Offset 0x54
+      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
 
       // Print the values
       "li   t0, 0x30002000\n"  // UART3 Base Address
