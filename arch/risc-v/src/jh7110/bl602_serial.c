@@ -428,11 +428,8 @@ static int bl602_attach(struct uart_dev_s *dev)
 
   // Test Interrupt Priority
   _info("Test Interrupt Priority\n");
-  // void test_interrupt_priority(void);
-  // test_interrupt_priority();
-
-  void test_interrupt_priority_atomic(void);
-  test_interrupt_priority_atomic();
+  void test_interrupt_priority(void);
+  test_interrupt_priority();
 
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
@@ -482,6 +479,7 @@ void test_interrupt_priority_atomic(void)
   uint32_t after54 = *(volatile uint32_t *) 0xe0000054UL;
 
   // Dump before and after values:
+  // test_interrupt_priority_atomic: ret=0, before50=0, before54=0, after50=1, after54=1
   _info("ret=%u, before50=%u, before54=%u, after50=%u, after54=%u\n",
     ret, before50, before54, after50, after54);
 }
