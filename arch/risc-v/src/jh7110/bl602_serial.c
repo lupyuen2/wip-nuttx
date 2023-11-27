@@ -428,8 +428,11 @@ static int bl602_attach(struct uart_dev_s *dev)
 
   // Test Interrupt Priority
   _info("Test Interrupt Priority\n");
-  void test_interrupt_priority(void);
-  test_interrupt_priority();
+  // void test_interrupt_priority(void);
+  // test_interrupt_priority();
+
+  void test_interrupt_priority_atomic(void);
+  test_interrupt_priority_atomic();
 
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
@@ -463,8 +466,28 @@ void test_interrupt_priority(void)
     before50, before54, after50, after54);
 }
 
+// Test the Atomic setting of PLIC Interrupt Priority
+void test_interrupt_priority_atomic(void)
+{
+  // Read the values before setting Interrupt Priority
+  uint32_t before50 = *(volatile uint32_t *) 0xe0000050UL;
+  uint32_t before54 = *(volatile uint32_t *) 0xe0000054UL;
+
+  // Set the Interrupt Priority
+  // for 50 but NOT 54
+  uint32_t ret = up_testset(0xe0000050UL);
+
+  // Read the values after setting Interrupt Priority
+  uint32_t after50 = *(volatile uint32_t *) 0xe0000050UL;
+  uint32_t after54 = *(volatile uint32_t *) 0xe0000054UL;
+
+  // Dump before and after values:
+  _info("ret=%u, before50=%u, before54=%u, after50=%u, after54=%u\n",
+    ret, before50, before54, after50, after54);
+}
+
 // Test in RISC-V Assembly the setting of PLIC Interrupt Priority
-void test_interrupt_priority2(void)
+void test_interrupt_priority_assembly(void)
 {
   __asm__ __volatile__
     (  
