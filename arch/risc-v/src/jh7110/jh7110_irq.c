@@ -59,12 +59,12 @@ void up_irqinitialize(void)
   putreg32(0x0, JH7110_PLIC_ENABLE1);
   putreg32(0x0, JH7110_PLIC_ENABLE2);
 
-  ////Begin: From arch/risc-v/src/c906/c906_irq.c
+  //// Begin Mod: From arch/risc-v/src/c906/c906_irq.c
   /* Clear pendings in PLIC */
 
   uintptr_t val = getreg32(JH7110_PLIC_CLAIM);
   putreg32(val, JH7110_PLIC_CLAIM);
-  ////End
+  //// End Mod
 
   /* Colorize the interrupt stack for debug purposes */
 
@@ -77,11 +77,15 @@ void up_irqinitialize(void)
 
   int id;
 
+  // Dump Interrupt Priorities Before
   infodumpbuffer("PLIC Interrupt Priority: Before", 0xe0000004, 0x50 * 4); ////
+
   for (id = 1; id <= NR_IRQS; id++)
     {
       putreg32(1, (uintptr_t)(JH7110_PLIC_PRIORITY + 4 * id));
     }
+
+  // Dump Interrupt Priorities After
   infodumpbuffer("PLIC Interrupt Priority: After", 0xe0000004, 0x50 * 4); ////
 
   /* Set irq threshold to 0 (permits all global interrupts) */
@@ -185,10 +189,14 @@ void up_enable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63)
         {
+          // Dump Interrupt Enable Before
           infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable: Before", 0xe0002080, 2 * 4);////
           _info("extirq=%d, addr=%p, val=0x%d\n", extirq, (uintptr_t)JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)), 1 << (extirq % 32)); ////
+
           modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
+
+          // Dump Interrupt Enable After
           infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable: After", 0xe0002080, 2 * 4);////
         }
       else

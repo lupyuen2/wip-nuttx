@@ -407,7 +407,7 @@ static int bl602_attach(struct uart_dev_s *dev)
       up_enable_irq(priv->irq);
     }
 
-  ////Begin
+  //// Begin Test
   _info("BL602_UART_INT_STS=0x%x\n", getreg32(BL602_UART_INT_STS(0)));
   _info("BL602_UART_INT_MASK=0x%x\n", getreg32(BL602_UART_INT_MASK(0)));
   _info("BL602_UART_INT_CLEAR=0x%x\n", getreg32(BL602_UART_INT_CLEAR(0)));
@@ -436,7 +436,8 @@ static int bl602_attach(struct uart_dev_s *dev)
   putreg32(1, (uintptr_t)0xe0000050); // IRQ 20
   infodumpbuffer("PLIC Interrupt Priority", 0xe0000004, 0x50 * 4);
   infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);
-  ////End
+  //// End Test
+
   return ret;
 }
 

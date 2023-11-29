@@ -60,38 +60,14 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
     {
       uintptr_t val = getreg32(JH7110_PLIC_CLAIM);
 
-      ////Begin
-      if (val == 0) {
-        // Dump Interrupts
-        // _info("irq=%d, claim=%p\n", irq, val);////
-        // _info("*0xe0201004=%p\n", (uintptr_t)getreg32((uintptr_t)0xe0201004));////
-        // infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);////
-        // infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable", 0xe0002080, 2 * 4);
-        // infodumpbuffer("PLIC Hart 0 S-Mode Priority Threshold", 0xe0201000, 2 * 4);
-        // infodumpbuffer("PLIC Hart 0 S-Mode Claim / Complete", 0xe0201004, 1 * 4);
-        // infodumpbuffer("PLIC Hart 0 M-Mode Interrupt Enable", 0xe0002000, 2 * 4);
-        // infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
-        // infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
-
-        // Claim Interrupt
-        // uintptr_t val2 = getreg32(JH7110_PLIC_CLAIM);
-        // putreg32(val2, JH7110_PLIC_CLAIM);
-        // _info("Claim Interrupt\n");
-        // infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);////
-        // infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable", 0xe0002080, 2 * 4);
-        // infodumpbuffer("PLIC Hart 0 S-Mode Priority Threshold", 0xe0201000, 2 * 4);
-        // infodumpbuffer("PLIC Hart 0 S-Mode Claim / Complete", 0xe0201004, 1 * 4);
-        // infodumpbuffer("PLIC Hart 0 M-Mode Interrupt Enable", 0xe0002000, 2 * 4);
-        // infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
-        // infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
-
+      //// Begin Test
+      if (val == 0) {  // If Interrupt Claimed is 0...
         // Check Pending Interrupts
         uintptr_t ip0 = getreg32(0xe0001000);  // PLIC_IP0: Interrupt Pending for interrupts 1 to 31
         uintptr_t ip1 = getreg32(0xe0001004);  // PLIC_IP1: Interrupt Pending for interrupts 32 to 63
-        // if (ip1 & (1 << 20)) { val = 52; }  // EMAC
-        if (ip0 & (1 << 20)) { val = 20; }  // UART
+        if (ip0 & (1 << 20)) { val = 20; }  // UART3 Interrupt was fired
       }
-      ////End
+      //// End Test
 
       /* Add the value to nuttx irq which is offset to the mext */
 
@@ -104,30 +80,25 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
     {
       /* Deliver the IRQ */
 
-      // _info("Do irq=%d\n", irq);////
       regs = riscv_doirq(irq, regs);
     }
 
   if (RISCV_IRQ_EXT <= irq)
     {
+      // Read the Claim Register before Completing the Interrupt
       uintptr_t claim = getreg32(JH7110_PLIC_CLAIM);////
+
       /* Then write PLIC_CLAIM to clear pending in PLIC */
 
       putreg32(irq - RISCV_IRQ_EXT, JH7110_PLIC_CLAIM);
-      ////Begin
-      // infodumpbuffer("After Claim", 0xe0001000, 2 * 4);////
+
+      //// Begin Test
       // Clear Pending Interrupts
       putreg32(0, 0xe0001000);  // PLIC_IP0: Interrupt Pending for interrupts 1 to 31
       putreg32(0, 0xe0001004);  // PLIC_IP1: Interrupt Pending for interrupts 32 to 63
       _info("Clear Pending Interrupts, irq=%d, claim=%p\n", irq, claim);
-      infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);////
-      // infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable", 0xe0002080, 2 * 4);
-      // infodumpbuffer("PLIC Hart 0 S-Mode Priority Threshold", 0xe0201000, 2 * 4);
-      // infodumpbuffer("PLIC Hart 0 S-Mode Claim / Complete", 0xe0201004, 1 * 4);
-      // infodumpbuffer("PLIC Hart 0 M-Mode Interrupt Enable", 0xe0002000, 2 * 4);
-      // infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
-      // infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
-      ////End
+      infodumpbuffer("PLIC Interrupt Pending", 0xe0001000, 2 * 4);
+      //// End Test
     }
 
   return regs;
