@@ -291,11 +291,11 @@ void jh7110_kernel_mappings(void)
 
 void jh7110_mm_init(void)
 {
-  ////Begin
+  //// Begin Test
   _info("Test Interrupt Priority\n");
   void test_interrupt_priority(void);
-  test_interrupt_priority();
-  ////End
+  test_interrupt_priority();  // Works OK!
+  //// End Test
 
   /* Setup the kernel mappings */
 
@@ -307,17 +307,17 @@ void jh7110_mm_init(void)
   mmu_enable(g_kernel_pgt_pbase, 0);
 
 #ifdef NOTUSED
-  ////Begin
+  //// Begin Test
   _info("Disable MMU\n");
   uintptr_t satp = mmu_read_satp();
   mmu_write_satp(0);
 
   _info("Test Interrupt Priority\n");
   void test_interrupt_priority(void);
-  test_interrupt_priority();
+  test_interrupt_priority();  // Works OK!
 
   _info("Enable MMU\n");
   mmu_write_satp(satp);
-  ////End
+  //// End Test
 #endif  // NOTUSED
 }
