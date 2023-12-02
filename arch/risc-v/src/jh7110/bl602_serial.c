@@ -426,6 +426,12 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Hart 0 M-Mode Priority Threshold", 0xe0200000, 2 * 4);
   infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
 
+  // Claim / Complete M-Mode
+  uint32_t claim = getreg32(0xe0200004);
+  _info("Claim / Complete M-Mode: claim=%d\n", claim);
+  putreg32(claim, 0xe0200004);
+  infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
+  
   // Test Interrupt Priority
   _info("Test Interrupt Priority\n");
   void test_interrupt_priority(void);
