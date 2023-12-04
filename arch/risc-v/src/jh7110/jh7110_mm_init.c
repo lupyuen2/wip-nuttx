@@ -295,6 +295,11 @@ void jh7110_mm_init(void)
   _info("Test Interrupt Priority\n");
   void test_interrupt_priority(void);
   test_interrupt_priority();  // Works OK!
+
+  // Test Interrupt Priority Cache
+  // _info("Test Interrupt Priority Cache\n");
+  // void test_interrupt_priority_cache(void);  // Works OK!
+  // test_interrupt_priority_cache();
   //// End Test
 
   /* Setup the kernel mappings */
