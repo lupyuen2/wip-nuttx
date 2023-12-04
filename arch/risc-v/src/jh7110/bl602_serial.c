@@ -433,9 +433,14 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
   
   // Test Interrupt Priority
-  _info("Test Interrupt Priority\n");
-  void test_interrupt_priority(void);
-  test_interrupt_priority();
+  // _info("Test Interrupt Priority\n");
+  // void test_interrupt_priority(void);
+  // test_interrupt_priority();
+
+  // Test Interrupt Priority Cache
+  _info("Test Interrupt Priority Cache\n");
+  void test_interrupt_priority_cache(void);
+  test_interrupt_priority_cache();
 
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
@@ -535,6 +540,23 @@ void test_interrupt_priority_assembly(void)
     // Prints [before1][before2][after1][after2]: 0011
 }
 
+// DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+// (0b11 << 20) | 0x0b
+// ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+
+// SYNC: Performs the synchronization operation
+// (0b11000 << 20) | 0x0b
+// ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+
+// SYNC.I: Synchronizes the clearing operation.
+// (0b11010 << 20) | 0x0b
+// ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+
+// From https://github.com/torvalds/linux/blob/master/arch/riscv/include/asm/errata_list.h#L69-L164
+// ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+
+// ".long 0x01b0000b\n" // SYNC.IS: ???
+
 // Test in RISC-V Assembly DCACHE / ICACHE the setting of PLIC Interrupt Priority
 void test_interrupt_priority_cache(void)
 {
@@ -544,6 +566,12 @@ void test_interrupt_priority_cache(void)
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
 
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
+
       // Read the values before setting Interrupt Priority
       // A0 = *(volatile uint32_t *) 0xe0000050UL;
       // A1 = *(volatile uint32_t *) 0xe0000054UL;
@@ -552,15 +580,33 @@ void test_interrupt_priority_cache(void)
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
 
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
+
       "lw   a0, 0x50(t0)\n"    // Read A0 from Offset 0x50
       ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
 
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
+
       "lw   a1, 0x54(t0)\n"    // Read A0 from Offset 0x54
       ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
 
       // Print the values
       "li   t0, 0x30002000\n"  // UART3 Base Address
@@ -577,10 +623,22 @@ void test_interrupt_priority_cache(void)
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
 
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
+
       "sw   t1, 0x50(t0)\n"    // Write to Offset 0x50
       ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
 
       // Read the values after setting Interrupt Priority
       // A0 = *(volatile uint32_t *) 0xe0000050UL;
@@ -590,15 +648,33 @@ void test_interrupt_priority_cache(void)
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
 
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
+
       "lw   a0, 0x50(t0)\n"    // Read A0 from Offset 0x50
       ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
 
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
+
       "lw   a1, 0x54(t0)\n"    // Read A0 from Offset 0x54
       ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
       ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
       ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
+
+      ".long 0x0030000b\n" // DCACHE.CIALL: Clears all dirty page table entries in the D-Cache and invalidates the D-Cache.
+      ".long 0x0180000b\n" // SYNC: Performs the synchronization operation
+      ".long 0x01a0000b\n" // SYNC.I: Synchronizes the clearing operation.
+      ".long 0x0190000b\n" // SYNC.S: Make sure all cache operations finished
+      ".long 0x01b0000b\n" // SYNC.IS: ???
 
       // Print the values
       "li   t0, 0x30002000\n"  // UART3 Base Address
