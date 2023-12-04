@@ -433,14 +433,14 @@ static int bl602_attach(struct uart_dev_s *dev)
   infodumpbuffer("PLIC Hart 0 M-Mode Claim / Complete", 0xe0200004, 1 * 4);
   
   // Test Interrupt Priority
-  // _info("Test Interrupt Priority\n");
-  // void test_interrupt_priority(void);
-  // test_interrupt_priority();
+  _info("Test Interrupt Priority\n");
+  void test_interrupt_priority(void);
+  test_interrupt_priority();
 
   // Test Interrupt Priority Cache
-  _info("Test Interrupt Priority Cache\n");
-  void test_interrupt_priority_cache(void);
-  test_interrupt_priority_cache();
+  // _info("Test Interrupt Priority Cache\n");
+  // void test_interrupt_priority_cache(void);
+  // test_interrupt_priority_cache();
 
   // Set PLIC Interrupt Priority to 1
   _info("Set PLIC Interrupt Priority to 1\n");
