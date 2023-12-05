@@ -100,17 +100,38 @@ void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
   /* Save it */
 
   lntable[index] = (paddr | mmuflags);
-#ifdef NOTUSED
-  ////Begin
-  if ((mmuflags & PTE_R) && (vaddr & 0xe0000000))
+
+  //// Begin Test
+  // From https://github.com/torvalds/linux/blob/master/arch/riscv/include/asm/pgtable-64.h#L126-L142
+  /*
+  * [63:59] T-Head Memory Type definitions:
+  * bit[63] SO - Strong Order
+  * bit[62] C - Cacheable
+  * bit[61] B - Bufferable
+  * bit[60] SH - Shareable
+  * bit[59] Sec - Trustable
+  * 00110 - NC   Weakly-ordered, Non-cacheable, Bufferable, Shareable, Non-trustable
+  * 01110 - PMA  Weakly-ordered, Cacheable, Bufferable, Shareable, Non-trustable
+  * 10010 - IO   Strongly-ordered, Non-cacheable, Non-bufferable, Shareable, Non-trustable
+  */
+  #define _PAGE_PMA_THEAD		((1UL << 62) | (1UL << 61) | (1UL << 60))
+  #define _PAGE_NOCACHE_THEAD	((1UL < 61) | (1UL << 60))
+  #define _PAGE_IO_THEAD		((1UL << 63) | (1UL << 60))
+  #define _PAGE_MTMASK_THEAD	(_PAGE_PMA_THEAD | _PAGE_IO_THEAD | (1UL << 59))
+  if ((mmuflags & PTE_R) && (vaddr <= 0x40000000UL))
     {
-      lntable[index] = lntable[index] | (1UL << 63); ////TODO: Strong Order
-      if (vaddr == 0xe0000000) { _info("vaddr=%p, lntable[index]=%p\n", vaddr, lntable[index]); }
-      if (!(lntable[index] & (1UL << 63))) { _info("Strong Order not set\n"); } ////
-      // DEBUGASSERT(lntable[index] & (1UL << 63));////TODO: Extend mmuflags to uint64_t      
+      lntable[index] = lntable[index] | _PAGE_MTMASK_THEAD;
+      _info("vaddr=%p, lntable[index]=%p\n", vaddr, lntable[index]);
     }
-  ////End
-#endif  // NOTUSED
+
+  // if ((mmuflags & PTE_R) && (vaddr & 0xe0000000))
+  //   {
+  //     lntable[index] = lntable[index] | (1UL << 63); ////TODO: Strong Order
+  //     if (vaddr == 0xe0000000) { _info("vaddr=%p, lntable[index]=%p\n", vaddr, lntable[index]); }
+  //     if (!(lntable[index] & (1UL << 63))) { _info("Strong Order not set\n"); } ////
+  //     // DEBUGASSERT(lntable[index] & (1UL << 63));////TODO: Extend mmuflags to uint64_t      
+  //   }
+  //// End Test
 
   /* Update with memory by flushing the cache(s) */
 
