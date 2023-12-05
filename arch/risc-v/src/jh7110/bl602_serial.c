@@ -1038,7 +1038,11 @@ static bool bl602_rxavailable(struct uart_dev_s *dev)
 
   /* Return true is data is available in the receive data buffer */
 
-  uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
+  //// Begin Test
+  uintptr_t fifo = getreg32(0x30002084);
+  uintptr_t rx = getreg32(0x3000208c);
+  _info("fifo=%p, rx=%p\n", fifo, rx);
+  //// End Test
   return (getreg32(BL602_UART_FIFO_CONFIG_1(uart_idx)) & \
           UART_FIFO_CONFIG_1_RX_CNT_MASK) != 0;
 }
