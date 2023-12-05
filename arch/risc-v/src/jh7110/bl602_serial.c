@@ -311,6 +311,7 @@ static int __uart_interrupt(int irq, void *context, void *arg)
   if ((int_status & UART_INT_STS_URX_END_INT) &&
       !(int_mask & UART_INT_MASK_CR_URX_END_MASK))
     {
+      uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
       putreg32(UART_INT_CLEAR_CR_URX_END_CLR,
                BL602_UART_INT_CLEAR(uart_idx));
 
@@ -951,7 +952,6 @@ static int bl602_ioctl(struct file *filep, int cmd, unsigned long arg)
 
 static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
 {
-  uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
   struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
   uint8_t uart_idx = priv->config.idx;
   int rxdata;
