@@ -951,6 +951,7 @@ static int bl602_ioctl(struct file *filep, int cmd, unsigned long arg)
 
 static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
 {
+  uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
   struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
   uint8_t uart_idx = priv->config.idx;
   int rxdata;
