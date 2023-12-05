@@ -150,6 +150,7 @@ void uart_recvchars(FAR uart_dev_t *dev)
 
   while (uart_rxavailable(dev))
     {
+      uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
       bool is_full = (nexthead == rxbuf->tail);
       char ch;
 
@@ -203,7 +204,6 @@ void uart_recvchars(FAR uart_dev_t *dev)
 
       /* Get this next character from the hardware */
 
-      uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
       ch = uart_receive(dev, &status);
 
 #if defined(CONFIG_TTY_SIGINT) || defined(CONFIG_TTY_SIGTSTP) || \
