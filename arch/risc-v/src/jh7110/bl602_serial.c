@@ -980,6 +980,9 @@ static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
         UART_FIFO_RDATA_MASK;
       _info("rxdata=0x%x\n", rxdata);
       infodumpbuffer("UART Registers", 0x30002000, 0x36 * 4);
+
+      putreg32(0xfff,  0x30002024);  // uart_int_mask (Interrupt Mask)
+      putreg32(1 << 3, 0x30002080);  // uart_fifo_config_0 (FIFO Config 0) / Bit 3 rx_fifo_clr: Clear signal of RX FIFO
       //// End Test
     }
   return rxdata;
