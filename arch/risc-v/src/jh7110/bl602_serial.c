@@ -969,11 +969,13 @@ static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
     {
       rxdata = getreg32(BL602_UART_FIFO_RDATA(uart_idx)) & \
         UART_FIFO_RDATA_MASK;
-      _info("rxdata=0x%x\n", rxdata);////
+      // _info("rxdata=0x%x\n", rxdata);////
     }
   else
     {
       rxdata = -1;
+
+#ifdef NOTUSED
       //// Begin Test: Read the UART Input anyway
       _info("rxdata=-1\n");
       rxdata = getreg32(BL602_UART_FIFO_RDATA(uart_idx)) & \
@@ -984,6 +986,7 @@ static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
       putreg32(0xfff,  0x30002024);  // uart_int_mask (Interrupt Mask)
       putreg32(1 << 3, 0x30002080);  // uart_fifo_config_0 (FIFO Config 0) / Bit 3 rx_fifo_clr: Clear signal of RX FIFO
       //// End Test
+#endif  // NOTUSED
     }
   return rxdata;
 }

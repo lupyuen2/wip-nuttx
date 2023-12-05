@@ -60,9 +60,9 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
     {
       uintptr_t val = getreg32(JH7110_PLIC_CLAIM);
 
+#ifdef NOTUSED
       //// Begin Test
       _info("claim=%p\n", val);
-#ifdef NOTUSED
       if (val == 0) {  // If Interrupt Claimed is 0...
         // Check Pending Interrupts
         uintptr_t ip0 = getreg32(0xe0001000);  // PLIC_IP0: Interrupt Pending for interrupts 1 to 31
@@ -73,8 +73,8 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
           // _info("rx=%p\n", rx);
         }
       }
-#endif  // NOTUSED
       //// End Test
+#endif  // NOTUSED
 
       /* Add the value to nuttx irq which is offset to the mext */
 
