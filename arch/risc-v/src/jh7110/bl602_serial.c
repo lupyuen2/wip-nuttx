@@ -979,6 +979,7 @@ static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
       rxdata = getreg32(BL602_UART_FIFO_RDATA(uart_idx)) & \
         UART_FIFO_RDATA_MASK;
       _info("rxdata=0x%x\n", rxdata);
+      infodumpbuffer("UART Registers", 0x30002000, 0x36 * 4);
       //// End Test
     }
   return rxdata;
