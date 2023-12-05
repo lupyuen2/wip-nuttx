@@ -118,7 +118,8 @@ void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
   #define _PAGE_NOCACHE_THEAD	((1UL < 61) | (1UL << 60))
   #define _PAGE_IO_THEAD		((1UL << 63) | (1UL << 60))
   #define _PAGE_MTMASK_THEAD	(_PAGE_PMA_THEAD | _PAGE_IO_THEAD | (1UL << 59))
-  if ((mmuflags & PTE_R) && (vaddr <= 0x40000000UL))
+  if ((mmuflags & PTE_R) &&
+    (vaddr < 0x40000000UL || vaddr >= 0xe0000000UL))
     {
       lntable[index] = lntable[index] | _PAGE_MTMASK_THEAD;
       _info("vaddr=%p, lntable[index]=%p\n", vaddr, lntable[index]);
