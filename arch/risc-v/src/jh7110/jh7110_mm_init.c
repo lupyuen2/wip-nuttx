@@ -291,6 +291,7 @@ void jh7110_kernel_mappings(void)
 
 void jh7110_mm_init(void)
 {
+#ifdef NOTUSED
   //// Begin Test
   _info("Test Interrupt Priority\n");
   void test_interrupt_priority(void);
@@ -301,6 +302,7 @@ void jh7110_mm_init(void)
   // void test_interrupt_priority_cache(void);  // Works OK!
   // test_interrupt_priority_cache();
   //// End Test
+#endif  // NOTUSED
 
   /* Setup the kernel mappings */
 

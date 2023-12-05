@@ -46,7 +46,7 @@
 
 int irq_attach(int irq, xcpt_t isr, FAR void *arg)
 {
-  _info("irq=%d, isr=%p\n", irq, isr); ////
+  // _info("irq=%d, isr=%p\n", irq, isr); ////
 #if NR_IRQS > 0
   int ret = -EINVAL;
 

@@ -78,7 +78,7 @@ void up_irqinitialize(void)
   int id;
 
   // Dump Interrupt Priorities Before
-  infodumpbuffer("PLIC Interrupt Priority: Before", 0xe0000004, 0x50 * 4); ////
+  // infodumpbuffer("PLIC Interrupt Priority: Before", 0xe0000004, 0x50 * 4); ////
 
   for (id = 1; id <= NR_IRQS; id++)
     {
@@ -86,7 +86,7 @@ void up_irqinitialize(void)
     }
 
   // Dump Interrupt Priorities After
-  infodumpbuffer("PLIC Interrupt Priority: After", 0xe0000004, 0x50 * 4); ////
+  // infodumpbuffer("PLIC Interrupt Priority: After", 0xe0000004, 0x50 * 4); ////
 
   /* Set irq threshold to 0 (permits all global interrupts) */
 
@@ -122,7 +122,7 @@ void up_irqinitialize(void)
 
 void up_disable_irq(int irq)
 {
-  _info("irq=%d\n", irq); ////
+  // _info("irq=%d\n", irq); ////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
@@ -145,7 +145,7 @@ void up_disable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63)
         {
-          _info("extirq=%d\n", extirq); ////
+          // _info("extirq=%d\n", extirq); ////
           modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       1 << (extirq % 32), 0);
         }
@@ -166,7 +166,7 @@ void up_disable_irq(int irq)
 
 void up_enable_irq(int irq)
 {
-  _info("irq=%d\n", irq); ////
+  // _info("irq=%d\n", irq); ////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
@@ -190,14 +190,14 @@ void up_enable_irq(int irq)
       if (0 <= extirq && extirq <= 63)
         {
           // Dump Interrupt Enable Before
-          infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable: Before", 0xe0002080, 2 * 4);////
-          _info("extirq=%d, addr=%p, val=0x%d\n", extirq, (uintptr_t)JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)), 1 << (extirq % 32)); ////
+          // infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable: Before", 0xe0002080, 2 * 4);////
+          // _info("extirq=%d, addr=%p, val=0x%d\n", extirq, (uintptr_t)JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)), 1 << (extirq % 32)); ////
 
           modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
 
           // Dump Interrupt Enable After
-          infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable: After", 0xe0002080, 2 * 4);////
+          // infodumpbuffer("PLIC Hart 0 S-Mode Interrupt Enable: After", 0xe0002080, 2 * 4);////
         }
       else
         {
@@ -208,7 +208,7 @@ void up_enable_irq(int irq)
 
 irqstate_t up_irq_enable(void)
 {
-  _info("\n"); ////
+  // _info("\n"); ////
   irqstate_t oldstat;
 
   /* Enable external interrupts (sie) */
