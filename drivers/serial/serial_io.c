@@ -150,7 +150,6 @@ void uart_recvchars(FAR uart_dev_t *dev)
 
   while (uart_rxavailable(dev))
     {
-      uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
       bool is_full = (nexthead == rxbuf->tail);
       char ch;
 
