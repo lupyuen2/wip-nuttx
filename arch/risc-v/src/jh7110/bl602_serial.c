@@ -311,9 +311,9 @@ static int __uart_interrupt(int irq, void *context, void *arg)
   if ((int_status & UART_INT_STS_URX_END_INT) &&
       !(int_mask & UART_INT_MASK_CR_URX_END_MASK))
     {
-      uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
       putreg32(UART_INT_CLEAR_CR_URX_END_CLR,
                BL602_UART_INT_CLEAR(uart_idx));
+      uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
 
       /* Receive Data ready */
 
