@@ -367,7 +367,7 @@ static inline bool vaddr_is_shm(uintptr_t vaddr)
 int up_addrenv_create(size_t textsize, size_t datasize, size_t heapsize,
                       arch_addrenv_t *addrenv)
 {
-  _info("textsize=0x%lx, datasize=0x%lx, heapsize=0x%lx, addrenv=%p\n", textsize, datasize, heapsize, addrenv);////
+  // _info("textsize=0x%lx, datasize=0x%lx, heapsize=0x%lx, addrenv=%p\n", textsize, datasize, heapsize, addrenv);////
   int       ret;
   uintptr_t resvbase;
   uintptr_t resvsize;
@@ -710,7 +710,7 @@ ssize_t up_addrenv_heapsize(const arch_addrenv_t *addrenv)
 
 int up_addrenv_select(const arch_addrenv_t *addrenv)
 {
-  _info("addrenv=%p, satp=%p\n", addrenv, addrenv->satp);////
+  // _info("addrenv=%p, satp=%p\n", addrenv, addrenv->satp);////
   DEBUGASSERT(addrenv && addrenv->satp);
   mmu_write_satp(addrenv->satp);
   return OK;
