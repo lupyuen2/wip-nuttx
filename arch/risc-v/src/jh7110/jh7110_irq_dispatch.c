@@ -65,7 +65,11 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
         // Check Pending Interrupts
         uintptr_t ip0 = getreg32(0xe0001000);  // PLIC_IP0: Interrupt Pending for interrupts 1 to 31
         uintptr_t ip1 = getreg32(0xe0001004);  // PLIC_IP1: Interrupt Pending for interrupts 32 to 63
-        if (ip0 & (1 << 20)) { val = 20; }  // UART3 Interrupt was fired
+        if (ip0 & (1 << 20)) {
+          val = 20;  // UART3 Interrupt was fired
+          uintptr_t rx = getreg32(0x3000208c);
+          _info("rx=%p\n", rx);
+        }
       }
       //// End Test
 
