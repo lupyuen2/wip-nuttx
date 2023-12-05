@@ -105,6 +105,8 @@ void uart_xmitchars(FAR uart_dev_t *dev)
 #endif
 }
 
+#include "../arch/risc-v/src/common/riscv_internal.h" ////
+
 /****************************************************************************
  * Name: uart_recvchars
  *
@@ -201,6 +203,7 @@ void uart_recvchars(FAR uart_dev_t *dev)
 
       /* Get this next character from the hardware */
 
+      uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
       ch = uart_receive(dev, &status);
 
 #if defined(CONFIG_TTY_SIGINT) || defined(CONFIG_TTY_SIGTSTP) || \

@@ -313,7 +313,6 @@ static int __uart_interrupt(int irq, void *context, void *arg)
     {
       putreg32(UART_INT_CLEAR_CR_URX_END_CLR,
                BL602_UART_INT_CLEAR(uart_idx));
-      uintptr_t rx = getreg32(0x3000208c); _info("rx=%p\n", rx); ////
 
       /* Receive Data ready */
 
