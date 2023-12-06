@@ -121,8 +121,8 @@ void mmu_ln_setentry(uint32_t ptlevel, uintptr_t lnvaddr, uintptr_t paddr,
   if ((mmuflags & PTE_R) &&
     (vaddr < 0x40000000UL || vaddr >= 0xe0000000UL))
     {
-      lntable[index] = lntable[index] | _PAGE_MTMASK_THEAD;
-      // _info("vaddr=%p, lntable[index]=%p\n", vaddr, lntable[index]);
+      lntable[index] = lntable[index] | _PAGE_IO_THEAD;
+      _info("vaddr=%p, lntable[index]=%p\n", vaddr, lntable[index]);
     }
   //// End Test
 
