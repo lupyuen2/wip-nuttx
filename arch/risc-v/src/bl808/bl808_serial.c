@@ -38,14 +38,16 @@
 #include <nuttx/fs/ioctl.h>
 #include <nuttx/serial/tioctl.h>
 
-#include "bl808_lowputc.h"
-#include "bl808_gpio.h"
+////#include "bl808_lowputc.h"
 
 #include "hardware/bl808_uart.h"
-#include "hardware/bl808_glb.h"
 #include "riscv_internal.h"
-#include "bl808_config.h"
 #include "chip.h"
+
+////TODO
+#define HAVE_SERIAL_CONSOLE 1
+#define BL808_IRQ_UART3 45 ////TODO
+void bl808_uart_configure(const struct uart_config_s *config) {}
 
 /****************************************************************************
  * Pre-processor Definitions
