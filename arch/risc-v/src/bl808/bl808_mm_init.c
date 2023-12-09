@@ -40,35 +40,34 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Ramdisk Load Address from U-Boot */
-
-#define RAMDISK_ADDR_R  (0x46100000)
-
 /* Map the whole I/O memory with vaddr = paddr mappings */
 
-#define MMU_IO_BASE     (0x00000000)
-#define MMU_IO_SIZE     (0x40000000)
+#define MMU_IO_BASE      (0x00000000)
+#define MMU_IO_SIZE      (0x40000000)
 
 /* Physical and virtual addresses to page tables (vaddr = paddr mapping) */
 
-#define PGT_L1_PBASE    (uintptr_t)&m_l1_pgtable
-#define PGT_L2_PBASE    (uintptr_t)&m_l2_pgtable
-#define PGT_L3_PBASE    (uintptr_t)&m_l3_pgtable
-#define PGT_L1_VBASE    PGT_L1_PBASE
-#define PGT_L2_VBASE    PGT_L2_PBASE
-#define PGT_L3_VBASE    PGT_L3_PBASE
+#define PGT_L1_PBASE     (uintptr_t)&m_l1_pgtable
+#define PGT_L2_PBASE     (uintptr_t)&m_l2_pgtable
+#define PGT_L2_INT_PBASE (uintptr_t)&m_l2_int_pgtable
+#define PGT_L3_PBASE     (uintptr_t)&m_l3_pgtable
+#define PGT_L1_VBASE     PGT_L1_PBASE
+#define PGT_L2_VBASE     PGT_L2_PBASE
+#define PGT_L2_INT_VBASE PGT_L2_INT_PBASE
+#define PGT_L3_VBASE     PGT_L3_PBASE
 
-#define PGT_L1_SIZE     (512)  /* Enough to map 512 GiB */
-#define PGT_L2_SIZE     (512)  /* Enough to map 1 GiB */
-#define PGT_L3_SIZE     (1024) /* Enough to map 4 MiB (2MiB x 2) */
+#define PGT_L1_SIZE      (512)  /* Enough to map 512 GiB */
+#define PGT_L2_SIZE      (512)  /* Enough to map 1 GiB */
+#define PGT_L2_INT_SIZE  (512)  /* Enough to map 1 GiB */
+#define PGT_L3_SIZE      (1024) /* Enough to map 4 MiB (2MiB x 2) */
 
-#define SLAB_COUNT      (sizeof(m_l3_pgtable) / RV_MMU_PAGE_SIZE)
+#define SLAB_COUNT       (sizeof(m_l3_pgtable) / RV_MMU_PAGE_SIZE)
 
-#define KMM_PAGE_SIZE   RV_MMU_L3_PAGE_SIZE
-#define KMM_PBASE       PGT_L3_PBASE   
-#define KMM_PBASE_IDX   3   
-#define KMM_SPBASE      PGT_L2_PBASE
-#define KMM_SPBASE_IDX  2
+#define KMM_PAGE_SIZE    RV_MMU_L3_PAGE_SIZE
+#define KMM_PBASE        PGT_L3_PBASE   
+#define KMM_PBASE_IDX    3   
+#define KMM_SPBASE       PGT_L2_PBASE
+#define KMM_SPBASE_IDX   2
 
 /****************************************************************************
  * Private Types
@@ -87,19 +86,20 @@ typedef struct pgalloc_slab_s pgalloc_slab_t;
 
 /* Kernel mappings simply here, mapping is vaddr=paddr */
 
-static size_t         m_l1_pgtable[PGT_L1_SIZE] locate_data(".pgtables");
-static size_t         m_l2_pgtable[PGT_L2_SIZE] locate_data(".pgtables");
-static size_t         m_l3_pgtable[PGT_L3_SIZE] locate_data(".pgtables");
+static size_t m_l1_pgtable[PGT_L1_SIZE] locate_data(".pgtables");
+static size_t m_l2_pgtable[PGT_L2_SIZE] locate_data(".pgtables");
+static size_t m_l2_int_pgtable[PGT_L2_INT_SIZE] locate_data(".pgtables");
+static size_t m_l3_pgtable[PGT_L3_SIZE] locate_data(".pgtables");
 
 /* Kernel mappings (L1 base) */
 
-uintptr_t               g_kernel_mappings  = PGT_L1_VBASE;
-uintptr_t               g_kernel_pgt_pbase = PGT_L1_PBASE;
+uintptr_t g_kernel_mappings  = PGT_L1_VBASE;
+uintptr_t g_kernel_pgt_pbase = PGT_L1_PBASE;
 
 /* L3 page table allocator */
 
-static sq_queue_t       g_free_slabs;
-static pgalloc_slab_t   g_slabs[SLAB_COUNT];
+static sq_queue_t     g_free_slabs;
+static pgalloc_slab_t g_slabs[SLAB_COUNT];
 
 /****************************************************************************
  * Private Functions
@@ -236,6 +236,15 @@ void bl808_kernel_mappings(void)
   binfo("map I/O regions\n");
   mmu_ln_map_region(1, PGT_L1_VBASE, MMU_IO_BASE, MMU_IO_BASE,
                     MMU_IO_SIZE, MMU_IO_FLAGS);
+
+  // Map the PLIC for Interrupt L2
+  binfo("map PLIC for Interrupt L2\n");
+  mmu_ln_map_region(2, PGT_L2_INT_PBASE, 0xE0000000, 0xE0000000, 0x10000000, ////TODO
+                    MMU_IO_FLAGS);
+
+  // Connect the L1 and Interrupt L2 page tables for PLIC
+  binfo("connect the L1 and Interrupt L2 page tables for PLIC\n");
+  mmu_ln_setentry(1, PGT_L1_VBASE, PGT_L2_INT_PBASE, 0xE0000000, PTE_G); ////TODO
 
   /* Map the kernel text and data for L2/L3 */
 
