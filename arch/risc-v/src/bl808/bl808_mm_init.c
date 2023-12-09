@@ -247,13 +247,15 @@ void bl808_kernel_mappings(void)
   mmu_ln_map_region(1, PGT_L1_VBASE, MMU_IO_BASE, MMU_IO_BASE,
                     MMU_IO_SIZE, MMU_THEAD_IO_FLAGS);
 
-  // Map the PLIC for Interrupt L2
-  binfo("map PLIC for Interrupt L2\n");
+  /* Map the PLIC with L2 page table */
+
+  binfo("map PLIC with L2 page table\n");
   mmu_ln_map_region(2, PGT_L2_INT_PBASE, MMU_INT_BASE, MMU_INT_BASE,
                     MMU_INT_SIZE, MMU_THEAD_IO_FLAGS);
 
-  // Connect the L1 and Interrupt L2 page tables for PLIC
-  binfo("connect the L1 and Interrupt L2 page tables for PLIC\n");
+  /* Connect the L1 and PLIC L2 page tables */
+
+  binfo("connect the L1 and PLIC L2 page tables\n");
   mmu_ln_setentry(1, PGT_L1_VBASE, PGT_L2_INT_PBASE, MMU_INT_BASE, PTE_G);
 
   /* Map the kernel text and data for L2/L3 */
