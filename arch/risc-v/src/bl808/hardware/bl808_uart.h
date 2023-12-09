@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/bl602/hardware/bl602_uart.h
+ * arch/risc-v/src/bl808/hardware/bl808_uart.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,15 +18,15 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_BL602_HARDWARE_BL602_UART_H
-#define __ARCH_RISCV_SRC_BL602_HARDWARE_BL602_UART_H
+#ifndef __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_UART_H
+#define __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_UART_H
 
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
 #include <nuttx/config.h>
-#include "bl602_memorymap.h"
+#include "bl808_memorymap.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -34,83 +34,83 @@
 
 /* UART0 and 1 are the same so create this helper for register offsets */
 
-#define BL602_UART_BASE(n)    (BL602_UART0_BASE + (n * (BL602_UART1_BASE - BL602_UART0_BASE)))
+#define BL808_UART_BASE(n)    (BL808_UART0_BASE + (n * (BL808_UART1_BASE - BL808_UART0_BASE)))
 
 /* Register offsets *********************************************************/
 
-#define BL602_UART_UTX_CONFIG_OFFSET          0x000000  /* utx_config */
-#define BL602_UART_URX_CONFIG_OFFSET          0x000004  /* urx_config */
-#define BL602_UART_BIT_PRD_OFFSET             0x000008  /* uart_bit_prd */
-#define BL602_UART_DATA_CONFIG_OFFSET         0x00000c  /* data_config */
-#define BL602_UART_UTX_IR_POSITION_OFFSET     0x000010  /* utx_ir_position */
-#define BL602_UART_URX_IR_POSITION_OFFSET     0x000014  /* urx_ir_position */
-#define BL602_UART_URX_RTO_TIMER_OFFSET       0x000018  /* urx_rto_timer */
-#define BL602_UART_INT_STS_OFFSET             0x000020  /* UART interrupt status */
-#define BL602_UART_INT_MASK_OFFSET            0x000024  /* UART interrupt mask */
-#define BL602_UART_INT_CLEAR_OFFSET           0x000028  /* UART interrupt clear */
-#define BL602_UART_INT_EN_OFFSET              0x00002c  /* UART interrupt enable */
-#define BL602_UART_STATUS_OFFSET              0x000030  /* uart_status */
-#define BL602_UART_STS_URX_ABR_PRD_OFFSET     0x000034  /* sts_urx_abr_prd */
-#define BL602_UART_FIFO_CONFIG_0_OFFSET       0x000080  /* uart_fifo_config_0 */
-#define BL602_UART_FIFO_CONFIG_1_OFFSET       0x000084  /* uart_fifo_config_1 */
-#define BL602_UART_FIFO_WDATA_OFFSET          0x000088  /* uart_fifo_wdata */
-#define BL602_UART_FIFO_RDATA_OFFSET          0x00008c  /* uart_fifo_rdata */
+#define BL808_UART_UTX_CONFIG_OFFSET          0x000000  /* utx_config */
+#define BL808_UART_URX_CONFIG_OFFSET          0x000004  /* urx_config */
+#define BL808_UART_BIT_PRD_OFFSET             0x000008  /* uart_bit_prd */
+#define BL808_UART_DATA_CONFIG_OFFSET         0x00000c  /* data_config */
+#define BL808_UART_UTX_IR_POSITION_OFFSET     0x000010  /* utx_ir_position */
+#define BL808_UART_URX_IR_POSITION_OFFSET     0x000014  /* urx_ir_position */
+#define BL808_UART_URX_RTO_TIMER_OFFSET       0x000018  /* urx_rto_timer */
+#define BL808_UART_INT_STS_OFFSET             0x000020  /* UART interrupt status */
+#define BL808_UART_INT_MASK_OFFSET            0x000024  /* UART interrupt mask */
+#define BL808_UART_INT_CLEAR_OFFSET           0x000028  /* UART interrupt clear */
+#define BL808_UART_INT_EN_OFFSET              0x00002c  /* UART interrupt enable */
+#define BL808_UART_STATUS_OFFSET              0x000030  /* uart_status */
+#define BL808_UART_STS_URX_ABR_PRD_OFFSET     0x000034  /* sts_urx_abr_prd */
+#define BL808_UART_FIFO_CONFIG_0_OFFSET       0x000080  /* uart_fifo_config_0 */
+#define BL808_UART_FIFO_CONFIG_1_OFFSET       0x000084  /* uart_fifo_config_1 */
+#define BL808_UART_FIFO_WDATA_OFFSET          0x000088  /* uart_fifo_wdata */
+#define BL808_UART_FIFO_RDATA_OFFSET          0x00008c  /* uart_fifo_rdata */
 
 /* Register definitions *****************************************************/
 
-#define BL602_UART_UTX_CONFIG(n)          (BL602_UART_BASE(n) + BL602_UART_UTX_CONFIG_OFFSET)
-#define BL602_UART_URX_CONFIG(n)          (BL602_UART_BASE(n) + BL602_UART_URX_CONFIG_OFFSET)
-#define BL602_UART_BIT_PRD(n)             (BL602_UART_BASE(n) + BL602_UART_BIT_PRD_OFFSET)
-#define BL602_UART_DATA_CONFIG(n)         (BL602_UART_BASE(n) + BL602_UART_DATA_CONFIG_OFFSET)
-#define BL602_UART_UTX_IR_POSITION(n)     (BL602_UART_BASE(n) + BL602_UART_UTX_IR_POSITION_OFFSET)
-#define BL602_UART_URX_IR_POSITION(n)     (BL602_UART_BASE(n) + BL602_UART_URX_IR_POSITION_OFFSET)
-#define BL602_UART_URX_RTO_TIMER(n)       (BL602_UART_BASE(n) + BL602_UART_URX_RTO_TIMER_OFFSET)
-#define BL602_UART_INT_STS(n)             (BL602_UART_BASE(n) + BL602_UART_INT_STS_OFFSET)
-#define BL602_UART_INT_MASK(n)            (BL602_UART_BASE(n) + BL602_UART_INT_MASK_OFFSET)
-#define BL602_UART_INT_CLEAR(n)           (BL602_UART_BASE(n) + BL602_UART_INT_CLEAR_OFFSET)
-#define BL602_UART_INT_EN(n)              (BL602_UART_BASE(n) + BL602_UART_INT_EN_OFFSET)
-#define BL602_UART_STATUS(n)              (BL602_UART_BASE(n) + BL602_UART_STATUS_OFFSET)
-#define BL602_UART_STS_URX_ABR_PRD(n)     (BL602_UART_BASE(n) + BL602_UART_STS_URX_ABR_PRD_OFFSET)
-#define BL602_UART_FIFO_CONFIG_0(n)       (BL602_UART_BASE(n) + BL602_UART_FIFO_CONFIG_0_OFFSET)
-#define BL602_UART_FIFO_CONFIG_1(n)       (BL602_UART_BASE(n) + BL602_UART_FIFO_CONFIG_1_OFFSET)
-#define BL602_UART_FIFO_WDATA(n)          (BL602_UART_BASE(n) + BL602_UART_FIFO_WDATA_OFFSET)
-#define BL602_UART_FIFO_RDATA(n)          (BL602_UART_BASE(n) + BL602_UART_FIFO_RDATA_OFFSET)
+#define BL808_UART_UTX_CONFIG(n)          (BL808_UART_BASE(n) + BL808_UART_UTX_CONFIG_OFFSET)
+#define BL808_UART_URX_CONFIG(n)          (BL808_UART_BASE(n) + BL808_UART_URX_CONFIG_OFFSET)
+#define BL808_UART_BIT_PRD(n)             (BL808_UART_BASE(n) + BL808_UART_BIT_PRD_OFFSET)
+#define BL808_UART_DATA_CONFIG(n)         (BL808_UART_BASE(n) + BL808_UART_DATA_CONFIG_OFFSET)
+#define BL808_UART_UTX_IR_POSITION(n)     (BL808_UART_BASE(n) + BL808_UART_UTX_IR_POSITION_OFFSET)
+#define BL808_UART_URX_IR_POSITION(n)     (BL808_UART_BASE(n) + BL808_UART_URX_IR_POSITION_OFFSET)
+#define BL808_UART_URX_RTO_TIMER(n)       (BL808_UART_BASE(n) + BL808_UART_URX_RTO_TIMER_OFFSET)
+#define BL808_UART_INT_STS(n)             (BL808_UART_BASE(n) + BL808_UART_INT_STS_OFFSET)
+#define BL808_UART_INT_MASK(n)            (BL808_UART_BASE(n) + BL808_UART_INT_MASK_OFFSET)
+#define BL808_UART_INT_CLEAR(n)           (BL808_UART_BASE(n) + BL808_UART_INT_CLEAR_OFFSET)
+#define BL808_UART_INT_EN(n)              (BL808_UART_BASE(n) + BL808_UART_INT_EN_OFFSET)
+#define BL808_UART_STATUS(n)              (BL808_UART_BASE(n) + BL808_UART_STATUS_OFFSET)
+#define BL808_UART_STS_URX_ABR_PRD(n)     (BL808_UART_BASE(n) + BL808_UART_STS_URX_ABR_PRD_OFFSET)
+#define BL808_UART_FIFO_CONFIG_0(n)       (BL808_UART_BASE(n) + BL808_UART_FIFO_CONFIG_0_OFFSET)
+#define BL808_UART_FIFO_CONFIG_1(n)       (BL808_UART_BASE(n) + BL808_UART_FIFO_CONFIG_1_OFFSET)
+#define BL808_UART_FIFO_WDATA(n)          (BL808_UART_BASE(n) + BL808_UART_FIFO_WDATA_OFFSET)
+#define BL808_UART_FIFO_RDATA(n)          (BL808_UART_BASE(n) + BL808_UART_FIFO_RDATA_OFFSET)
 
-#define BL602_UART0_UTX_CONFIG            (BL602_UART_UTX_CONFIG(0))
-#define BL602_UART0_URX_CONFIG            (BL602_UART_URX_CONFIG(0))
-#define BL602_UART0_UART_BIT_PRD          (BL602_UART_BIT_PRD(0))
-#define BL602_UART0_DATA_CONFIG           (BL602_UART_DATA_CONFIG(0))
-#define BL602_UART0_UTX_IR_POSITION       (BL602_UART_UTX_IR_POSITION(0))
-#define BL602_UART0_URX_IR_POSITION       (BL602_UART_URX_IR_POSITION(0))
-#define BL602_UART0_URX_RTO_TIMER         (BL602_UART_URX_RTO_TIMER(0))
-#define BL602_UART0_UART_INT_STS          (BL602_UART_INT_STS(0))
-#define BL602_UART0_UART_INT_MASK         (BL602_UART_INT_MASK(0))
-#define BL602_UART0_UART_INT_CLEAR        (BL602_UART_INT_CLEAR(0))
-#define BL602_UART0_UART_INT_EN           (BL602_UART_INT_EN(0))
-#define BL602_UART0_UART_STATUS           (BL602_UART_STATUS(0))
-#define BL602_UART0_STS_URX_ABR_PRD       (BL602_UART_STS_URX_ABR_PRD(0))
-#define BL602_UART0_UART_FIFO_CONFIG_0    (BL602_UART_FIFO_CONFIG_0(0))
-#define BL602_UART0_UART_FIFO_CONFIG_1    (BL602_UART_FIFO_CONFIG_1(0))
-#define BL602_UART0_UART_FIFO_WDATA       (BL602_UART_FIFO_WDATA(0))
-#define BL602_UART0_UART_FIFO_RDATA       (BL602_UART_FIFO_RDATA(0))
+#define BL808_UART0_UTX_CONFIG            (BL808_UART_UTX_CONFIG(0))
+#define BL808_UART0_URX_CONFIG            (BL808_UART_URX_CONFIG(0))
+#define BL808_UART0_UART_BIT_PRD          (BL808_UART_BIT_PRD(0))
+#define BL808_UART0_DATA_CONFIG           (BL808_UART_DATA_CONFIG(0))
+#define BL808_UART0_UTX_IR_POSITION       (BL808_UART_UTX_IR_POSITION(0))
+#define BL808_UART0_URX_IR_POSITION       (BL808_UART_URX_IR_POSITION(0))
+#define BL808_UART0_URX_RTO_TIMER         (BL808_UART_URX_RTO_TIMER(0))
+#define BL808_UART0_UART_INT_STS          (BL808_UART_INT_STS(0))
+#define BL808_UART0_UART_INT_MASK         (BL808_UART_INT_MASK(0))
+#define BL808_UART0_UART_INT_CLEAR        (BL808_UART_INT_CLEAR(0))
+#define BL808_UART0_UART_INT_EN           (BL808_UART_INT_EN(0))
+#define BL808_UART0_UART_STATUS           (BL808_UART_STATUS(0))
+#define BL808_UART0_STS_URX_ABR_PRD       (BL808_UART_STS_URX_ABR_PRD(0))
+#define BL808_UART0_UART_FIFO_CONFIG_0    (BL808_UART_FIFO_CONFIG_0(0))
+#define BL808_UART0_UART_FIFO_CONFIG_1    (BL808_UART_FIFO_CONFIG_1(0))
+#define BL808_UART0_UART_FIFO_WDATA       (BL808_UART_FIFO_WDATA(0))
+#define BL808_UART0_UART_FIFO_RDATA       (BL808_UART_FIFO_RDATA(0))
 
-#define BL602_UART1_UTX_CONFIG            (BL602_UART_UTX_CONFIG(1))
-#define BL602_UART1_URX_CONFIG            (BL602_UART_URX_CONFIG(1))
-#define BL602_UART1_UART_BIT_PRD          (BL602_UART_BIT_PRD(1))
-#define BL602_UART1_DATA_CONFIG           (BL602_UART_DATA_CONFIG(1))
-#define BL602_UART1_UTX_IR_POSITION       (BL602_UART_UTX_IR_POSITION(1))
-#define BL602_UART1_URX_IR_POSITION       (BL602_UART_URX_IR_POSITION(1))
-#define BL602_UART1_URX_RTO_TIMER         (BL602_UART_URX_RTO_TIMER(1))
-#define BL602_UART1_UART_INT_STS          (BL602_UART_INT_STS(1))
-#define BL602_UART1_UART_INT_MASK         (BL602_UART_INT_MASK(1))
-#define BL602_UART1_UART_INT_CLEAR        (BL602_UART_INT_CLEAR(1))
-#define BL602_UART1_UART_INT_EN           (BL602_UART_INT_EN(1))
-#define BL602_UART1_UART_STATUS           (BL602_UART_STATUS(1))
-#define BL602_UART1_STS_URX_ABR_PRD       (BL602_UART_STS_URX_ABR_PRD(1))
-#define BL602_UART1_UART_FIFO_CONFIG_0    (BL602_UART_FIFO_CONFIG_0(1))
-#define BL602_UART1_UART_FIFO_CONFIG_1    (BL602_UART_FIFO_CONFIG_1(1))
-#define BL602_UART1_UART_FIFO_WDATA       (BL602_UART_FIFO_WDATA(1))
-#define BL602_UART1_UART_FIFO_RDATA       (BL602_UART_FIFO_RDATA(1))
+#define BL808_UART1_UTX_CONFIG            (BL808_UART_UTX_CONFIG(1))
+#define BL808_UART1_URX_CONFIG            (BL808_UART_URX_CONFIG(1))
+#define BL808_UART1_UART_BIT_PRD          (BL808_UART_BIT_PRD(1))
+#define BL808_UART1_DATA_CONFIG           (BL808_UART_DATA_CONFIG(1))
+#define BL808_UART1_UTX_IR_POSITION       (BL808_UART_UTX_IR_POSITION(1))
+#define BL808_UART1_URX_IR_POSITION       (BL808_UART_URX_IR_POSITION(1))
+#define BL808_UART1_URX_RTO_TIMER         (BL808_UART_URX_RTO_TIMER(1))
+#define BL808_UART1_UART_INT_STS          (BL808_UART_INT_STS(1))
+#define BL808_UART1_UART_INT_MASK         (BL808_UART_INT_MASK(1))
+#define BL808_UART1_UART_INT_CLEAR        (BL808_UART_INT_CLEAR(1))
+#define BL808_UART1_UART_INT_EN           (BL808_UART_INT_EN(1))
+#define BL808_UART1_UART_STATUS           (BL808_UART_STATUS(1))
+#define BL808_UART1_STS_URX_ABR_PRD       (BL808_UART_STS_URX_ABR_PRD(1))
+#define BL808_UART1_UART_FIFO_CONFIG_0    (BL808_UART_FIFO_CONFIG_0(1))
+#define BL808_UART1_UART_FIFO_CONFIG_1    (BL808_UART_FIFO_CONFIG_1(1))
+#define BL808_UART1_UART_FIFO_WDATA       (BL808_UART_FIFO_WDATA(1))
+#define BL808_UART1_UART_FIFO_RDATA       (BL808_UART_FIFO_RDATA(1))
 
 /* Register bit definitions *************************************************/
 
@@ -222,4 +222,4 @@
 
 #define UART_FIFO_RDATA_MASK                        (0xff)
 
-#endif /* __ARCH_RISCV_SRC_BL602_HARDWARE_BL602_UART_H */
+#endif /* __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_UART_H */

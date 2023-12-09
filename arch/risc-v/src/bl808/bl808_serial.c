@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/bl602/bl602_serial.c
+ * arch/risc-v/src/bl808/bl808_serial.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -38,13 +38,13 @@
 #include <nuttx/fs/ioctl.h>
 #include <nuttx/serial/tioctl.h>
 
-#include "bl602_lowputc.h"
-#include "bl602_gpio.h"
+#include "bl808_lowputc.h"
+#include "bl808_gpio.h"
 
-#include "hardware/bl602_uart.h"
-#include "hardware/bl602_glb.h"
+#include "hardware/bl808_uart.h"
+#include "hardware/bl808_glb.h"
 #include "riscv_internal.h"
-#include "bl602_config.h"
+#include "bl808_config.h"
 #include "chip.h"
 
 /****************************************************************************
@@ -55,22 +55,22 @@
 
 #ifdef HAVE_SERIAL_CONSOLE
 #if defined(CONFIG_UART0_SERIAL_CONSOLE)
-#define BL602_CONSOLE_IDX    0
-#define BL602_CONSOLE_BAUD   CONFIG_UART0_BAUD
-#define BL602_CONSOLE_BITS   CONFIG_UART0_BITS
-#define BL602_CONSOLE_PARITY CONFIG_UART0_PARITY
-#define BL602_CONSOLE_2STOP  CONFIG_UART0_2STOP
-#define BL602_CONSOLE_TX     GPIO_UART0_TX
-#define BL602_CONSOLE_RX     GPIO_UART0_RX
+#define BL808_CONSOLE_IDX    0
+#define BL808_CONSOLE_BAUD   CONFIG_UART0_BAUD
+#define BL808_CONSOLE_BITS   CONFIG_UART0_BITS
+#define BL808_CONSOLE_PARITY CONFIG_UART0_PARITY
+#define BL808_CONSOLE_2STOP  CONFIG_UART0_2STOP
+#define BL808_CONSOLE_TX     GPIO_UART0_TX
+#define BL808_CONSOLE_RX     GPIO_UART0_RX
 #define HAVE_UART
 #elif defined(CONFIG_UART1_SERIAL_CONSOLE)
-#define BL602_CONSOLE_IDX    1
-#define BL602_CONSOLE_BAUD   CONFIG_UART1_BAUD
-#define BL602_CONSOLE_BITS   CONFIG_UART1_BITS
-#define BL602_CONSOLE_PARITY CONFIG_UART1_PARITY
-#define BL602_CONSOLE_2STOP  CONFIG_UART1_2STOP
-#define BL602_CONSOLE_TX     GPIO_UART1_TX
-#define BL602_CONSOLE_RX     GPIO_UART1_RX
+#define BL808_CONSOLE_IDX    1
+#define BL808_CONSOLE_BAUD   CONFIG_UART1_BAUD
+#define BL808_CONSOLE_BITS   CONFIG_UART1_BITS
+#define BL808_CONSOLE_PARITY CONFIG_UART1_PARITY
+#define BL808_CONSOLE_2STOP  CONFIG_UART1_2STOP
+#define BL808_CONSOLE_TX     GPIO_UART1_TX
+#define BL808_CONSOLE_RX     GPIO_UART1_RX
 #define HAVE_UART
 #endif
 #endif /* HAVE_CONSOLE */
@@ -98,7 +98,7 @@
 #else
 #undef CONSOLE_DEV /* No console */
 #undef CONFIG_UART0_SERIAL_CONSOLE
-#if defined(CONFIG_BL602_UART0)
+#if defined(CONFIG_BL808_UART0)
 #define TTYS0_DEV g_uart0port /* UART0 is ttyS0 */
 #undef TTYS1_DEV              /* No ttyS1 */
 #define SERIAL_CONSOLE 1
@@ -120,7 +120,7 @@
  * Private Types
  ****************************************************************************/
 
-struct bl602_uart_s
+struct bl808_uart_s
 {
   uint8_t              irq;      /* IRQ associated with this UART */
   struct uart_config_s config;
@@ -132,18 +132,18 @@ struct bl602_uart_s
 
 /* Serial driver methods */
 
-static int  bl602_setup(struct uart_dev_s *dev);
-static void bl602_shutdown(struct uart_dev_s *dev);
-static int  bl602_attach(struct uart_dev_s *dev);
-static void bl602_detach(struct uart_dev_s *dev);
-static int  bl602_ioctl(struct file *filep, int cmd, unsigned long arg);
-static int  bl602_receive(struct uart_dev_s *dev, unsigned int *status);
-static void bl602_rxint(struct uart_dev_s *dev, bool enable);
-static bool bl602_rxavailable(struct uart_dev_s *dev);
-static void bl602_send(struct uart_dev_s *dev, int ch);
-static void bl602_txint(struct uart_dev_s *dev, bool enable);
-static bool bl602_txready(struct uart_dev_s *dev);
-static bool bl602_txempty(struct uart_dev_s *dev);
+static int  bl808_setup(struct uart_dev_s *dev);
+static void bl808_shutdown(struct uart_dev_s *dev);
+static int  bl808_attach(struct uart_dev_s *dev);
+static void bl808_detach(struct uart_dev_s *dev);
+static int  bl808_ioctl(struct file *filep, int cmd, unsigned long arg);
+static int  bl808_receive(struct uart_dev_s *dev, unsigned int *status);
+static void bl808_rxint(struct uart_dev_s *dev, bool enable);
+static bool bl808_rxavailable(struct uart_dev_s *dev);
+static void bl808_send(struct uart_dev_s *dev, int ch);
+static void bl808_txint(struct uart_dev_s *dev, bool enable);
+static bool bl808_txready(struct uart_dev_s *dev);
+static bool bl808_txempty(struct uart_dev_s *dev);
 
 /****************************************************************************
  * Private Data
@@ -151,32 +151,32 @@ static bool bl602_txempty(struct uart_dev_s *dev);
 
 static const struct uart_ops_s g_uart_ops =
 {
-  .setup       = bl602_setup,
-  .shutdown    = bl602_shutdown,
-  .attach      = bl602_attach,
-  .detach      = bl602_detach,
-  .ioctl       = bl602_ioctl,
-  .receive     = bl602_receive,
-  .rxint       = bl602_rxint,
-  .rxavailable = bl602_rxavailable,
+  .setup       = bl808_setup,
+  .shutdown    = bl808_shutdown,
+  .attach      = bl808_attach,
+  .detach      = bl808_detach,
+  .ioctl       = bl808_ioctl,
+  .receive     = bl808_receive,
+  .rxint       = bl808_rxint,
+  .rxavailable = bl808_rxavailable,
 #ifdef CONFIG_SERIAL_IFLOWCONTROL
   .rxflowcontrol = NULL,
 #endif
-  .send    = bl602_send,
-  .txint   = bl602_txint,
-  .txready = bl602_txready,
-  .txempty = bl602_txempty,
+  .send    = bl808_send,
+  .txint   = bl808_txint,
+  .txready = bl808_txready,
+  .txempty = bl808_txempty,
 };
 
 /* I/O buffers */
 
-#ifdef CONFIG_BL602_UART0
+#ifdef CONFIG_BL808_UART0
 static char g_uart0rxbuffer[CONFIG_UART0_RXBUFSIZE];
 static char g_uart0txbuffer[CONFIG_UART0_TXBUFSIZE];
 
-static struct bl602_uart_s g_uart0priv =
+static struct bl808_uart_s g_uart0priv =
 {
-  .irq      = BL602_IRQ_UART0,
+  .irq      = BL808_IRQ_UART0,
   .config =
     {
       .idx       = 0,
@@ -219,13 +219,13 @@ static uart_dev_t g_uart0port =
 };
 #endif
 
-#ifdef CONFIG_BL602_UART1
+#ifdef CONFIG_BL808_UART1
 static char g_uart1rxbuffer[CONFIG_UART1_RXBUFSIZE];
 static char g_uart1txbuffer[CONFIG_UART1_TXBUFSIZE];
 
-static struct bl602_uart_s g_uart1priv =
+static struct bl808_uart_s g_uart1priv =
 {
-  .irq      = BL602_IRQ_UART1,
+  .irq      = BL808_IRQ_UART1,
   .config =
     {
       .idx       = 1,
@@ -270,10 +270,10 @@ static uart_dev_t g_uart1port =
 
 static struct uart_dev_s *const g_uart_devs[] =
 {
-#ifdef CONFIG_BL602_UART0
+#ifdef CONFIG_BL808_UART0
   [0] = &g_uart0port,
 #endif
-#ifdef CONFIG_BL602_UART1
+#ifdef CONFIG_BL808_UART1
   [1] = &g_uart1port
 #endif
 };
@@ -293,13 +293,13 @@ static struct uart_dev_s *const g_uart_devs[] =
 static int __uart_interrupt(int irq, void *context, void *arg)
 {
   uart_dev_t *dev           = (uart_dev_t *)arg;
-  struct bl602_uart_s *priv = dev->priv;
+  struct bl808_uart_s *priv = dev->priv;
   uint8_t uart_idx          = priv->config.idx;
   uint32_t int_status;
   uint32_t int_mask;
 
-  int_status = getreg32(BL602_UART_INT_STS(uart_idx));
-  int_mask = getreg32(BL602_UART_INT_MASK(uart_idx));
+  int_status = getreg32(BL808_UART_INT_STS(uart_idx));
+  int_mask = getreg32(BL808_UART_INT_MASK(uart_idx));
 
   /* Length of uart rx data transfer arrived interrupt */
 
@@ -307,7 +307,7 @@ static int __uart_interrupt(int irq, void *context, void *arg)
       !(int_mask & UART_INT_MASK_CR_URX_END_MASK))
     {
       putreg32(UART_INT_CLEAR_CR_URX_END_CLR,
-               BL602_UART_INT_CLEAR(uart_idx));
+               BL808_UART_INT_CLEAR(uart_idx));
 
       /* Receive Data ready */
 
@@ -338,7 +338,7 @@ static int __uart_interrupt(int irq, void *context, void *arg)
 }
 
 /****************************************************************************
- * Name: bl602_setup
+ * Name: bl808_setup
  *
  * Description:
  *   Configure the UART baud, bits, parity, etc. This method is called the
@@ -346,16 +346,16 @@ static int __uart_interrupt(int irq, void *context, void *arg)
  *
  ****************************************************************************/
 
-static int bl602_setup(struct uart_dev_s *dev)
+static int bl808_setup(struct uart_dev_s *dev)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
 
-  bl602_uart_configure(&priv->config);
+  bl808_uart_configure(&priv->config);
   return OK;
 }
 
 /****************************************************************************
- * Name: bl602_shutdown
+ * Name: bl808_shutdown
  *
  * Description:
  *   Disable the UART.  This method is called when the serial
@@ -363,19 +363,19 @@ static int bl602_setup(struct uart_dev_s *dev)
  *
  ****************************************************************************/
 
-static void bl602_shutdown(struct uart_dev_s *dev)
+static void bl808_shutdown(struct uart_dev_s *dev)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx = priv->config.idx;
 
   /* Disable uart before config */
 
-  modifyreg32(BL602_UART_UTX_CONFIG(uart_idx), UART_UTX_CONFIG_CR_EN, 0);
-  modifyreg32(BL602_UART_URX_CONFIG(uart_idx), UART_URX_CONFIG_CR_EN, 0);
+  modifyreg32(BL808_UART_UTX_CONFIG(uart_idx), UART_UTX_CONFIG_CR_EN, 0);
+  modifyreg32(BL808_UART_URX_CONFIG(uart_idx), UART_URX_CONFIG_CR_EN, 0);
 }
 
 /****************************************************************************
- * Name: bl602_attach
+ * Name: bl808_attach
  *
  * Description:
  *   Configure the UART to operation in interrupt driven mode.  This method
@@ -389,10 +389,10 @@ static void bl602_shutdown(struct uart_dev_s *dev)
  *
  ****************************************************************************/
 
-static int bl602_attach(struct uart_dev_s *dev)
+static int bl808_attach(struct uart_dev_s *dev)
 {
   int                  ret;
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
 
   ret = irq_attach(priv->irq, __uart_interrupt, (void *)dev);
   if (ret == OK)
@@ -404,7 +404,7 @@ static int bl602_attach(struct uart_dev_s *dev)
 }
 
 /****************************************************************************
- * Name: bl602_detach
+ * Name: bl808_detach
  *
  * Description:
  *   Detach UART interrupts.  This method is called when the serial port is
@@ -413,9 +413,9 @@ static int bl602_attach(struct uart_dev_s *dev)
  *
  ****************************************************************************/
 
-static void bl602_detach(struct uart_dev_s *dev)
+static void bl808_detach(struct uart_dev_s *dev)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
 
   /* Disable interrupts */
 
@@ -427,14 +427,14 @@ static void bl602_detach(struct uart_dev_s *dev)
 }
 
 /****************************************************************************
- * Name: bl602_ioctl
+ * Name: bl808_ioctl
  *
  * Description:
  *   All ioctl calls will be routed through this method
  *
  ****************************************************************************/
 
-static int bl602_ioctl(struct file *filep, int cmd, unsigned long arg)
+static int bl808_ioctl(struct file *filep, int cmd, unsigned long arg)
 {
 #if defined(CONFIG_SERIAL_TERMIOS) || defined(CONFIG_SERIAL_TIOCSERGSTRUCT)
   struct inode *     inode = filep->f_inode;
@@ -449,7 +449,7 @@ static int bl602_ioctl(struct file *filep, int cmd, unsigned long arg)
       do
         {
           struct termios * termiosp = (struct termios *)arg;
-          struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+          struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
 
           if (!termiosp)
             {
@@ -505,7 +505,7 @@ static int bl602_ioctl(struct file *filep, int cmd, unsigned long arg)
       do
         {
           struct termios *     termiosp = (struct termios *)arg;
-          struct bl602_uart_s *    priv = (struct bl602_uart_s *)dev->priv;
+          struct bl808_uart_s *    priv = (struct bl808_uart_s *)dev->priv;
           struct uart_config_s config;
           uint32_t             tmp_val;
 
@@ -593,9 +593,9 @@ static int bl602_ioctl(struct file *filep, int cmd, unsigned long arg)
                * implement TCSADRAIN / TCSAFLUSH
                */
 
-              tmp_val = getreg32(BL602_UART_INT_MASK(config.idx));
-              bl602_uart_configure(&config);
-              putreg32(tmp_val, BL602_UART_INT_MASK(config.idx));
+              tmp_val = getreg32(BL808_UART_INT_MASK(config.idx));
+              bl808_uart_configure(&config);
+              putreg32(tmp_val, BL808_UART_INT_MASK(config.idx));
             }
         }
       while (0);
@@ -611,7 +611,7 @@ static int bl602_ioctl(struct file *filep, int cmd, unsigned long arg)
 }
 
 /****************************************************************************
- * Name: bl602_receive
+ * Name: bl808_receive
  *
  * Description:
  *   Called (usually) from the interrupt level to receive one
@@ -620,9 +620,9 @@ static int bl602_ioctl(struct file *filep, int cmd, unsigned long arg)
  *
  ****************************************************************************/
 
-static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
+static int bl808_receive(struct uart_dev_s *dev, unsigned int *status)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx = priv->config.idx;
   int rxdata;
 
@@ -635,10 +635,10 @@ static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
 
   /* if uart fifo cnts > 0 */
 
-  if (getreg32(BL602_UART_FIFO_CONFIG_1(uart_idx)) & \
+  if (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
       UART_FIFO_CONFIG_1_RX_CNT_MASK)
     {
-      rxdata = getreg32(BL602_UART_FIFO_RDATA(uart_idx)) & \
+      rxdata = getreg32(BL808_UART_FIFO_RDATA(uart_idx)) & \
         UART_FIFO_RDATA_MASK;
     }
   else
@@ -649,91 +649,91 @@ static int bl602_receive(struct uart_dev_s *dev, unsigned int *status)
 }
 
 /****************************************************************************
- * Name: bl602_rxint
+ * Name: bl808_rxint
  *
  * Description:
  *   Call to enable or disable RX interrupts
  *
  ****************************************************************************/
 
-static void bl602_rxint(struct uart_dev_s *dev, bool enable)
+static void bl808_rxint(struct uart_dev_s *dev, bool enable)
 {
   uint32_t int_mask;
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx = priv->config.idx;
   irqstate_t       flags = enter_critical_section();
 
   if (enable)
     {
 #ifndef CONFIG_SUPPRESS_SERIAL_INTS
-      int_mask = getreg32(BL602_UART_INT_MASK(uart_idx));
+      int_mask = getreg32(BL808_UART_INT_MASK(uart_idx));
       int_mask &= ~(UART_INT_MASK_CR_URX_FIFO_MASK);
       int_mask &= ~(UART_INT_MASK_CR_URX_END_MASK);
-      putreg32(int_mask, BL602_UART_INT_MASK(uart_idx));
+      putreg32(int_mask, BL808_UART_INT_MASK(uart_idx));
 #endif
     }
   else
     {
-      int_mask = getreg32(BL602_UART_INT_MASK(uart_idx));
+      int_mask = getreg32(BL808_UART_INT_MASK(uart_idx));
       int_mask |= UART_INT_MASK_CR_URX_FIFO_MASK;
       int_mask |= UART_INT_MASK_CR_URX_END_MASK;
-      putreg32(int_mask, BL602_UART_INT_MASK(uart_idx));
+      putreg32(int_mask, BL808_UART_INT_MASK(uart_idx));
     }
 
   leave_critical_section(flags);
 }
 
 /****************************************************************************
- * Name: bl602_rxavailable
+ * Name: bl808_rxavailable
  *
  * Description:
  *   Return true if the receive register is not empty
  *
  ****************************************************************************/
 
-static bool bl602_rxavailable(struct uart_dev_s *dev)
+static bool bl808_rxavailable(struct uart_dev_s *dev)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx          = priv->config.idx;
 
   /* Return true is data is available in the receive data buffer */
 
-  return (getreg32(BL602_UART_FIFO_CONFIG_1(uart_idx)) & \
+  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
           UART_FIFO_CONFIG_1_RX_CNT_MASK) != 0;
 }
 
 /****************************************************************************
- * Name: bl602_send
+ * Name: bl808_send
  *
  * Description:
  *   This method will send one byte on the UART.
  *
  ****************************************************************************/
 
-static void bl602_send(struct uart_dev_s *dev, int ch)
+static void bl808_send(struct uart_dev_s *dev, int ch)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx          = priv->config.idx;
 
   /* Wait for FIFO to be empty */
 
-  while ((getreg32(BL602_UART_FIFO_CONFIG_1(uart_idx)) & \
+  while ((getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
          UART_FIFO_CONFIG_1_TX_CNT_MASK) == 0);
 
-  putreg32(ch, BL602_UART_FIFO_WDATA(uart_idx));
+  putreg32(ch, BL808_UART_FIFO_WDATA(uart_idx));
 }
 
 /****************************************************************************
- * Name: bl602_txint
+ * Name: bl808_txint
  *
  * Description:
  *   Call to enable or disable TX interrupts
  *
  ****************************************************************************/
 
-static void bl602_txint(struct uart_dev_s *dev, bool enable)
+static void bl808_txint(struct uart_dev_s *dev, bool enable)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx          = priv->config.idx;
   irqstate_t       flags;
   uint32_t         int_mask;
@@ -745,9 +745,9 @@ static void bl602_txint(struct uart_dev_s *dev, bool enable)
 #ifndef CONFIG_SUPPRESS_SERIAL_INTS
       /* Enable the TX interrupt */
 
-      int_mask = getreg32(BL602_UART_INT_MASK(uart_idx));
+      int_mask = getreg32(BL808_UART_INT_MASK(uart_idx));
       int_mask &= ~(UART_INT_MASK_CR_UTX_FIFO_MASK);
-      putreg32(int_mask, BL602_UART_INT_MASK(uart_idx));
+      putreg32(int_mask, BL808_UART_INT_MASK(uart_idx));
 
       /* Fake a TX interrupt here by just calling uart_xmitchars() with
        * interrupts disabled (note this may recurse).
@@ -760,47 +760,47 @@ static void bl602_txint(struct uart_dev_s *dev, bool enable)
     {
       /* Disable the TX interrupt */
 
-      int_mask = getreg32(BL602_UART_INT_MASK(uart_idx));
+      int_mask = getreg32(BL808_UART_INT_MASK(uart_idx));
       int_mask |= UART_INT_MASK_CR_UTX_FIFO_MASK;
-      putreg32(int_mask, BL602_UART_INT_MASK(uart_idx));
+      putreg32(int_mask, BL808_UART_INT_MASK(uart_idx));
     }
 
   leave_critical_section(flags);
 }
 
 /****************************************************************************
- * Name: bl602_txready
+ * Name: bl808_txready
  *
  * Description:
  *   Return true if the transmit data register is not full
  *
  ****************************************************************************/
 
-static bool bl602_txready(struct uart_dev_s *dev)
+static bool bl808_txready(struct uart_dev_s *dev)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx          = priv->config.idx;
 
   /* Return TRUE if the TX FIFO is not full */
 
-  return (getreg32(BL602_UART_FIFO_CONFIG_1(uart_idx)) & \
+  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
           UART_FIFO_CONFIG_1_TX_CNT_MASK) != 0;
 }
 
 /****************************************************************************
- * Name: bl602_txempty
+ * Name: bl808_txempty
  *
  * Description:
  *   Return true if the transmit data register is empty
  *
  ****************************************************************************/
 
-static bool bl602_txempty(struct uart_dev_s *dev)
+static bool bl808_txempty(struct uart_dev_s *dev)
 {
-  struct bl602_uart_s *priv = (struct bl602_uart_s *)dev->priv;
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx          = priv->config.idx;
 
-  return (getreg32(BL602_UART_FIFO_CONFIG_1(uart_idx)) & \
+  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
           UART_FIFO_CONFIG_1_TX_CNT_MASK) == 0;
 }
 
@@ -828,7 +828,7 @@ void riscv_earlyserialinit(void)
   /* Configuration whichever one is the console */
 
   CONSOLE_DEV.isconsole = true;
-  bl602_setup(&CONSOLE_DEV);
+  bl808_setup(&CONSOLE_DEV);
 #endif
 }
 #endif
