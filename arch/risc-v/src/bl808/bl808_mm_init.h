@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_mm_init.h
+ * arch/risc-v/src/bl808/bl808_mm_init.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISC_V_SRC_JH7110_JH7110_MM_INIT_H
-#define __ARCH_RISC_V_SRC_JH7110_JH7110_MM_INIT_H
+#ifndef __ARCH_RISC_V_SRC_BL808_BL808_MM_INIT_H
+#define __ARCH_RISC_V_SRC_BL808_BL808_MM_INIT_H
 
 /****************************************************************************
  * Included Files
@@ -34,7 +34,7 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Name: jh7110_kernel_mappings
+ * Name: bl808_kernel_mappings
  *
  * Description:
  *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up the kernel
@@ -42,10 +42,10 @@
  *
  ****************************************************************************/
 
-void jh7110_kernel_mappings(void);
+void bl808_kernel_mappings(void);
 
 /****************************************************************************
- * Name: jh7110_mm_init
+ * Name: bl808_mm_init
  *
  * Description:
  *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up kernel MMU
@@ -53,6 +53,6 @@ void jh7110_kernel_mappings(void);
  *
  ****************************************************************************/
 
-void jh7110_mm_init(void);
+void bl808_mm_init(void);
 
-#endif /* __ARCH_RISC_V_SRC_JH7110_JH7110_MM_INIT_H */
+#endif /* __ARCH_RISC_V_SRC_BL808_BL808_MM_INIT_H */

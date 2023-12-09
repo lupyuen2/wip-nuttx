@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_irq.c
+ * arch/risc-v/src/bl808/bl808_irq.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -51,8 +51,8 @@ void up_irqinitialize(void)
 
   /* Disable all global interrupts */
 
-  putreg32(0x0, JH7110_PLIC_ENABLE1);
-  putreg32(0x0, JH7110_PLIC_ENABLE2);
+  putreg32(0x0, BL808_PLIC_ENABLE1);
+  putreg32(0x0, BL808_PLIC_ENABLE2);
 
   /* Colorize the interrupt stack for debug purposes */
 
@@ -67,12 +67,12 @@ void up_irqinitialize(void)
 
   for (id = 1; id <= NR_IRQS; id++)
     {
-      putreg32(1, (uintptr_t)(JH7110_PLIC_PRIORITY + 4 * id));
+      putreg32(1, (uintptr_t)(BL808_PLIC_PRIORITY + 4 * id));
     }
 
   /* Set irq threshold to 0 (permits all global interrupts) */
 
-  putreg32(0, JH7110_PLIC_THRESHOLD);
+  putreg32(0, BL808_PLIC_THRESHOLD);
 
   /* Attach the common interrupt handler */
 
@@ -126,7 +126,7 @@ void up_disable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63)
         {
-          modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
+          modifyreg32(BL808_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       1 << (extirq % 32), 0);
         }
       else
@@ -168,7 +168,7 @@ void up_enable_irq(int irq)
 
       if (0 <= extirq && extirq <= 63)
         {
-          modifyreg32(JH7110_PLIC_ENABLE1 + (4 * (extirq / 32)),
+          modifyreg32(BL808_PLIC_ENABLE1 + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
         }
       else

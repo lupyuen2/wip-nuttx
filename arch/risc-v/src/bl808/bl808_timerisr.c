@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_timerisr.c
+ * arch/risc-v/src/bl808/bl808_timerisr.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -39,7 +39,7 @@
 #include "riscv_internal.h"
 #include "riscv_mtimer.h"
 #include "riscv_percpu.h"
-#include "hardware/jh7110_memorymap.h"
+#include "hardware/bl808_memorymap.h"
 
 /****************************************************************************
  * Private Data
@@ -52,7 +52,7 @@ static uint32_t g_stimer_pending = false;
  ****************************************************************************/
 
 /****************************************************************************
- * Name: jh7110_ssoft_interrupt
+ * Name: bl808_ssoft_interrupt
  *
  * Description:
  *   This function is S-mode software interrupt handler to proceed
@@ -60,7 +60,7 @@ static uint32_t g_stimer_pending = false;
  *
  ****************************************************************************/
 
-static int jh7110_ssoft_interrupt(int irq, void *context, void *arg)
+static int bl808_ssoft_interrupt(int irq, void *context, void *arg)
 {
   /* Cleaer Supervisor Software Interrupt */
 
@@ -101,6 +101,6 @@ static int jh7110_ssoft_interrupt(int irq, void *context, void *arg)
 
 void up_timer_initialize(void)
 {
-  irq_attach(RISCV_IRQ_SSOFT, jh7110_ssoft_interrupt, NULL);
+  irq_attach(RISCV_IRQ_SSOFT, bl808_ssoft_interrupt, NULL);
   up_enable_irq(RISCV_IRQ_SSOFT);
 }

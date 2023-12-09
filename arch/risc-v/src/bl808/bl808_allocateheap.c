@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_allocateheap.c
+ * arch/risc-v/src/bl808/bl808_allocateheap.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with

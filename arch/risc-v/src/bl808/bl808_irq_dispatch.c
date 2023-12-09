@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_irq_dispatch.c
+ * arch/risc-v/src/bl808/bl808_irq_dispatch.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -32,8 +32,8 @@
 #include <sys/types.h>
 
 #include "riscv_internal.h"
-#include "hardware/jh7110_memorymap.h"
-#include "hardware/jh7110_plic.h"
+#include "hardware/bl808_memorymap.h"
+#include "hardware/bl808_plic.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -57,7 +57,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 
   if (RISCV_IRQ_EXT == irq)
     {
-      uintptr_t val = getreg32(JH7110_PLIC_CLAIM);
+      uintptr_t val = getreg32(BL808_PLIC_CLAIM);
 
       /* Add the value to nuttx irq which is offset to the mext */
 
@@ -77,7 +77,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
     {
       /* Then write PLIC_CLAIM to clear pending in PLIC */
 
-      putreg32(irq - RISCV_IRQ_EXT, JH7110_PLIC_CLAIM);
+      putreg32(irq - RISCV_IRQ_EXT, BL808_PLIC_CLAIM);
     }
 
   return regs;

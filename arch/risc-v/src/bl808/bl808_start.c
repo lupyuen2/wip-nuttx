@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_start.c
+ * arch/risc-v/src/bl808/bl808_start.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -30,7 +30,7 @@
 
 #include "riscv_internal.h"
 #include "chip.h"
-#include "jh7110_mm_init.h"
+#include "bl808_mm_init.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -56,17 +56,17 @@ extern void __trap_vec(void);
  * for CPU0 and this value is used in up_initial_state()
  */
 
-uintptr_t g_idle_topstack = JH7110_IDLESTACK_TOP;
+uintptr_t g_idle_topstack = BL808_IDLESTACK_TOP;
 
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
 
 /****************************************************************************
- * Name: jh7110_clear_bss
+ * Name: bl808_clear_bss
  ****************************************************************************/
 
-void jh7110_clear_bss(void)
+void bl808_clear_bss(void)
 {
   uint32_t *dest;
 
@@ -81,10 +81,10 @@ void jh7110_clear_bss(void)
 }
 
 /****************************************************************************
- * Name: jh7110_start
+ * Name: bl808_start
  ****************************************************************************/
 
-void jh7110_start_s(int mhartid)
+void bl808_start_s(int mhartid)
 {
   /* Configure FPU */
 
@@ -109,7 +109,7 @@ void jh7110_start_s(int mhartid)
 
   /* Setup page tables for kernel and enable MMU */
 
-  jh7110_mm_init();
+  bl808_mm_init();
 
   /* Call nx_start() */
 
@@ -128,16 +128,16 @@ cpux:
 }
 
 /****************************************************************************
- * Name: jh7110_start
+ * Name: bl808_start
  ****************************************************************************/
 
-void jh7110_start(int mhartid)
+void bl808_start(int mhartid)
 {
   DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
 
   if (0 == mhartid)
     {
-      jh7110_clear_bss();
+      bl808_clear_bss();
 
       /* Initialize the per CPU areas */
 
@@ -154,7 +154,7 @@ void jh7110_start(int mhartid)
 
   /* Start S-mode */
 
-  jh7110_start_s(mhartid);
+  bl808_start_s(mhartid);
 }
 
 void riscv_earlyserialinit(void)

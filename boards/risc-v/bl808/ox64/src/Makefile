@@ -1,5 +1,5 @@
 ############################################################################
-# boards/risc-v/jh7110/star64/src/Makefile
+# boards/risc-v/bl808/ox64/src/Makefile
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -22,6 +22,6 @@ include $(TOPDIR)/Make.defs
 
 RCSRCS = etc/init.d/rc.sysinit etc/init.d/rcS
 
-CSRCS = jh7110_appinit.c
+CSRCS = bl808_appinit.c
 
 include $(TOPDIR)/boards/Board.mk

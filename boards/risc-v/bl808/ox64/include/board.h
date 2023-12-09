@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/jh7110/star64/include/board.h
+ * boards/risc-v/bl808/ox64/include/board.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_H
-#define __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_H
+#ifndef __BOARDS_RISCV_BL808_OX64_INCLUDE_BOARD_H
+#define __BOARDS_RISCV_BL808_OX64_INCLUDE_BOARD_H
 
 /****************************************************************************
  * Included Files
@@ -65,14 +65,14 @@ extern "C"
  ****************************************************************************/
 
 /****************************************************************************
- * Name: jh7110_boardinitialize
+ * Name: bl808_boardinitialize
  ****************************************************************************/
 
-void jh7110_boardinitialize(void);
+void bl808_boardinitialize(void);
 
 #undef EXTERN
 #if defined(__cplusplus)
 }
 #endif
 #endif /* __ASSEMBLY__ */
-#endif /* __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_H */
+#endif /* __BOARDS_RISCV_BL808_OX64_INCLUDE_BOARD_H */

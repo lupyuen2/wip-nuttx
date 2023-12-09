@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/chip.h
+ * arch/risc-v/src/bl808/chip.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_JH7110_CHIP_H
-#define __ARCH_RISCV_SRC_JH7110_CHIP_H
+#ifndef __ARCH_RISCV_SRC_BL808_CHIP_H
+#define __ARCH_RISCV_SRC_BL808_CHIP_H
 
 /****************************************************************************
  * Included Files
@@ -27,12 +27,12 @@
 
 /* Include the chip capabilities file */
 
-#include <arch/jh7110/chip.h>
+#include <arch/bl808/chip.h>
 
-#include "jh7110_memorymap.h"
+#include "bl808_memorymap.h"
 
-#include "hardware/jh7110_memorymap.h"
-#include "hardware/jh7110_plic.h"
+#include "hardware/bl808_memorymap.h"
+#include "hardware/bl808_plic.h"
 
 #include "riscv_internal.h"
 #include "riscv_percpu.h"
@@ -72,4 +72,4 @@
 #endif /* CONFIG_ARCH_INTERRUPTSTACK > 15 */
 
 #endif /* __ASSEMBLY__  */
-#endif /* __ARCH_RISCV_SRC_JH7110_CHIP_H */
+#endif /* __ARCH_RISCV_SRC_BL808_CHIP_H */

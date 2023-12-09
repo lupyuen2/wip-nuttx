@@ -1,5 +1,5 @@
 ############################################################################
-# arch/risc-v/src/jh7110/Make.defs
+# arch/risc-v/src/bl808/Make.defs
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -22,9 +22,9 @@ include common/Make.defs
 
 # Specify our HEAD assembly file.  This will be linked as
 # the first object file, so it will appear at address 0
-HEAD_ASRC = jh7110_head.S
+HEAD_ASRC = bl808_head.S
 
 # Specify our C code within this directory to be included
-CHIP_CSRCS  = jh7110_start.c jh7110_irq_dispatch.c jh7110_irq.c
-CHIP_CSRCS += jh7110_timerisr.c jh7110_allocateheap.c
-CHIP_CSRCS += jh7110_mm_init.c jh7110_pgalloc.c
+CHIP_CSRCS  = bl808_start.c bl808_irq_dispatch.c bl808_irq.c
+CHIP_CSRCS += bl808_timerisr.c bl808_allocateheap.c
+CHIP_CSRCS += bl808_mm_init.c bl808_pgalloc.c

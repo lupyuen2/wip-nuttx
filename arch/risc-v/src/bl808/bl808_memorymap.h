@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/jh7110_memorymap.h
+ * arch/risc-v/src/bl808/bl808_memorymap.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_JH7110_JH7110_MEMORYMAP_H
-#define __ARCH_RISCV_SRC_JH7110_JH7110_MEMORYMAP_H
+#ifndef __ARCH_RISCV_SRC_BL808_BL808_MEMORYMAP_H
+#define __ARCH_RISCV_SRC_BL808_BL808_MEMORYMAP_H
 
 /****************************************************************************
  * Included Files
@@ -34,12 +34,12 @@
 /* Idle thread stack starts from _ebss */
 
 #ifndef __ASSEMBLY__
-#define JH7110_IDLESTACK_BASE  (uintptr_t)_ebss
+#define BL808_IDLESTACK_BASE  (uintptr_t)_ebss
 #else
-#define JH7110_IDLESTACK_BASE  _ebss
+#define BL808_IDLESTACK_BASE  _ebss
 #endif
 
-#define JH7110_IDLESTACK_SIZE (CONFIG_IDLETHREAD_STACKSIZE & ~3)
-#define JH7110_IDLESTACK_TOP  (JH7110_IDLESTACK_BASE + JH7110_IDLESTACK_SIZE)
+#define BL808_IDLESTACK_SIZE (CONFIG_IDLETHREAD_STACKSIZE & ~3)
+#define BL808_IDLESTACK_TOP  (BL808_IDLESTACK_BASE + BL808_IDLESTACK_SIZE)
 
-#endif /* __ARCH_RISCV_SRC_JH7110_JH7110_MEMORYMAP_H */
+#endif /* __ARCH_RISCV_SRC_BL808_BL808_MEMORYMAP_H */

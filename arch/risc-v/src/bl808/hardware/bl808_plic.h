@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/hardware/jh7110_plic.h
+ * arch/risc-v/src/bl808/hardware/bl808_plic.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_PLIC_H
-#define __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_PLIC_H
+#ifndef __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_PLIC_H
+#define __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_PLIC_H
 
 /****************************************************************************
  * Included Files
@@ -33,19 +33,19 @@
 
 /* Interrupt Priority */
 
-#define JH7110_PLIC_PRIORITY  (JH7110_PLIC_BASE + 0x000000)
+#define BL808_PLIC_PRIORITY  (BL808_PLIC_BASE + 0x000000)
 
 /* Hart 1 S-Mode Interrupt Enable */
 
-#define JH7110_PLIC_ENABLE1   (JH7110_PLIC_BASE + 0x002100)
-#define JH7110_PLIC_ENABLE2   (JH7110_PLIC_BASE + 0x002104)
+#define BL808_PLIC_ENABLE1   (BL808_PLIC_BASE + 0x002100)
+#define BL808_PLIC_ENABLE2   (BL808_PLIC_BASE + 0x002104)
 
 /* Hart 1 S-Mode Priority Threshold */
 
-#define JH7110_PLIC_THRESHOLD (JH7110_PLIC_BASE + 0x202000)
+#define BL808_PLIC_THRESHOLD (BL808_PLIC_BASE + 0x202000)
 
 /* Hart 1 S-Mode Claim / Complete */
 
-#define JH7110_PLIC_CLAIM     (JH7110_PLIC_BASE + 0x202004)
+#define BL808_PLIC_CLAIM     (BL808_PLIC_BASE + 0x202004)
 
-#endif /* __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_PLIC_H */
+#endif /* __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_PLIC_H */

@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/jh7110/hardware/jh7110_memorymap.h
+ * arch/risc-v/src/bl808/hardware/bl808_memorymap.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_MEMORYMAP_H
-#define __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_MEMORYMAP_H
+#ifndef __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_MEMORYMAP_H
+#define __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_MEMORYMAP_H
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -27,6 +27,6 @@
 
 /* Register Base Address ****************************************************/
 
-#define JH7110_PLIC_BASE    0x0c000000
+#define BL808_PLIC_BASE    0x0c000000
 
-#endif /* __ARCH_RISCV_SRC_JH7110_HARDWARE_JH7110_MEMORYMAP_H */
+#endif /* __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_MEMORYMAP_H */

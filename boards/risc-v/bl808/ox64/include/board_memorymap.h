@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/jh7110/star64/include/board_memorymap.h
+ * boards/risc-v/bl808/ox64/include/board_memorymap.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_MEMORYMAP_H
-#define __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_MEMORYMAP_H
+#ifndef __BOARDS_RISCV_BL808_OX64_INCLUDE_BOARD_MEMORYMAP_H
+#define __BOARDS_RISCV_BL808_OX64_INCLUDE_BOARD_MEMORYMAP_H
 
 /****************************************************************************
  * Included Files
@@ -33,8 +33,8 @@
 
 /* DDR start address */
 
-#define JH7110_DDR_BASE   (0x40200000)
-#define JH7110_DDR_SIZE   (0x40000000)
+#define BL808_DDR_BASE   (0x40200000)
+#define BL808_DDR_SIZE   (0x40000000)
 
 /* Kernel code memory (RX) */
 
@@ -85,4 +85,4 @@ extern uint8_t          __pgheap_size[];
 extern uint8_t          __ramdisk_start[];
 extern uint8_t          __ramdisk_size[];
 
-#endif /* __BOARDS_RISCV_JH7110_STAR64_INCLUDE_BOARD_MEMORYMAP_H */
+#endif /* __BOARDS_RISCV_BL808_OX64_INCLUDE_BOARD_MEMORYMAP_H */
