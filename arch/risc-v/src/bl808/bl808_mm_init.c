@@ -296,11 +296,6 @@ void bl808_kernel_mappings(void)
 
 void bl808_mm_init(void)
 {
-  /* Copy Ramdisk from U-Boot Ramdisk Load Address */
-
-  memcpy((void *)__ramdisk_start, (void *)RAMDISK_ADDR_R,
-         (size_t)__ramdisk_size);
-
   /* Setup the kernel mappings */
 
   bl808_kernel_mappings();

@@ -174,11 +174,13 @@ void bl808_start(int mhartid)
 
 void riscv_earlyserialinit(void)
 {
+  //// TODO: Declaration
   bl808_earlyserialinit();
 }
 
 void riscv_serialinit(void)
 {
+  //// TODO: Declaration
   bl808_serialinit();
 }
 
