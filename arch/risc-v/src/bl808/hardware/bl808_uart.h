@@ -28,16 +28,15 @@
 #include <nuttx/config.h>
 ////#include "bl808_memorymap.h"
 
-#define BL808_UART3_BASE 0x30002000 ////
+#define BL808_UART3_BASE 0x30002000ul ////
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-//// /* UART0 and 1 are the same so create this helper for register offsets */
+/* Only UART 3 is supported */
 
 #define BL808_UART_BASE(n) (UNUSED(n), BL808_UART3_BASE)
-////#define BL808_UART_BASE(n)    (BL808_UART0_BASE + (n * (BL808_UART1_BASE - BL808_UART0_BASE)))
 
 /* Register offsets *********************************************************/
 
