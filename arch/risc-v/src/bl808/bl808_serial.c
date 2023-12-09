@@ -45,7 +45,6 @@
 #include "chip.h"
 
 ////TODO
-#define HAVE_SERIAL_CONSOLE 1
 #define BL808_IRQ_UART3 45 ////TODO
 void bl808_uart_configure(const struct uart_config_s *config) {}
 
@@ -53,70 +52,20 @@ void bl808_uart_configure(const struct uart_config_s *config) {}
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Select UART parameters for the selected console */
+/* UART parameters for the console */
 
-#ifdef HAVE_SERIAL_CONSOLE
-#if defined(CONFIG_UART0_SERIAL_CONSOLE)
 #define BL808_CONSOLE_IDX    0
-#define BL808_CONSOLE_BAUD   CONFIG_UART0_BAUD
-#define BL808_CONSOLE_BITS   CONFIG_UART0_BITS
-#define BL808_CONSOLE_PARITY CONFIG_UART0_PARITY
-#define BL808_CONSOLE_2STOP  CONFIG_UART0_2STOP
-#define BL808_CONSOLE_TX     GPIO_UART0_TX
-#define BL808_CONSOLE_RX     GPIO_UART0_RX
+#define BL808_CONSOLE_BAUD   CONFIG_UART3_BAUD
+#define BL808_CONSOLE_BITS   CONFIG_UART3_BITS
+#define BL808_CONSOLE_PARITY CONFIG_UART3_PARITY
+#define BL808_CONSOLE_2STOP  CONFIG_UART3_2STOP
+#define BL808_CONSOLE_TX     GPIO_UART3_TX
+#define BL808_CONSOLE_RX     GPIO_UART3_RX
 #define HAVE_UART
-#elif defined(CONFIG_UART1_SERIAL_CONSOLE)
-#define BL808_CONSOLE_IDX    1
-#define BL808_CONSOLE_BAUD   CONFIG_UART1_BAUD
-#define BL808_CONSOLE_BITS   CONFIG_UART1_BITS
-#define BL808_CONSOLE_PARITY CONFIG_UART1_PARITY
-#define BL808_CONSOLE_2STOP  CONFIG_UART1_2STOP
-#define BL808_CONSOLE_TX     GPIO_UART1_TX
-#define BL808_CONSOLE_RX     GPIO_UART1_RX
-#define HAVE_UART
-#endif
-#endif /* HAVE_CONSOLE */
 
-/* If we are not using the serial driver for the console, then we still must
- * provide some minimal implementation of up_putc.
- */
-
-#ifdef USE_SERIALDRIVER
-
-/* Which UART with be tty0/console and which tty1?  The console will always
- * be ttyS0.  If there is no console then will use the lowest numbered UART.
- */
-
-#ifdef HAVE_SERIAL_CONSOLE
-#if defined(CONFIG_UART0_SERIAL_CONSOLE)
-#define CONSOLE_DEV g_uart0port /* UART0 is console */
-#define TTYS0_DEV   g_uart0port /* UART0 is ttyS0 */
-#undef TTYS1_DEV                /* No ttyS1 */
+#define CONSOLE_DEV g_uart3port /* UART3 is console */
+#define TTYS0_DEV   g_uart3port /* UART3 is ttyS0 */
 #define SERIAL_CONSOLE 1
-#elif defined(CONFIG_UART1_SERIAL_CONSOLE)
-#define CONSOLE_DEV g_uart1port /* UART0 is console */
-#error "I'm confused... Do we have a serial console or not?"
-#endif
-#else
-#undef CONSOLE_DEV /* No console */
-#undef CONFIG_UART0_SERIAL_CONSOLE
-#if defined(CONFIG_BL808_UART0)
-#define TTYS0_DEV g_uart0port /* UART0 is ttyS0 */
-#undef TTYS1_DEV              /* No ttyS1 */
-#define SERIAL_CONSOLE 1
-#else
-#undef TTYS0_DEV
-#undef TTYS1_DEV
-#endif
-#endif
-
-/* Common initialization logic will not not know that the all of the UARTs
- * have been disabled.  So, as a result, we may still have to provide
- * stub implementations of riscv_earlyserialinit(), riscv_serialinit(), and
- * up_putc().
- */
-
-#ifdef HAVE_UART_DEVICE
 
 /****************************************************************************
  * Private Types
@@ -172,52 +121,52 @@ static const struct uart_ops_s g_uart_ops =
 
 /* I/O buffers */
 
-#ifdef CONFIG_BL808_UART0
-static char g_uart0rxbuffer[CONFIG_UART0_RXBUFSIZE];
-static char g_uart0txbuffer[CONFIG_UART0_TXBUFSIZE];
+#ifdef CONFIG_BL808_UART3
+static char g_uart3rxbuffer[CONFIG_UART3_RXBUFSIZE];
+static char g_uart3txbuffer[CONFIG_UART3_TXBUFSIZE];
 
-static struct bl808_uart_s g_uart0priv =
+static struct bl808_uart_s g_uart3priv =
 {
-  .irq      = BL808_IRQ_UART0,
+  .irq      = BL808_IRQ_UART3,
   .config =
     {
       .idx       = 0,
-      .baud      = CONFIG_UART0_BAUD,
-      .parity    = CONFIG_UART0_PARITY,
-      .data_bits = CONFIG_UART0_BITS,
-      .stop_bits = CONFIG_UART0_2STOP,
+      .baud      = CONFIG_UART3_BAUD,
+      .parity    = CONFIG_UART3_PARITY,
+      .data_bits = CONFIG_UART3_BITS,
+      .stop_bits = CONFIG_UART3_2STOP,
 
-#ifdef CONFIG_UART0_IFLOWCONTROL
-      .iflow_ctl = CONFIG_UART0_IFLOWCONTROL,
+#ifdef CONFIG_UART3_IFLOWCONTROL
+      .iflow_ctl = CONFIG_UART3_IFLOWCONTROL,
 #else
       .iflow_ctl = 0,
 #endif
 
-#ifdef CONFIG_UART0_OFLOWCONTROL
-      .oflow_ctl = CONFIG_UART0_OFLOWCONTROL,
+#ifdef CONFIG_UART3_OFLOWCONTROL
+      .oflow_ctl = CONFIG_UART3_OFLOWCONTROL,
 #else
       .oflow_ctl = 0,
 #endif
     },
 };
 
-static uart_dev_t g_uart0port =
+static uart_dev_t g_uart3port =
 {
-#ifdef CONFIG_UART0_SERIAL_CONSOLE
+#ifdef CONFIG_UART3_SERIAL_CONSOLE
   .isconsole = 1,
 #endif
   .recv =
     {
-      .size   = CONFIG_UART0_RXBUFSIZE,
-      .buffer = g_uart0rxbuffer,
+      .size   = CONFIG_UART3_RXBUFSIZE,
+      .buffer = g_uart3rxbuffer,
     },
   .xmit =
     {
-      .size   = CONFIG_UART0_TXBUFSIZE,
-      .buffer = g_uart0txbuffer,
+      .size   = CONFIG_UART3_TXBUFSIZE,
+      .buffer = g_uart3txbuffer,
     },
   .ops  = &g_uart_ops,
-  .priv = (void *)&g_uart0priv,
+  .priv = (void *)&g_uart3priv,
 };
 #endif
 
@@ -272,8 +221,8 @@ static uart_dev_t g_uart1port =
 
 static struct uart_dev_s *const g_uart_devs[] =
 {
-#ifdef CONFIG_BL808_UART0
-  [0] = &g_uart0port,
+#ifdef CONFIG_BL808_UART3
+  [0] = &g_uart3port,
 #endif
 #ifdef CONFIG_BL808_UART1
   [1] = &g_uart1port
@@ -566,10 +515,10 @@ static int bl808_ioctl(struct file *filep, int cmd, unsigned long arg)
 
           if (priv->config.idx == 0)
             {
-#ifdef CONFIG_UART0_IFLOWCONTROL
+#ifdef CONFIG_UART3_IFLOWCONTROL
               config.iflow_ctl = (termiosp->c_cflag & CRTS_IFLOW) != 0;
 #endif
-#ifdef CONFIG_UART0_OFLOWCONTROL
+#ifdef CONFIG_UART3_OFLOWCONTROL
               config.oflow_ctl = (termiosp->c_cflag & CCTS_OFLOW) != 0;
 #endif
             }
@@ -810,10 +759,8 @@ static bool bl808_txempty(struct uart_dev_s *dev)
  * Public Functions
  ****************************************************************************/
 
-#ifdef USE_EARLYSERIALINIT
-
 /****************************************************************************
- * Name: riscv_earlyserialinit
+ * Name: bl808_earlyserialinit
  *
  * Description:
  *   Performs the low level UART initialization early in debug so that the
@@ -824,19 +771,16 @@ static bool bl808_txempty(struct uart_dev_s *dev)
  *
  ****************************************************************************/
 
-void riscv_earlyserialinit(void)
+void bl808_earlyserialinit(void)
 {
-#ifdef HAVE_SERIAL_CONSOLE
   /* Configuration whichever one is the console */
 
   CONSOLE_DEV.isconsole = true;
   bl808_setup(&CONSOLE_DEV);
-#endif
 }
-#endif
 
 /****************************************************************************
- * Name: riscv_serialinit
+ * Name: bl808_serialinit
  *
  * Description:
  *   Register serial console and serial ports.  This assumes
@@ -844,16 +788,14 @@ void riscv_earlyserialinit(void)
  *
  ****************************************************************************/
 
-void riscv_serialinit(void)
+void bl808_serialinit(void)
 {
   int  i;
   char devname[16];
 
-#ifdef HAVE_SERIAL_CONSOLE
   /* Register the console */
 
   uart_register("/dev/console", &CONSOLE_DEV);
-#endif
 
   /* Register all UARTs */
 
@@ -889,7 +831,7 @@ void riscv_serialinit(void)
 
 int up_putc(int ch)
 {
-#ifdef HAVE_SERIAL_CONSOLE
+  struct bl808_uart_s *priv = (struct bl808_uart_s *)CONSOLE_DEV.priv;
   irqstate_t flags = enter_critical_section();
 
   /* Check for LF */
@@ -898,66 +840,10 @@ int up_putc(int ch)
     {
       /* Add CR */
 
-      riscv_lowputc('\r');
+      bl808_send(priv, '\r');
     }
 
-  riscv_lowputc(ch);
+  bl808_send(priv, ch);
   leave_critical_section(flags);
-#endif
   return ch;
 }
-
-/****************************************************************************
- * Name: riscv_earlyserialinit, riscv_serialinit, and up_putc
- *
- * Description:
- *   stubs that may be needed.  These stubs would be used if all UARTs are
- *   disabled.  In that case, the logic in common/up_initialize() is not
- *   smart enough to know that there are not UARTs and will still expect
- *   these interfaces to be provided.
- *
- ****************************************************************************/
-
-#else /* HAVE_UART_DEVICE */
-void riscv_earlyserialinit(void)
-{
-}
-
-void riscv_serialinit(void)
-{
-}
-
-int up_putc(int ch)
-{
-  return ch;
-}
-
-#endif /* HAVE_UART_DEVICE */
-#else  /* USE_SERIALDRIVER */
-
-/****************************************************************************
- * Name: up_putc
- *
- * Description:
- *   Provide priority, low-level access to support OS debug writes
- *
- ****************************************************************************/
-
-int up_putc(int ch)
-{
-#ifdef HAVE_SERIAL_CONSOLE
-  /* Check for LF */
-
-  if (ch == '\n')
-    {
-      /* Add CR */
-
-      riscv_lowputc('\r');
-    }
-
-  riscv_lowputc(ch);
-#endif
-  return ch;
-}
-
-#endif /* USE_SERIALDRIVER */
