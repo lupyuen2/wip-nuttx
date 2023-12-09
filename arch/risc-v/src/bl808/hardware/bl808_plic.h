@@ -35,17 +35,17 @@
 
 #define BL808_PLIC_PRIORITY  (BL808_PLIC_BASE + 0x000000)
 
-/* Hart 1 S-Mode Interrupt Enable */
+/* Hart 0 S-Mode Interrupt Enable */
 
-#define BL808_PLIC_ENABLE1   (BL808_PLIC_BASE + 0x002100)
-#define BL808_PLIC_ENABLE2   (BL808_PLIC_BASE + 0x002104)
+#define BL808_PLIC_ENABLE1   (BL808_PLIC_BASE + 0x002080)
+#define BL808_PLIC_ENABLE2   (BL808_PLIC_BASE + 0x002084)
 
-/* Hart 1 S-Mode Priority Threshold */
+/* Hart 0 S-Mode Priority Threshold */
 
-#define BL808_PLIC_THRESHOLD (BL808_PLIC_BASE + 0x202000)
+#define BL808_PLIC_THRESHOLD (BL808_PLIC_BASE + 0x201000)
 
-/* Hart 1 S-Mode Claim / Complete */
+/* Hart 0 S-Mode Claim / Complete */
 
-#define BL808_PLIC_CLAIM     (BL808_PLIC_BASE + 0x202004)
+#define BL808_PLIC_CLAIM     (BL808_PLIC_BASE + 0x201004)
 
 #endif /* __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_PLIC_H */

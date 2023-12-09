@@ -27,6 +27,6 @@
 
 /* Register Base Address ****************************************************/
 
-#define BL808_PLIC_BASE    0x0c000000
+#define BL808_PLIC_BASE    0xe0000000
 
 #endif /* __ARCH_RISCV_SRC_BL808_HARDWARE_BL808_MEMORYMAP_H */
