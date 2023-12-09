@@ -38,8 +38,6 @@
 #include <nuttx/fs/ioctl.h>
 #include <nuttx/serial/tioctl.h>
 
-////#include "bl808_lowputc.h"
-
 #include "hardware/bl808_uart.h"
 #include "riscv_internal.h"
 #include "chip.h"
