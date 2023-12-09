@@ -763,6 +763,7 @@ void bl808_serialinit(void)
 
 int up_putc(int ch)
 {
+  //// TODO: priv should be struct uart_dev_s *
   struct bl808_uart_s *priv = (struct bl808_uart_s *)CONSOLE_DEV.priv;
   irqstate_t flags = enter_critical_section();
 
