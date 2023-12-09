@@ -62,8 +62,8 @@ void up_irqinitialize(void)
 
   /* Clear pendings in PLIC */
 
-  claim = getreg32(JH7110_PLIC_CLAIM);
-  putreg32(claim, JH7110_PLIC_CLAIM);
+  claim = getreg32(BL808_PLIC_CLAIM);
+  putreg32(claim, BL808_PLIC_CLAIM);
 
   /* Colorize the interrupt stack for debug purposes */
 

@@ -39,7 +39,6 @@
 
 ////TODO
 static void bl808_copy_ramdisk(void);
-static void verify_image(uint8_t *addr);
 static FAR void *local_memmove(FAR void *dest, FAR const void *src, size_t count);
 
 /****************************************************************************
