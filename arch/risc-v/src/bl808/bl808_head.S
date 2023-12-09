@@ -68,12 +68,6 @@ __start:
 
 real_start:
 
-  /* We assume that OpenSBI has passed Hart ID (value 1) in Register a0.
-   * But NuttX expects Hart ID to start at 0, so we subtract 1.
-   */
-
-  addi a0, a0, -1
-
   /* Set stack pointer to the idle thread stack */
 
   bnez a0, 1f
