@@ -44,32 +44,28 @@
 #include "riscv_internal.h"
 #include "chip.h"
 
-////TODO
 #define BL808_IRQ_UART3 45 ////TODO
-void bl808_uart_configure(const struct uart_config_s *config) {}
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* UART parameters for the console */
-
-#define BL808_CONSOLE_IDX    0
-#define BL808_CONSOLE_BAUD   CONFIG_UART3_BAUD
-#define BL808_CONSOLE_BITS   CONFIG_UART3_BITS
-#define BL808_CONSOLE_PARITY CONFIG_UART3_PARITY
-#define BL808_CONSOLE_2STOP  CONFIG_UART3_2STOP
-#define BL808_CONSOLE_TX     GPIO_UART3_TX
-#define BL808_CONSOLE_RX     GPIO_UART3_RX
-#define HAVE_UART
-
 #define CONSOLE_DEV g_uart3port /* UART3 is console */
-#define TTYS0_DEV   g_uart3port /* UART3 is ttyS0 */
-#define SERIAL_CONSOLE 1
 
 /****************************************************************************
  * Private Types
  ****************************************************************************/
+
+struct uart_config_s
+{
+  uint8_t  idx;       /* Uart idx */
+  uint32_t baud;      /* Configured baud */
+  uint8_t  iflow_ctl; /* Input flow control supported */
+  uint8_t  oflow_ctl; /* Output flow control supported. */
+  uint8_t  data_bits; /* Number of bits per word */
+  bool     stop_bits; /* true=2 stop bits; false=1 stop bit */
+  uint8_t  parity;    /* Parity selection:  0=none, 1=odd, 2=even */
+};
 
 struct bl808_uart_s
 {
@@ -121,16 +117,15 @@ static const struct uart_ops_s g_uart_ops =
 
 /* I/O buffers */
 
-#ifdef CONFIG_BL808_UART3
 static char g_uart3rxbuffer[CONFIG_UART3_RXBUFSIZE];
 static char g_uart3txbuffer[CONFIG_UART3_TXBUFSIZE];
 
 static struct bl808_uart_s g_uart3priv =
 {
-  .irq      = BL808_IRQ_UART3,
+  .irq = BL808_IRQ_UART3,
   .config =
     {
-      .idx       = 0,
+      .idx       = 3,
       .baud      = CONFIG_UART3_BAUD,
       .parity    = CONFIG_UART3_PARITY,
       .data_bits = CONFIG_UART3_BITS,
@@ -152,9 +147,7 @@ static struct bl808_uart_s g_uart3priv =
 
 static uart_dev_t g_uart3port =
 {
-#ifdef CONFIG_UART3_SERIAL_CONSOLE
   .isconsole = 1,
-#endif
   .recv =
     {
       .size   = CONFIG_UART3_RXBUFSIZE,
@@ -168,65 +161,10 @@ static uart_dev_t g_uart3port =
   .ops  = &g_uart_ops,
   .priv = (void *)&g_uart3priv,
 };
-#endif
-
-#ifdef CONFIG_BL808_UART1
-static char g_uart1rxbuffer[CONFIG_UART1_RXBUFSIZE];
-static char g_uart1txbuffer[CONFIG_UART1_TXBUFSIZE];
-
-static struct bl808_uart_s g_uart1priv =
-{
-  .irq      = BL808_IRQ_UART1,
-  .config =
-    {
-      .idx       = 1,
-      .baud      = CONFIG_UART1_BAUD,
-      .parity    = CONFIG_UART1_PARITY,
-      .data_bits = CONFIG_UART1_BITS,
-      .stop_bits = CONFIG_UART1_2STOP,
-
-#ifdef CONFIG_UART1_IFLOWCONTROL
-      .iflow_ctl = CONFIG_UART1_IFLOWCONTROL,
-#else
-      .iflow_ctl = 0,
-#endif
-
-#ifdef CONFIG_UART1_OFLOWCONTROL
-      .oflow_ctl = CONFIG_UART1_OFLOWCONTROL,
-#else
-      .oflow_ctl = 0,
-#endif
-    },
-};
-
-static uart_dev_t g_uart1port =
-{
-#ifdef CONFIG_UART1_SERIAL_CONSOLE
-  .isconsole = 1,
-#endif
-  .recv =
-    {
-      .size   = CONFIG_UART1_RXBUFSIZE,
-      .buffer = g_uart1rxbuffer,
-    },
-  .xmit =
-    {
-      .size   = CONFIG_UART1_TXBUFSIZE,
-      .buffer = g_uart1txbuffer,
-    },
-  .ops  = &g_uart_ops,
-  .priv = (void *)&g_uart1priv,
-};
-#endif
 
 static struct uart_dev_s *const g_uart_devs[] =
 {
-#ifdef CONFIG_BL808_UART3
   [0] = &g_uart3port,
-#endif
-#ifdef CONFIG_BL808_UART1
-  [1] = &g_uart1port
-#endif
 };
 
 /****************************************************************************
@@ -243,9 +181,9 @@ static struct uart_dev_s *const g_uart_devs[] =
 
 static int __uart_interrupt(int irq, void *context, void *arg)
 {
-  uart_dev_t *dev           = (uart_dev_t *)arg;
+  uart_dev_t *dev = (uart_dev_t *)arg;
   struct bl808_uart_s *priv = dev->priv;
-  uint8_t uart_idx          = priv->config.idx;
+  uint8_t uart_idx = priv->config.idx;
   uint32_t int_status;
   uint32_t int_mask;
 
@@ -287,6 +225,9 @@ static int __uart_interrupt(int irq, void *context, void *arg)
 
   return OK;
 }
+
+////TODO
+void bl808_uart_configure(const struct uart_config_s *config) {}
 
 /****************************************************************************
  * Name: bl808_setup
@@ -513,21 +454,12 @@ static int bl808_ioctl(struct file *filep, int cmd, unsigned long arg)
 
           /* Decode flow control */
 
-          if (priv->config.idx == 0)
+          if (priv->config.idx == 3)
             {
 #ifdef CONFIG_UART3_IFLOWCONTROL
               config.iflow_ctl = (termiosp->c_cflag & CRTS_IFLOW) != 0;
 #endif
 #ifdef CONFIG_UART3_OFLOWCONTROL
-              config.oflow_ctl = (termiosp->c_cflag & CCTS_OFLOW) != 0;
-#endif
-            }
-          else
-            {
-#ifdef CONFIG_UART1_IFLOWCONTROL
-              config.iflow_ctl = (termiosp->c_cflag & CRTS_IFLOW) != 0;
-#endif
-#ifdef CONFIG_UART1_OFLOWCONTROL
               config.oflow_ctl = (termiosp->c_cflag & CCTS_OFLOW) != 0;
 #endif
             }
@@ -612,7 +544,7 @@ static void bl808_rxint(struct uart_dev_s *dev, bool enable)
   uint32_t int_mask;
   struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx = priv->config.idx;
-  irqstate_t       flags = enter_critical_section();
+  irqstate_t flags = enter_critical_section();
 
   if (enable)
     {
@@ -645,7 +577,7 @@ static void bl808_rxint(struct uart_dev_s *dev, bool enable)
 static bool bl808_rxavailable(struct uart_dev_s *dev)
 {
   struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
-  uint8_t uart_idx          = priv->config.idx;
+  uint8_t uart_idx = priv->config.idx;
 
   /* Return true is data is available in the receive data buffer */
 
@@ -664,7 +596,7 @@ static bool bl808_rxavailable(struct uart_dev_s *dev)
 static void bl808_send(struct uart_dev_s *dev, int ch)
 {
   struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
-  uint8_t uart_idx          = priv->config.idx;
+  uint8_t uart_idx = priv->config.idx;
 
   /* Wait for FIFO to be empty */
 
@@ -685,9 +617,9 @@ static void bl808_send(struct uart_dev_s *dev, int ch)
 static void bl808_txint(struct uart_dev_s *dev, bool enable)
 {
   struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
-  uint8_t uart_idx          = priv->config.idx;
-  irqstate_t       flags;
-  uint32_t         int_mask;
+  uint8_t uart_idx = priv->config.idx;
+  irqstate_t flags;
+  uint32_t int_mask;
 
   flags = enter_critical_section();
 
@@ -730,7 +662,7 @@ static void bl808_txint(struct uart_dev_s *dev, bool enable)
 static bool bl808_txready(struct uart_dev_s *dev)
 {
   struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
-  uint8_t uart_idx          = priv->config.idx;
+  uint8_t uart_idx = priv->config.idx;
 
   /* Return TRUE if the TX FIFO is not full */
 
@@ -749,7 +681,7 @@ static bool bl808_txready(struct uart_dev_s *dev)
 static bool bl808_txempty(struct uart_dev_s *dev)
 {
   struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
-  uint8_t uart_idx          = priv->config.idx;
+  uint8_t uart_idx = priv->config.idx;
 
   return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
           UART_FIFO_CONFIG_1_TX_CNT_MASK) == 0;
