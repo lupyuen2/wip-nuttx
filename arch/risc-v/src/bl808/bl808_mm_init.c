@@ -36,6 +36,25 @@
 #include "riscv_internal.h"
 #include "riscv_mmu.h"
 
+//// Begin Test
+// From https://github.com/torvalds/linux/blob/master/arch/riscv/include/asm/pgtable-64.h#L126-L142
+/*
+* [63:59] T-Head Memory Type definitions:
+* bit[63] SO - Strong Order
+* bit[62] C - Cacheable
+* bit[61] B - Bufferable
+* bit[60] SH - Shareable
+* bit[59] Sec - Trustable
+* 00110 - NC   Weakly-ordered, Non-cacheable, Bufferable, Shareable, Non-trustable
+* 01110 - PMA  Weakly-ordered, Cacheable, Bufferable, Shareable, Non-trustable
+* 10010 - IO   Strongly-ordered, Non-cacheable, Non-bufferable, Shareable, Non-trustable
+*/
+// #define _PAGE_PMA_THEAD		((1UL << 62) | (1UL << 61) | (1UL << 60))
+// #define _PAGE_NOCACHE_THEAD	((1UL < 61) | (1UL << 60))
+#define MMU_THEAD_IO_FLAGS		((1UL << 63) | (1UL << 60))
+// #define _PAGE_MTMASK_THEAD	(_PAGE_PMA_THEAD | _PAGE_IO_THEAD | (1UL << 59))
+//// End Test
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -235,12 +254,12 @@ void bl808_kernel_mappings(void)
 
   binfo("map I/O regions\n");
   mmu_ln_map_region(1, PGT_L1_VBASE, MMU_IO_BASE, MMU_IO_BASE,
-                    MMU_IO_SIZE, MMU_IO_FLAGS);
+                    MMU_IO_SIZE, MMU_IO_FLAGS | MMU_THEAD_IO_FLAGS);
 
   // Map the PLIC for Interrupt L2
   binfo("map PLIC for Interrupt L2\n");
   mmu_ln_map_region(2, PGT_L2_INT_PBASE, 0xE0000000, 0xE0000000, 0x10000000, ////TODO
-                    MMU_IO_FLAGS);
+                    MMU_IO_FLAGS | MMU_THEAD_IO_FLAGS);
 
   // Connect the L1 and Interrupt L2 page tables for PLIC
   binfo("connect the L1 and Interrupt L2 page tables for PLIC\n");
