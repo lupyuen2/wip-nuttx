@@ -45,14 +45,25 @@
 
 void up_irqinitialize(void)
 {
+  uintptr_t claim;
+
   /* Disable S-Mode interrupts */
 
   up_irq_save();
+
+  /* Attach the common interrupt handler */
+
+  riscv_exception_attach();
 
   /* Disable all global interrupts */
 
   putreg32(0x0, BL808_PLIC_ENABLE1);
   putreg32(0x0, BL808_PLIC_ENABLE2);
+
+  /* Clear pendings in PLIC */
+
+  claim = getreg32(JH7110_PLIC_CLAIM);
+  putreg32(claim, JH7110_PLIC_CLAIM);
 
   /* Colorize the interrupt stack for debug purposes */
 
@@ -73,10 +84,6 @@ void up_irqinitialize(void)
   /* Set irq threshold to 0 (permits all global interrupts) */
 
   putreg32(0, BL808_PLIC_THRESHOLD);
-
-  /* Attach the common interrupt handler */
-
-  riscv_exception_attach();
 
 #ifdef CONFIG_SMP
   /* Clear RISCV_IPI for CPU0 */
