@@ -42,8 +42,8 @@
 
 /* T-Head C906 MMU requires Strong Order and Shareable for I/O Memory */
 
-#define MMU_THEAD_SHAREABLE    (1UL << 60)
-#define MMU_THEAD_STRONG_ORDER (1UL << 63)
+#define MMU_THEAD_SHAREABLE    (1ul << 60)
+#define MMU_THEAD_STRONG_ORDER (1ul << 63)
 #define MMU_THEAD_IO_FLAGS		 (MMU_IO_FLAGS | MMU_THEAD_SHAREABLE | \
                                 MMU_THEAD_STRONG_ORDER)
 
