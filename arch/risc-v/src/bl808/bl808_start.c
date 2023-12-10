@@ -72,7 +72,7 @@ uintptr_t g_idle_topstack = BL808_IDLESTACK_TOP;
  * Name: bl808_copy_overlap
  *
  * Description:
- *   Copy an overlapping memory region. dest overlaps with src + count.
+ *   Copy an overlapping memory region.  dest overlaps with src + count.
  *
  * Input Parameters:
  *   dest  - Destination address
@@ -112,6 +112,7 @@ static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
 static void bl808_copy_ramdisk(void)
 {
   const char *header = "-rom1fs-";
+  uint8_t *limit = (uint8_t *)BL808_IDLESTACK_TOP + (256 * 1024);
   uint8_t *ramdisk_addr = NULL;
   uint8_t *addr;
   uint32_t size;
@@ -121,7 +122,7 @@ static void bl808_copy_ramdisk(void)
   binfo("_edata=%p, _sbss=%p, _ebss=%p, BL808_IDLESTACK_TOP=%p\n",
         (void *)_edata, (void *)_sbss, (void *)_ebss,
         (void *)BL808_IDLESTACK_TOP);
-  for (addr = _edata; addr < (uint8_t *)BL808_IDLESTACK_TOP + (256 * 1024); addr++)
+  for (addr = _edata; addr < limit; addr++)
     {
       if (memcmp(addr, header, strlen(header)) == 0)
         {
@@ -192,7 +193,7 @@ void bl808_clear_bss(void)
  * Name: bl808_start_s
  *
  * Description:
- *   TODO
+ *   Start the NuttX Kernel.  Assume that we are in RISC-V Supervisor Mode.
  *
  * Input Parameters:
  *   mhartid - Hart ID
@@ -246,7 +247,7 @@ cpux:
  * Name: bl808_start
  *
  * Description:
- *   TODO
+ *   Start the NuttX Kernel.  Called by Boot Code.
  *
  * Input Parameters:
  *   mhartid - Hart ID
