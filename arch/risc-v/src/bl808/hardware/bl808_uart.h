@@ -32,7 +32,7 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Only UART 3 is supported */
+/* Only UART3 is supported */
 
 #define BL808_UART_BASE(n) (UNUSED(n), BL808_UART3_BASE)
 
