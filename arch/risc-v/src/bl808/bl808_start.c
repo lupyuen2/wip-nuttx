@@ -188,7 +188,7 @@ void bl808_clear_bss(void)
 }
 
 /****************************************************************************
- * Name: bl808_start
+ * Name: bl808_start_s
  *
  * Description:
  *   TODO
@@ -248,7 +248,7 @@ cpux:
  *   TODO
  *
  * Input Parameters:
- *   TODO - TODO
+ *   mhartid - Hart ID
  *
  ****************************************************************************/
 
