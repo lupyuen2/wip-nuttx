@@ -88,7 +88,7 @@ static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
 
   if (dest <= src)
     {
-      _info("dest and src should overlap");
+      _err("dest and src should overlap");
       PANIC();
     }
 
@@ -117,8 +117,10 @@ static void bl808_copy_ramdisk(void)
   uint8_t *addr;
   uint32_t size;
 
-  // After _edata, search for "-rom1fs-". This is the RAM Disk Address.
-  // Limit search to 256 KB after Idle Stack Top.
+  /* After _edata, search for "-rom1fs-". This is the RAM Disk Address.
+   * Limit search to 256 KB after Idle Stack Top.
+   */
+
   binfo("_edata=%p, _sbss=%p, _ebss=%p, BL808_IDLESTACK_TOP=%p\n",
         (void *)_edata, (void *)_sbss, (void *)_ebss,
         (void *)BL808_IDLESTACK_TOP);
@@ -131,38 +133,44 @@ static void bl808_copy_ramdisk(void)
         }
     }
 
-  // Stop if RAM Disk is missing
+  /* Stop if RAM Disk is missing */
+
   binfo("ramdisk_addr=%p\n", ramdisk_addr);
   if (ramdisk_addr == NULL)
     {
-      _info("Missing RAM Disk. Check the initrd padding.");
+      _err("Missing RAM Disk. Check the initrd padding.");
       PANIC();
     }
 
-  // RAM Disk must be after Idle Stack, to prevent overwriting
+  /* RAM Disk must be after Idle Stack, to prevent overwriting */
+
   if (ramdisk_addr <= (uint8_t *)BL808_IDLESTACK_TOP)
     {
       const size_t pad = (size_t)BL808_IDLESTACK_TOP - (size_t)ramdisk_addr;
-      _info("RAM Disk must be after Idle Stack. Increase initrd padding "
+      _err("RAM Disk must be after Idle Stack. Increase initrd padding "
             "by %ul bytes.", pad);
       PANIC();
     }
 
-  // Read the Filesystem Size from the next 4 bytes, in Big Endian
+  /* Read the Filesystem Size from the next 4 bytes (Big Endian) */
+
   size = (ramdisk_addr[8] << 24) + (ramdisk_addr[9] << 16) + 
          (ramdisk_addr[10] << 8) + ramdisk_addr[11] + 0x1f0;
   binfo("size=%d\n", size);
 
-  // Filesystem Size must be less than RAM Disk Memory Region
+  /* Filesystem Size must be less than RAM Disk Memory Region */
+
   if (size > (size_t)__ramdisk_size)
   {
-    _info("RAM Disk Region too small. Increase by %ul bytes.\n",
+    _err("RAM Disk Region too small. Increase by %ul bytes.\n",
           size - (size_t)__ramdisk_size);
     PANIC();
   }
 
-  // Copy the RAM Disk from NuttX Image to RAM Disk Region.
-  // __ramdisk_start overlaps with ramdisk_addr + size.
+  /* Copy the RAM Disk from NuttX Image to RAM Disk Region.
+   * __ramdisk_start overlaps with ramdisk_addr + size.
+   */
+
   bl808_copy_overlap(__ramdisk_start, ramdisk_addr, size);
 }
 
