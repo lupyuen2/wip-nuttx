@@ -37,10 +37,6 @@
 #include "bl808_mm_init.h"
 #include "bl808_memorymap.h"
 
-////TODO
-static void bl808_copy_ramdisk(void);
-static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count);
-
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -58,132 +54,31 @@ static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count);
 extern void __trap_vec(void);
 
 /****************************************************************************
- * Public Data
+ * Private Functions
  ****************************************************************************/
 
-/* NOTE: g_idle_topstack needs to point the top of the idle stack
- * for CPU0 and this value is used in up_initial_state()
- */
-
-uintptr_t g_idle_topstack = BL808_IDLESTACK_TOP;
-
-/****************************************************************************
- * Public Functions
- ****************************************************************************/
-
-/****************************************************************************
- * Name: bl808_clear_bss
- ****************************************************************************/
-
-void bl808_clear_bss(void)
+// Copy an overlapping memory region.
+static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
 {
-  uint32_t *dest;
+  uint8_t *d = dest + count - 1;
+  const uint8_t *s = src + count - 1;
 
-  /* Clear .bss.  We'll do this inline (vs. calling memset) just to be
-   * certain that there are no issues with the state of global variables.
-   */
-
-  for (dest = (uint32_t *)_sbss; dest < (uint32_t *)_ebss; )
+  if (dest <= src)
     {
-      *dest++ = 0;
+      _info("dest and src should overlap");
+      PANIC();
+    }
+
+  while (count--)
+    {
+      volatile uint8_t c = *s;  /* Prevent compiler optimisation */
+      *d = c;
+      d--;
+      s--;
     }
 }
 
-/****************************************************************************
- * Name: bl808_start
- ****************************************************************************/
-
-void bl808_start_s(int mhartid)
-{
-  /* Configure FPU */
-
-  riscv_fpuconfig();
-
-  if (mhartid > 0)
-    {
-      goto cpux;
-    }
-
-  showprogress('A');
-
-#ifdef USE_EARLYSERIALINIT
-  riscv_earlyserialinit();
-#endif
-
-  showprogress('B');
-
-  /* Do board initialization */
-
-  showprogress('C');
-
-  /* Setup page tables for kernel and enable MMU */
-
-  bl808_mm_init();
-
-  /* Call nx_start() */
-
-  nx_start();
-
-cpux:
-
-#ifdef CONFIG_SMP
-  riscv_cpu_boot(mhartid);
-#endif
-
-  while (true)
-    {
-      asm("WFI");
-    }
-}
-
-/****************************************************************************
- * Name: bl808_start
- ****************************************************************************/
-
-void bl808_start(int mhartid)
-{
-  DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
-
-  if (0 == mhartid)
-    {
-      /* Copy the RAM Disk */
-
-      bl808_copy_ramdisk();
-
-      /* Clear the BSS */
-
-      bl808_clear_bss();
-
-      /* Initialize the per CPU areas */
-
-      riscv_percpu_add_hart(mhartid);
-    }
-
-  /* Disable MMU */
-
-  WRITE_CSR(satp, 0x0);
-
-  /* Set the trap vector for S-mode */
-
-  WRITE_CSR(stvec, (uintptr_t)__trap_vec);
-
-  /* Start S-mode */
-
-  bl808_start_s(mhartid);
-}
-
-void riscv_earlyserialinit(void)
-{
-  //// TODO: Declaration
-  bl808_earlyserialinit();
-}
-
-void riscv_serialinit(void)
-{
-  //// TODO: Declaration
-  bl808_serialinit();
-}
-
+// Copy the RAM Disk from NuttX Image to RAM Disk Region.
 static void bl808_copy_ramdisk(void)
 {
   const char *header = "-rom1fs-";
@@ -235,29 +130,142 @@ static void bl808_copy_ramdisk(void)
     PANIC();
   }
 
-  // Copy the Filesystem Size to RAM Disk Start
-  // Warning: __ramdisk_start overlaps with ramdisk_addr + size
-  // memmove is aliased to memcpy, so we implement memmove ourselves
+  // Copy the Filesystem Size to RAM Disk Start.
+  // __ramdisk_start overlaps with ramdisk_addr + size.
   bl808_copy_overlap(__ramdisk_start, ramdisk_addr, size);
 }
 
-// From libs/libc/string/lib_memmove.c
-static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
+/****************************************************************************
+ * Public Data
+ ****************************************************************************/
+
+/* NOTE: g_idle_topstack needs to point the top of the idle stack
+ * for CPU0 and this value is used in up_initial_state()
+ */
+
+uintptr_t g_idle_topstack = BL808_IDLESTACK_TOP;
+
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Name: bl808_clear_bss
+ ****************************************************************************/
+////TODO
+void bl808_clear_bss(void)
 {
-  uint8_t *d = dest + count - 1;
-  const uint8_t *s = src + count - 1;
+  uint32_t *dest;
 
-  if (dest <= src)
+  /* Clear .bss.  We'll do this inline (vs. calling memset) just to be
+   * certain that there are no issues with the state of global variables.
+   */
+
+  for (dest = (uint32_t *)_sbss; dest < (uint32_t *)_ebss; )
     {
-      _info("dest and src should overlap");
-      PANIC();
+      *dest++ = 0;
+    }
+}
+
+/****************************************************************************
+ * Name: bl808_start
+ ****************************************************************************/
+////TODO
+void bl808_start_s(int mhartid)
+{
+  /* Configure FPU */
+
+  riscv_fpuconfig();
+
+  if (mhartid > 0)
+    {
+      goto cpux;
     }
 
-  while (count--)
+  showprogress('A');
+
+#ifdef USE_EARLYSERIALINIT
+  riscv_earlyserialinit();
+#endif
+
+  showprogress('B');
+
+  /* Do board initialization */
+
+  showprogress('C');
+
+  /* Setup page tables for kernel and enable MMU */
+
+  bl808_mm_init();
+
+  /* Call nx_start() */
+
+  nx_start();
+
+cpux:
+
+#ifdef CONFIG_SMP
+  riscv_cpu_boot(mhartid);
+#endif
+
+  while (true)
     {
-      volatile uint8_t c = *s;  /* Prevent compiler optimisation */
-      *d = c;
-      d--;
-      s--;
+      asm("WFI");
     }
+}
+
+/****************************************************************************
+ * Name: bl808_start
+ ****************************************************************************/
+////TODO
+void bl808_start(int mhartid)
+{
+  DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
+
+  if (0 == mhartid)
+    {
+      /* Copy the RAM Disk */
+
+      bl808_copy_ramdisk();
+
+      /* Clear the BSS */
+
+      bl808_clear_bss();
+
+      /* Initialize the per CPU areas */
+
+      riscv_percpu_add_hart(mhartid);
+    }
+
+  /* Disable MMU */
+
+  WRITE_CSR(satp, 0x0);
+
+  /* Set the trap vector for S-mode */
+
+  WRITE_CSR(stvec, (uintptr_t)__trap_vec);
+
+  /* Start S-mode */
+
+  bl808_start_s(mhartid);
+}
+
+/****************************************************************************
+ * Name: riscv_earlyserialinit
+ ****************************************************************************/
+////TODO
+void riscv_earlyserialinit(void)
+{
+  //// TODO: Declaration
+  bl808_earlyserialinit();
+}
+
+/****************************************************************************
+ * Name: riscv_serialinit
+ ****************************************************************************/
+////TODO
+void riscv_serialinit(void)
+{
+  //// TODO: Declaration
+  bl808_serialinit();
 }
