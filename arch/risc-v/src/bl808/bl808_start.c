@@ -81,7 +81,8 @@ uintptr_t g_idle_topstack = BL808_IDLESTACK_TOP;
  *
  ****************************************************************************/
 
-static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
+static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src,
+                               size_t count)
 {
   uint8_t *d = dest + count - 1;
   const uint8_t *s = src + count - 1;
@@ -154,18 +155,18 @@ static void bl808_copy_ramdisk(void)
 
   /* Read the Filesystem Size from the next 4 bytes (Big Endian) */
 
-  size = (ramdisk_addr[8] << 24) + (ramdisk_addr[9] << 16) + 
+  size = (ramdisk_addr[8] << 24) + (ramdisk_addr[9] << 16) +
          (ramdisk_addr[10] << 8) + ramdisk_addr[11] + 0x1f0;
   binfo("size=%d\n", size);
 
   /* Filesystem Size must be less than RAM Disk Memory Region */
 
   if (size > (size_t)__ramdisk_size)
-  {
-    _err("RAM Disk Region too small. Increase by %ul bytes.\n",
-          size - (size_t)__ramdisk_size);
-    PANIC();
-  }
+    {
+      _err("RAM Disk Region too small. Increase by %ul bytes.\n",
+            size - (size_t)__ramdisk_size);
+      PANIC();
+    }
 
   /* Copy the RAM Disk from NuttX Image to RAM Disk Region.
    * __ramdisk_start overlaps with ramdisk_addr + size.
