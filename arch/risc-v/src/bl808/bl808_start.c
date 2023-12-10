@@ -186,14 +186,17 @@ void riscv_serialinit(void)
 
 static void bl808_copy_ramdisk(void)
 {
+  const char *header = "-rom1fs-";
+  uint8_t *ramdisk_addr = NULL;
+  uint8_t *addr;
   uint32_t size;
 
   // After _edata, search for "-rom1fs-". This is the RAM Disk Address.
   // Limit search to 256 KB after Idle Stack Top.
-  _info("_edata=%p, _sbss=%p, _ebss=%p, BL808_IDLESTACK_TOP=%p\n", (void *)_edata, (void *)_sbss, (void *)_ebss, BL808_IDLESTACK_TOP);////
-  const char *header = "-rom1fs-";
-  uint8_t *ramdisk_addr = NULL;
-  for (uint8_t *addr = _edata; addr < (uint8_t *)BL808_IDLESTACK_TOP + (256 * 1024); addr++)
+  binfo("_edata=%p, _sbss=%p, _ebss=%p, BL808_IDLESTACK_TOP=%p\n",
+        (void *)_edata, (void *)_sbss, (void *)_ebss,
+        (void *)BL808_IDLESTACK_TOP);
+  for (addr = _edata; addr < (uint8_t *)BL808_IDLESTACK_TOP + (256 * 1024); addr++)
     {
       if (memcmp(addr, header, strlen(header)) == 0)
         {
@@ -203,7 +206,7 @@ static void bl808_copy_ramdisk(void)
     }
 
   // Stop if RAM Disk is missing
-  _info("ramdisk_addr=%p\n", ramdisk_addr);////
+  binfo("ramdisk_addr=%p\n", ramdisk_addr);
   if (ramdisk_addr == NULL)
     {
       _info("Missing RAM Disk. Check the initrd padding.");
@@ -213,19 +216,22 @@ static void bl808_copy_ramdisk(void)
   // RAM Disk must be after Idle Stack, to prevent overwriting
   if (ramdisk_addr <= (uint8_t *)BL808_IDLESTACK_TOP)
     {
-      _info("RAM Disk must be after Idle Stack. Increase initrd padding by %ul bytes.", (size_t)BL808_IDLESTACK_TOP - (size_t)ramdisk_addr);
+      const size_t pad = (size_t)BL808_IDLESTACK_TOP - (size_t)ramdisk_addr;
+      _info("RAM Disk must be after Idle Stack. Increase initrd padding "
+            "by %ul bytes.", pad);
       PANIC();
     }
 
   // Read the Filesystem Size from the next 4 bytes, in Big Endian
   size = (ramdisk_addr[8] << 24) + (ramdisk_addr[9] << 16) + 
          (ramdisk_addr[10] << 8) + ramdisk_addr[11] + 0x1f0;
-  _info("size=%d\n", size);////
+  binfo("size=%d\n", size);
 
   // Filesystem Size must be less than RAM Disk Memory Region
   if (size > (size_t)__ramdisk_size)
   {
-    _info("RAM Disk Region too small. Increase by %ul bytes.\n", size - (size_t)__ramdisk_size);
+    _info("RAM Disk Region too small. Increase by %ul bytes.\n",
+          size - (size_t)__ramdisk_size);
     PANIC();
   }
 
