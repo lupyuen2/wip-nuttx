@@ -54,10 +54,32 @@
 extern void __trap_vec(void);
 
 /****************************************************************************
+ * Public Data
+ ****************************************************************************/
+
+/* NOTE: g_idle_topstack needs to point the top of the idle stack
+ * for CPU0 and this value is used in up_initial_state()
+ */
+
+uintptr_t g_idle_topstack = BL808_IDLESTACK_TOP;
+
+/****************************************************************************
  * Private Functions
  ****************************************************************************/
 
-// Copy an overlapping memory region.
+/****************************************************************************
+ * Name: bl808_copy_overlap
+ *
+ * Description:
+ *   Copy an overlapping memory region. dest overlaps with src + count.
+ *
+ * Input Parameters:
+ *   dest  - Destination address
+ *   src   - Source address
+ *   count - Number of bytes to copy
+ *
+ ****************************************************************************/
+
 static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
 {
   uint8_t *d = dest + count - 1;
@@ -78,7 +100,14 @@ static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
     }
 }
 
-// Copy the RAM Disk from NuttX Image to RAM Disk Region.
+/****************************************************************************
+ * Name: bl808_copy_ramdisk
+ *
+ * Description:
+ *   Copy the RAM Disk from NuttX Image to RAM Disk Region.
+ *
+ ****************************************************************************/
+
 static void bl808_copy_ramdisk(void)
 {
   const char *header = "-rom1fs-";
@@ -136,30 +165,21 @@ static void bl808_copy_ramdisk(void)
 }
 
 /****************************************************************************
- * Public Data
- ****************************************************************************/
-
-/* NOTE: g_idle_topstack needs to point the top of the idle stack
- * for CPU0 and this value is used in up_initial_state()
- */
-
-uintptr_t g_idle_topstack = BL808_IDLESTACK_TOP;
-
-/****************************************************************************
  * Public Functions
  ****************************************************************************/
 
 /****************************************************************************
  * Name: bl808_clear_bss
+ *
+ * Description:
+ *   Clear .bss.  We'll do this inline (vs. calling memset) just to be
+ *   certain that there are no issues with the state of global variables.
+ *
  ****************************************************************************/
-////TODO
+
 void bl808_clear_bss(void)
 {
   uint32_t *dest;
-
-  /* Clear .bss.  We'll do this inline (vs. calling memset) just to be
-   * certain that there are no issues with the state of global variables.
-   */
 
   for (dest = (uint32_t *)_sbss; dest < (uint32_t *)_ebss; )
     {
@@ -169,8 +189,15 @@ void bl808_clear_bss(void)
 
 /****************************************************************************
  * Name: bl808_start
+ *
+ * Description:
+ *   TODO
+ *
+ * Input Parameters:
+ *   TODO - TODO
+ *
  ****************************************************************************/
-////TODO
+
 void bl808_start_s(int mhartid)
 {
   /* Configure FPU */
@@ -216,8 +243,15 @@ cpux:
 
 /****************************************************************************
  * Name: bl808_start
+ *
+ * Description:
+ *   TODO
+ *
+ * Input Parameters:
+ *   TODO - TODO
+ *
  ****************************************************************************/
-////TODO
+
 void bl808_start(int mhartid)
 {
   DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
@@ -252,8 +286,16 @@ void bl808_start(int mhartid)
 
 /****************************************************************************
  * Name: riscv_earlyserialinit
+ *
+ * Description:
+ *   Performs the low level UART initialization early in debug so that the
+ *   serial console will be available during bootup.  This must be called
+ *   before riscv_serialinit.  NOTE:  This function depends on GPIO pin
+ *   configuration performed in up_consoleinit() and main clock
+ *   initialization performed in up_clkinitialize().
+ *
  ****************************************************************************/
-////TODO
+
 void riscv_earlyserialinit(void)
 {
   //// TODO: Declaration
@@ -262,8 +304,13 @@ void riscv_earlyserialinit(void)
 
 /****************************************************************************
  * Name: riscv_serialinit
+ *
+ * Description:
+ *   Register serial console and serial ports.  This assumes
+ *   that riscv_earlyserialinit was called previously.
+ *
  ****************************************************************************/
-////TODO
+
 void riscv_serialinit(void)
 {
   //// TODO: Declaration

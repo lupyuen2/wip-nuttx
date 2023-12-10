@@ -119,9 +119,8 @@ static pgalloc_slab_t g_slabs[SLAB_COUNT];
  * Name: slab_init
  *
  * Description:
- *   Initialize slab allocator for L2 or L3 page table entries
- *
- * L2 Page table is used for SV32. L3 used for SV39
+ *   Initialize slab allocator for L2 or L3 page table entries.
+ *   L2 Page table is used for SV32. L3 is used for SV39.
  *
  * Input Parameters:
  *   start - Beginning of the L2 or L3 page table pool
@@ -146,9 +145,8 @@ static void slab_init(uintptr_t start)
  * Name: slab_alloc
  *
  * Description:
- *   Allocate single slab for L2/L3 page table entry
- *
- * L2 Page table is used for SV32. L3 used for SV39
+ *   Allocate single slab for L2/L3 page table entry.
+ *   L2 Page table is used for SV32. L3 is used for SV39.
  *
  ****************************************************************************/
 
