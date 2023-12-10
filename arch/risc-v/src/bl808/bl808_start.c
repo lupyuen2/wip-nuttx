@@ -39,7 +39,7 @@
 
 ////TODO
 static void bl808_copy_ramdisk(void);
-static FAR void *local_memmove(FAR void *dest, FAR const void *src, size_t count);
+static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count);
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -184,18 +184,8 @@ void riscv_serialinit(void)
   bl808_serialinit();
 }
 
-////TODO
-/* Ramdisk Load Address from U-Boot */
-
-#define RAMDISK_ADDR_R  (0x46100000)
-
 static void bl808_copy_ramdisk(void)
 {
-  /* Copy Ramdisk from U-Boot Ramdisk Load Address */
-  // memcpy((void *)__ramdisk_start, (void *)RAMDISK_ADDR_R,
-  //        (size_t)__ramdisk_size);
-
-  // From https://docs.kernel.org/filesystems/romfs.html
   // After _edata, search for "-rom1fs-". This is the RAM Disk Address.
   // Limit search to 256 KB after Idle Stack Top.
   extern uint8_t _edata[];
@@ -235,49 +225,24 @@ static void bl808_copy_ramdisk(void)
   // Filesystem Size must be less than RAM Disk Memory Region
   DEBUGASSERT(size <= (size_t)__ramdisk_size);
 
-  // _info("Before Copy: ramdisk_addr=%p\n", ramdisk_addr);////
-  // verify_image(ramdisk_addr);////
-
   // Copy the Filesystem Size to RAM Disk Start
   // Warning: __ramdisk_start overlaps with ramdisk_addr + size
   // memmove is aliased to memcpy, so we implement memmove ourselves
-  local_memmove((void *)__ramdisk_start, ramdisk_addr, size);
-
-  // _info("After Copy: __ramdisk_start=%p\n", __ramdisk_start);////
-  // verify_image(__ramdisk_start);////
+  bl808_copy_overlap(__ramdisk_start, ramdisk_addr, size);
 }
 
 // From libs/libc/string/lib_memmove.c
-static FAR void *local_memmove(FAR void *dest, FAR const void *src, size_t count)
+static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
 {
-  FAR char *d;
-  FAR char *s;
+  uint8_t *d = dest + count - 1;
+  const uint8_t *s = src + count - 1;
 
-  // if (dest <= src)
-  //   {
-  //     tmp = (FAR char *) dest;
-  //     s   = (FAR char *) src;
-
-  //     while (count--)
-  //       {
-  //         *tmp++ = *s++;
-  //       }
-  //   }
-  // else
+  DEBUGASSERT(dest > src); ////
+  while (count--)
     {
-      DEBUGASSERT(dest > src); ////
-      d = (FAR char *) dest + count;
-      s = (FAR char *) src + count;
-
-      while (count--)
-        {
-          d -= 1;
-          s -= 1;
-          ////TODO: Very strange. This needs to be volatile or C Compiler will replace this by memcpy.
-          volatile char c = *s;
-          *d = c;
-        }
+      volatile uint8_t c = *s;
+      *d = c;
+      d--;
+      s--;
     }
-
-  return dest;
 }
