@@ -112,7 +112,7 @@ static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src, size_t count)
 static void bl808_copy_ramdisk(void)
 {
   const char *header = "-rom1fs-";
-  uint8_t *limit = (uint8_t *)BL808_IDLESTACK_TOP + (256 * 1024);
+  const uint8_t *limit = (uint8_t *)BL808_IDLESTACK_TOP + (256 * 1024);
   uint8_t *ramdisk_addr = NULL;
   uint8_t *addr;
   uint32_t size;
