@@ -222,8 +222,18 @@ static int __uart_interrupt(int irq, void *context, void *arg)
   return OK;
 }
 
-////TODO
-void bl808_uart_configure(const struct uart_config_s *config) {}
+/****************************************************************************
+ * Name: bl808_uart_configure
+ *
+ * Description:
+ *   Configure the UART baud, bits, parity, etc.
+ *
+ ****************************************************************************/
+
+static void bl808_uart_configure(const struct uart_config_s *config)
+{
+  /* Assume that U-Boot Bootloader has already configured the UART */
+}
 
 /****************************************************************************
  * Name: bl808_setup
