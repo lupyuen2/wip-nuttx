@@ -161,7 +161,7 @@ static void bl808_copy_ramdisk(void)
     PANIC();
   }
 
-  // Copy the Filesystem Size to RAM Disk Start.
+  // Copy the RAM Disk from NuttX Image to RAM Disk Region.
   // __ramdisk_start overlaps with ramdisk_addr + size.
   bl808_copy_overlap(__ramdisk_start, ramdisk_addr, size);
 }
