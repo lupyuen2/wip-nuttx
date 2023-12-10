@@ -41,6 +41,7 @@
 #include "hardware/bl808_uart.h"
 #include "riscv_internal.h"
 #include "chip.h"
+#include "bl808_serial.h"
 
 /****************************************************************************
  * Pre-processor Definitions

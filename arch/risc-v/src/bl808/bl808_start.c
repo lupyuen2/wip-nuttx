@@ -36,6 +36,7 @@
 #include "chip.h"
 #include "bl808_mm_init.h"
 #include "bl808_memorymap.h"
+#include "bl808_serial.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -298,7 +299,6 @@ void bl808_start(int mhartid)
 
 void riscv_earlyserialinit(void)
 {
-  //// TODO: Declaration
   bl808_earlyserialinit();
 }
 
@@ -313,6 +313,5 @@ void riscv_earlyserialinit(void)
 
 void riscv_serialinit(void)
 {
-  //// TODO: Declaration
   bl808_serialinit();
 }
