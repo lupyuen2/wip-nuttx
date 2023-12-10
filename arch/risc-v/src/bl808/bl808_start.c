@@ -194,7 +194,7 @@ void bl808_clear_bss(void)
  *   TODO
  *
  * Input Parameters:
- *   TODO - TODO
+ *   mhartid - Hart ID
  *
  ****************************************************************************/
 
