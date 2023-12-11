@@ -2,7 +2,48 @@
 Bouffalo Lab BL808
 ==================
 
-TODO: `StarFive JH7110 <https://doc-en.rvspace.org/Doc_Center/jh7110.html>`_ is a 64-bit RISC-V SoC that features:
+`Bouffalo Lab BL808 <https://github.com/bouffalolab/bl_docs/tree/main/BL808_RM/en>`_ is a 64-bit / 32-bit RISC-V SoC with 3 RISC-V Cores:
+
+- **D0 Multimedia Core:** T-Head C906 480 MHz 64-bit RISC-V CPU
+    - RV64IMAFCV
+    - Level 1 Instruction and Data Cache (Harvard architecture)
+    - Sv39 Memory Management Unit
+    - jTLB (128 entries)
+    - AXI 4.0 128-bit master interface
+    - Core Local Interrupt (CLINT) and Platform-Level Interrupt Controller (PLIC)
+    - 80 External Interrupt Sources
+    - BHT (8K) and BTB
+    - RISC-V PMP (8 configurable areas)
+
+- **M0 Wireless Core:** T-Head E907 320 MHz 32-bit RISC-V CPU
+    - RV32IMAFCP
+    - 32-bit / 16-bit Mixed Instruction Set
+    - RISC-V Machine Mode and User Mode
+    - 32 x 32-bit Integer General Purpose Registers (GPR)
+    - 32 x 32-bit / 64-bit Floating-Point GPRs
+    - AXI 4.0 main device interface and AHB 5.0 peripheral interface
+    - Instruction and Data Cache
+
+- **LP Low Power Core:** T-Head E902 150 MHz 32-bit RISC-V CPU
+- **RAM:** Embedded 64 MB PSRAM
+
+Network
+2.4 GHz 1T1R WiFi 802.11 b/g/n
+Bluetooth 5.2
+Zigbee
+10/100 Mbit/s Ethernet (optional, on expansion board)
+
+Storage
+On-board 16 Mbit (2 MB) or 128 Mbit (16 MB) XSPI NOR flash memory
+MicroSD, supports SDHC and SDXC (only on the 128 Mbit version)
+
+Expansion Ports
+USB 2.0 OTG port
+26 GPIO pins, including SPI, I2C and UART functionality, possible I2S and GMII expansion
+
+Dual-lane MiPi CSI port, located at USB-C port, for camera module
+
+TODO
 
 - **CPU:** SiFive RISC-V U74 Application Cores (4 cores, RV64GCB) and SiFive RISC-V S7 Monitor Core (single core, RV64IMACB)
 - **GPU:** Imagination Technology BXE-4-32
