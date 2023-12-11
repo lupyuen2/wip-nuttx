@@ -20,9 +20,9 @@ Features
 - **Ethernet:** 10 / 100 Mbps (optional)
 - **Storage:** On-board 16 Mbit (2 MB) or 128 Mbit (16 MB) XSPI NOR Flash Memory, MicroSD (SDHC and SDXC)
 - **USB:** USB 2.0 OTG
-- **Expansion Ports:** 26 GPIO pins (including SPI, I2C and UART)
 - **Audio:** Microphone and Speaker (optional)
-- **MIPI CSI Port:** Dual-lane MIPI CSI port for Camera Module (USB-C)
+- **Video Input:** Dual-lane MIPI CSI port for Camera Module (USB-C)
+- **Expansion Ports:** 26 GPIO pins (including SPI, I2C and UART)
 
 Serial Console
 ==============
