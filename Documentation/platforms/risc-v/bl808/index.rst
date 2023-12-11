@@ -25,6 +25,8 @@ Bouffalo Lab BL808
     - Instruction and Data Cache
 
 - **LP Low Power Core:** T-Head E902 150 MHz 32-bit RISC-V CPU
+    - RV32E[M]C
+
 - **RAM:** Embedded 64 MB PSRAM
 
 Network

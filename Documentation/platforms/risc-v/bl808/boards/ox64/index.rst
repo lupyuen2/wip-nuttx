@@ -4,50 +4,25 @@ PINE64 Ox64
 
 `Ox64 <https://wiki.pine64.org/wiki/Ox64>`_ is a RISC-V Single-Board Computer
 based on the Bouffalo Lab BL808 RISC-V SoC with C906 64-bit and
-E907/E902 32-bit CPU cores supported by 64 MB of embedded PSRAM memory,
+E907 / E902 32-bit CPU cores supported by 64 MB of embedded PSRAM memory,
 with built-in WiFi, Bluetooth and Zigbee radio interfaces.
 
-It comes in a breadboard-friendly form-factor, has a microSD Card slot,
-a USB 2.0 Type-C port and other peripheral interfaces.
+Ox64 comes in a breadboard-friendly form factor. It has a microSD Card slot,
+USB 2.0 Type-C port and other peripheral interfaces.
 
 Features
 ========
 
 - **System on Chip:** Bouffalo Lab BL808
-    - **CPU:** TODO
-    - **RAM:** TODO
-
-TODO
-
-Network
-2.4 GHz 1T1R WiFi 802.11 b/g/n
-Bluetooth 5.2
-Zigbee
-10/100 Mbit/s Ethernet (optional, on expansion board)
-Storage
-On-board 16 Mbit (2 MB) or 128 Mbit (16 MB) XSPI NOR flash memory
-MicroSD, supports SDHC and SDXC (only on the 128 Mbit version)
-Expansion Ports
-USB 2.0 OTG port
-26 GPIO pins, including SPI, I2C and UART functionality, possible I2S and GMII expansion
-Dual-lane MiPi CSI port, located at USB-C port, for camera module
-Audio
-Microphone (optional, on the camera module)
-Speaker (optional, on the camera module)
-
-- **System on Chip:** StarFive JH7110
-    - **CPU:** SiFive RISC-V U74 Application Cores (4 cores, RV64GCB) and SiFive RISC-V S7 Monitor Core (single core, RV64IMACB)
-    - **GPU:** Imagination Technology BXE-4-32
-    - **RAM:** LPDDR4 2GB / 4GB / 8GB
-- **Video:** Digital Video Output up to 4K @ 30 Hz, 4K HDR @ 60 fps
-- **Audio:** 3.5mm Audio Jack
-- **Ethernet:** Single or Dual 10 / 100 / 1000Mbps
-- **Wireless:** 2.4 GHz / 5 Ghz MIMO WiFi 802.11 b/g/n/ac with Bluetooth 5.2 (Realtek RTL8852BU)
-- **Storage:** 128 Mbit (16 MByte) XSPI NOR flash Memory, Bootable microSD (SDHC and SDXC up to 256 GB), Bootable eMMC
-- **USB:** 1 x USB 3.0 Dedicated Host Port, 3 x USB 2.0 Host Ports
-- **Expansion Ports:** PCIe 2.0 x 1 lane, 2 x 20 pins "Pi2" GPIO Header
-- **MIPI DSI Port:** 4-lane MIPI DSI port for LCD Panel
-- **MIPI CSI Port:** 4-lane MIPI CSI port for Camera Module
+    - **CPU:** 64-bit T-Head C906 (D0, RV64IMAFCV), 32-bit T-Head E907 (M0, RV32IMAFCP), 32-bit T-Head E902 (LP, RV32E[M]C)
+    - **RAM:** Embedded 64 MB PSRAM
+- **Wireless:** 2.4 GHz 1T1R WiFi 802.11 b/g/n, Bluetooth 5.2, Zigbee
+- **Ethernet:** 10 / 100 Mbps (optional)
+- **Storage:** On-board 16 Mbit (2 MB) or 128 Mbit (16 MB) XSPI NOR Flash Memory, MicroSD (SDHC and SDXC)
+- **USB:** USB 2.0 OTG
+- **Expansion Ports:** 26 GPIO pins (including SPI, I2C and UART)
+- **Audio:** Microphone and Speaker (optional)
+- **MIPI CSI Port:** Dual-lane MIPI CSI port for Camera Module (USB-C)
 
 Serial Console
 ==============
