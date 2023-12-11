@@ -2,6 +2,21 @@
 PINE64 Ox64
 ===========
 
+`Ox64 <https://wiki.pine64.org/wiki/Ox64>`_ is a RISC-V Single-Board Computer
+based on the Bouffalo Lab BL808 RISC-V SoC with C906 64-bit and
+E907/E902 32-bit CPU cores supported by 64 MB of embedded PSRAM memory,
+with built-in WiFi, Bluetooth and Zigbee radio interfaces.
+
+It comes in a breadboard-friendly form-factor, has a microSD Card slot,
+a USB 2.0 Type-C port and other peripheral interfaces.
+
+Features
+========
+
+- **System on Chip:** Bouffalo Lab BL808
+    - **CPU:** TODO
+    - **RAM:** TODO
+
 TODO
 
 Network
@@ -19,17 +34,6 @@ Dual-lane MiPi CSI port, located at USB-C port, for camera module
 Audio
 Microphone (optional, on the camera module)
 Speaker (optional, on the camera module)
-
-TODO: `Star64 <https://wiki.pine64.org/wiki/STAR64>`_ is a 64-bit RISC-V based
-Single Board Computer powered by StarFive JH7110 Quad-Core SiFive U74 64-Bit CPU,
-Imagination Technology BX-4-32 GPU and supports up to 8GB 1866MHz LPDDR4 memory.
-
-It provides an eMMC module socket, MicroSD Card slot, PCI-e, Pi-2 Bus, USB 3.0
-and many other peripheral interfaces for makers to integrate with sensors
-and other devices.
-
-Features
-========
 
 - **System on Chip:** StarFive JH7110
     - **CPU:** SiFive RISC-V U74 Application Cores (4 cores, RV64GCB) and SiFive RISC-V S7 Monitor Core (single core, RV64IMACB)
