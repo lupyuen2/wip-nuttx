@@ -126,7 +126,7 @@ Booting
 
 Flash `OpenSBI and U-Boot Bootloader <https://lupyuen.github.io/articles/ox64>`_ to Ox64.
 
-Prepare a `Linux microSD <https://lupyuen.github.io/articles/ox64>`_ for Ox64.
+Prepare a `Linux microSD Card <https://lupyuen.github.io/articles/ox64>`_ for Ox64.
 
 Copy the file ``Image`` from the previous section
 and overwrite the file on the microSD Card.
