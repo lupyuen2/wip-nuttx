@@ -28,6 +28,20 @@ Bouffalo Lab BL808
     - RV32E[M]C
 
 - **RAM:** Embedded 64 MB PSRAM
+- **Wireless:** 2.4 GHz 1T1R WiFi 802.11 b/g/n, Bluetooth 5.2, Zigbee
+- **Ethernet:** 10 / 100 Mbps
+
+TODO
+
+- **Storage:** On-board 16 Mbit (2 MB) or 128 Mbit (16 MB) XSPI NOR Flash Memory, MicroSD (SDHC and SDXC)
+- **USB:** USB 2.0 OTG
+- **Expansion Ports:** 26 GPIO pins (including SPI, I2C and UART)
+- **Audio:** Microphone and Speaker (optional)
+- **MIPI CSI Port:** Dual-lane MIPI CSI port for Camera Module (USB-C)
+
+TODO
+
+- **Peripherals:** TODO
 
 Network
 2.4 GHz 1T1R WiFi 802.11 b/g/n
