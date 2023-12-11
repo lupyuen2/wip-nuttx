@@ -14,7 +14,10 @@ Features
 ========
 
 - **System on Chip:** Bouffalo Lab BL808
-    - **CPU:** 64-bit T-Head C906 (D0, RV64IMAFCV), 32-bit T-Head E907 (M0, RV32IMAFCP), 32-bit T-Head E902 (LP, RV32E[M]C)
+    - **CPU:** 
+        - 64-bit T-Head C906 "D0" (RV64IMAFCV)
+        - 32-bit T-Head E907 "M0" (RV32IMAFCP)
+        - 32-bit T-Head E902 "LP" (RV32E[M]C)
     - **RAM:** Embedded 64 MB PSRAM
 - **Wireless:** 2.4 GHz 1T1R WiFi 802.11 b/g/n, Bluetooth 5.2, Zigbee
 - **Ethernet:** 10 / 100 Mbps (optional)
