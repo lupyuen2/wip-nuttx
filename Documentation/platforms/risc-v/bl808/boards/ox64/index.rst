@@ -103,9 +103,11 @@ The NuttX Image ``Image`` will be copied to a microSD Card in the next step.
 Booting
 =======
 
-Flash `OpenSBI and U-Boot Bootloader <https://lupyuen.github.io/articles/ox64>`_ to Ox64.
+To boot NuttX on Ox64, flash
+`OpenSBI and U-Boot Bootloader <https://lupyuen.github.io/articles/ox64>`_ to Ox64.
 
-Prepare a `Linux microSD Card <https://lupyuen.github.io/articles/ox64>`_ for Ox64.
+NuttX boots on Star64 via a microSD Card. Prepare a
+`Linux microSD Card <https://lupyuen.github.io/articles/ox64>`_ for Ox64.
 
 Copy the file ``Image`` from the previous section
 and overwrite the file on the microSD Card.
