@@ -95,7 +95,7 @@ static void bl808_copy_overlap(uint8_t *dest, const uint8_t *src,
 
   while (count--)
     {
-      volatile uint8_t c = *s;  /* Prevent compiler optimisation */
+      volatile uint8_t c = *s;  /* Prevent compiler optimization */
       *d = c;
       d--;
       s--;
@@ -269,13 +269,13 @@ void bl808_start(int mhartid)
 
   if (0 == mhartid)
     {
-      /* Copy the RAM Disk */
-
-      bl808_copy_ramdisk();
-
       /* Clear the BSS */
 
       bl808_clear_bss();
+
+      /* Copy the RAM Disk */
+
+      bl808_copy_ramdisk();
 
       /* Initialize the per CPU areas */
 

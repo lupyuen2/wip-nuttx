@@ -525,11 +525,11 @@ static int bl808_receive(struct uart_dev_s *dev, unsigned int *status)
 
   /* if uart fifo cnts > 0 */
 
-  if (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
+  if (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) &
       UART_FIFO_CONFIG_1_RX_CNT_MASK)
     {
-      rxdata = getreg32(BL808_UART_FIFO_RDATA(uart_idx)) & \
-        UART_FIFO_RDATA_MASK;
+      rxdata = getreg32(BL808_UART_FIFO_RDATA(uart_idx)) &
+               UART_FIFO_RDATA_MASK;
     }
   else
     {
@@ -588,7 +588,7 @@ static bool bl808_rxavailable(struct uart_dev_s *dev)
 
   /* Return true is data is available in the receive data buffer */
 
-  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
+  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) &
           UART_FIFO_CONFIG_1_RX_CNT_MASK) != 0;
 }
 
@@ -607,7 +607,7 @@ static void bl808_send(struct uart_dev_s *dev, int ch)
 
   /* Wait for FIFO to be empty */
 
-  while ((getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
+  while ((getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) &
          UART_FIFO_CONFIG_1_TX_CNT_MASK) == 0);
 
   putreg32(ch, BL808_UART_FIFO_WDATA(uart_idx));
@@ -673,7 +673,7 @@ static bool bl808_txready(struct uart_dev_s *dev)
 
   /* Return TRUE if the TX FIFO is not full */
 
-  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
+  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) &
           UART_FIFO_CONFIG_1_TX_CNT_MASK) != 0;
 }
 
@@ -690,7 +690,7 @@ static bool bl808_txempty(struct uart_dev_s *dev)
   struct bl808_uart_s *priv = (struct bl808_uart_s *)dev->priv;
   uint8_t uart_idx = priv->config.idx;
 
-  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) & \
+  return (getreg32(BL808_UART_FIFO_CONFIG_1(uart_idx)) &
           UART_FIFO_CONFIG_1_TX_CNT_MASK) == 0;
 }
 
