@@ -21,7 +21,7 @@ Features
     - **RAM:** Embedded 64 MB PSRAM
 - **Wireless:** 2.4 GHz 1T1R WiFi 802.11 b/g/n, Bluetooth 5.2, Zigbee
 - **Ethernet:** 10 / 100 Mbps (optional)
-- **Storage:** On-board 16 Mbit (2 MB) or 128 Mbit (16 MB) XSPI NOR Flash Memory, microSD (SDHC and SDXC)
+- **Storage:** On-board 128 Mbit (16 MB) XSPI NOR Flash Memory, microSD (SDHC and SDXC)
 - **USB:** USB 2.0 OTG
 - **Audio:** Microphone and Speaker (optional)
 - **Video Input:** Dual-lane MIPI CSI port for Camera Module (USB-C)
