@@ -1,0 +1,21 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+comment "BL808 Configuration Options"
+
+menu "BL808 Peripheral Support"
+
+config BL808_HAVE_UART3
+	bool "UART3"
+	select BL808_UART3
+	select ARCH_HAVE_UART3
+	select UART3_SERIALDRIVER
+	select ARCH_HAVE_SERIAL_TERMIOS
+
+config BL808_UART3
+	bool
+	default n
+
+endmenu
