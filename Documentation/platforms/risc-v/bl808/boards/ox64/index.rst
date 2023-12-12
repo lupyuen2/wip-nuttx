@@ -3,8 +3,8 @@ PINE64 Ox64
 ===========
 
 `Ox64 <https://wiki.pine64.org/wiki/Ox64>`_ is a RISC-V Single-Board Computer
-based on the Bouffalo Lab BL808 RISC-V SoC with C906 64-bit and
-E907 / E902 32-bit CPU cores supported by 64 MB of embedded PSRAM memory,
+based on the Bouffalo Lab BL808 RISC-V SoC with C906 64-bit CPU Core and
+E907 / E902 32-bit CPU Cores supported by 64 MB of embedded PSRAM memory,
 with built-in WiFi, Bluetooth and Zigbee radio interfaces.
 
 Ox64 comes in a breadboard-friendly form factor. It has a microSD Card slot,
