@@ -68,6 +68,24 @@ __start:
 
 real_start:
 
+  /* Print `123`: Load UART3 Base Address to Register t0 */
+  li  t0, 0x30002000
+
+  /* Load `1` to Register t1 */
+  li  t1, 0x31
+  /* Store byte from Register t1 to UART3 Base Address, Offset 0x88 */
+  sb  t1, 0x88(t0)
+
+  /* Load `2` to Register t1 */
+  li  t1, 0x32
+  /* Store byte from Register t1 to UART3 Base Address, Offset 0x88 */
+  sb  t1, 0x88(t0)
+
+  /* Load `3` to Register t1 */
+  li  t1, 0x33
+  /* Store byte from Register t1 to UART3 Base Address, Offset 0x88 */
+  sb  t1, 0x88(t0)
+
   /* Set stack pointer to the idle thread stack */
 
   bnez a0, 1f
