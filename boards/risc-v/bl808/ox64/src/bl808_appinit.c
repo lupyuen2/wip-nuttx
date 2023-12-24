@@ -165,3 +165,6 @@ void board_late_initialize(void)
 
 #endif
 }
+
+////TODO: Needed by Nim for nuttx/arch/risc-v/src/common/riscv_initialize.c
+void riscv_netinitialize(void) {} ////TODO
