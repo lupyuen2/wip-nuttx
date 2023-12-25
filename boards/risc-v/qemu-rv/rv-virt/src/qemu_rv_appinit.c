@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <errno.h>
+#include <debug.h>
 
 #include <nuttx/board.h>
 #include <nuttx/virtio/virtio-mmio.h>
@@ -99,6 +100,7 @@ static void qemu_virtio_register_mmio_devices(void)
 
 int board_app_initialize(uintptr_t arg)
 {
+  _info("\n");////
 #ifdef CONFIG_BOARD_LATE_INITIALIZE
   /* Board initialization already performed by board_late_initialize() */
 
