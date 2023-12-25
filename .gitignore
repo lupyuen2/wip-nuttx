@@ -62,3 +62,7 @@ uImage
 .DS_Store
 tools/gdb/__pycache__
 /build
+hello.S
+Image
+init.S
+initrd
