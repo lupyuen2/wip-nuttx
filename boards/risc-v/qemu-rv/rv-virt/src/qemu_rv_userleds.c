@@ -52,12 +52,12 @@
 //   LED3
 // };
 
-// static const uint32_t g_led_setmap[BOARD_LEDS] =
-// {
-//   BOARD_LED1_BIT,
-//   BOARD_LED2_BIT,
-//   BOARD_LED3_BIT
-// };
+static const uint32_t g_led_setmap[BOARD_LEDS] =
+{
+  BOARD_LED1_BIT,
+  BOARD_LED2_BIT,
+  BOARD_LED3_BIT
+};
 
 /****************************************************************************
  * Public Functions
@@ -175,13 +175,15 @@ void board_userled(int led, bool ledon)
 
 void board_userled_all(uint32_t ledset)
 {
-  _info("\n");////
+  _info("ledset=0x%x\n", ledset);////
   int i;
 
   /* Configure LED1-3 GPIOs for output */
 
   for (i = 0; i < BOARD_LEDS; i++)
     {
+      bool val = ((ledset & g_led_setmap[i]) != 0);
+      _info("led=%d, val=%d\n", i, val);////
       ////TODO: a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
     }
 }
