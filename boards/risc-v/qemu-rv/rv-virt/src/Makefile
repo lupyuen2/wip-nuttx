@@ -22,6 +22,6 @@ include $(TOPDIR)/Make.defs
 
 RCSRCS = etc/init.d/rc.sysinit etc/init.d/rcS
 
-CSRCS = qemu_rv_appinit.c
+CSRCS = qemu_rv_appinit.c qemu_rv_autoleds.c qemu_rv_userleds.c
 
 include $(TOPDIR)/boards/Board.mk

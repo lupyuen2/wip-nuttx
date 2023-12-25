@@ -45,12 +45,12 @@
 
 /* LED index */
 
-static const uint32_t g_led_map[BOARD_LEDS] =
-{
-  LED1,
-  LED2,
-  LED3
-};
+// static const uint32_t g_led_map[BOARD_LEDS] =
+// {
+//   LED1,
+//   LED2,
+//   LED3
+// };
 
 static bool g_initialized;
 
@@ -60,16 +60,16 @@ static bool g_initialized;
 
 /* Turn on selected led */
 
-static void pinephone_led_on(led_typedef_enum led_num)
+static void qemu_led_on(led_typedef_enum led_num)
 {
-  a64_pio_write(g_led_map[led_num], true);
+  ////TODO: a64_pio_write(g_led_map[led_num], true);
 }
 
 /* Turn off selected led */
 
-static void pinephone_led_off(led_typedef_enum led_num)
+static void qemu_led_off(led_typedef_enum led_num)
 {
-  a64_pio_write(g_led_map[led_num], false);
+  ////TODO: a64_pio_write(g_led_map[led_num], false);
 }
 
 /****************************************************************************
@@ -108,14 +108,13 @@ static void pinephone_led_off(led_typedef_enum led_num)
 void board_autoled_initialize(void)
 {
   int i;
-  int ret;
 
   /* Configure the LED GPIO for output. */
 
-  for (i = 0; i < nitems(g_led_map); i++)
+  for (i = 0; i < BOARD_LEDS; i++)
     {
-      ret = a64_pio_config(g_led_map[i]);
-      DEBUGASSERT(ret == OK);
+      ////TODO: int ret = a64_pio_config(g_led_map[i]);
+      ////TODO: DEBUGASSERT(ret == OK);
     }
 }
 
@@ -153,39 +152,39 @@ void board_autoled_on(int led)
   switch (led)
     {
       case LED_HEAPALLOCATE:
-        pinephone_led_on(BOARD_LED1);
+        qemu_led_on(BOARD_LED1);
         break;
 
       case LED_IRQSENABLED:
-        pinephone_led_on(BOARD_LED2);
+        qemu_led_on(BOARD_LED2);
         break;
 
       case LED_STACKCREATED:
-        pinephone_led_on(BOARD_LED3);
+        qemu_led_on(BOARD_LED3);
         g_initialized = true;
         break;
 
       case LED_INIRQ:
-        pinephone_led_on(BOARD_LED1);
-        pinephone_led_on(BOARD_LED2);
+        qemu_led_on(BOARD_LED1);
+        qemu_led_on(BOARD_LED2);
         break;
 
       case LED_SIGNAL:
-        pinephone_led_on(BOARD_LED1);
-        pinephone_led_on(BOARD_LED3);
+        qemu_led_on(BOARD_LED1);
+        qemu_led_on(BOARD_LED3);
         break;
 
       case LED_ASSERTION:
-        pinephone_led_on(BOARD_LED2);
-        pinephone_led_on(BOARD_LED3);
+        qemu_led_on(BOARD_LED2);
+        qemu_led_on(BOARD_LED3);
         break;
 
       case LED_PANIC:
-        pinephone_led_on(BOARD_LED1);
+        qemu_led_on(BOARD_LED1);
         break;
 
       case LED_IDLE:
-        pinephone_led_on(BOARD_LED2);
+        qemu_led_on(BOARD_LED2);
         break;
 
       default:
@@ -223,26 +222,26 @@ void board_autoled_off(int led)
   switch (led)
     {
       case LED_SIGNAL:
-        pinephone_led_off(BOARD_LED1);
-        pinephone_led_off(BOARD_LED3);
+        qemu_led_off(BOARD_LED1);
+        qemu_led_off(BOARD_LED3);
         break;
 
       case LED_INIRQ:
-        pinephone_led_off(BOARD_LED1);
-        pinephone_led_off(BOARD_LED2);
+        qemu_led_off(BOARD_LED1);
+        qemu_led_off(BOARD_LED2);
         break;
 
       case LED_ASSERTION:
-        pinephone_led_off(BOARD_LED2);
-        pinephone_led_off(BOARD_LED3);
+        qemu_led_off(BOARD_LED2);
+        qemu_led_off(BOARD_LED3);
         break;
 
       case LED_PANIC:
-        pinephone_led_off(BOARD_LED1);
+        qemu_led_off(BOARD_LED1);
         break;
 
       case LED_IDLE:
-        pinephone_led_off(BOARD_LED2);
+        qemu_led_off(BOARD_LED2);
         break;
 
       default:

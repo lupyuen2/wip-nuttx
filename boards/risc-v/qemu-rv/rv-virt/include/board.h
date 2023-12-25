@@ -59,7 +59,7 @@ typedef enum
 #define LED_SIGNAL        5  /* N/A */
 #define LED_ASSERTION     6  /* N/A */
 #define LED_PANIC         7  /* N/A */
-#define LED_CPU           8  /* LED */
+#define LED_IDLE          8  /* LED */
 
 /****************************************************************************
  * Public Types

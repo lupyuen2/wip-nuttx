@@ -45,19 +45,19 @@
 
 /* LED index */
 
-static const uint32_t g_led_map[BOARD_LEDS] =
-{
-  LED1,
-  LED2,
-  LED3
-};
+// static const uint32_t g_led_map[BOARD_LEDS] =
+// {
+//   LED1,
+//   LED2,
+//   LED3
+// };
 
-static const uint32_t g_led_setmap[BOARD_LEDS] =
-{
-  BOARD_LED1_BIT,
-  BOARD_LED2_BIT,
-  BOARD_LED3_BIT
-};
+// static const uint32_t g_led_setmap[BOARD_LEDS] =
+// {
+//   BOARD_LED1_BIT,
+//   BOARD_LED2_BIT,
+//   BOARD_LED3_BIT
+// };
 
 /****************************************************************************
  * Public Functions
@@ -93,15 +93,15 @@ static const uint32_t g_led_setmap[BOARD_LEDS] =
 
 uint32_t board_userled_initialize(void)
 {
+  info("\n");////
   int i;
-  int ret;
 
   /* Configure the LED GPIO for output. */
 
-  for (i = 0; i < nitems(g_led_map); i++)
+  for (i = 0; i < BOARD_LEDS; i++)
     {
-      ret = a64_pio_config(g_led_map[i]);
-      DEBUGASSERT(ret == OK);
+      ////TODO: int ret = a64_pio_config(g_led_map[i]);
+      ////TODO: DEBUGASSERT(ret == OK);
     }
 
   return BOARD_LEDS;
@@ -138,9 +138,10 @@ uint32_t board_userled_initialize(void)
 
 void board_userled(int led, bool ledon)
 {
-  if ((unsigned)led < nitems(g_led_map))
+  info("led=%d, ledon=%d\n", led, ledon);////
+  if ((unsigned)led < BOARD_LEDS)
     {
-      a64_pio_write(g_led_map[led], ledon);
+      ////TODO: a64_pio_write(g_led_map[led], ledon);
     }
 }
 
@@ -174,13 +175,14 @@ void board_userled(int led, bool ledon)
 
 void board_userled_all(uint32_t ledset)
 {
+  info("\n");////
   int i;
 
   /* Configure LED1-3 GPIOs for output */
 
-  for (i = 0; i < nitems(g_led_map); i++)
+  for (i = 0; i < BOARD_LEDS; i++)
     {
-      a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
+      ////TODO: a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
     }
 }
 
