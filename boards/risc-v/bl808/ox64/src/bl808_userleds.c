@@ -178,12 +178,32 @@ void board_userled_all(uint32_t ledset)
   _info("ledset=0x%x\n", ledset);////
   int i;
 
-  /* Configure LED1-3 GPIOs for output */
-
+  // For LED 0 to 2...
   for (i = 0; i < BOARD_LEDS; i++)
     {
+      // Get the desired state of the LED
       bool val = ((ledset & g_led_setmap[i]) != 0);
       _info("led=%d, val=%d\n", i, val);////
+
+      // If this is LED 0...
+      if (i == 0)
+        {
+          // Switch it On or Off?
+          if (val)
+            {
+              // Switch LED 0 (GPIO 29) to On:
+              // Set gpio_cfg29 to (1 << 6) | (11 << 8) | (0 << 30) | (0 << 4) | (1 << 24)
+              // mw 0x20000938 0x1000b40 1
+              *(volatile uint32_t *) 0x20000938 = 0x1000b40;
+            }
+          else
+            {
+              // Switch LED 0 (GPIO 29) to Off:
+              // Set gpio_cfg29 to (1 << 6) | (11 << 8) | (0 << 30) | (0 << 4) | (0 << 24)
+              // mw 0x20000938 0xb40 1
+              *(volatile uint32_t *) 0x20000938 = 0xb40;
+            }
+        }
       ////TODO: a64_pio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
     }
 }
