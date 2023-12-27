@@ -66,3 +66,4 @@ hello.S
 Image
 init.S
 initrd
+hello_nim.S
