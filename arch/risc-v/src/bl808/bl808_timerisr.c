@@ -42,6 +42,12 @@
 #include "hardware/bl808_memorymap.h"
 
 /****************************************************************************
+ * Pre-processor Definitions
+ ****************************************************************************/
+
+#define MTIMER_FREQ 1000000
+
+/****************************************************************************
  * Private Data
  ****************************************************************************/
 
@@ -101,6 +107,10 @@ static int bl808_ssoft_interrupt(int irq, void *context, void *arg)
 
 void up_timer_initialize(void)
 {
-  irq_attach(RISCV_IRQ_SSOFT, bl808_ssoft_interrupt, NULL);
-  up_enable_irq(RISCV_IRQ_SSOFT);
+  struct oneshot_lowerhalf_s *lower = riscv_mtimer_initialize(
+    0, 0, RISCV_IRQ_STIMER, MTIMER_FREQ);
+
+  DEBUGASSERT(lower);
+
+  up_alarm_set_lowerhalf(lower);
 }
