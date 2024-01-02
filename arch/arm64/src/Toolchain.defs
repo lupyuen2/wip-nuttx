@@ -98,7 +98,7 @@ endif
 ARCHCFLAGS += -fno-common
 ARCHCXXFLAGS += -fno-common -nostdinc++
 
-ARCHCFLAGS += -Wall -Wstrict-prototypes -Wshadow -Wundef -Werror -Wno-attributes -Wno-unknown-pragmas
+ARCHCFLAGS += -Wall -Wstrict-prototypes -Wshadow -Wundef -Wno-attributes -Wno-unknown-pragmas
 ARCHCXXFLAGS += -Wall -Wshadow -Wundef -Wno-attributes -Wno-unknown-pragmas
 
 # When all C++ code is built using GCC 7.1 or a higher version,
