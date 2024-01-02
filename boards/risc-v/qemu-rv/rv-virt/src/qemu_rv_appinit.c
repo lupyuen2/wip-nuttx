@@ -119,3 +119,10 @@ int board_app_initialize(uintptr_t arg)
   return OK;
 #endif
 }
+
+#if defined(CONFIG_NET) && !defined(CONFIG_NETDEV_LATEINIT)
+void riscv_netinitialize(void)
+{
+  /* TODO: Support net initialize */
+}
+#endif
