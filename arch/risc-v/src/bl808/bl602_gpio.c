@@ -31,11 +31,14 @@
 ////TODO
 #define BL602_GLB_BASE        0x20000000ul  /* glb */
 
+////TODO: Can pinset map 142 pins?
+
 /****************************************************************************
- * Public Data
+ * Private Data
  ****************************************************************************/
 
-const uintptr_t g_gpio_base[] =
+////TODO: Rename g_ to static
+static const uintptr_t g_gpio_base[] =
 {
   BL602_GPIO_CFG0,
   BL602_GPIO_CFG1,
@@ -78,7 +81,7 @@ int bl602_configgpio(gpio_pinset_t cfgset)
   uint32_t cfg = 0;
   uint8_t pin = (cfgset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
-  if (pin > 27)
+  if (pin >= nitems(g_gpio_base))
     {
       return ERROR;
     }
@@ -181,7 +184,7 @@ int bl602_config_uart_sel(gpio_pinset_t pinset, uint8_t sig_sel)
   uint8_t sel_idx;
   uint32_t reg;
 
-  if ((pin > 27) || sig_sel > UART_SIG_SEL_UART1_RXD)
+  if ((pin >= nitems(g_gpio_base)) || sig_sel > UART_SIG_SEL_UART1_RXD)
     {
       return ERROR;
     }
@@ -209,6 +212,8 @@ int bl602_config_uart_sel(gpio_pinset_t pinset, uint8_t sig_sel)
 void bl602_gpiowrite(gpio_pinset_t pinset, bool value)
 {
   uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
+
+  DEBUGASSERT(pin < nitems(g_gpio_base));
   if (value)
     {
       modifyreg32(BL602_GPIO_CFGCTL32, 0, (1 << pin));
@@ -230,5 +235,7 @@ void bl602_gpiowrite(gpio_pinset_t pinset, bool value)
 bool bl602_gpioread(gpio_pinset_t pinset)
 {
   uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
+
+  DEBUGASSERT(pin < nitems(g_gpio_base));
   return ((getreg32(BL602_GPIO_CFGCTL30) & (1 << pin)) ? 1 : 0);
 }
