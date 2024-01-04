@@ -35,7 +35,7 @@
 #include <nuttx/irq.h>
 
 #include "chip.h"
-#include "hardware/bl602_glb.h"
+////#include "hardware/bl602_glb.h"
 
 /****************************************************************************
  * Pre-Processor Declarations
