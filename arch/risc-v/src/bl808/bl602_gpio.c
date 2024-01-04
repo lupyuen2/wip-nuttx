@@ -23,6 +23,7 @@
  ****************************************************************************/
 
 #include <stdint.h>
+#include <sys/param.h>
 
 #include "riscv_internal.h"
 #include "hardware/bl602_glb.h"
@@ -30,8 +31,10 @@
 
 ////TODO
 #define BL602_GLB_BASE        0x20000000ul  /* glb */
+#define reg_gpio_xx_o 24
+#define reg_gpio_xx_i 28
 
-////TODO: Can pinset map 142 pins?
+////TODO: Can pinset map 46 pins?
 
 /****************************************************************************
  * Private Data
@@ -122,11 +125,7 @@ int bl602_configgpio(gpio_pinset_t cfgset)
         GPIO_CFGCTL0_GPIO_0_FUNC_SEL_SHIFT;
     }
 
-  /* Grab the register that contains the pin config, this is shared between
-   * two pins so we must shift accordingly.
-   */
-
-  regaddr = g_gpio_base[pin / 2];
+  regaddr = g_gpio_base[pin];
   mask = 0xffff;
   if ((pin & 1) == 1)
     {
@@ -136,12 +135,14 @@ int bl602_configgpio(gpio_pinset_t cfgset)
 
   modifyreg32(regaddr, mask, cfg);
 
-  /* Enable pin output if requested */
+  // TODO
+  // /* Enable pin output if requested */
 
-  if (!(cfgset & GPIO_INPUT))
-    {
-      modifyreg32(BL602_GPIO_CFGCTL34, 0, (1 << pin));
-    }
+  // if (!(cfgset & GPIO_INPUT))
+  //   {
+  //     modifyreg32(BL602_GPIO_CFGCTL34, 0, (1 << pin));
+  //     modifyreg32(regaddr, 0, (1 << reg_gpio_xx_o));
+  //   }
 
   return OK;
 }
@@ -211,16 +212,18 @@ int bl602_config_uart_sel(gpio_pinset_t pinset, uint8_t sig_sel)
 
 void bl602_gpiowrite(gpio_pinset_t pinset, bool value)
 {
+  uintptr_t regaddr;
   uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
   DEBUGASSERT(pin < nitems(g_gpio_base));
+  regaddr = g_gpio_base[pin];
   if (value)
     {
-      modifyreg32(BL602_GPIO_CFGCTL32, 0, (1 << pin));
+      modifyreg32(regaddr, 0, (1 << reg_gpio_xx_o));
     }
   else
     {
-      modifyreg32(BL602_GPIO_CFGCTL32, (1 << pin), 0);
+      modifyreg32(regaddr, (1 << reg_gpio_xx_o), 0);
     }
 }
 
@@ -234,8 +237,10 @@ void bl602_gpiowrite(gpio_pinset_t pinset, bool value)
 
 bool bl602_gpioread(gpio_pinset_t pinset)
 {
+  uintptr_t regaddr;
   uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
   DEBUGASSERT(pin < nitems(g_gpio_base));
-  return ((getreg32(BL602_GPIO_CFGCTL30) & (1 << pin)) ? 1 : 0);
+  regaddr = g_gpio_base[pin];
+  return ((getreg32(regaddr) & (1 << reg_gpio_xx_i)) ? 1 : 0);
 }

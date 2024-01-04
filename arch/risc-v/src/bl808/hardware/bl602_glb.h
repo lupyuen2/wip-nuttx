@@ -94,7 +94,7 @@
 // #define BL602_GPIO_CFGCTL33_OFFSET          0x00018c  /* gpio_cfgctl33 */
 // #define BL602_GPIO_CFGCTL34_OFFSET          0x000190  /* gpio_cfgctl34 */
 // #define BL602_GPIO_CFGCTL35_OFFSET          0x000194  /* gpio_cfgctl35 */
-// gpio_cfg141 0x000af8
+// gpio_cfg45 0x000978
 ////
 
 #define BL602_GPIO_INT_MASK1_OFFSET         0x0001a0  /* gpio_int_mask1 */
@@ -175,7 +175,7 @@
 #define BL602_GPIO_CFGCTL33       (BL602_GLB_BASE + BL602_GPIO_CFGCTL33_OFFSET)
 #define BL602_GPIO_CFGCTL34       (BL602_GLB_BASE + BL602_GPIO_CFGCTL34_OFFSET)
 #define BL602_GPIO_CFGCTL35       (BL602_GLB_BASE + BL602_GPIO_CFGCTL35_OFFSET)
-// gpio_cfg141 0x000af8
+// gpio_cfg45 0x000978
 ////
 
 #define BL602_GPIO_INT_MASK1      (BL602_GLB_BASE + BL602_GPIO_INT_MASK1_OFFSET)
