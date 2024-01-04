@@ -28,27 +28,31 @@
 #include "hardware/bl602_glb.h"
 #include "bl602_gpio.h"
 
+////TODO
+#define BL602_GLB_BASE        0x20000000ul  /* glb */
+
 /****************************************************************************
  * Public Data
  ****************************************************************************/
 
 const uintptr_t g_gpio_base[] =
 {
-  BL602_GPIO_CFGCTL0,
-  BL602_GPIO_CFGCTL1,
-  BL602_GPIO_CFGCTL2,
-  BL602_GPIO_CFGCTL3,
-  BL602_GPIO_CFGCTL4,
-  BL602_GPIO_CFGCTL5,
-  BL602_GPIO_CFGCTL6,
-  BL602_GPIO_CFGCTL7,
-  BL602_GPIO_CFGCTL8,
-  BL602_GPIO_CFGCTL9,
-  BL602_GPIO_CFGCTL10,
-  BL602_GPIO_CFGCTL11,
-  BL602_GPIO_CFGCTL12,
-  BL602_GPIO_CFGCTL13,
-  BL602_GPIO_CFGCTL14
+  BL602_GPIO_CFG0,
+  BL602_GPIO_CFG1,
+  // BL602_GPIO_CFGCTL2,
+  // BL602_GPIO_CFGCTL3,
+  // BL602_GPIO_CFGCTL4,
+  // BL602_GPIO_CFGCTL5,
+  // BL602_GPIO_CFGCTL6,
+  // BL602_GPIO_CFGCTL7,
+  // BL602_GPIO_CFGCTL8,
+  // BL602_GPIO_CFGCTL9,
+  // BL602_GPIO_CFGCTL10,
+  // BL602_GPIO_CFGCTL11,
+  // BL602_GPIO_CFGCTL12,
+  // BL602_GPIO_CFGCTL13,
+  // BL602_GPIO_CFGCTL14,
+  // gpio_cfg141
 };
 
 /****************************************************************************
