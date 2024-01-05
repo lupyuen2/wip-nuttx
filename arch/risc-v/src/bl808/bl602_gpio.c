@@ -152,43 +152,6 @@ int bl602_gpio_deinit(uint8_t pin)
 }
 
 /****************************************************************************
- * Name: bl602_config_uart_sel
- *
- * Description:
- *   Configure the GPIO UART pin selection mux based on bit-encoded
- *   description of the pin and the selection signal
- *
- * Returned Value:
- *   OK on success
- *   ERROR on invalid port.
- *
- ****************************************************************************/
-
-int bl602_config_uart_sel(gpio_pinset_t pinset, uint8_t sig_sel)
-{
-  irqstate_t flags;
-  uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
-  uint8_t sel_idx;
-  uint32_t reg;
-
-  if ((pin >= nitems(g_gpio_base)) || sig_sel > UART_SIG_SEL_UART1_RXD)
-    {
-      return ERROR;
-    }
-
-  sel_idx = pin % 8;
-  flags = enter_critical_section();
-
-  reg = getreg32(BL602_UART_SIG_SEL_0);
-  reg &= ~(0xf << (sel_idx * 4));
-  reg |= sig_sel << (sel_idx * 4);
-  putreg32(reg, BL602_UART_SIG_SEL_0);
-
-  leave_critical_section(flags);
-  return OK;
-}
-
-/****************************************************************************
  * Name: bl602_gpiowrite
  *
  * Description:
@@ -206,10 +169,12 @@ void bl602_gpiowrite(gpio_pinset_t pinset, bool value)
   regaddr = g_gpio_base[pin];
   if (value)
     {
+      _info("regaddr=%p, set=0x%x\n", regaddr, (1 << reg_gpio_xx_o));////
       modifyreg32(regaddr, 0, (1 << reg_gpio_xx_o));
     }
   else
     {
+      _info("regaddr=%p, clear=0x%x\n", regaddr, (1 << reg_gpio_xx_o));////
       modifyreg32(regaddr, (1 << reg_gpio_xx_o), 0);
     }
 }
