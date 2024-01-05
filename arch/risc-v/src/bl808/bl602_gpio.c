@@ -22,7 +22,9 @@
  * Included Files
  ****************************************************************************/
 
-#include <stdint.h>
+#include <nuttx/config.h>
+
+#include <debug.h>
 #include <sys/param.h>
 
 #include "riscv_internal.h"
@@ -126,6 +128,7 @@ int bl602_configgpio(gpio_pinset_t cfgset)
     }
 
   regaddr = g_gpio_base[pin];
+  _info("regaddr=%p, cfg=0x%x\n", regaddr, cfg);////
   putreg32(cfg, regaddr);
   return OK;
 }
