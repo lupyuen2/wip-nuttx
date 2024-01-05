@@ -97,6 +97,7 @@ int bl602_configgpio(gpio_pinset_t cfgset)
     {
       cfg |= GPIO_CFGCTL0_GPIO_0_IE;
     }
+  ////output
 
   if (cfgset & GPIO_PULLUP)
     {
@@ -108,31 +109,25 @@ int bl602_configgpio(gpio_pinset_t cfgset)
       cfg |= GPIO_CFGCTL0_GPIO_0_PD;
     }
 
-  if (cfgset & GPIO_DRV_MASK)
+  if (cfgset & GPIO_DRV_MASK)////
     {
-      cfg |= ((cfgset & GPIO_DRV_MASK) >> GPIO_DRV_SHIFT) << \
+      cfg |= ((cfgset & GPIO_DRV_MASK) >> GPIO_DRV_SHIFT) <<
         GPIO_CFGCTL0_GPIO_0_DRV_SHIFT;
     }
 
-  if (cfgset & GPIO_SMT_EN)
+  if (cfgset & GPIO_SMT_EN)////
     {
       cfg |= GPIO_CFGCTL0_GPIO_0_SMT;
     }
 
-  if (cfgset & GPIO_FUNC_MASK)
+  if (cfgset & GPIO_FUNC_MASK)////
     {
-      cfg |= ((cfgset & GPIO_FUNC_MASK) >> GPIO_FUNC_SHIFT) << \
+      cfg |= ((cfgset & GPIO_FUNC_MASK) >> GPIO_FUNC_SHIFT) <<
         GPIO_CFGCTL0_GPIO_0_FUNC_SEL_SHIFT;
     }
 
   regaddr = g_gpio_base[pin];
-  mask = 0xffff;
-  if ((pin & 1) == 1)
-    {
-      cfg = cfg << 16;
-      mask = mask << 16;
-    }
-
+  mask = 0xffff; ////TODO
   modifyreg32(regaddr, mask, cfg);
 
   // TODO
@@ -216,6 +211,7 @@ void bl602_gpiowrite(gpio_pinset_t pinset, bool value)
   uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
   DEBUGASSERT(pin < nitems(g_gpio_base));
+
   regaddr = g_gpio_base[pin];
   if (value)
     {
@@ -241,6 +237,7 @@ bool bl602_gpioread(gpio_pinset_t pinset)
   uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
   DEBUGASSERT(pin < nitems(g_gpio_base));
+
   regaddr = g_gpio_base[pin];
   return ((getreg32(regaddr) & (1 << reg_gpio_xx_i)) ? 1 : 0);
 }
