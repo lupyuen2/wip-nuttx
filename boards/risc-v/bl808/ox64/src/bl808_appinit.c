@@ -28,12 +28,14 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <errno.h>
+#include <debug.h> ////
 
 #include <nuttx/board.h>
 #include <nuttx/drivers/ramdisk.h>
 #include <sys/mount.h>
 #include <sys/boardctl.h>
 #include <arch/board/board_memorymap.h>
+#include "bl602_gpio.h" ////
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -164,4 +166,15 @@ void board_late_initialize(void)
   mount(NULL, "/proc", "procfs", 0, NULL);
 
 #endif
+
+  ////TODO
+  #define BOARD_GPIO_OUT1   (GPIO_OUTPUT | GPIO_PULLDOWN | \
+                            GPIO_FUNC_SWGPIO | GPIO_PIN1)
+  _info("Config GPIO 0x%x\n", BOARD_GPIO_OUT1);
+  int ret = bl602_configgpio(BOARD_GPIO_OUT1);
+  DEBUGASSERT(ret == OK);
+  _info("Set GPIO\n");
+  bl602_gpiowrite(BOARD_GPIO_OUT1, true);
+  _info("Clear GPIO\n");
+  bl602_gpiowrite(BOARD_GPIO_OUT1, false);
 }
