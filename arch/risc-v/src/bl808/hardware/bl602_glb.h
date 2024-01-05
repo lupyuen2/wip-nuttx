@@ -416,6 +416,7 @@
 #define GPIO_CFGCTL0_REAL_GPIO_0_FUNC_SEL_MASK       (0x0f << GPIO_CFGCTL0_REAL_GPIO_0_FUNC_SEL_SHIFT)
 #define GPIO_CFGCTL0_GPIO_0_FUNC_SEL_SHIFT           (8)
 #define GPIO_CFGCTL0_GPIO_0_FUNC_SEL_MASK            (0x0f << GPIO_CFGCTL0_GPIO_0_FUNC_SEL_SHIFT)
+#define GPIO_CFGCTL0_GPIO_0_OE                       (1 << 6)
 #define GPIO_CFGCTL0_GPIO_0_PD                       (1 << 5)
 #define GPIO_CFGCTL0_GPIO_0_PU                       (1 << 4)
 #define GPIO_CFGCTL0_GPIO_0_DRV_SHIFT                (2)

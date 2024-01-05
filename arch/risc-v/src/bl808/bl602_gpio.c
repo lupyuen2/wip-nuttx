@@ -79,7 +79,6 @@ static const uintptr_t g_gpio_base[] =
 
 int bl602_configgpio(gpio_pinset_t cfgset)
 {
-  uint32_t mask;
   uintptr_t regaddr;
   uint32_t cfg = 0;
   uint8_t pin = (cfgset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
@@ -89,15 +88,15 @@ int bl602_configgpio(gpio_pinset_t cfgset)
       return ERROR;
     }
 
-  /* The configuration masks will just use the defines for GPIO0 which is
-   * the same as all GPIO config bit fields besides the offset.
-   */
-
+  //// TODO: Change GPIO_CFGCTL0_GPIO_0_IE to GPIO_CFG_GPIO_IE
   if (cfgset & GPIO_INPUT)
     {
       cfg |= GPIO_CFGCTL0_GPIO_0_IE;
     }
-  ////output
+  else
+    {
+      cfg |= GPIO_CFGCTL0_GPIO_0_OE;
+    }
 
   if (cfgset & GPIO_PULLUP)
     {
@@ -109,36 +108,25 @@ int bl602_configgpio(gpio_pinset_t cfgset)
       cfg |= GPIO_CFGCTL0_GPIO_0_PD;
     }
 
-  if (cfgset & GPIO_DRV_MASK)////
+  if (cfgset & GPIO_DRV_MASK)
     {
       cfg |= ((cfgset & GPIO_DRV_MASK) >> GPIO_DRV_SHIFT) <<
         GPIO_CFGCTL0_GPIO_0_DRV_SHIFT;
     }
 
-  if (cfgset & GPIO_SMT_EN)////
+  if (cfgset & GPIO_SMT_EN)
     {
       cfg |= GPIO_CFGCTL0_GPIO_0_SMT;
     }
 
-  if (cfgset & GPIO_FUNC_MASK)////
+  if (cfgset & GPIO_FUNC_MASK)
     {
       cfg |= ((cfgset & GPIO_FUNC_MASK) >> GPIO_FUNC_SHIFT) <<
         GPIO_CFGCTL0_GPIO_0_FUNC_SEL_SHIFT;
     }
 
   regaddr = g_gpio_base[pin];
-  mask = 0xffff; ////TODO
-  modifyreg32(regaddr, mask, cfg);
-
-  // TODO
-  // /* Enable pin output if requested */
-
-  // if (!(cfgset & GPIO_INPUT))
-  //   {
-  //     modifyreg32(BL602_GPIO_CFGCTL34, 0, (1 << pin));
-  //     modifyreg32(regaddr, 0, (1 << reg_gpio_xx_o));
-  //   }
-
+  putreg32(cfg, regaddr);
   return OK;
 }
 
