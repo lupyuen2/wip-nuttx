@@ -41,6 +41,25 @@
 
 __start:
 
+  /* Print `123` to HTIF Console */
+  /* Load HTIF Base Address to Register t0 */
+  li  t0, 0x40008000
+
+  /* Load to Register t1 the HTIF Command to print `1` */
+  li  t1, 0x0101000000000031
+  /* Store 64-bit double-word from Register t1 to HTIF Base Address, Offset 0 */
+  sd  t1, 0(t0)
+
+  /* Load to Register t1 the HTIF Command to print `2` */
+  li  t1, 0x0101000000000032
+  /* Store 64-bit double-word from Register t1 to HTIF Base Address, Offset 0 */
+  sd  t1, 0(t0)
+
+  /* Load to Register t1 the HTIF Command to print `3` */
+  li  t1, 0x0101000000000033
+  /* Store 64-bit double-word from Register t1 to HTIF Base Address, Offset 0 */
+  sd  t1, 0(t0)
+
   /* Preserve a1 as it contains the pointer to DTB */
   /* Load mhartid (cpuid) */
 
