@@ -68,6 +68,7 @@
  * .M.. .... .... ....
  */
 
+////TODO
 #define GPIO_MODE_SHIFT  (14)                    /* Bits 14: Port Mode */
 #define GPIO_MODE_MASK   (1 << GPIO_MODE_SHIFT)
 #  define GPIO_INPUT     (1 << GPIO_MODE_SHIFT)  /* Input Enable */
@@ -81,6 +82,7 @@
  * ..UU .... .... ....
  */
 
+////TODO
 #define GPIO_PUPD_SHIFT (12) /* Bits 16-17: Pull-up/down */
 #define GPIO_PUPD_MASK  (3 << GPIO_PUPD_SHIFT)
 #define GPIO_FLOAT      (0 << GPIO_PUPD_SHIFT) /* No pull-up, pull-down */
@@ -95,6 +97,7 @@
  * .... DD.. .... ....
  */
 
+////TODO
 #define GPIO_DRV_SHIFT (10) /* Bits 10-11: Drive */
 #define GPIO_DRV_MASK  (3 << GPIO_DRV_SHIFT)
 #define GPIO_DRV_0     (0 << GPIO_DRV_SHIFT)
@@ -110,6 +113,7 @@
  * .... ..S. .... ....
  */
 
+////TODO
 #define GPIO_SMT_SHIFT (9) /* Bits 9: SMT Enable */
 #define GPIO_SMT_MASK  (3 << GPIO_SMT_SHIFT)
 #define GPIO_SMT_DIS   (0 << GPIO_SMT_SHIFT)
@@ -123,6 +127,7 @@
  * .... ...F FFF. ....
  */
 
+////TODO
 #define GPIO_FUNC_SHIFT  (5) /* Bits 5-8: GPIO Type */
 #define GPIO_FUNC_MASK   (15 << GPIO_FUNC_SHIFT)
 #define GPIO_FUNC_SDIO   (1 << GPIO_FUNC_SHIFT)  /* SDIO */
@@ -144,8 +149,9 @@
  * .... .... ...P PPPP
  */
 
+////TODO: Need 6 bits: 0-5
 #define GPIO_PIN_SHIFT (0) /* Bits 0-4: GPIO number: 0-28 */
-#define GPIO_PIN_MASK  (0x1f << GPIO_PIN_SHIFT)
+#define GPIO_PIN_MASK  (0x1f << GPIO_PIN_SHIFT)  ////TODO
 #define GPIO_PIN0      (0 << GPIO_PIN_SHIFT)
 #define GPIO_PIN1      (1 << GPIO_PIN_SHIFT)
 #define GPIO_PIN2      (2 << GPIO_PIN_SHIFT)
@@ -175,20 +181,23 @@
 #define GPIO_PIN26     (26 << GPIO_PIN_SHIFT)
 #define GPIO_PIN27     (27 << GPIO_PIN_SHIFT)
 #define GPIO_PIN28     (28 << GPIO_PIN_SHIFT)
-
-/* GLB GPIO interrupt trigger mode type definition */
-
-#define GLB_GPIO_INT_TRIG_NEG_PULSE \
-  0 /* GPIO negedge pulse trigger interrupt */
-
-#define GLB_GPIO_INT_TRIG_POS_PULSE \
-  1 /* GPIO posedge pulse trigger interrupt */
-
-#define GLB_GPIO_INT_TRIG_NEG_LEVEL \
-  2 /* GPIO negedge level trigger interrupt (32k 3T) */
-
-#define GLB_GPIO_INT_TRIG_POS_LEVEL \
-  3 /* GPIO posedge level trigger interrupt (32k 3T) */
+#define GPIO_PIN29     (29 << GPIO_PIN_SHIFT)
+#define GPIO_PIN30     (30 << GPIO_PIN_SHIFT)
+#define GPIO_PIN31     (31 << GPIO_PIN_SHIFT)
+#define GPIO_PIN32     (32 << GPIO_PIN_SHIFT)
+#define GPIO_PIN33     (33 << GPIO_PIN_SHIFT)
+#define GPIO_PIN34     (34 << GPIO_PIN_SHIFT)
+#define GPIO_PIN35     (35 << GPIO_PIN_SHIFT)
+#define GPIO_PIN36     (36 << GPIO_PIN_SHIFT)
+#define GPIO_PIN37     (37 << GPIO_PIN_SHIFT)
+#define GPIO_PIN38     (38 << GPIO_PIN_SHIFT)
+#define GPIO_PIN39     (39 << GPIO_PIN_SHIFT)
+#define GPIO_PIN40     (40 << GPIO_PIN_SHIFT)
+#define GPIO_PIN41     (41 << GPIO_PIN_SHIFT)
+#define GPIO_PIN42     (42 << GPIO_PIN_SHIFT)
+#define GPIO_PIN43     (43 << GPIO_PIN_SHIFT)
+#define GPIO_PIN44     (44 << GPIO_PIN_SHIFT)
+#define GPIO_PIN45     (45 << GPIO_PIN_SHIFT)
 
 /****************************************************************************
  * Public Types
@@ -246,21 +255,6 @@ int bl602_configgpio(gpio_pinset_t cfgset);
 int bl602_gpio_deinit(uint8_t pin);
 
 /****************************************************************************
- * Name: bl602_config_uart_sel
- *
- * Description:
- *   Configure the GPIO UART pin selection mux based on bit-encoded
- *   description of the pin and the selection signal
- *
- * Returned Value:
- *   OK on success
- *   ERROR on invalid port.
- *
- ****************************************************************************/
-
-int bl602_config_uart_sel(gpio_pinset_t cfgset, uint8_t sig_sel);
-
-/****************************************************************************
  * Name: bl602_gpiowrite
  *
  * Description:
@@ -281,33 +275,6 @@ void bl602_gpiowrite(gpio_pinset_t pinset, bool value);
 bool bl602_gpioread(gpio_pinset_t pinset);
 
 /****************************************************************************
- * Name: bl602_gpiosetevent
- *
- * Description:
- *   Sets/clears GPIO based event and interrupt triggers.
- *
- * Input Parameters:
- *  - pinset:      GPIO pin configuration
- *  - risingedge:  Enables interrupt on rising edges
- *  - fallingedge: Enables interrupt on falling edges
- *  - event:       Generate event when set
- *  - func:        When non-NULL, generate interrupt
- *  - arg:         Argument passed to the interrupt callback
- *
- * Returned Value:
- *   Zero (OK) on success; a negated errno value on failure indicating the
- *   nature of the failure.
- *
- ****************************************************************************/
-
-int bl602_gpiosetevent(gpio_pinset_t pinset,
-                       bool          risingedge,
-                       bool          fallingedge,
-                       bool          event,
-                       xcpt_t        func,
-                       void *        arg);
-
-/****************************************************************************
  * Name: bl602_gpio_initialize
  *
  * Description:
@@ -315,21 +282,8 @@ int bl602_gpiosetevent(gpio_pinset_t pinset,
  *
  ****************************************************************************/
 
+////TODO
 int bl602_gpio_initialize(void);
-
-/****************************************************************************
- * Function:  bl602_dumpgpio
- *
- * Description:
- *   Dump all GPIO registers associated with the provided base address
- *
- ****************************************************************************/
-
-#ifdef CONFIG_DEBUG_GPIO_INFO
-int bl602_dumpgpio(gpio_pinset_t pinset, const char *msg);
-#else
-#define bl602_dumpgpio(p, m)
-#endif
 
 #undef EXTERN
 #if defined(__cplusplus)

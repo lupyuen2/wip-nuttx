@@ -168,13 +168,17 @@ void board_late_initialize(void)
 #endif
 
   ////TODO
-  #define BOARD_GPIO_OUT1   (GPIO_OUTPUT | GPIO_PULLDOWN | \
-                            GPIO_FUNC_SWGPIO | GPIO_PIN1)
+  #define BOARD_GPIO_OUT1   (GPIO_OUTPUT | GPIO_FUNC_SWGPIO | GPIO_PIN29)
   _info("Config GPIO 0x%x\n", BOARD_GPIO_OUT1);
   int ret = bl602_configgpio(BOARD_GPIO_OUT1);
   DEBUGASSERT(ret == OK);
+  up_mdelay(100);
+
   _info("Set GPIO\n");
   bl602_gpiowrite(BOARD_GPIO_OUT1, true);
+  up_mdelay(100);
+
   _info("Clear GPIO\n");
   bl602_gpiowrite(BOARD_GPIO_OUT1, false);
+  up_mdelay(100);
 }
