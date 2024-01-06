@@ -182,3 +182,14 @@ void board_late_initialize(void)
   bl602_gpiowrite(BOARD_GPIO_OUT1, false);
   up_mdelay(100);
 }
+
+/* Output Log:
+Starting kernel ...
+
+ABCboard_late_initialize: Config GPIO 0x17d
+bl602_configgpio: regaddr=0x20000938, cfg=0xb40
+board_late_initialize: Set GPIO
+bl602_gpiowrite: regaddr=0x20000938, set=0x1000000
+board_late_initialize: Clear GPIO
+bl602_gpiowrite: regaddr=0x20000938, clear=0x1000000
+*/
