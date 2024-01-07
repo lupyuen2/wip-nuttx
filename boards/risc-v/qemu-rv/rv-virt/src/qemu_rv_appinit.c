@@ -115,9 +115,6 @@ int board_app_initialize(uintptr_t arg)
 
 #ifdef CONFIG_DRIVERS_VIRTIO_MMIO
   qemu_virtio_register_mmio_devices();
-
-  void test_virtio(void);
-  test_virtio(); ////
 #endif
 
   return OK;

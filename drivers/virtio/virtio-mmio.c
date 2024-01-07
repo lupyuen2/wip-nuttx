@@ -867,7 +867,10 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
       goto err;
     }
 
-  //// TODO: Init VirtIO Device
+  // Testing: Init VirtIO Device
+  // Based on virtio_serial_init
+  // https://github.com/apache/nuttx/blob/master/drivers/virtio/virtio-serial.c#L445-L511
+
   struct virtio_device *vdev = &vmdev->vdev;
   DEBUGASSERT(vdev != NULL);
 
@@ -890,7 +893,10 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
   DEBUGASSERT(ret >= 0);
   virtio_set_status(vdev, VIRTIO_CONFIG_STATUS_DRIVER_OK);
 
-  //// TODO: Send data to VirtIO Device
+  // Testing: Send data to VirtIO Device
+  // Based on virtio_serial_dmasend
+  // https://github.com/apache/nuttx/blob/master/drivers/virtio/virtio-serial.c#L310-L345
+
   DEBUGASSERT(vdev->vrings_info != NULL);
   struct virtqueue *vq = vdev->vrings_info[VIRTIO_SERIAL_TX].vq;
   DEBUGASSERT(vq != NULL);
@@ -905,6 +911,7 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
   /* Get the total send length */
   uintptr_t len = strlen(HELLO_MSG);
 
+  // TODO: What's this?
   // if (xfer->nlength != 0)
   //   {
   //     vb[1].buf = xfer->nbuffer;
@@ -915,7 +922,7 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
   /* Add buffer to TX virtiqueue and notify the other size */
   virtqueue_add_buffer(vq, vb, num, 0, (FAR void *)len);
   virtqueue_kick(vq);  
-  ////
+  // End of Testing
 
   return ret;
 
