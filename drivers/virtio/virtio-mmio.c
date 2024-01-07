@@ -902,7 +902,7 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
   DEBUGASSERT(vq != NULL);
 
   /* Set the virtqueue buffer */
-  static char *HELLO_MSG = "Hello VirtIO from NuttX!\n";
+  static char *HELLO_MSG = "Hello VirtIO from NuttX!\r\n";
   struct virtqueue_buf vb[2];
   vb[0].buf = HELLO_MSG;
   vb[0].len = strlen(HELLO_MSG);
