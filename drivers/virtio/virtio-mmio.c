@@ -919,7 +919,7 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
   //     num = 2;
   //   }
 
-  /* Add buffer to TX virtiqueue and notify the other size */
+  /* Add buffer to TX virtiqueue and notify the VirtIO Host */
   virtqueue_add_buffer(vq, vb, num, 0, (FAR void *)len);
   virtqueue_kick(vq);  
   // End of Testing
