@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/bl602/bl602_gpio.h
+ * arch/risc-v/src/esp32c3/esp32c3_gpio.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_BL602_BL602_GPIO_H
-#define __ARCH_RISCV_SRC_BL602_BL602_GPIO_H
+#ifndef __ARCH_RISCV_SRC_ESP32C3_ESP32C3_GPIO_H
+#define __ARCH_RISCV_SRC_ESP32C3_ESP32C3_GPIO_H
 
 /****************************************************************************
  * Included Files
@@ -27,37 +27,23 @@
 
 #include <nuttx/config.h>
 
-#ifndef __ASSEMBLY__
 #include <stdint.h>
 #include <stdbool.h>
-#endif
 
-#include <nuttx/irq.h>
-
-#include "chip.h"
-////#include "hardware/bl602_glb.h"
+/****************************************************************************
+ * Pre-processor Definitions
+ ****************************************************************************/
 
 /****************************************************************************
  * Pre-Processor Declarations
  ****************************************************************************/
 
-/* Bit-encoded input to bl602_configgpio() */
-
-/* Each port bit of the general-purpose I/O (GPIO) ports can be individually
- * configured by software in several modes:
+/* Encoded GPIO Attributes
  *
- *  - Input floating
- *  - Input pull-up
- *  - Input-pull-down
- *  - Output floating
- *  - Output with pull-up
- *  - Output with pull-down
- *  - Alternate function (Digital and Analog)
- *
- * 16-bit Encoding:       1111 1100 0000 0000
- *                        5432 1098 7654 3210
- *                        ---- ---- ---- ----
- *                        .MUU DDSF FFFP PPPP
+ * 1111 1100 0000 0000
+ * 5432 1098 7654 3210
+ * ---- ---- ---- ----
+ * .... ..MU UDDS FFFF
  */
 
 /* Mode:
@@ -65,25 +51,23 @@
  * 1111 1100 0000 0000
  * 5432 1098 7654 3210
  * ---- ---- ---- ----
- * .M.. .... .... ....
+ * .... ..M. .... ....
  */
 
-////TODO
-#define GPIO_MODE_SHIFT  (14)                    /* Bits 14: Port Mode */
+#define GPIO_MODE_SHIFT  (9)                     /* Bit 9: Port Mode */
 #define GPIO_MODE_MASK   (1 << GPIO_MODE_SHIFT)
 #  define GPIO_INPUT     (1 << GPIO_MODE_SHIFT)  /* Input Enable */
 #  define GPIO_OUTPUT    (0 << GPIO_MODE_SHIFT)  /* Output Enable */
 
-/* Input/output pull-ups/downs:
+/* Input/Output pull-ups/downs:
  *
  * 1111 1100 0000 0000
  * 5432 1098 7654 3210
  * ---- ---- ---- ----
- * ..UU .... .... ....
+ * .... ...U U... ....
  */
 
-////TODO
-#define GPIO_PUPD_SHIFT (12) /* Bits 16-17: Pull-up/down */
+#define GPIO_PUPD_SHIFT (7) /* Bits 7-8: Pull-up/down */
 #define GPIO_PUPD_MASK  (3 << GPIO_PUPD_SHIFT)
 #define GPIO_FLOAT      (0 << GPIO_PUPD_SHIFT) /* No pull-up, pull-down */
 #define GPIO_PULLUP     (1 << GPIO_PUPD_SHIFT) /* Pull-up */
@@ -94,11 +78,10 @@
  * 1111 1100 0000 0000
  * 5432 1098 7654 3210
  * ---- ---- ---- ----
- * .... DD.. .... ....
+ * .... .... .DD. ....
  */
 
-////TODO
-#define GPIO_DRV_SHIFT (10) /* Bits 10-11: Drive */
+#define GPIO_DRV_SHIFT (5) /* Bits 5-6: Drive */
 #define GPIO_DRV_MASK  (3 << GPIO_DRV_SHIFT)
 #define GPIO_DRV_0     (0 << GPIO_DRV_SHIFT)
 #define GPIO_DRV_1     (1 << GPIO_DRV_SHIFT)
@@ -110,11 +93,10 @@
  * 1111 1100 0000 0000
  * 5432 1098 7654 3210
  * ---- ---- ---- ----
- * .... ..S. .... ....
+ * .... .... ...S ....
  */
 
-////TODO
-#define GPIO_SMT_SHIFT (9) /* Bits 9: SMT Enable */
+#define GPIO_SMT_SHIFT (4) /* Bit 4: SMT Enable */
 #define GPIO_SMT_MASK  (3 << GPIO_SMT_SHIFT)
 #define GPIO_SMT_DIS   (0 << GPIO_SMT_SHIFT)
 #define GPIO_SMT_EN    (1 << GPIO_SMT_SHIFT)
@@ -124,94 +106,35 @@
  * 1111 1100 0000 0000
  * 5432 1098 7654 3210
  * ---- ---- ---- ----
- * .... ...F FFF. ....
+ * .... .... .... FFFF
  */
 
-////TODO
-#define GPIO_FUNC_SHIFT  (5) /* Bits 5-8: GPIO Type */
+#define GPIO_FUNC_SHIFT  (0) /* Bits 0-3: GPIO Type */
 #define GPIO_FUNC_MASK   (15 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SDIO   (1 << GPIO_FUNC_SHIFT)  /* SDIO */
-#define GPIO_FUNC_FLASH  (2 << GPIO_FUNC_SHIFT)  /* Flash */
-#define GPIO_FUNC_SPI    (4 << GPIO_FUNC_SHIFT)  /* SPI */
-#define GPIO_FUNC_I2C    (6 << GPIO_FUNC_SHIFT)  /* I2C */
-#define GPIO_FUNC_UART   (7 << GPIO_FUNC_SHIFT)  /* UART */
-#define GPIO_FUNC_PWM    (8 << GPIO_FUNC_SHIFT)  /* PWM */
-#define GPIO_FUNC_EXT_PA (9 << GPIO_FUNC_SHIFT)  /* Analog */
+#define GPIO_FUNC_SDIO   (1  << GPIO_FUNC_SHIFT)  /* SDIO */
+#define GPIO_FUNC_FLASH  (2  << GPIO_FUNC_SHIFT)  /* Flash */
+#define GPIO_FUNC_SPI    (4  << GPIO_FUNC_SHIFT)  /* SPI */
+#define GPIO_FUNC_I2C    (6  << GPIO_FUNC_SHIFT)  /* I2C */
+#define GPIO_FUNC_UART   (7  << GPIO_FUNC_SHIFT)  /* UART */
+#define GPIO_FUNC_PWM    (8  << GPIO_FUNC_SHIFT)  /* PWM */
+#define GPIO_FUNC_EXT_PA (9  << GPIO_FUNC_SHIFT)  /* Analog */
 #define GPIO_FUNC_ANA    (10 << GPIO_FUNC_SHIFT) /* Analog */
 #define GPIO_FUNC_SWGPIO (11 << GPIO_FUNC_SHIFT) /* Software GPIO */
 #define GPIO_FUNC_JTAG   (14 << GPIO_FUNC_SHIFT) /* JTAG */
-
-/* This identifies the bit in the port:
- *
- * 1111 1100 0000 0000
- * 5432 1098 7654 3210
- * ---- ---- ---- ----
- * .... .... ...P PPPP
- */
-
-////TODO: Need 6 bits: 0-5
-#define GPIO_PIN_SHIFT (0) /* Bits 0-4: GPIO number: 0-28 */
-#define GPIO_PIN_MASK  (0x1f << GPIO_PIN_SHIFT)  ////TODO
-#define GPIO_PIN0      (0 << GPIO_PIN_SHIFT)
-#define GPIO_PIN1      (1 << GPIO_PIN_SHIFT)
-#define GPIO_PIN2      (2 << GPIO_PIN_SHIFT)
-#define GPIO_PIN3      (3 << GPIO_PIN_SHIFT)
-#define GPIO_PIN4      (4 << GPIO_PIN_SHIFT)
-#define GPIO_PIN5      (5 << GPIO_PIN_SHIFT)
-#define GPIO_PIN6      (6 << GPIO_PIN_SHIFT)
-#define GPIO_PIN7      (7 << GPIO_PIN_SHIFT)
-#define GPIO_PIN8      (8 << GPIO_PIN_SHIFT)
-#define GPIO_PIN9      (9 << GPIO_PIN_SHIFT)
-#define GPIO_PIN10     (10 << GPIO_PIN_SHIFT)
-#define GPIO_PIN11     (11 << GPIO_PIN_SHIFT)
-#define GPIO_PIN12     (12 << GPIO_PIN_SHIFT)
-#define GPIO_PIN13     (13 << GPIO_PIN_SHIFT)
-#define GPIO_PIN14     (14 << GPIO_PIN_SHIFT)
-#define GPIO_PIN15     (15 << GPIO_PIN_SHIFT)
-#define GPIO_PIN16     (16 << GPIO_PIN_SHIFT)
-#define GPIO_PIN17     (17 << GPIO_PIN_SHIFT)
-#define GPIO_PIN18     (18 << GPIO_PIN_SHIFT)
-#define GPIO_PIN19     (19 << GPIO_PIN_SHIFT)
-#define GPIO_PIN20     (20 << GPIO_PIN_SHIFT)
-#define GPIO_PIN21     (21 << GPIO_PIN_SHIFT)
-#define GPIO_PIN22     (22 << GPIO_PIN_SHIFT)
-#define GPIO_PIN23     (23 << GPIO_PIN_SHIFT)
-#define GPIO_PIN24     (24 << GPIO_PIN_SHIFT)
-#define GPIO_PIN25     (25 << GPIO_PIN_SHIFT)
-#define GPIO_PIN26     (26 << GPIO_PIN_SHIFT)
-#define GPIO_PIN27     (27 << GPIO_PIN_SHIFT)
-#define GPIO_PIN28     (28 << GPIO_PIN_SHIFT)
-#define GPIO_PIN29     (29 << GPIO_PIN_SHIFT)
-#define GPIO_PIN30     (30 << GPIO_PIN_SHIFT)
-#define GPIO_PIN31     (31 << GPIO_PIN_SHIFT)
-#define GPIO_PIN32     (32 << GPIO_PIN_SHIFT)
-#define GPIO_PIN33     (33 << GPIO_PIN_SHIFT)
-#define GPIO_PIN34     (34 << GPIO_PIN_SHIFT)
-#define GPIO_PIN35     (35 << GPIO_PIN_SHIFT)
-#define GPIO_PIN36     (36 << GPIO_PIN_SHIFT)
-#define GPIO_PIN37     (37 << GPIO_PIN_SHIFT)
-#define GPIO_PIN38     (38 << GPIO_PIN_SHIFT)
-#define GPIO_PIN39     (39 << GPIO_PIN_SHIFT)
-#define GPIO_PIN40     (40 << GPIO_PIN_SHIFT)
-#define GPIO_PIN41     (41 << GPIO_PIN_SHIFT)
-#define GPIO_PIN42     (42 << GPIO_PIN_SHIFT)
-#define GPIO_PIN43     (43 << GPIO_PIN_SHIFT)
-#define GPIO_PIN44     (44 << GPIO_PIN_SHIFT)
-#define GPIO_PIN45     (45 << GPIO_PIN_SHIFT)
 
 /****************************************************************************
  * Public Types
  ****************************************************************************/
 
-/* The smallest integer type that can hold the GPIO encoding */
+#ifndef __ASSEMBLY__
 
-typedef uint16_t gpio_pinset_t;
+/* Must be big enough to hold the above encodings */
+
+typedef uint16_t gpio_pinattr_t;
 
 /****************************************************************************
  * Public Data
  ****************************************************************************/
-
-#ifndef __ASSEMBLY__
 
 #undef EXTERN
 #if defined(__cplusplus)
@@ -227,68 +150,39 @@ extern "C"
  ****************************************************************************/
 
 /****************************************************************************
- * Name: bl602_configgpio
+ * Name: esp32c3_configgpio
  *
  * Description:
- *   Configure a GPIO pin based on bit-encoded description of the pin.
- *
- * Returned Value:
- *   OK on success
- *   ERROR on invalid port.
+ *   Configure a GPIO pin based on encoded pin attributes.
  *
  ****************************************************************************/
 
-int bl602_configgpio(gpio_pinset_t cfgset);
+int esp32c3_configgpio(int pin, gpio_pinattr_t attr);
 
 /****************************************************************************
- * Name: bl602_gpio_deinit
- *
- * Description:
- *   Deinit a GPIO (Set GPIO to floating input state)
- *
- * Returned Value:
- *   OK on success
- *   ERROR on invalid port.
- *
- ****************************************************************************/
-
-int bl602_gpio_deinit(uint8_t pin);
-
-/****************************************************************************
- * Name: bl602_gpiowrite
+ * Name: esp32c3_gpiowrite
  *
  * Description:
  *   Write one or zero to the selected GPIO pin
  *
  ****************************************************************************/
 
-void bl602_gpiowrite(gpio_pinset_t pinset, bool value);
+void esp32c3_gpiowrite(int pin, bool value);
 
 /****************************************************************************
- * Name: bl602_gpioread
+ * Name: esp32c3_gpioread
  *
  * Description:
  *   Read one or zero from the selected GPIO pin
  *
  ****************************************************************************/
 
-bool bl602_gpioread(gpio_pinset_t pinset);
+bool esp32c3_gpioread(int pin);
 
-/****************************************************************************
- * Name: bl602_gpio_initialize
- *
- * Description:
- *   Initialize GPIO drivers for use with /apps/examples/gpio
- *
- ****************************************************************************/
-
-////TODO
-int bl602_gpio_initialize(void);
-
-#undef EXTERN
-#if defined(__cplusplus)
+#ifdef __cplusplus
 }
 #endif
+#undef EXTERN
 
 #endif /* __ASSEMBLY__ */
-#endif /* __ARCH_RISCV_SRC_BL602_BL602_GPIO_H */
+#endif /* __ARCH_RISCV_SRC_ESP32C3_ESP32C3_GPIO_H */

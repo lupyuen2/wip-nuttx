@@ -32,100 +32,33 @@
 #include "bl602_gpio.h"
 
 ////TODO
-#define BL602_GLB_BASE        0x20000000ul  /* glb */
+////#define BL602_GLB_BASE        0x20000000ul  /* glb */
+#define BL808_GPIO_BASE 0x200008c4ul /* gpio */
+#define ESP32C3_NGPIOS 45
 #define reg_gpio_xx_o 24
 #define reg_gpio_xx_i 28
-
-////TODO: Can pinset map 46 pins?
-
-/****************************************************************************
- * Private Data
- ****************************************************************************/
-
-////TODO: Rename g_ to static
-static const uintptr_t g_gpio_base[] =
-{
-  BL602_GPIO_CFG0,
-  BL602_GPIO_CFG1,
-  BL602_GPIO_CFG2,
-  BL602_GPIO_CFG3,
-  BL602_GPIO_CFG4,
-  BL602_GPIO_CFG5,
-  BL602_GPIO_CFG6,
-  BL602_GPIO_CFG7,
-  BL602_GPIO_CFG8,
-  BL602_GPIO_CFG9,
-
-  BL602_GPIO_CFG10,
-  BL602_GPIO_CFG11,
-  BL602_GPIO_CFG12,
-  BL602_GPIO_CFG13,
-  BL602_GPIO_CFG14,
-  BL602_GPIO_CFG15,
-  BL602_GPIO_CFG16,
-  BL602_GPIO_CFG17,
-  BL602_GPIO_CFG18,
-  BL602_GPIO_CFG19,
-
-  BL602_GPIO_CFG20,
-  BL602_GPIO_CFG21,
-  BL602_GPIO_CFG22,
-  BL602_GPIO_CFG23,
-  BL602_GPIO_CFG24,
-  BL602_GPIO_CFG25,
-  BL602_GPIO_CFG26,
-  BL602_GPIO_CFG27,
-  BL602_GPIO_CFG28,
-  BL602_GPIO_CFG29,
-
-  BL602_GPIO_CFG30,
-  BL602_GPIO_CFG31,
-  BL602_GPIO_CFG32,
-  BL602_GPIO_CFG33,
-  BL602_GPIO_CFG34,
-  BL602_GPIO_CFG35,
-  BL602_GPIO_CFG36,
-  BL602_GPIO_CFG37,
-  BL602_GPIO_CFG38,
-  BL602_GPIO_CFG39,
-
-  BL602_GPIO_CFG40,
-  BL602_GPIO_CFG41,
-  BL602_GPIO_CFG42,
-  BL602_GPIO_CFG43,
-  BL602_GPIO_CFG44,
-  BL602_GPIO_CFG45
-};
 
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
 
 /****************************************************************************
- * Name: bl602_configgpio
+ * Name: esp32c3_configgpio
  *
  * Description:
- *   Configure a GPIO pin based on bit-encoded description of the pin.
- *
- * Returned Value:
- *   OK on success
- *   ERROR on invalid port.
+ *   Configure a GPIO pin based on encoded pin attributes.
  *
  ****************************************************************************/
 
-int bl602_configgpio(gpio_pinset_t cfgset)
+int esp32c3_configgpio(int pin, gpio_pinattr_t attr)
 {
   uintptr_t regaddr;
   uint32_t cfg = 0;
-  uint8_t pin = (cfgset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
-  if (pin >= nitems(g_gpio_base))
-    {
-      return ERROR;
-    }
+  DEBUGASSERT(pin >= 0 && pin <= ESP32C3_NGPIOS);
 
   //// TODO: Change GPIO_CFGCTL0_GPIO_0_IE to GPIO_CFG_GPIO_IE
-  if (cfgset & GPIO_INPUT)
+  if (attr & GPIO_INPUT)
     {
       cfg |= GPIO_CFGCTL0_GPIO_0_IE;
     }
@@ -134,73 +67,54 @@ int bl602_configgpio(gpio_pinset_t cfgset)
       cfg |= GPIO_CFGCTL0_GPIO_0_OE;
     }
 
-  if (cfgset & GPIO_PULLUP)
+  if (attr & GPIO_PULLUP)
     {
       cfg |= GPIO_CFGCTL0_GPIO_0_PU;
     }
 
-  if (cfgset & GPIO_PULLDOWN)
+  if (attr & GPIO_PULLDOWN)
     {
       cfg |= GPIO_CFGCTL0_GPIO_0_PD;
     }
 
-  if (cfgset & GPIO_DRV_MASK)
+  if (attr & GPIO_DRV_MASK)
     {
-      cfg |= ((cfgset & GPIO_DRV_MASK) >> GPIO_DRV_SHIFT) <<
+      cfg |= ((attr & GPIO_DRV_MASK) >> GPIO_DRV_SHIFT) <<
         GPIO_CFGCTL0_GPIO_0_DRV_SHIFT;
     }
 
-  if (cfgset & GPIO_SMT_EN)
+  if (attr & GPIO_SMT_EN)
     {
       cfg |= GPIO_CFGCTL0_GPIO_0_SMT;
     }
 
-  if (cfgset & GPIO_FUNC_MASK)
+  if (attr & GPIO_FUNC_MASK)
     {
-      cfg |= ((cfgset & GPIO_FUNC_MASK) >> GPIO_FUNC_SHIFT) <<
+      cfg |= ((attr & GPIO_FUNC_MASK) >> GPIO_FUNC_SHIFT) <<
         GPIO_CFGCTL0_GPIO_0_FUNC_SEL_SHIFT;
     }
 
-  regaddr = g_gpio_base[pin];
+  regaddr = BL808_GPIO_BASE + (pin * 4);
   _info("regaddr=%p, cfg=0x%x\n", regaddr, cfg);////
   putreg32(cfg, regaddr);
   return OK;
 }
 
 /****************************************************************************
- * Name: bl602_gpio_deinit
- *
- * Description:
- *   Deinit a GPIO (Set GPIO to floating input state)
- *
- * Returned Value:
- *   OK on success
- *   ERROR on invalid port.
- *
- ****************************************************************************/
-
-int bl602_gpio_deinit(uint8_t pin)
-{
-  bl602_configgpio(GPIO_INPUT | GPIO_FLOAT | pin);
-  return OK;
-}
-
-/****************************************************************************
- * Name: bl602_gpiowrite
+ * Name: esp32c3_gpiowrite
  *
  * Description:
  *   Write one or zero to the selected GPIO pin
  *
  ****************************************************************************/
 
-void bl602_gpiowrite(gpio_pinset_t pinset, bool value)
+void esp32c3_gpiowrite(int pin, bool value)
 {
   uintptr_t regaddr;
-  uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
-  DEBUGASSERT(pin < nitems(g_gpio_base));
+  DEBUGASSERT(pin >= 0 && pin <= ESP32C3_NGPIOS);
 
-  regaddr = g_gpio_base[pin];
+  regaddr = BL808_GPIO_BASE + (pin * 4);
   if (value)
     {
       _info("regaddr=%p, set=0x%x\n", regaddr, (1 << reg_gpio_xx_o));////
@@ -214,20 +128,21 @@ void bl602_gpiowrite(gpio_pinset_t pinset, bool value)
 }
 
 /****************************************************************************
- * Name: bl602_gpioread
+ * Name: esp32c3_gpioread
  *
  * Description:
  *   Read one or zero from the selected GPIO pin
  *
  ****************************************************************************/
 
-bool bl602_gpioread(gpio_pinset_t pinset)
+bool esp32c3_gpioread(int pin)
 {
   uintptr_t regaddr;
-  uint8_t pin = (pinset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
+  uint32_t regval;
 
-  DEBUGASSERT(pin < nitems(g_gpio_base));
+  DEBUGASSERT(pin >= 0 && pin <= ESP32C3_NGPIOS);
 
-  regaddr = g_gpio_base[pin];
-  return ((getreg32(regaddr) & (1 << reg_gpio_xx_i)) ? 1 : 0);
+  regaddr = BL808_GPIO_BASE + (pin * 4);
+  regval = getreg32(regaddr);
+  return (regval & (1 << reg_gpio_xx_i)) != 0;
 }

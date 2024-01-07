@@ -168,28 +168,30 @@ void board_late_initialize(void)
 #endif
 
   ////TODO
-  #define BOARD_GPIO_OUT1   (GPIO_OUTPUT | GPIO_FUNC_SWGPIO | GPIO_PIN29)
-  _info("Config GPIO 0x%x\n", BOARD_GPIO_OUT1);
-  int ret = bl602_configgpio(BOARD_GPIO_OUT1);
+  #define GPIO_PIN  29
+  #define GPIO_ATTR (GPIO_OUTPUT | GPIO_FUNC_SWGPIO)
+
+  _info("Config GPIO: pin=%d, attr=0x%x\n", GPIO_PIN, GPIO_ATTR);
+  int ret = esp32c3_configgpio(GPIO_PIN, GPIO_ATTR);
   DEBUGASSERT(ret == OK);
   up_mdelay(100);
 
-  _info("Set GPIO\n");
-  bl602_gpiowrite(BOARD_GPIO_OUT1, true);
+  _info("Set GPIO: pin=%d\n", GPIO_PIN);
+  esp32c3_gpiowrite(GPIO_PIN, true);
   up_mdelay(100);
 
-  _info("Clear GPIO\n");
-  bl602_gpiowrite(BOARD_GPIO_OUT1, false);
+  _info("Clear GPIO: pin=%d\n", GPIO_PIN);
+  esp32c3_gpiowrite(GPIO_PIN, false);
   up_mdelay(100);
 }
 
 /* Output Log:
 Starting kernel ...
 
-ABCboard_late_initialize: Config GPIO 0x17d
-bl602_configgpio: regaddr=0x20000938, cfg=0xb40
-board_late_initialize: Set GPIO
-bl602_gpiowrite: regaddr=0x20000938, set=0x1000000
-board_late_initialize: Clear GPIO
-bl602_gpiowrite: regaddr=0x20000938, clear=0x1000000
+ABCboard_late_initialize: Config GPIO: pin=29, attr=0xb
+esp32c3_configgpio: regaddr=0x20000938, cfg=0xb40
+board_late_initialize: Set GPIO: pin=29
+esp32c3_gpiowrite: regaddr=0x20000938, set=0x1000000
+board_late_initialize: Clear GPIO: pin=29
+esp32c3_gpiowrite: regaddr=0x20000938, clear=0x1000000
 */
