@@ -46,7 +46,7 @@
 #else
 #  define QEMU_VIRTIO_MMIO_IRQ   28 // TODO: Should this be 1? (VIRTIO_IRQ)
 #endif
-#define QEMU_VIRTIO_MMIO_NUM     8
+#define QEMU_VIRTIO_MMIO_NUM     1  // Number of VirtIO Devices. Previously: 8
 
 /****************************************************************************
  * Private Functions
