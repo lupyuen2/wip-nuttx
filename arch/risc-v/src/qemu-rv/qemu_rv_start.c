@@ -26,7 +26,7 @@
 
 #include <nuttx/init.h>
 #include <nuttx/arch.h>
-#include <nuttx/serial/uart_16550.h>
+////#include <nuttx/serial/uart_16550.h>
 #include <arch/board/board.h>
 
 #include "riscv_internal.h"
@@ -230,10 +230,10 @@ void qemu_rv_start(int mhartid, const char *dtb)
 
 void riscv_earlyserialinit(void)
 {
-  u16550_earlyserialinit();
+  //// Previously: u16550_earlyserialinit();
 }
 
 void riscv_serialinit(void)
 {
-  u16550_serialinit();
+  //// Previously: u16550_serialinit();
 }

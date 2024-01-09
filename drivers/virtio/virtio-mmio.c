@@ -867,6 +867,7 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
       goto err;
     }
 
+#ifdef NOTUSED
   // Testing: Init VirtIO Device
   // Based on virtio_serial_init
   // https://github.com/apache/nuttx/blob/master/drivers/virtio/virtio-serial.c#L445-L511
@@ -923,6 +924,7 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
   virtqueue_add_buffer(vq, vb, num, 0, (FAR void *)len);
   virtqueue_kick(vq);  
   // End of Testing
+#endif  // NOTUSED
 
   return ret;
 
