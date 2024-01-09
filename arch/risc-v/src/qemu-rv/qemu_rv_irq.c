@@ -171,6 +171,7 @@ void up_enable_irq(int irq)
   else if (irq > RISCV_IRQ_EXT)
     {
       extirq = irq - RISCV_IRQ_EXT;
+      _info("irq=%d, extirq=%d\n", irq, extirq);////
 
       /* Set enable bit for the irq */
 
