@@ -550,7 +550,8 @@ static int virtio_serial_probe(FAR struct virtio_device *vdev)
 
   /* Uart driver register */
 
-  snprintf(priv->name, NAME_MAX, "/dev/ttyV%d", g_virtio_serial_idx);
+  snprintf(priv->name, NAME_MAX, "/dev/console"); ////
+  ////Previously: snprintf(priv->name, NAME_MAX, "/dev/ttyV%d", g_virtio_serial_idx);
   ret = uart_register(priv->name, &priv->udev);
   if (ret < 0)
     {
@@ -592,6 +593,8 @@ static void virtio_serial_remove(FAR struct virtio_device *vdev)
 int virtio_register_serial_driver(void)
 {
   int ret1 = virtio_register_driver(&g_virtio_serial_driver);
+  _info("ret1=%d\n", ret1); ////
   int ret2 = virtio_register_driver(&g_virtio_rprocserial_driver);
+  _info("ret2=%d\n", ret2); ////
   return ret1 < 0 ? ret1 : ret2;
 }

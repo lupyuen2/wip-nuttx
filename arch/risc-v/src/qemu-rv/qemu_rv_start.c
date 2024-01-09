@@ -243,11 +243,6 @@ void riscv_serialinit(void)
   void qemu_virtio_register_mmio_devices(void);
   qemu_virtio_register_mmio_devices();
 
-  // Register the VirtIO Serial Driver
-  int virtio_register_serial_driver(void);
-  int ret = virtio_register_serial_driver();
-  DEBUGASSERT(ret >= 0);
-
   //// Previously: u16550_serialinit();
 }
 
