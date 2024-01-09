@@ -23,6 +23,7 @@
  ****************************************************************************/
 
 #include <nuttx/config.h>
+#include <debug.h>
 
 #include <nuttx/init.h>
 #include <nuttx/arch.h>
@@ -237,5 +238,15 @@ void riscv_earlyserialinit(void)
 void riscv_serialinit(void)
 {
   _info("\n");////
+
+  // Init the VirtIO Devices
+  void qemu_virtio_register_mmio_devices(void);
+  qemu_virtio_register_mmio_devices();
+
+  // Register the VirtIO Serial Driver
+  int virtio_register_serial_driver(void);
+  int ret = virtio_register_serial_driver();
+  DEBUGASSERT(ret >= 0);
+
   //// Previously: u16550_serialinit();
 }

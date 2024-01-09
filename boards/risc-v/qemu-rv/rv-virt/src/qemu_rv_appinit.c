@@ -57,7 +57,8 @@
  ****************************************************************************/
 
 #ifdef CONFIG_DRIVERS_VIRTIO_MMIO
-static void qemu_virtio_register_mmio_devices(void)
+////static 
+void qemu_virtio_register_mmio_devices(void)
 {
   uintptr_t virtio = (uintptr_t)QEMU_VIRTIO_MMIO_BASE;
   size_t size = QEMU_VIRTIO_MMIO_REGSIZE;
@@ -114,7 +115,8 @@ int board_app_initialize(uintptr_t arg)
 #endif
 
 #ifdef CONFIG_DRIVERS_VIRTIO_MMIO
-  qemu_virtio_register_mmio_devices();
+  //// Moved to nuttx/arch/risc-v/src/qemu-rv/qemu_rv_start.c
+  //// Previously: qemu_virtio_register_mmio_devices();
 #endif
 
   return OK;
