@@ -230,10 +230,12 @@ void qemu_rv_start(int mhartid, const char *dtb)
 
 void riscv_earlyserialinit(void)
 {
+  _info("\n");////
   //// Previously: u16550_earlyserialinit();
 }
 
 void riscv_serialinit(void)
 {
+  _info("\n");////
   //// Previously: u16550_serialinit();
 }
