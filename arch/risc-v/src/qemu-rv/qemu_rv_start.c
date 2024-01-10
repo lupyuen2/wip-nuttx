@@ -27,7 +27,6 @@
 
 #include <nuttx/init.h>
 #include <nuttx/arch.h>
-////#include <nuttx/serial/uart_16550.h>
 #include <arch/board/board.h>
 
 #include "riscv_internal.h"

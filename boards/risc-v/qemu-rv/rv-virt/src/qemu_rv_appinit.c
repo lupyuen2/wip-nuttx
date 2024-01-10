@@ -41,13 +41,7 @@
 
 #define QEMU_VIRTIO_MMIO_BASE    0x40010000 // VIRTIO_BASE_ADDR. Previously: 0x10001000
 #define QEMU_VIRTIO_MMIO_REGSIZE 0x1000     // VIRTIO_SIZE
-#define QEMU_VIRTIO_MMIO_IRQ (RISCV_IRQ_EXT + 1) // VIRTIO_IRQ
-// Previously:
-// #ifdef CONFIG_ARCH_USE_S_MODE
-// #  define QEMU_VIRTIO_MMIO_IRQ   26 // TODO: Should this be 1? (VIRTIO_IRQ)
-// #else
-// #  define QEMU_VIRTIO_MMIO_IRQ   28 // TODO: Should this be 1? (VIRTIO_IRQ)
-// #endif
+#define QEMU_VIRTIO_MMIO_IRQ     (RISCV_IRQ_EXT + 1) // VIRTIO_IRQ
 #define QEMU_VIRTIO_MMIO_NUM     1  // Number of VirtIO Devices. Previously: 8
 
 /****************************************************************************
