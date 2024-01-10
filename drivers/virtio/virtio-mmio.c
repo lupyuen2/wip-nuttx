@@ -31,6 +31,7 @@
 
 #include <nuttx/virtio/virtio.h>
 #include <nuttx/virtio/virtio-mmio.h>
+#include "../arch/risc-v/src/common/riscv_internal.h" ////
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -940,6 +941,11 @@ err:
 void test_queue(struct virtio_device *vdev0)
 {
   _info("test_queue: %p\n", vdev0);
+  uint64_t mip = READ_CSR(mip);
+  _info("mip: %p\n", mip);
+  uint64_t mie = READ_CSR(mie);
+  _info("mie: %p\n", mie);
+
   static struct virtio_device *vdev = NULL;
   if (vdev == NULL && vdev0 != NULL) { vdev = vdev0; return; }
 
