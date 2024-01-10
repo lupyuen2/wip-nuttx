@@ -867,6 +867,9 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
       goto err;
     }
 
+  void test_queue(struct virtio_device *vdev0); ////
+  test_queue(&vmdev->vdev); ////
+
 #ifdef NOTUSED
   // Testing: Init VirtIO Device
   // Based on virtio_serial_init
@@ -931,4 +934,26 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
 err:
   kmm_free(vmdev);
   return ret;
+}
+
+// Dump the TX and RX Queues
+void test_queue(struct virtio_device *vdev0)
+{
+  _info("test_queue: %p\n", vdev0);
+  static struct virtio_device *vdev = NULL;
+  if (vdev0 != NULL) { vdev = vdev0; return; }
+
+  #define VIRTIO_SERIAL_RX           0
+  #define VIRTIO_SERIAL_TX           1
+  #define VIRTIO_SERIAL_NUM          2
+  DEBUGASSERT(vdev != NULL);
+  DEBUGASSERT(vdev->vrings_info != NULL);
+
+  struct virtqueue *vq = vdev->vrings_info[VIRTIO_SERIAL_TX].vq;
+  DEBUGASSERT(vq != NULL);
+  _info("TX index=%d, entries=%d\n", vq->vq_queue_index, vq->vq_nentries);
+
+  vq = vdev->vrings_info[VIRTIO_SERIAL_RX].vq;
+  DEBUGASSERT(vq != NULL);
+  _info("RX index=%d, entries=%d\n", vq->vq_queue_index, vq->vq_nentries);
 }

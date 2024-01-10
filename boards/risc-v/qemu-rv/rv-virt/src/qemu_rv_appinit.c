@@ -133,4 +133,11 @@ int board_app_initialize(uintptr_t arg)
 void test_virtio(void)
 {
   _info("\n");
+
+  for (int i = 0; i < 10; i++)
+    {
+      void test_queue(struct virtio_device *vdev0);
+      test_queue(NULL);
+      up_mdelay(1000);
+    }
 }
