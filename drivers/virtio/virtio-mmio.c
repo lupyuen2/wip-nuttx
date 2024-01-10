@@ -949,6 +949,7 @@ void test_queue(struct virtio_device *vdev0)
   _info("mie: %p\n", mie);
   uintptr_t claim = getreg32(QEMU_RV_PLIC_CLAIM);
   _info("claim: %p\n", claim);
+  putreg32(claim, QEMU_RV_PLIC_CLAIM);
 
   static struct virtio_device *vdev = NULL;
   if (vdev == NULL && vdev0 != NULL) { vdev = vdev0; return; }

@@ -134,7 +134,7 @@ void test_virtio(void)
 {
   _info("\n");
 
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 5; i++)
     {
       void test_queue(struct virtio_device *vdev0);
       test_queue(NULL);

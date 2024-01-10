@@ -247,6 +247,8 @@ void riscv_serialinit(void)
 }
 
 /* Output Log:
+ *  Executing task: cd nuttx && ../run.sh 
+
 + git pull
 Already up-to-date.
 + git status
@@ -256,11 +258,12 @@ Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git checkout -- <file>..." to discard changes in working directory)
 
+        modified:   boards/risc-v/qemu-rv/rv-virt/src/qemu_rv_appinit.c
         modified:   drivers/virtio/virtio-mmio.c
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ++ git rev-parse HEAD
-+ hash1=22fecb0cfdb5daf964b77a04842013dd45f3ae30
++ hash1=d0e592d380a767445ac82262a71e28a036f9fbab
 + pushd ../apps
 ~/riscv/apps ~/riscv/nuttx
 + git pull
@@ -273,7 +276,7 @@ nothing to commit, working tree clean
 + hash2=cf27f085f56709ca5e1a31e4a91ca9e90dd69c79
 + popd
 ~/riscv/nuttx
-+ echo NuttX Source: https://github.com/apache/nuttx/tree/22fecb0cfdb5daf964b77a04842013dd45f3ae30
++ echo NuttX Source: https://github.com/apache/nuttx/tree/d0e592d380a767445ac82262a71e28a036f9fbab
 + echo NuttX Apps: https://github.com/apache/nuttx-apps/tree/cf27f085f56709ca5e1a31e4a91ca9e90dd69c79
 + riscv64-unknown-elf-gcc -v
 Using built-in specs.
@@ -288,13 +291,18 @@ gcc version 10.2.0 (SiFive GCC-Metal 10.2.0-2020.12.8)
 + pushd ../nuttx
 ~/riscv/nuttx ~/riscv/nuttx
 + make -j 8
-CPP:  /Users/Luppy/riscv/nuttx/boards/risc-v/qemu-rv/rv-virt/scripts/ld.script-> /Users/Luppy/riscv/nuttx/boards/risc-v/qemu-rv/rv-virt/scripts/ld.scripLD: nuttx
+Create version.h
+CPP:  /Users/Luppy/riscv/nuttx/boards/risc-v/qemu-rv/rv-virt/scripts/ld.script-> /Users/Luppy/riscv/nuttx/boards/risc-v/qemu-rv/rv-virt/scripts/ld.scripCC:  qemu_rv_appinit.c qemu_rv_appinit.c: In function 'test_virtio':
+qemu_rv_appinit.c:139:30: warning: 'struct virtio_device' declared inside parameter list will not be visible outside of this definition or declaration
+  139 |       void test_queue(struct virtio_device *vdev0);
+      |                              ^~~~~~~~~~~~~
+LD: nuttx
 CP: nuttx.hex
 + popd
 ~/riscv/nuttx
 + riscv64-unknown-elf-size nuttx
    text    data     bss     dec     hex filename
- 268901     833   10600  280334   4470e nuttx
+ 268913     833   10600  280346   4471a nuttx
 + riscv64-unknown-elf-objcopy -O binary nuttx nuttx.bin
 + cp .config nuttx.config
 + riscv64-unknown-elf-objdump --syms --source --reloc --demangle --line-numbers --wide --debugging nuttx
@@ -304,16 +312,16 @@ CP: nuttx.hex
 + ../nxstyle arch/risc-v/src/common/riscv_mmu.c
 + set -e
 + wget --output-document=nuttx.cfg https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
---2024-01-10 13:12:43--  https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
-Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...
-Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.108.133|:443... connected.
+--2024-01-10 13:18:07--  https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
+Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.110.133, 185.199.111.133, 185.199.108.133, ...
+Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.110.133|:443... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 109 [text/plain]
 Saving to: ‘nuttx.cfg’
 
 nuttx.cfg          100%[================>]     109  --.-KB/s    in 0s      
 
-2024-01-10 13:12:44 (2.89 MB/s) - ‘nuttx.cfg’ saved [109/109]
+2024-01-10 13:18:07 (5.78 MB/s) - ‘nuttx.cfg’ saved [109/109]
 
 + cp nuttx.cfg ../nuttx-tinyemu/docs/tinyemu2/root-riscv64.cfg
 + cp nuttx.bin ../nuttx-tinyemu/docs/tinyemu2/
@@ -329,13 +337,13 @@ virtio_console_init
 virtio_console_can_write_data: ready=0
 123Ariscv_earlyserialinit: 
 BCnx_start: Entry
-mm_initialize: Heap: name=Umem, start=0x80044f88 size=33271928
-mm_addregion: [Umem] Region 1: base=0x80045238 size=33271232
-mm_malloc: Allocated 0x80045260, size 48
-mm_malloc: Allocated 0x80045290, size 288
-mm_malloc: Allocated 0x800453b0, size 32
-mm_malloc: Allocated 0x800453d0, size 720
-mm_malloc: Allocated 0x800456a0, size 80
+mm_initialize: Heap: name=Umem, start=0x80044f98 size=33271912
+mm_addregion: [Umem] Region 1: base=0x80045248 size=33271216
+mm_malloc: Allocated 0x80045270, size 48
+mm_malloc: Allocated 0x800452a0, size 288
+mm_malloc: Allocated 0x800453c0, size 32
+mm_malloc: Allocated 0x800453e0, size 720
+mm_malloc: Allocated 0x800456b0, size 80
 plic_write: offset=0x2000, val=0x0
 plic_write: offset=0x2004, val=0x0
 plic_write: offset=0x4, val=0x1
@@ -382,82 +390,75 @@ plic_write: offset=0xa4, val=0x1
 plic_write: offset=0xa8, val=0x1
 plic_write: offset=0xac, val=0x1
 plic_write: offset=0xb0, val=0x1
-plic_write: offset=0xb4, val=0x1
-plic_write: offset=0xb8, val=0x1
-plic_write: offset=0xbc, val=0x1
-plic_write: offset=0xc0, val=0x1
-plic_write: offset=0xc4, val=0x1
-plic_write: offset=0xc8, val=0x1
-plic_write: offset=0xcc, val=0x1
-plic_write: offset=0xd0, val=0x1
-plic_write: offset=0x200000, val=0x0
-mm_malloc: Allocated 0x800456f0, size 64
-mm_malloc: Allocated 0x80045730, size 240
-mm_malloc: Allocated 0x80045820, size 464
-mm_malloc: Allocated 0x800459f0, size 176
-mm_malloc: Allocated 0x80045aa0, size 336
-mm_malloc: Allocated 0x80045bf0, size 464
-mm_malloc: Allocated 0x80045dc0, size 464
-mm_malloc: Allocated 0x80045f90, size 528
+plicmm_malloc: Allocated 0x80045700, size 64
+mm_malloc: Allocated 0x80045740, size 240
+mm_malloc: Allocated 0x80045830, size 464
+mm_malloc: Allocated 0x80045a00, size 176
+mm_malloc: Allocated 0x80045ab0, size 336
+mm_malloc: Allocated 0x80045c00, size 464
+mm_malloc: Allocated 0x80045dd0, size 464
+mm_malloc: Allocated 0x80045fa0, size 528
 builtin_initialize: Registering Builtin Loader
 elf_initialize: Registering ELF
 riscv_serialinit: 
-mm_malloc: Allocated 0x800461a0, size 336
+mm_malloc: Allocated 0x800461b0, size 336
 virtio_mmio_init_device: VIRTIO version: 2 device: 3 vendor: ffff
 plic_set_irq: irq_num=1, state=0
 plic_update_mip: reset_mip, pending=0x0, served=0x0
-mm_malloc: Allocated 0x800462f0, size 48
-test_queue: test_queue: 0x800461a0
+mm_malloc: Allocated 0x80046300, size 48
+test_queue: test_queue: 0x800461b0
 test_queue: mip: 0
 test_queue: mie: 0x80
 plic_read: offset=0x200004
 test_queue: claim: 0
-mm_malloc: Allocated 0x80046320, size 80
-mm_malloc: Allocated 0x80046370, size 80
-mm_malloc: Allocated 0x800463c0, size 80
-mm_malloc: Allocated 0x80046410, size 400
-mm_malloc: Allocated 0x800465a0, size 272
-mm_malloc: Allocated 0x800466b0, size 272
-mm_malloc: Allocated 0x800467c0, size 96
-mm_malloc: Allocated 0x80046820, size 368
-mm_malloc: Allocated 0x80046990, size 12448
-mm_malloc: Allocated 0x80046990, size 368
+plic_write: offset=0x200004, val=0x0
+mm_malloc: Allocated 0x80046330, size 80
+mm_malloc: Allocated 0x80046380, size 80
+mm_malloc: Allocated 0x800463d0, size 80
+mm_malloc: Allocated 0x80046420, size 400
+mm_malloc: Allocated 0x800465b0, size 272
+mm_malloc: Allocated 0x800466c0, size 272
+mm_malloc: Allocated 0x800467d0, size 96
+mm_malloc: Allocated 0x80046830, size 368
+mm_malloc: Allocated 0x800469a0, size 12448
+mm_malloc: Allocated 0x800469a0, size 368
 mm_malloc: Allocated 0x80048090, size 12448
 up_enable_irq: irq=28, extirq=1
 plic_read: offset=0x2000
 plic_write: offset=0x2000, val=0x2
 uart_register: Registering /dev/console
-mm_malloc: Allocated 0x80046b00, size 80
+mm_malloc: Allocated 0x80046b10, size 80
 virtio_register_serial_driver: ret1=0
 virtio_register_serial_driver: ret2=0
-mm_malloc: Allocated 0x80046b50, size 32
-mm_malloc: Allocated 0x80046b70, size 160
-mm_malloc: Allocated 0x80046c10, size 32
-mm_malloc: Allocated 0x80046c30, size 32
-mm_malloc: Allocated 0x80046c50, size 32
+mm_malloc: Allocated 0x80046b60, size 32
+mm_malloc: Allocated 0x80046b80, size 160
+mm_malloc: Allocated 0x80046c20, size 32
+mm_malloc: Allocated 0x80046c40, size 32
+mm_malloc: Allocated 0x80046c60, size 32
 nx_start_application: Starting init thread
-task_spawn: name=nsh_main entry=0x80008a9a file_actions=0 attr=0x80044ef8 argv=0x80044ef0
-mm_malloc: Allocated 0x80046c70, size 272
-mm_malloc: Allocated 0x80046d80, size 288
-mm_malloc: Allocated 0x80046ea0, size 32
+task_spawn: name=nsh_main entry=0x80008aa6 file_actions=0 attr=0x80044f08 argv=0x80044f00
+mm_malloc: Allocated 0x80046c80, size 272
+mm_malloc: Allocated 0x80046d90, size 288
+mm_malloc: Allocated 0x80046eb0, size 32
 mm_malloc: Allocated 0x80048090, size 720
-mm_malloc: Allocated 0x80046ec0, size 32
-mm_malloc: Allocated 0x80046ee0, size 32
-mm_malloc: Allocated 0x80046f00, size 32
-mm_malloc: Allocated 0x80046f20, size 32
-mm_malloc: Allocated 0x80046f40, size 160
+mm_malloc: Allocated 0x80046ed0, size 32
+mm_malloc: Allocated 0x80046ef0, size 32
+mm_malloc: Allocated 0x80046f10, size 32
+mm_malloc: Allocated 0x80046f30, size 32
+mm_malloc: Allocated 0x80046f50, size 160
 mm_malloc: Allocated 0x80048360, size 3088
-mm_free: Freeing 0x80046c10
-mm_free: Freeing 0x80046c50
-mm_free: Freeing 0x80046c30
+mm_free: Freeing 0x80046c20
+mm_free: Freeing 0x80046c60
+mm_free: Freeing 0x80046c40
 riscv_dispatch_irq: irq=11
-mm_malloc: Allocated 0x80046c10, size 80
+mm_malloc: Allocated 0x80046c20, size 80
 test_virtio: 
 test_queue: test_queue: 0
 test_queue: mip: 0
 test_queue: mie: 0x80
 plic_read: offset=0x200004
 test_queue: claim: 0
+plic_write: offset=0x200004, val=0x0
 test_queue: TX index=0, entries=16
 test_queue: RX index=0, entries=16
 Hello VirtIO from NuttX!
@@ -477,96 +478,57 @@ test_queue: mie: 0x80
 plic_read: offset=0x200004
 plic_update_mip: reset_mip, pending=0x1, served=0x1
 test_queue: claim: 0x1
+plic_write: offset=0x200004, val=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 test_queue: TX index=0, entries=16
 test_queue: RX index=0, entries=16
 Hello VirtIO from NuttX!
 plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 test_queue: test_queue: 0
-test_queue: mip: 0
+test_queue: mip: 0xa00
 test_queue: mie: 0x80
 plic_read: offset=0x200004
-test_queue: claim: 0
+plic_update_mip: reset_mip, pending=0x1, served=0x1
+test_queue: claim: 0x1
+plic_write: offset=0x200004, val=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 test_queue: TX index=0, entries=16
 test_queue: RX index=0, entries=16
 Hello VirtIO from NuttX!
 plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 test_queue: test_queue: 0
-test_queue: mip: 0
+test_queue: mip: 0xa00
 test_queue: mie: 0x80
 plic_read: offset=0x200004
-test_queue: claim: 0
+plic_update_mip: reset_mip, pending=0x1, served=0x1
+test_queue: claim: 0x1
+plic_write: offset=0x200004, val=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 test_queue: TX index=0, entries=16
 test_queue: RX index=0, entries=16
 Hello VirtIO from NuttX!
 plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 test_queue: test_queue: 0
-test_queue: mip: 0
+test_queue: mip: 0xa00
 test_queue: mie: 0x80
 plic_read: offset=0x200004
-test_queue: claim: 0
+plic_update_mip: reset_mip, pending=0x1, served=0x1
+test_queue: claim: 0x1
+plic_write: offset=0x200004, val=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 test_queue: TX index=0, entries=16
 test_queue: RX index=0, entries=16
 Hello VirtIO from NuttX!
 plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
-test_queue: test_queue: 0
-test_queue: mip: 0
-test_queue: mie: 0x80
-plic_read: offset=0x200004
-test_queue: claim: 0
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
-Hello VirtIO from NuttX!
-plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
-test_queue: test_queue: 0
-test_queue: mip: 0
-test_queue: mie: 0x80
-plic_read: offset=0x200004
-test_queue: claim: 0
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
-Hello VirtIO from NuttX!
-plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
-test_queue: test_queue: 0
-test_queue: mip: 0
-test_queue: mie: 0x80
-plic_read: offset=0x200004
-test_queue: claim: 0
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
-Hello VirtIO from NuttX!
-plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
-test_queue: test_queue: 0
-test_queue: mip: 0
-test_queue: mie: 0x80
-plic_read: offset=0x200004
-test_queue: claim: 0
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
-Hello VirtIO from NuttX!
-plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
-test_queue: test_queue: 0
-test_queue: mip: 0
-test_queue: mie: 0x80
-plic_read: offset=0x200004
-test_queue: claim: 0
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
-Hello VirtIO from NuttX!
-plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 mm_malloc: Allocated 0x8004a090, size 848
 
 NuttShell (NSH) NuttX-12.3.0-RC1
 plic_set_irq: irq_num=1, state=1
-plic_update_mip: reset_mip, pending=0x1, served=0x1
+plic_update_mip: set_mip, pending=0x1, served=0x0
 riscv_dispatch_irq: irq=11
 nx_start: CPU0: Beginning Idle Loop
 
