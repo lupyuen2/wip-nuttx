@@ -361,6 +361,7 @@ static void virtio_serial_dmatxavail(FAR struct uart_dev_s *dev)
 
 static void virtio_serial_dmareceive(FAR struct uart_dev_s *dev)
 {
+  _info("\n");////
   FAR struct virtio_serial_priv_s *priv = dev->priv;
   FAR struct virtqueue *vq = priv->vdev->vrings_info[VIRTIO_SERIAL_RX].vq;
   FAR struct uart_dmaxfer_s *xfer = &dev->dmarx;
@@ -415,6 +416,7 @@ static void virtio_serial_rxready(FAR struct virtqueue *vq)
   xfer = virtqueue_get_buffer(vq, &len, NULL);
   if (xfer == NULL)
     {
+      _info("virtqueue_get_buffer=null\n");////
       return;
     }
 
