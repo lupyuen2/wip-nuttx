@@ -947,6 +947,8 @@ void test_queue(struct virtio_device *vdev0)
   _info("mip: %p\n", mip);
   uint64_t mie = READ_CSR(mie);
   _info("mie: %p\n", mie);
+  uint64_t mstatus = READ_CSR(mstatus);
+  _info("mstatus: %p\n", mstatus);
   // uintptr_t claim = getreg32(QEMU_RV_PLIC_CLAIM);
   // _info("claim: %p\n", claim);
   // putreg32(claim, QEMU_RV_PLIC_CLAIM);
@@ -983,3 +985,11 @@ void test_queue(struct virtio_device *vdev0)
   virtqueue_kick(vq);  
 #endif  // NOTUSED
 }
+
+// mstatus=0xa00002088
+// Bit 3: MIE
+// Bit 7: MPIE
+// Bit 13: FS=1
+// Bit 35: SXL=2
+// Bit 39: WPRI?
+// Bit 45: WPRI?
