@@ -32,6 +32,8 @@
 #include <nuttx/virtio/virtio.h>
 #include <nuttx/virtio/virtio-mmio.h>
 #include "../arch/risc-v/src/common/riscv_internal.h" ////
+#include "../arch/risc-v/src/qemu-rv/hardware/qemu_rv_memorymap.h" ////
+#include "../arch/risc-v/src/qemu-rv/hardware/qemu_rv_plic.h" ////
 
 /****************************************************************************
  * Pre-processor Definitions
