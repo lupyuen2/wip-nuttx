@@ -99,15 +99,6 @@ void up_irqinitialize(void)
 
   up_irq_enable();
 #endif
-
-#ifdef NOTUSED
-  ////Begin Test
-  for (int i = RISCV_IRQ_EXT; i < 50; i++)
-    {
-      up_enable_irq(i);
-    }
-  ////End Test
-#endif  // NOTUSED
 }
 
 /****************************************************************************
