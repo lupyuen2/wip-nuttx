@@ -45,6 +45,8 @@
 
 void up_irqinitialize(void)
 {
+  uintptr_t claim;
+
   /* Disable Machine interrupts */
 
   up_irq_save();
@@ -53,6 +55,11 @@ void up_irqinitialize(void)
 
   putreg32(0x0, QEMU_RV_PLIC_ENABLE1);
   putreg32(0x0, QEMU_RV_PLIC_ENABLE2);
+
+  /* Clear pendings in PLIC */
+
+  claim = getreg32(QEMU_RV_PLIC_CLAIM);
+  putreg32(claim, QEMU_RV_PLIC_CLAIM);
 
   /* Colorize the interrupt stack for debug purposes */
 
@@ -161,7 +168,9 @@ void up_enable_irq(int irq)
     {
       /* Read m/sstatus & set machine software interrupt enable in m/sie */
 
+      { uint64_t mie = READ_CSR(mie); _info("Before mie: %p\n", mie); }////
       SET_CSR(CSR_IE, IE_SIE);
+      { uint64_t mie = READ_CSR(mie); _info("After mie: %p\n", mie); }////
     }
   else if (irq == RISCV_IRQ_TIMER)
     {
@@ -202,7 +211,9 @@ irqstate_t up_irq_enable(void)
 
   /* Enable external interrupts (mie/sie) */
 
+  { uint64_t mie = READ_CSR(mie); _info("Before mie: %p\n", mie); }////
   SET_CSR(CSR_IE, IE_EIE);
+  { uint64_t mie = READ_CSR(mie); _info("After mie: %p\n", mie); }////
 
   /* Read and enable global interrupts (M/SIE) in m/sstatus */
 
