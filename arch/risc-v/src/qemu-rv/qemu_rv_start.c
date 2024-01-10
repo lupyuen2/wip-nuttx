@@ -256,11 +256,17 @@ Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git checkout -- <file>..." to discard changes in working directory)
 
-        modified:   arch/risc-v/src/bl808/bl808_irq_dispatch.c
+        modified:   arch/risc-v/src/qemu-rv/qemu_rv_irq_dispatch.c
+        modified:   boards/risc-v/qemu-rv/rv-virt/src/qemu_rv_appinit.c
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        boards/risc-v/qemu-rv/rv-virt/scripts/ld.script.tmp
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ++ git rev-parse HEAD
-+ hash1=3afc0d315b2ad98a69df367762d9c95f0d810068
++ hash1=eb5bd6f6228622a22035f15576ce8a8394d7194a
 + pushd ../apps
 ~/riscv/apps ~/riscv/nuttx
 + git pull
@@ -273,7 +279,7 @@ nothing to commit, working tree clean
 + hash2=cf27f085f56709ca5e1a31e4a91ca9e90dd69c79
 + popd
 ~/riscv/nuttx
-+ echo NuttX Source: https://github.com/apache/nuttx/tree/3afc0d315b2ad98a69df367762d9c95f0d810068
++ echo NuttX Source: https://github.com/apache/nuttx/tree/eb5bd6f6228622a22035f15576ce8a8394d7194a
 + echo NuttX Apps: https://github.com/apache/nuttx-apps/tree/cf27f085f56709ca5e1a31e4a91ca9e90dd69c79
 + riscv64-unknown-elf-gcc -v
 Using built-in specs.
@@ -288,14 +294,13 @@ gcc version 10.2.0 (SiFive GCC-Metal 10.2.0-2020.12.8)
 + pushd ../nuttx
 ~/riscv/nuttx ~/riscv/nuttx
 + make -j 8
-Create version.h
-CPP:  /Users/Luppy/riscv/nuttx/boards/risc-v/qemu-rv/rv-virt/scripts/ld.script-> /Users/Luppy/riscv/nLD: nuttx
+LD: nuttx
 CP: nuttx.hex
 + popd
 ~/riscv/nuttx
 + riscv64-unknown-elf-size nuttx
    text    data     bss     dec     hex filename
- 268023     833   10592  279448   44398 nuttx
+ 268141     833   10592  279566   4440e nuttx
 + riscv64-unknown-elf-objcopy -O binary nuttx nuttx.bin
 + cp .config nuttx.config
 + riscv64-unknown-elf-objdump --syms --source --reloc --demangle --line-numbers --wide --debugging nuttx
@@ -305,16 +310,16 @@ CP: nuttx.hex
 + ../nxstyle arch/risc-v/src/common/riscv_mmu.c
 + set -e
 + wget --output-document=nuttx.cfg https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
---2024-01-10 08:08:01--  https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
-Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.109.133, 185.199.108.133, 185.199.111.133, ...
-Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.109.133|:443... connected.
+--2024-01-10 08:40:15--  https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
+Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.111.133, ...
+Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.108.133|:443... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 109 [text/plain]
 Saving to: ‘nuttx.cfg’
 
 nuttx.cfg                 100%[==================================>]     109  --.-KB/s    in 0s      
 
-2024-01-10 08:08:01 (6.50 MB/s) - ‘nuttx.cfg’ saved [109/109]
+2024-01-10 08:40:16 (4.16 MB/s) - ‘nuttx.cfg’ saved [109/109]
 
 + cp nuttx.cfg ../nuttx-tinyemu/docs/tinyemu2/root-riscv64.cfg
 + cp nuttx.bin ../nuttx-tinyemu/docs/tinyemu2/
@@ -324,74 +329,77 @@ nuttx.cfg                 100%[==================================>]     109  --.
 + echo http://localhost:8080
 http://localhost:8080
 + echo simple-http-server /Users/Luppy/riscv/nuttx-tinyemu/docs/
-+ sleep 10
 simple-http-server /Users/Luppy/riscv/nuttx-tinyemu/docs/
++ sleep 10
 + temu nuttx.cfg
 123Ariscv_earlyserialinit: 
 BCnx_start: Entry
-mm_initialize: Heap: name=Umem, start=0x80044c10 size=33272816
-mm_addregion: [Umem] Region 1: base=0x80044eb8 size=33272128
-mm_malloc: Allocated 0x80044ee0, size 48
-mm_malloc: Allocated 0x80044f10, size 288
-mm_malloc: Allocated 0x80045030, size 32
-mm_malloc: Allocated 0x80045050, size 720
-mm_malloc: Allocated 0x80045320, size 80
-mm_malloc: Allocated 0x80045370, size 64
-mm_malloc: Allocated 0x800453b0, size 240
-mm_malloc: Allocated 0x800454a0, size 464
-mm_malloc: Allocated 0x80045670, size 176
-mm_malloc: Allocated 0x80045720, size 336
-mm_malloc: Allocated 0x80045870, size 464
-mm_malloc: Allocated 0x80045a40, size 464
-mm_malloc: Allocated 0x80045c10, size 528
+mm_initialize: Heap: name=Umem, start=0x80044c80 size=33272704
+mm_addregion: [Umem] Region 1: base=0x80044f28 size=33272016
+mm_malloc: Allocated 0x80044f50, size 48
+mm_malloc: Allocated 0x80044f80, size 288
+mm_malloc: Allocated 0x800450a0, size 32
+mm_malloc: Allocated 0x800450c0, size 720
+mm_malloc: Allocated 0x80045390, size 80
+mm_malloc: Allocated 0x800453e0, size 64
+mm_malloc: Allocated 0x80045420, size 240
+mm_malloc: Allocated 0x80045510, size 464
+mm_malloc: Allocated 0x800456e0, size 176
+mm_malloc: Allocated 0x80045790, size 336
+mm_malloc: Allocated 0x800458e0, size 464
+mm_malloc: Allocated 0x80045ab0, size 464
+mm_malloc: Allocated 0x80045c80, size 528
 builtin_initialize: Registering Builtin Loader
 elf_initialize: Registering ELF
 riscv_serialinit: 
-mm_malloc: Allocated 0x80045e20, size 336
+mm_malloc: Allocated 0x80045e90, size 336
 virtio_mmio_init_device: VIRTIO version: 2 device: 3 vendor: ffff
-mm_malloc: Allocated 0x80045f70, size 48
-mm_malloc: Allocated 0x80045fa0, size 80
-mm_malloc: Allocated 0x80045ff0, size 80
-mm_malloc: Allocated 0x80046040, size 80
-mm_malloc: Allocated 0x80046090, size 400
-mm_malloc: Allocated 0x80046220, size 272
-mm_malloc: Allocated 0x80046330, size 272
-mm_malloc: Allocated 0x80046440, size 96
-mm_malloc: Allocated 0x800464a0, size 368
-mm_malloc: Allocated 0x80046610, size 12448
-mm_malloc: Allocated 0x80046610, size 368
+mm_malloc: Allocated 0x80045fe0, size 48
+mm_malloc: Allocated 0x80046010, size 80
+mm_malloc: Allocated 0x80046060, size 80
+mm_malloc: Allocated 0x800460b0, size 80
+mm_malloc: Allocated 0x80046100, size 400
+mm_malloc: Allocated 0x80046290, size 272
+mm_malloc: Allocated 0x800463a0, size 272
+mm_malloc: Allocated 0x800464b0, size 96
+mm_malloc: Allocated 0x80046510, size 368
+mm_malloc: Allocated 0x80046680, size 12448
+mm_malloc: Allocated 0x80046680, size 368
 mm_malloc: Allocated 0x80048090, size 12448
 up_enable_irq: irq=28, extirq=1
 uart_register: Registering /dev/console
-mm_malloc: Allocated 0x80046780, size 80
+mm_malloc: Allocated 0x800467f0, size 80
 virtio_register_serial_driver: ret1=0
 virtio_register_serial_driver: ret2=0
-mm_malloc: Allocated 0x800467d0, size 32
-mm_malloc: Allocated 0x800467f0, size 160
-mm_malloc: Allocated 0x80046890, size 32
-mm_malloc: Allocated 0x800468b0, size 32
-mm_malloc: Allocated 0x800468d0, size 32
+mm_malloc: Allocated 0x80046840, size 32
+mm_malloc: Allocated 0x80046860, size 160
+mm_malloc: Allocated 0x80046900, size 32
+mm_malloc: Allocated 0x80046920, size 32
+mm_malloc: Allocated 0x80046940, size 32
 nx_start_application: Starting init thread
-task_spawn: name=nsh_main entry=0x8000889c file_actions=0 attr=0x80044b80 argv=0x80044b78
-mm_malloc: Allocated 0x800468f0, size 272
-mm_malloc: Allocated 0x80046a00, size 288
-mm_malloc: Allocated 0x80046b20, size 32
-mm_malloc: Allocated 0x80046b40, size 720
-mm_malloc: Allocated 0x80046e10, size 32
-mm_malloc: Allocated 0x80046e30, size 32
-mm_malloc: Allocated 0x80046e50, size 32
-mm_malloc: Allocated 0x80046e70, size 32
-mm_malloc: Allocated 0x80046e90, size 160
+task_spawn: name=nsh_main entry=0x800088da file_actions=0 attr=0x80044bf0 argv=0x80044be8
+mm_malloc: Allocated 0x80046960, size 272
+mm_malloc: Allocated 0x80046a70, size 288
+mm_malloc: Allocated 0x80046b90, size 32
+mm_malloc: Allocated 0x80046bb0, size 720
+mm_malloc: Allocated 0x80046e80, size 32
+mm_malloc: Allocated 0x80046ea0, size 32
+mm_malloc: Allocated 0x80046ec0, size 32
+mm_malloc: Allocated 0x80046ee0, size 32
+mm_malloc: Allocated 0x80046f00, size 160
 mm_malloc: Allocated 0x80048090, size 3088
-mm_free: Freeing 0x80046890
-mm_free: Freeing 0x800468d0
-mm_free: Freeing 0x800468b0
-mm_malloc: Allocated 0x80046890, size 80
+mm_free: Freeing 0x80046900
+mm_free: Freeing 0x80046940
+mm_free: Freeing 0x80046920
+riscv_dispatch_irq: irq=11
+mm_malloc: Allocated 0x80046900, size 80
+test_virtio: 
 mm_malloc: Allocated 0x80048ca0, size 848
 
 NuttShell (NSH) NuttX-12.3.0-RC1
+riscv_dispatch_irq: irq=11
 nx_start: CPU0: Beginning Idle Loop
-asdddsdsds+ pkill temu
+asdf+ pkill temu
 
  *  The terminal process "/bin/zsh '-l', '-c', 'cd nuttx && ../run.sh'" terminated with exit code: 1. 
  *  Terminal will be reused by tasks, press any key to close it. 

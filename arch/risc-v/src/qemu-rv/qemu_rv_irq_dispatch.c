@@ -26,6 +26,7 @@
 
 #include <stdint.h>
 #include <assert.h>
+#include <debug.h>
 
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
@@ -56,6 +57,7 @@
 void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 {
   int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
+  _info("irq=%d\n", irq);////
 
   /* Firstly, check if the irq is machine external interrupt */
 

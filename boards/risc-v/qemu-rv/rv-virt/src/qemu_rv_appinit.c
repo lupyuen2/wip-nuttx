@@ -121,6 +121,9 @@ int board_app_initialize(uintptr_t arg)
   //// Previously: qemu_virtio_register_mmio_devices();
 #endif
 
+  void test_virtio(void);
+  test_virtio();
+
   return OK;
 #endif
 }
