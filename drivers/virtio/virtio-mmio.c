@@ -870,8 +870,8 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
       goto err;
     }
 
-  void test_queue(struct virtio_device *vdev0); ////
-  test_queue(&vmdev->vdev); ////
+  // void test_queue(struct virtio_device *vdev0); ////
+  // test_queue(&vmdev->vdev); ////
 
 #ifdef NOTUSED
   // Testing: Init VirtIO Device
@@ -947,15 +947,6 @@ void test_queue(struct virtio_device *vdev0)
   _info("mip: %p\n", mip);
   uint64_t mie = READ_CSR(mie);
   _info("mie: %p\n", mie);
-  // TODO: This doesn't work
-  // Enable MEIE: Machine-Mode External Interrupt  
-  // WRITE_CSR(mie, mie | (1 << 11));
-
-  // TODO: This works, but we need MEIE, not SEIE
-  WRITE_CSR(mie, mie | (1 << 9));  // Enable SEIE: Supervisor-Mode External Interrupt
-  mie = READ_CSR(mie);
-  _info("mie: %p\n", mie);
-
   uint64_t mstatus = READ_CSR(mstatus);
   _info("mstatus: %p\n", mstatus);
   // uintptr_t claim = getreg32(QEMU_RV_PLIC_CLAIM);
