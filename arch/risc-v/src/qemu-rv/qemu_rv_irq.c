@@ -168,6 +168,7 @@ void up_enable_irq(int irq)
     {
       /* Read m/sstatus & set machine software interrupt enable in m/sie */
 
+      _info("soft irq=%d\n", irq);////
       { uint64_t mie = READ_CSR(mie); _info("Before mie: %p\n", mie); }////
       SET_CSR(CSR_IE, IE_SIE);
       { uint64_t mie = READ_CSR(mie); _info("After mie: %p\n", mie); }////
@@ -176,7 +177,8 @@ void up_enable_irq(int irq)
     {
       /* Read m/sstatus & set timer interrupt enable in m/sie */
 
-      SET_CSR(CSR_IE, IE_TIE);
+      _info("timer irq=%d\n", irq);////
+      ////TODO: SET_CSR(CSR_IE, IE_TIE);
     }
 #ifdef CONFIG_BUILD_KERNEL
   else if (irq == RISCV_IRQ_MTIMER)

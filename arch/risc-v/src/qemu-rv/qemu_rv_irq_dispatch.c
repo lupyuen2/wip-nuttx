@@ -57,8 +57,8 @@
 void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 {
   int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
-  ////if (irq != 23) { _info("irq=%d\n", irq); }////
-  { _info("irq=%d\n", irq); up_mdelay(1000); }////
+  if (irq != 23) { _info("irq=%d\n", irq); }////
+  ////{ _info("irq=%d\n", irq); up_mdelay(1000); }////
 
   /* Firstly, check if the irq is machine external interrupt */
 
