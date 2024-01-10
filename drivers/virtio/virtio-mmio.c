@@ -941,7 +941,7 @@ void test_queue(struct virtio_device *vdev0)
 {
   _info("test_queue: %p\n", vdev0);
   static struct virtio_device *vdev = NULL;
-  if (vdev0 != NULL) { vdev = vdev0; return; }
+  if (vdev == NULL && vdev0 != NULL) { vdev = vdev0; return; }
 
   #define VIRTIO_SERIAL_RX           0
   #define VIRTIO_SERIAL_TX           1
@@ -956,4 +956,17 @@ void test_queue(struct virtio_device *vdev0)
   vq = vdev->vrings_info[VIRTIO_SERIAL_RX].vq;
   DEBUGASSERT(vq != NULL);
   _info("RX index=%d, entries=%d\n", vq->vq_queue_index, vq->vq_nentries);
+
+  /* Set the virtqueue buffer */
+  static char *HELLO_MSG = "Hello VirtIO from NuttX!\r\n";
+  struct virtqueue_buf vb[2];
+  vb[0].buf = HELLO_MSG;
+  vb[0].len = strlen(HELLO_MSG);
+  int num = 1;
+  uintptr_t len = strlen(HELLO_MSG);
+
+  /* Add buffer to TX virtiqueue and notify the VirtIO Host */
+  vq = vdev->vrings_info[VIRTIO_SERIAL_TX].vq;
+  virtqueue_add_buffer(vq, vb, num, 0, (FAR void *)len);
+  virtqueue_kick(vq);  
 }
