@@ -128,16 +128,15 @@ int board_app_initialize(uintptr_t arg)
 #endif
 }
 
-// Based on virtio_mmio_create_virtqueue
-// https://github.com/apache/nuttx/blob/master/drivers/virtio/virtio-mmio.c#L349-L414
+// Called by drivers/virtio/virtio-mmio.c
 void test_virtio(void)
 {
   _info("\n");
 
-  for (int i = 0; i < 5; i++)
-    {
-      void test_queue(struct virtio_device *vdev0);
-      test_queue(NULL);
-      up_mdelay(10 * 1000);
-    }
+  // for (int i = 0; i < 5; i++)
+  //   {
+  //     void test_queue(struct virtio_device *vdev0);
+  //     test_queue(NULL);
+  //     up_mdelay(10 * 1000);
+  //   }
 }
