@@ -138,6 +138,6 @@ void test_virtio(void)
     {
       void test_queue(struct virtio_device *vdev0);
       test_queue(NULL);
-      up_mdelay(1000);
+      up_mdelay(10 * 1000);
     }
 }

@@ -951,11 +951,11 @@ void test_queue(struct virtio_device *vdev0)
 
   struct virtqueue *vq = vdev->vrings_info[VIRTIO_SERIAL_TX].vq;
   DEBUGASSERT(vq != NULL);
-  _info("TX index=%d, entries=%d\n", vq->vq_queue_index, vq->vq_nentries);
+  _info("TX index=%d, entries=%d\n", vq->vq_available_idx, vq->vq_nentries);
 
   vq = vdev->vrings_info[VIRTIO_SERIAL_RX].vq;
   DEBUGASSERT(vq != NULL);
-  _info("RX index=%d, entries=%d\n", vq->vq_queue_index, vq->vq_nentries);
+  _info("RX index=%d, entries=%d\n", vq->vq_available_idx, vq->vq_nentries);
 
   /* Set the virtqueue buffer */
   static char *HELLO_MSG = "Hello VirtIO from NuttX!\r\n";
