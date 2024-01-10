@@ -968,6 +968,7 @@ void test_queue(struct virtio_device *vdev0)
   DEBUGASSERT(vq != NULL);
   _info("RX index=%d, entries=%d\n", vq->vq_available_idx, vq->vq_nentries);
 
+#ifdef NOTUSED
   /* Set the virtqueue buffer */
   static char *HELLO_MSG = "Hello VirtIO from NuttX!\r\n";
   struct virtqueue_buf vb[2];
@@ -980,4 +981,5 @@ void test_queue(struct virtio_device *vdev0)
   vq = vdev->vrings_info[VIRTIO_SERIAL_TX].vq;
   virtqueue_add_buffer(vq, vb, num, 0, (FAR void *)len);
   virtqueue_kick(vq);  
+#endif  // NOTUSED
 }
