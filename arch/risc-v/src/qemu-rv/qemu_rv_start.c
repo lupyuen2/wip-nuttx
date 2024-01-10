@@ -247,8 +247,6 @@ void riscv_serialinit(void)
 }
 
 /* Output Log:
- *  Executing task: cd nuttx && ../run.sh 
-
 + git pull
 Already up-to-date.
 + git status
@@ -258,11 +256,16 @@ Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git checkout -- <file>..." to discard changes in working directory)
 
-        modified:   drivers/virtio/virtio-mmio.c
+        modified:   arch/risc-v/src/qemu-rv/qemu_rv_irq_dispatch.c
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        boards/risc-v/qemu-rv/rv-virt/scripts/ld.script.tmp
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ++ git rev-parse HEAD
-+ hash1=fdcb2a342d2190bc74e6e7712b3b8b2c402d382a
++ hash1=c16056d11ddaa33504fd08962d55fa085ccba84f
 + pushd ../apps
 ~/riscv/apps ~/riscv/nuttx
 + git pull
@@ -275,7 +278,7 @@ nothing to commit, working tree clean
 + hash2=cf27f085f56709ca5e1a31e4a91ca9e90dd69c79
 + popd
 ~/riscv/nuttx
-+ echo NuttX Source: https://github.com/apache/nuttx/tree/fdcb2a342d2190bc74e6e7712b3b8b2c402d382a
++ echo NuttX Source: https://github.com/apache/nuttx/tree/c16056d11ddaa33504fd08962d55fa085ccba84f
 + echo NuttX Apps: https://github.com/apache/nuttx-apps/tree/cf27f085f56709ca5e1a31e4a91ca9e90dd69c79
 + riscv64-unknown-elf-gcc -v
 Using built-in specs.
@@ -290,8 +293,7 @@ gcc version 10.2.0 (SiFive GCC-Metal 10.2.0-2020.12.8)
 + pushd ../nuttx
 ~/riscv/nuttx ~/riscv/nuttx
 + make -j 8
-Create version.h
-CPP:  /Users/Luppy/riscv/nuttx/boards/risc-v/qemu-rv/rv-virt/scripts/ld.script-> /Users/Luppy/riscv/nuttx/boards/risc-v/qemu-rv/rv-virt/scripts/ld.scripLD: nuttx
+LD: nuttx
 CP: nuttx.hex
 + popd
 ~/riscv/nuttx
@@ -307,7 +309,7 @@ CP: nuttx.hex
 + ../nxstyle arch/risc-v/src/common/riscv_mmu.c
 + set -e
 + wget --output-document=nuttx.cfg https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
---2024-01-10 13:50:24--  https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
+--2024-01-10 13:57:15--  https://raw.githubusercontent.com/lupyuen/nuttx-tinyemu/main/docs/root-riscv64.cfg
 Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.110.133, 185.199.111.133, 185.199.108.133, ...
 Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.110.133|:443... connected.
 HTTP request sent, awaiting response... 200 OK
@@ -316,7 +318,7 @@ Saving to: ‘nuttx.cfg’
 
 nuttx.cfg          100%[================>]     109  --.-KB/s    in 0s      
 
-2024-01-10 13:50:25 (3.85 MB/s) - ‘nuttx.cfg’ saved [109/109]
+2024-01-10 13:57:15 (3.71 MB/s) - ‘nuttx.cfg’ saved [109/109]
 
 + cp nuttx.cfg ../nuttx-tinyemu/docs/tinyemu2/root-riscv64.cfg
 + cp nuttx.bin ../nuttx-tinyemu/docs/tinyemu2/
@@ -379,7 +381,12 @@ plic_write: offset=0x84, val=0x1
 plic_write: offset=0x88, val=0x1
 plic_write: offset=0x8c, val=0x1
 plic_write: offset=0x90, val=0x1
-plicplic_write: offset=0xa8, val=0x1
+plic_write: offset=0x94, val=0x1
+plic_write: offset=0x98, val=0x1
+plic_write: offset=0x9c, val=0x1
+plic_write: offset=0xa0, val=0x1
+plic_write: offset=0xa4, val=0x1
+plic_write: offset=0xa8, val=0x1
 plic_write: offset=0xac, val=0x1
 plic_write: offset=0xb0, val=0x1
 plic_write: offset=0xb4, val=0x1
@@ -451,47 +458,25 @@ mm_free: Freeing 0x80046c60
 mm_free: Freeing 0x80046ca0
 mm_free: Freeing 0x80046c80
 riscv_dispatch_irq: irq=11
-mm_malloc: Allocated 0x80046c60, size 80
-test_virtio: 
-test_queue: test_queue: 0
-test_queue: mip: 0
-test_queue: mie: 0x80
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
 virtio_console_resize_event
 plic_set_irq: irq_num=1, state=1
 plic_update_mip: set_mip, pending=0x1, served=0x0
+riscv_dispatch_irq: irq=23
+mm_malloc: Allocated 0x80046c60, size 80
+test_virtio: 
 test_queue: test_queue: 0
 test_queue: mip: 0xa00
 test_queue: mie: 0x80
 test_queue: TX index=0, entries=16
 test_queue: RX index=0, entries=16
-virtio_console_get_write_len
-virtio_console_write_data: ready=1
-virtio_console_write_data: last_avail_idx=0, avail_idx=1
-plic_set_irq: irq_num=1, state=1
-plic_update_mip: set_mip, pending=0x1, served=0x0
-test_queue: test_queue: 0
-test_queue: mip: 0xa00
-test_queue: mie: 0x80
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
-test_queue: test_queue: 0
-test_queue: mip: 0xa00
-test_queue: mie: 0x80
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
-test_queue: test_queue: 0
-test_queue: mip: 0xa00
-test_queue: mie: 0x80
-test_queue: TX index=0, entries=16
-test_queue: RX index=0, entries=16
-mm_malloc: Allocated 0x80048400, size 848
-
-NuttShell (NSH) NuttX-12.3.0-RC1
-plic_set_irq: irq_num=1, state=1
-plic_update_mip: set_mip, pending=0x1, served=0x0
-riscv_dispatch_irq: irq=11
-nx_start: CPU0: Beginning Idle Loop
+riscv_dispatch_irq: irq=23
+riscv_dispatch_irq: irq=23
+riscv_dispatch_irq: irq=23
+riscv_dispatch_irq: irq=23
+riscv_dispatch_irq: irq=23
+riscv_dispatch_irq: irq=23
+riscv_dispatch_irq: irq=23
+riscv_dispatch_irq: irq=23
+riscv_dispatch_irq: irq=23
 
 */
