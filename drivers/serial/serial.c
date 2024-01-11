@@ -736,7 +736,7 @@ static int uart_close(FAR struct file *filep)
 static ssize_t uart_read(FAR struct file *filep,
                          FAR char *buffer, size_t buflen)
 {
-  FAR char *buffer0 = buffer;////
+  // FAR char *buffer0 = buffer;////
   FAR struct inode *inode = filep->f_inode;
   FAR uart_dev_t *dev = inode->i_private;
   FAR struct uart_buffer_s *rxbuf = &dev->recv;
@@ -804,7 +804,7 @@ static ssize_t uart_read(FAR struct file *filep,
           /* Take the next character from the tail of the buffer */
 
           ch = rxbuf->buffer[tail];
-          _info("ch=%c\n", ch);////
+          // _info("ch=%c\n", ch);////
 
           /* Increment the tail index.  Most operations are done using the
            * local variable 'tail' so that the final rxbuf->tail update
@@ -1153,7 +1153,7 @@ static ssize_t uart_read(FAR struct file *filep,
 #endif
 
   nxmutex_unlock(&dev->recv.lock);
-  _info("buf[0]=%c, recvd=%d\n", buffer0[0], recvd);////
+  // _info("buf[0]=%c, recvd=%d\n", buffer0[0], recvd);////
   return recvd;
 }
 
@@ -1862,7 +1862,7 @@ int uart_register(FAR const char *path, FAR uart_dev_t *dev)
 
 void uart_datareceived(FAR uart_dev_t *dev)
 {
-  _info("\n");////
+  // _info("\n");////
   /* Notify all poll/select waiters that they can read from the recv buffer */
 
   poll_notify(dev->fds, CONFIG_SERIAL_NPOLLWAITERS, POLLIN);
