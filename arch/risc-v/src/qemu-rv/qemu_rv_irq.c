@@ -45,8 +45,6 @@
 
 void up_irqinitialize(void)
 {
-  uintptr_t claim;
-
   /* Disable Machine interrupts */
 
   up_irq_save();
@@ -55,11 +53,6 @@ void up_irqinitialize(void)
 
   putreg32(0x0, QEMU_RV_PLIC_ENABLE1);
   putreg32(0x0, QEMU_RV_PLIC_ENABLE2);
-
-  /* Clear pendings in PLIC */
-
-  claim = getreg32(QEMU_RV_PLIC_CLAIM);
-  putreg32(claim, QEMU_RV_PLIC_CLAIM);
 
   /* Colorize the interrupt stack for debug purposes */
 
@@ -178,7 +171,6 @@ void up_enable_irq(int irq)
   else if (irq > RISCV_IRQ_EXT)
     {
       extirq = irq - RISCV_IRQ_EXT;
-      _info("irq=%d, extirq=%d\n", irq, extirq);////
 
       /* Set enable bit for the irq */
 
