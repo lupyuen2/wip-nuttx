@@ -421,7 +421,7 @@ static void virtio_serial_rxready(FAR struct virtqueue *vq)
       return;
     }
 
-  _info("len=%d\n", len);////
+  _info("buf[0]=%c, len=%d\n", xfer->buffer[0], len);////
   xfer->nbytes = len;
   uart_recvchars_done(&priv->udev);
   uart_dmarxfree(&priv->udev);
