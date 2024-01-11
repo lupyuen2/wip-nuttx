@@ -1859,6 +1859,7 @@ int uart_register(FAR const char *path, FAR uart_dev_t *dev)
 
 void uart_datareceived(FAR uart_dev_t *dev)
 {
+  _info("\n");////
   /* Notify all poll/select waiters that they can read from the recv buffer */
 
   poll_notify(dev->fds, CONFIG_SERIAL_NPOLLWAITERS, POLLIN);

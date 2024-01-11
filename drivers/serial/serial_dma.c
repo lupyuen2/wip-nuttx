@@ -304,6 +304,7 @@ void uart_recvchars_dma(FAR uart_dev_t *dev)
 #ifdef CONFIG_SERIAL_RXDMA
 void uart_recvchars_done(FAR uart_dev_t *dev)
 {
+  _info("\n");////
   FAR struct uart_dmaxfer_s *xfer = &dev->dmarx;
   FAR struct uart_buffer_s *rxbuf = &dev->recv;
   size_t nbytes = xfer->nbytes;

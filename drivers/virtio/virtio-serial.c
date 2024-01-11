@@ -361,12 +361,12 @@ static void virtio_serial_dmatxavail(FAR struct uart_dev_s *dev)
 
 static void virtio_serial_dmareceive(FAR struct uart_dev_s *dev)
 {
-  _info("\n");////
   FAR struct virtio_serial_priv_s *priv = dev->priv;
   FAR struct virtqueue *vq = priv->vdev->vrings_info[VIRTIO_SERIAL_RX].vq;
   FAR struct uart_dmaxfer_s *xfer = &dev->dmarx;
   struct virtqueue_buf vb[2];
   int num = 1;
+  _info("buf[0]=%c, len=%d\n", xfer->buffer[0], xfer->length);////
 
   vb[0].buf = xfer->buffer;
   vb[0].len = xfer->length;
@@ -377,6 +377,7 @@ static void virtio_serial_dmareceive(FAR struct uart_dev_s *dev)
       vb[num].len = xfer->nlength;
       num = 2;
     }
+  _info("num=%d, length=%d, nlength=%d\n", num, xfer->length, xfer->nlength);////
 
   /* Add buffer to the RX virtqueue and notify the device side */
 
@@ -390,6 +391,7 @@ static void virtio_serial_dmareceive(FAR struct uart_dev_s *dev)
 
 static void virtio_serial_dmarxfree(FAR struct uart_dev_s *dev)
 {
+  _info("length=%d\n", dev->dmarx.length);////
   if (dev->dmarx.length == 0)
     {
       uart_recvchars_dma(dev);
