@@ -408,7 +408,6 @@ static void virtio_serial_dmarxfree(FAR struct uart_dev_s *dev)
 
 static void virtio_serial_rxready(FAR struct virtqueue *vq)
 {
-  _info("\n");////
   FAR struct virtio_serial_priv_s *priv = vq->vq_dev->priv;
   FAR struct uart_dmaxfer_s *xfer;
   uint32_t len;
@@ -422,6 +421,7 @@ static void virtio_serial_rxready(FAR struct virtqueue *vq)
       return;
     }
 
+  _info("len=%d\n", len);////
   xfer->nbytes = len;
   uart_recvchars_done(&priv->udev);
   uart_dmarxfree(&priv->udev);

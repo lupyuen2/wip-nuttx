@@ -255,10 +255,11 @@ void uart_recvchars_dma(FAR uart_dev_t *dev)
 
   if (is_full)
     {
+      _info("is_full\n");////
       /* If there is no free space in receive buffer we cannot start DMA
        * transfer.
        */
-
+      
       return;
     }
 
