@@ -486,8 +486,8 @@ static int virtio_serial_init(FAR struct virtio_serial_priv_s *priv,
       goto err_with_recv;
     }
 
-  //// TODO: TinyEMU needs NuttX to echo the keypress
-  udev->tc_lflag |= ECHO; ////
+  //// TODO: TinyEMU needs NuttX to echo the keypress and change CR to NL
+  udev->isconsole = true; ////
 
   /* Initialize the virtio device */
 
