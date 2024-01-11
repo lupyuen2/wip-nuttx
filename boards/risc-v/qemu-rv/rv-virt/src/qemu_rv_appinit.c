@@ -53,7 +53,7 @@
  ****************************************************************************/
 
 #ifdef CONFIG_DRIVERS_VIRTIO_MMIO
-////static 
+////Previously: static. Now called by nuttx/arch/risc-v/src/qemu-rv/qemu_rv_start.c
 void qemu_virtio_register_mmio_devices(void)
 {
   uintptr_t virtio = (uintptr_t)QEMU_VIRTIO_MMIO_BASE;
@@ -115,22 +115,6 @@ int board_app_initialize(uintptr_t arg)
   //// Previously: qemu_virtio_register_mmio_devices();
 #endif
 
-  void test_virtio(void);
-  test_virtio();
-
   return OK;
 #endif
-}
-
-// Called by drivers/virtio/virtio-mmio.c
-void test_virtio(void)
-{
-  _info("\n");
-
-  // for (int i = 0; i < 5; i++)
-  //   {
-  //     void test_queue(struct virtio_device *vdev0);
-  //     test_queue(NULL);
-  //     up_mdelay(10 * 1000);
-  //   }
 }

@@ -73,7 +73,6 @@ static uint32_t g_stimer_pending = false;
 
 static int qemu_rv_ssoft_interrupt(int irq, void *context, void *arg)
 {
-  _info("irq=%d\n", irq); ////
   /* Cleaer Supervisor Software Interrupt */
 
   CLEAR_CSR(sip, SIP_SSIP);
@@ -162,7 +161,6 @@ void up_timer_initialize(void)
 
 void up_mtimer_initialize(void)
 {
-  _info("\n"); ////
   uintptr_t irqstacktop = riscv_percpu_get_irqstack();
 
   /* Set the irq stack base to mscratch */
