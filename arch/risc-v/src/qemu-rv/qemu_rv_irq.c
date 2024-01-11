@@ -168,8 +168,7 @@ void up_enable_irq(int irq)
     {
       /* Read m/sstatus & set timer interrupt enable in m/sie */
 
-      _info("TODO: Enable timer irq=%d\n", irq);////
-      ////TODO: SET_CSR(CSR_IE, IE_TIE);
+      SET_CSR(CSR_IE, IE_TIE);
     }
 #ifdef CONFIG_BUILD_KERNEL
   else if (irq == RISCV_IRQ_MTIMER)
