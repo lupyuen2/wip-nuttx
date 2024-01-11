@@ -1151,6 +1151,7 @@ static ssize_t uart_read(FAR struct file *filep,
 #endif
 
   nxmutex_unlock(&dev->recv.lock);
+  _info("buf[0]=%c, recvd=%d\n", buffer[0], recvd);////
   return recvd;
 }
 
