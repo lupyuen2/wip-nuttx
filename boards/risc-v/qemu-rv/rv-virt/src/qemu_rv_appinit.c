@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <errno.h>
+#include <debug.h>
 
 #include <nuttx/board.h>
 #include <nuttx/virtio/virtio-mmio.h>
@@ -38,14 +39,14 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define QEMU_VIRTIO_MMIO_BASE    0x10001000
-#define QEMU_VIRTIO_MMIO_REGSIZE 0x1000
+#define QEMU_VIRTIO_MMIO_BASE    0x40010000 // VIRTIO_BASE_ADDR. Previously: 0x10001000
+#define QEMU_VIRTIO_MMIO_REGSIZE 0x1000     // VIRTIO_SIZE
 #ifdef CONFIG_ARCH_USE_S_MODE
-#  define QEMU_VIRTIO_MMIO_IRQ   26
+#  define QEMU_VIRTIO_MMIO_IRQ   26 // TODO: Should this be 1? (VIRTIO_IRQ)
 #else
-#  define QEMU_VIRTIO_MMIO_IRQ   28
+#  define QEMU_VIRTIO_MMIO_IRQ   28 // TODO: Should this be 1? (VIRTIO_IRQ)
 #endif
-#define QEMU_VIRTIO_MMIO_NUM     8
+#define QEMU_VIRTIO_MMIO_NUM     1  // Number of VirtIO Devices. Previously: 8
 
 /****************************************************************************
  * Private Functions
@@ -118,4 +119,11 @@ int board_app_initialize(uintptr_t arg)
 
   return OK;
 #endif
+}
+
+// Based on virtio_mmio_create_virtqueue
+// https://github.com/apache/nuttx/blob/master/drivers/virtio/virtio-mmio.c#L349-L414
+void test_virtio(void)
+{
+  _info("\n");
 }

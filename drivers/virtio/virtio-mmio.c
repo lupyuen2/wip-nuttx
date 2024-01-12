@@ -867,6 +867,63 @@ int virtio_register_mmio_device(FAR void *regs, int irq)
       goto err;
     }
 
+  // Testing: Init VirtIO Device
+  // Based on virtio_serial_init
+  // https://github.com/apache/nuttx/blob/master/drivers/virtio/virtio-serial.c#L445-L511
+
+  struct virtio_device *vdev = &vmdev->vdev;
+  DEBUGASSERT(vdev != NULL);
+
+  virtio_set_status(vdev, VIRTIO_CONFIG_STATUS_DRIVER);
+  virtio_set_features(vdev, 0);
+  virtio_set_status(vdev, VIRTIO_CONFIG_FEATURES_OK);
+
+  #define VIRTIO_SERIAL_RX           0
+  #define VIRTIO_SERIAL_TX           1
+  #define VIRTIO_SERIAL_NUM          2
+  const char *vqnames[VIRTIO_SERIAL_NUM];
+  vqnames[VIRTIO_SERIAL_RX]   = "virtio_serial_rx";
+  vqnames[VIRTIO_SERIAL_TX]   = "virtio_serial_tx";
+
+  vq_callback callbacks[VIRTIO_SERIAL_NUM];
+  callbacks[VIRTIO_SERIAL_RX] = NULL; //// TODO: virtio_serial_rxready;
+  callbacks[VIRTIO_SERIAL_TX] = NULL; //// TODO: virtio_serial_txdone;
+  ret = virtio_create_virtqueues(vdev, 0, VIRTIO_SERIAL_NUM, vqnames,
+                                 callbacks);
+  DEBUGASSERT(ret >= 0);
+  virtio_set_status(vdev, VIRTIO_CONFIG_STATUS_DRIVER_OK);
+
+  // Testing: Send data to VirtIO Device
+  // Based on virtio_serial_dmasend
+  // https://github.com/apache/nuttx/blob/master/drivers/virtio/virtio-serial.c#L310-L345
+
+  DEBUGASSERT(vdev->vrings_info != NULL);
+  struct virtqueue *vq = vdev->vrings_info[VIRTIO_SERIAL_TX].vq;
+  DEBUGASSERT(vq != NULL);
+
+  /* Set the virtqueue buffer */
+  static char *HELLO_MSG = "Hello VirtIO from NuttX!\r\n";
+  struct virtqueue_buf vb[2];
+  vb[0].buf = HELLO_MSG;
+  vb[0].len = strlen(HELLO_MSG);
+  int num = 1;
+
+  /* Get the total send length */
+  uintptr_t len = strlen(HELLO_MSG);
+
+  // TODO: What's this?
+  // if (xfer->nlength != 0)
+  //   {
+  //     vb[1].buf = xfer->nbuffer;
+  //     vb[1].len = xfer->nlength;
+  //     num = 2;
+  //   }
+
+  /* Add buffer to TX virtiqueue and notify the VirtIO Host */
+  virtqueue_add_buffer(vq, vb, num, 0, (FAR void *)len);
+  virtqueue_kick(vq);  
+  // End of Testing
+
   return ret;
 
 err:
