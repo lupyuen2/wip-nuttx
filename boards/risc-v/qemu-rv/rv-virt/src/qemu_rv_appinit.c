@@ -38,14 +38,10 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define QEMU_VIRTIO_MMIO_BASE    0x10001000
-#define QEMU_VIRTIO_MMIO_REGSIZE 0x1000
-#ifdef CONFIG_ARCH_USE_S_MODE
-#  define QEMU_VIRTIO_MMIO_IRQ   26
-#else
-#  define QEMU_VIRTIO_MMIO_IRQ   28
-#endif
-#define QEMU_VIRTIO_MMIO_NUM     8
+#define QEMU_VIRTIO_MMIO_BASE    0x40010000 // VIRTIO_BASE_ADDR. Previously: 0x10001000
+#define QEMU_VIRTIO_MMIO_REGSIZE 0x1000     // VIRTIO_SIZE
+#define QEMU_VIRTIO_MMIO_IRQ     (RISCV_IRQ_EXT + 1) // VIRTIO_IRQ
+#define QEMU_VIRTIO_MMIO_NUM     1  // Number of VirtIO Devices. Previously: 8
 
 /****************************************************************************
  * Private Functions
@@ -56,7 +52,8 @@
  ****************************************************************************/
 
 #ifdef CONFIG_DRIVERS_VIRTIO_MMIO
-static void qemu_virtio_register_mmio_devices(void)
+////Previously: static. Now called by nuttx/arch/risc-v/src/qemu-rv/qemu_rv_start.c
+void qemu_virtio_register_mmio_devices(void)
 {
   uintptr_t virtio = (uintptr_t)QEMU_VIRTIO_MMIO_BASE;
   size_t size = QEMU_VIRTIO_MMIO_REGSIZE;
@@ -113,7 +110,8 @@ int board_app_initialize(uintptr_t arg)
 #endif
 
 #ifdef CONFIG_DRIVERS_VIRTIO_MMIO
-  qemu_virtio_register_mmio_devices();
+  //// Moved to nuttx/arch/risc-v/src/qemu-rv/qemu_rv_start.c
+  //// Previously: qemu_virtio_register_mmio_devices();
 #endif
 
   return OK;

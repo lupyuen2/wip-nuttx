@@ -192,7 +192,21 @@ irqstate_t up_irq_enable(void)
 
   /* Enable external interrupts (mie/sie) */
 
+  uint64_t mie0 = READ_CSR(mie); if (mie0 == 0) { _info("Before mie: %p\n", mie0); }////
   SET_CSR(CSR_IE, IE_EIE);
+  uint64_t mie1 = READ_CSR(mie); if (mie0 == 0) { _info("After mie: %p\n", mie1); }////
+
+  // TODO: TinyEMU supports SEIE but not MEIE!
+  uint64_t mie = READ_CSR(mie); if (mie0 == 0) { _info("mie: %p\n", mie); }////
+
+  // TODO: This doesn't work
+  // Enable MEIE: Machine-Mode External Interrupt  
+  // WRITE_CSR(mie, mie | (1 << 11));
+
+  // TODO: This works, but we need MEIE, not SEIE. We patch this in riscv_dispatch_irq()
+  // Enable SEIE: Supervisor-Mode External Interrupt
+  WRITE_CSR(mie, mie | (1 << 9));
+  mie = READ_CSR(mie); if (mie0 == 0) { _info("mie: %p\n", mie); }////
 
   /* Read and enable global interrupts (M/SIE) in m/sstatus */
 
