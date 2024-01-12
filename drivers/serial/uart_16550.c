@@ -609,7 +609,11 @@ static uart_dev_t g_uart3port =
 static inline uart_datawidth_t u16550_serialin(FAR struct u16550_s *priv,
                                                int offset)
 {
-  return 0; //// Unused
+#ifdef CONFIG_SERIAL_UART_ARCH_MMIO
+  return *((FAR volatile uart_datawidth_t *)priv->uartbase + offset);
+#else
+  return uart_getreg(priv->uartbase, offset);
+#endif
 }
 
 /****************************************************************************
@@ -619,7 +623,11 @@ static inline uart_datawidth_t u16550_serialin(FAR struct u16550_s *priv,
 static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
                                     uart_datawidth_t value)
 {
-  //// Unused
+#ifdef CONFIG_SERIAL_UART_ARCH_MMIO
+  *((FAR volatile uart_datawidth_t *)priv->uartbase + offset) = value;
+#else
+  uart_putreg(priv->uartbase, offset, value);
+#endif
 }
 
 #ifdef CONFIG_16550_WAIT_LCR
@@ -640,7 +648,22 @@ static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
 
 static int u16550_wait(FAR struct u16550_s *priv)
 {
-  return OK; //// Nopez! No waiting for now
+  int i;
+
+  for (i = 0; i < UART_TIMEOUT_MS; i++)
+    {
+      uint32_t status = u16550_serialin(priv, UART_USR_OFFSET);
+
+      if ((status & UART_USR_BUSY) == 0)
+        {
+          return OK;
+        }
+
+      up_mdelay(1);
+    }
+
+  _err("UART timeout\n");
+  return ERROR;
 }
 #endif /* CONFIG_16550_WAIT_LCR */
 
@@ -1682,8 +1705,8 @@ static bool u16550_txempty(struct uart_dev_s *dev)
 #ifdef HAVE_16550_CONSOLE
 static void u16550_putc(FAR struct u16550_s *priv, int ch)
 {
-  // Hardcode the HTIF Base Address and print: device=1, cmd=1, buf=ch
-  *(volatile uint64_t *) 0x40008000 = 0x0101000000000000ul | ch;
+  while ((u16550_serialin(priv, UART_LSR_OFFSET) & UART_LSR_THRE) == 0);
+  u16550_serialout(priv, UART_THR_OFFSET, (uart_datawidth_t)ch);
 }
 #endif
 
