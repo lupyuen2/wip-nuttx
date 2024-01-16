@@ -507,6 +507,7 @@ errout:
 
 int up_addrenv_destroy(arch_addrenv_t *addrenv)
 {
+  _info("addrenv=%p\n", addrenv);////
   /* Recursively destroy it all, need to table walk */
 
   uintptr_t *ptprev;
