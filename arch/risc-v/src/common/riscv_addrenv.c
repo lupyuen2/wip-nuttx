@@ -711,7 +711,10 @@ ssize_t up_addrenv_heapsize(const arch_addrenv_t *addrenv)
 
 int up_addrenv_select(const arch_addrenv_t *addrenv)
 {
-  _info("addrenv=%p, satp=%p\n", addrenv, addrenv->satp);////
+  const uintptr_t page_table = (addrenv->satp & 0xfffff) << 12;////
+  _info("addrenv=%p, satp=%p, page_table=%p\n", addrenv, addrenv->satp, page_table);////
+  infodumpbuffer("*page_table=", page_table, 8 * 10);////
+
   DEBUGASSERT(addrenv && addrenv->satp);
   mmu_write_satp(addrenv->satp);
   return OK;
