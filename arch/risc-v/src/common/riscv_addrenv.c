@@ -711,9 +711,31 @@ ssize_t up_addrenv_heapsize(const arch_addrenv_t *addrenv)
 
 int up_addrenv_select(const arch_addrenv_t *addrenv)
 {
-  const uintptr_t page_table = (addrenv->satp & 0xfffff) << 12;////
-  _info("addrenv=%p, satp=%p, page_table=%p\n", addrenv, addrenv->satp, page_table);////
-  infodumpbuffer("*page_table=", page_table, 8 * 10);////
+  const uint8_t *l1_page_table = (addrenv->satp & 0xfffff) << 12;////
+  _info("addrenv=%p, satp=%p, l1_page_table=%p\n", addrenv, addrenv->satp, l1_page_table);////
+  infodumpbuffer("*l1_page_table=", l1_page_table, 8 * 10);////
+  // L2 Page Table Entry #3
+  const uintptr_t l1_pte =
+    l1_page_table[0x10]
+    | (l1_page_table[0x11] << 8)
+    | (l1_page_table[0x12] << 16)
+    | (l1_page_table[0x13] << 24);
+  const uint8_t *l2_page_table = (l1_pte >> 10) << 12;
+  _info("l2_page_table=%p\n", l2_page_table);////
+  if (l2_page_table >= 0x50000000 && l2_page_table < 0x60000000) {
+    infodumpbuffer("*l2_page_table=", l2_page_table, 8 * 10);////
+    // L2 Page Table Entry #2
+    const uintptr_t l2_pte =
+      l2_page_table[0x8]
+      | (l2_page_table[0x9] << 8)
+      | (l2_page_table[0xa] << 16)
+      | (l2_page_table[0xb] << 24);
+    const uint8_t *l3_page_table = (l2_pte >> 10) << 12;
+    _info("l3_page_table=%p\n", l3_page_table);////
+    if (l3_page_table >= 0x50000000 && l3_page_table < 0x60000000) {
+      infodumpbuffer("*l3_page_table=", l3_page_table, 8 * 10);////
+    }
+  }
 
   DEBUGASSERT(addrenv && addrenv->satp);
   mmu_write_satp(addrenv->satp);
