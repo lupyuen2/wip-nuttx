@@ -308,7 +308,7 @@ FAR void *mm_malloc(FAR struct mm_heap_s *heap, size_t size)
       memset(ret, 0xaa, alignsize - MM_ALLOCNODE_OVERHEAD);
 #endif
 #ifdef CONFIG_DEBUG_MM
-      minfo("Allocated %p, size %zu\n", ret, alignsize);
+      // minfo("Allocated %p, size %zu\n", ret, alignsize);
 #endif
     }
 

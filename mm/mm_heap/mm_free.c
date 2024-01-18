@@ -206,7 +206,7 @@ void mm_delayfree(FAR struct mm_heap_s *heap, FAR void *mem, bool delay)
 
 void mm_free(FAR struct mm_heap_s *heap, FAR void *mem)
 {
-  minfo("Freeing %p\n", mem);
+  // minfo("Freeing %p\n", mem);
 
   /* Protect against attempts to free a NULL reference */
 
