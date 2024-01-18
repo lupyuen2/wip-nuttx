@@ -507,77 +507,77 @@ errout:
 
 int up_addrenv_destroy(arch_addrenv_t *addrenv)
 {
-  _info("addrenv=%p\n", addrenv);////
-  /* Recursively destroy it all, need to table walk */
+  _info("TODO: Bypassed Destroy for addrenv=%p\n", addrenv);////
+  // /* Recursively destroy it all, need to table walk */
 
-  uintptr_t *ptprev;
-  uintptr_t *ptlast;
-  uintptr_t  paddr;
-  uintptr_t  vaddr;
-  size_t     pgsize;
-  int        i;
-  int        j;
+  // uintptr_t *ptprev;
+  // uintptr_t *ptlast;
+  // uintptr_t  paddr;
+  // uintptr_t  vaddr;
+  // size_t     pgsize;
+  // int        i;
+  // int        j;
 
-  DEBUGASSERT(addrenv);
+  // DEBUGASSERT(addrenv);
 
-  /* Make sure the caches are flushed before doing this */
+  // /* Make sure the caches are flushed before doing this */
 
-  __ISB();
-  __DMB();
+  // __ISB();
+  // __DMB();
 
-  /* Things start from the beginning of the user virtual memory */
+  // /* Things start from the beginning of the user virtual memory */
 
-  vaddr  = ARCH_ADDRENV_VBASE;
-  pgsize = mmu_get_region_size(ARCH_SPGTS);
+  // vaddr  = ARCH_ADDRENV_VBASE;
+  // pgsize = mmu_get_region_size(ARCH_SPGTS);
 
-  /* First destroy the allocated memory and the final level page table */
+  // /* First destroy the allocated memory and the final level page table */
 
-  ptprev = (uintptr_t *)riscv_pgvaddr(addrenv->spgtables[ARCH_SPGTS - 1]);
-  if (ptprev)
-    {
-      for (i = 0; i < ENTRIES_PER_PGT; i++, vaddr += pgsize)
-        {
-          ptlast = (uintptr_t *)riscv_pgvaddr(mmu_pte_to_paddr(ptprev[i]));
-          if (ptlast)
-            {
-              if (!vaddr_is_shm(vaddr))
-                {
-                  /* Free the allocated pages, but not from SHM area */
+  // ptprev = (uintptr_t *)riscv_pgvaddr(addrenv->spgtables[ARCH_SPGTS - 1]);
+  // if (ptprev)
+  //   {
+  //     for (i = 0; i < ENTRIES_PER_PGT; i++, vaddr += pgsize)
+  //       {
+  //         ptlast = (uintptr_t *)riscv_pgvaddr(mmu_pte_to_paddr(ptprev[i]));
+  //         if (ptlast)
+  //           {
+  //             if (!vaddr_is_shm(vaddr))
+  //               {
+  //                 /* Free the allocated pages, but not from SHM area */
 
-                  for (j = 0; j < ENTRIES_PER_PGT; j++)
-                    {
-                      paddr = mmu_pte_to_paddr(ptlast[j]);
-                      if (paddr)
-                        {
-                          mm_pgfree(paddr, 1);
-                        }
-                    }
-                }
+  //                 for (j = 0; j < ENTRIES_PER_PGT; j++)
+  //                   {
+  //                     paddr = mmu_pte_to_paddr(ptlast[j]);
+  //                     if (paddr)
+  //                       {
+  //                         mm_pgfree(paddr, 1);
+  //                       }
+  //                   }
+  //               }
 
-              /* Regardless, free the page table itself */
+  //             /* Regardless, free the page table itself */
 
-              mm_pgfree((uintptr_t)ptlast, 1);
-            }
-        }
-    }
+  //             mm_pgfree((uintptr_t)ptlast, 1);
+  //           }
+  //       }
+  //   }
 
-  /* Then destroy the static tables */
+  // /* Then destroy the static tables */
 
-  for (i = 0; i < ARCH_SPGTS; i++)
-    {
-      paddr = addrenv->spgtables[i];
-      if (paddr)
-        {
-          mm_pgfree(paddr, 1);
-        }
-    }
+  // for (i = 0; i < ARCH_SPGTS; i++)
+  //   {
+  //     paddr = addrenv->spgtables[i];
+  //     if (paddr)
+  //       {
+  //         mm_pgfree(paddr, 1);
+  //       }
+  //   }
 
-  /* When all is set and done, flush the caches */
+  // /* When all is set and done, flush the caches */
 
-  __ISB();
-  __DMB();
+  // __ISB();
+  // __DMB();
 
-  memset(addrenv, 0, sizeof(arch_addrenv_t));
+  // memset(addrenv, 0, sizeof(arch_addrenv_t));
   return OK;
 }
 
