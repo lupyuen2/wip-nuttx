@@ -192,7 +192,8 @@ irqstate_t up_irq_enable(void)
 
   /* Enable external interrupts (mie/sie) */
 
-  SET_CSR(CSR_IE, IE_EIE);
+  // TinyEMU supports SEIE but not MEIE
+  SET_CSR(CSR_IE, SIE_SEIE);
 
   /* Read and enable global interrupts (M/SIE) in m/sstatus */
 
