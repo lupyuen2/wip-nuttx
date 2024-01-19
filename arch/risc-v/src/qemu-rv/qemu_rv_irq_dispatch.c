@@ -56,6 +56,7 @@
 void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 {
   int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
+  if (irq == RISCV_IRQ_SEXT) { irq = RISCV_IRQ_MEXT; } // TinyEMU works only with SEIE, not MEIE
 
   /* Firstly, check if the irq is machine external interrupt */
 
