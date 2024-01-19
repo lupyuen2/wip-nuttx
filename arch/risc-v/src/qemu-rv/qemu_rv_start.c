@@ -26,7 +26,6 @@
 
 #include <nuttx/init.h>
 #include <nuttx/arch.h>
-#include <nuttx/serial/uart_16550.h>
 #include <arch/board/board.h>
 
 #include "riscv_internal.h"
@@ -230,10 +229,43 @@ void qemu_rv_start(int mhartid, const char *dtb)
 
 void riscv_earlyserialinit(void)
 {
-  u16550_earlyserialinit();
 }
 
 void riscv_serialinit(void)
 {
-  u16550_serialinit();
+  // Init the VirtIO Devices
+  void qemu_virtio_register_mmio_devices(void);
+  qemu_virtio_register_mmio_devices();
+}
+
+// Print to HTIF Console
+static void htif_putc(int ch)
+{
+  // Hardcode the HTIF Base Address and print: device=1, cmd=1, buf=ch
+  *(volatile uint64_t *) 0x40008000 = 0x0101000000000000ul | ch;
+}
+
+int up_putc(int ch)
+{
+  irqstate_t flags;
+
+  /* All interrupts must be disabled to prevent re-entrancy and to prevent
+   * interrupts from firing in the serial driver code.
+   */
+
+  flags = enter_critical_section();
+
+  /* Check for LF */
+
+  if (ch == '\n')
+    {
+      /* Add CR */
+
+      htif_putc('\r');
+    }
+
+  htif_putc(ch);
+  leave_critical_section(flags);
+
+  return ch;
 }
