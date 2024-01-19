@@ -480,6 +480,9 @@ static int virtio_serial_init(FAR struct virtio_serial_priv_s *priv,
       goto err_with_recv;
     }
 
+  // TinyEMU needs NuttX to echo the keypress and change CR to NL
+  udev->isconsole = true;
+
   /* Initialize the virtio device */
 
   virtio_set_status(vdev, VIRTIO_CONFIG_STATUS_DRIVER);
@@ -550,7 +553,7 @@ static int virtio_serial_probe(FAR struct virtio_device *vdev)
 
   /* Uart driver register */
 
-  snprintf(priv->name, NAME_MAX, "/dev/ttyV%d", g_virtio_serial_idx);
+  snprintf(priv->name, NAME_MAX, "/dev/console"); // Previously: /dev/ttyV0
   ret = uart_register(priv->name, &priv->udev);
   if (ret < 0)
     {
