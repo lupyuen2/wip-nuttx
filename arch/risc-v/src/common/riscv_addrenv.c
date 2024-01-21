@@ -711,6 +711,9 @@ ssize_t up_addrenv_heapsize(const arch_addrenv_t *addrenv)
 
 int up_addrenv_select(const arch_addrenv_t *addrenv)
 {
+  DEBUGASSERT(addrenv && addrenv->satp);
+  mmu_write_satp(addrenv->satp);
+
   const uint8_t *l1_page_table = (addrenv->satp & 0xfffff) << 12;////
   _info("addrenv=%p, satp=%p, l1_page_table=%p\n", addrenv, addrenv->satp, l1_page_table);////
   infodumpbuffer("*l1_page_table=", l1_page_table, 8 * 10);////
@@ -734,11 +737,41 @@ int up_addrenv_select(const arch_addrenv_t *addrenv)
     _info("l3_page_table=%p\n", l3_page_table);////
     if (l3_page_table >= 0x50000000 && l3_page_table < 0x60000000) {
       infodumpbuffer("*l3_page_table=", l3_page_table, 8 * 10);////
+
+      // Write to the Offending Data Address 0x8020_0000.
+      // Does it modify the Old App Heap (getprime) or the New App Heap (hello)?
+      // This will confirm which App Page Tables are actually in effect.
+      const uintptr_t l3_pte = 
+        l3_page_table[0x0]
+        | (l3_page_table[0x1] << 8)
+        | (l3_page_table[0x2] << 16)
+        | (l3_page_table[0x3] << 24);
+      volatile uint64_t *phy_addr = (l3_pte >> 10) << 12;
+      volatile uint64_t *virt_addr = 0x80200000;
+      _info("Virtual Address %p maps to Physical Address %p\n", virt_addr, phy_addr);
+      if (phy_addr >= 0x50000000 && phy_addr < 0x60000000) {
+        // Read the values at Virtual and Physical Addresses before update
+        volatile uint64_t virt_val = *virt_addr;
+        volatile uint64_t phy_val  = *phy_addr;
+        _info("Before Update: *%p is %p, *%p is %p\n", virt_addr, virt_val, phy_addr, phy_val);
+
+        // Update the values at Virtual and Physical Addresses
+        *virt_addr = virt_val - 1;
+        *phy_addr  = phy_val  + 1;
+        _info("Expected Values: *%p is %p, *%p is %p (not %p)\n", virt_addr, phy_val + 1, phy_addr, phy_val + 1, virt_val - 1);
+
+        // Read the values at Virtual and Physical Addresses after update
+        volatile uint64_t virt_val2 = *virt_addr;
+        volatile uint64_t phy_val2  = *phy_addr;
+        _info("Actual Values: *%p is %p, *%p is %p\n", virt_addr, virt_val2, phy_addr, phy_val2);
+
+        // Restore the values
+        *virt_addr = virt_val;
+        *phy_addr  = phy_val;
+      }
     }
   }
 
-  DEBUGASSERT(addrenv && addrenv->satp);
-  mmu_write_satp(addrenv->satp);
   return OK;
 }
 
