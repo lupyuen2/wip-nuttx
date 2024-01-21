@@ -171,7 +171,7 @@ static uintptr_t slab_alloc(void)
  ****************************************************************************/
 
 static void map_region(uintptr_t paddr, uintptr_t vaddr, size_t size,
-                       uint32_t mmuflags)
+                       uint64_t mmuflags)
 {
   uintptr_t endaddr;
   uintptr_t pbase;
