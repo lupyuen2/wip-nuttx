@@ -714,25 +714,6 @@ int up_addrenv_select(const arch_addrenv_t *addrenv)
   DEBUGASSERT(addrenv && addrenv->satp);
   mmu_write_satp(addrenv->satp);
 
-  // #define THEAD_SYNC_S	".long 0x0190000b"
-  __asm__ __volatile__
-    ( 
-      "nop\n nop\n nop\n nop\n nop\n nop\n"
-      ".long 0x0010000b\n" // DCACHE.CALL: Clears all dirty page table entries in the D-Cache.
-      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
-      ".long 0x0100000b\n" // ICACHE.IALL: Invalidates all page table entries in the I-Cache.
-
-      // TODO: Load 0x8020_0000 to Register A0 and invalidate:
-      //  * th.dache.iva rs1 (invalidate, virtual address)
-      //  *   0000001    00110      rs1       000      00000  0001011
-      //  * th.dcache.cva rs1 (clean, virtual address)
-      //  *   0000001    00101      rs1       000      00000  0001011
-      //  * th.dcache.civa rs1 (clean then invalidate, virtual address)
-      //  *   0000001    00111      rs1       000      00000  0001011
-
-      ".long 0x0190000b\n" // THEAD_SYNC_S: th.sync.s (make sure all cache operations finished)
-    );
-
   const uint8_t *l1_page_table = (addrenv->satp & 0xfffff) << 12;////
   _info("addrenv=%p, satp=%p, l1_page_table=%p\n", addrenv, addrenv->satp, l1_page_table);////
   infodumpbuffer("*l1_page_table=", l1_page_table, 8 * 10);////

@@ -296,3 +296,13 @@ void bl808_mm_init(void)
   binfo("mmu_enable: satp=%" PRIuPTR "\n", g_kernel_pgt_pbase);
   mmu_enable(g_kernel_pgt_pbase, 0);
 }
+
+// Flush the MMU Cache for T-Head C906
+void weak_function mmu_flush_cache(void)
+{
+  __asm__ __volatile__
+    ( 
+      ".long 0x0020000b\n" // DCACHE.IALL: Invalidates all page table entries in the D-Cache.
+      ".long 0x0190000b\n" // THEAD_SYNC_S: th.sync.s (make sure all cache operations finished)
+    );  
+}

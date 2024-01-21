@@ -199,6 +199,9 @@ static inline void mmu_write_satp(uintptr_t reg)
       : "rK" (reg)
       : "memory"
     );
+
+  void weak_function mmu_flush_cache(void); ////
+  mmu_flush_cache(); ////
 }
 
 /****************************************************************************
