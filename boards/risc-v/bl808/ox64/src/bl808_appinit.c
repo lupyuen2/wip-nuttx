@@ -28,12 +28,14 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <errno.h>
+#include <debug.h> ////
 
 #include <nuttx/board.h>
 #include <nuttx/drivers/ramdisk.h>
 #include <sys/mount.h>
 #include <sys/boardctl.h>
 #include <arch/board/board_memorymap.h>
+#include "bl602_gpio.h" ////
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -164,4 +166,32 @@ void board_late_initialize(void)
   mount(NULL, "/proc", "procfs", 0, NULL);
 
 #endif
+
+  ////TODO
+  #define GPIO_PIN  29
+  #define GPIO_ATTR (GPIO_OUTPUT | GPIO_FUNC_SWGPIO)
+
+  _info("Config GPIO: pin=%d, attr=0x%x\n", GPIO_PIN, GPIO_ATTR);
+  int ret = esp32c3_configgpio(GPIO_PIN, GPIO_ATTR);
+  DEBUGASSERT(ret == OK);
+  up_mdelay(100);
+
+  _info("Set GPIO: pin=%d\n", GPIO_PIN);
+  esp32c3_gpiowrite(GPIO_PIN, true);
+  up_mdelay(100);
+
+  _info("Clear GPIO: pin=%d\n", GPIO_PIN);
+  esp32c3_gpiowrite(GPIO_PIN, false);
+  up_mdelay(100);
 }
+
+/* Output Log:
+Starting kernel ...
+
+ABCboard_late_initialize: Config GPIO: pin=29, attr=0xb
+esp32c3_configgpio: regaddr=0x20000938, cfg=0xb40
+board_late_initialize: Set GPIO: pin=29
+esp32c3_gpiowrite: regaddr=0x20000938, set=0x1000000
+board_late_initialize: Clear GPIO: pin=29
+esp32c3_gpiowrite: regaddr=0x20000938, clear=0x1000000
+*/
