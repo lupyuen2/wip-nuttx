@@ -28,12 +28,14 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <errno.h>
+#include <debug.h> ////
 
 #include <nuttx/board.h>
 #include <nuttx/drivers/ramdisk.h>
 #include <sys/mount.h>
 #include <sys/boardctl.h>
 #include <arch/board/board_memorymap.h>
+#include "bl808_gpio.h" ////
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -164,4 +166,19 @@ void board_late_initialize(void)
   mount(NULL, "/proc", "procfs", 0, NULL);
 
 #endif
+
+  ////TODO
+  #define GPIO_PIN  29
+  #define GPIO_ATTR (GPIO_OUTPUT | GPIO_FUNC_SWGPIO)
+
+  _info("Config GPIO: pin=%d, attr=0x%x\n", GPIO_PIN, GPIO_ATTR);
+  int ret = bl808_configgpio(GPIO_PIN, GPIO_ATTR);
+  DEBUGASSERT(ret == OK);
+
+  _info("Set GPIO: pin=%d\n", GPIO_PIN);
+  bl808_gpiowrite(GPIO_PIN, true);
+  up_mdelay(1000);
+
+  _info("Clear GPIO: pin=%d\n", GPIO_PIN);
+  bl808_gpiowrite(GPIO_PIN, false);
 }
