@@ -95,7 +95,7 @@ int bl808_configgpio(int pin, gpio_pinattr_t attr)
     }
 
   regaddr = BL808_GPIO_BASE + (pin * 4);
-  _info("regaddr=%p, cfg=0x%x\n", regaddr, cfg);////
+  // _info("regaddr=%p, cfg=0x%x\n", regaddr, cfg);////
   putreg32(cfg, regaddr);
   return OK;
 }
@@ -117,12 +117,12 @@ void bl808_gpiowrite(int pin, bool value)
   regaddr = BL808_GPIO_BASE + (pin * 4);
   if (value)
     {
-      _info("regaddr=%p, set=0x%x\n", regaddr, (1 << reg_gpio_xx_o));////
+      up_putc('\n'); _info("regaddr=%p, set=0x%x\n", regaddr, (1 << reg_gpio_xx_o));////
       modifyreg32(regaddr, 0, (1 << reg_gpio_xx_o));
     }
   else
     {
-      _info("regaddr=%p, clear=0x%x\n", regaddr, (1 << reg_gpio_xx_o));////
+      up_putc('\n'); _info("regaddr=%p, clear=0x%x\n", regaddr, (1 << reg_gpio_xx_o));////
       modifyreg32(regaddr, (1 << reg_gpio_xx_o), 0);
     }
 }

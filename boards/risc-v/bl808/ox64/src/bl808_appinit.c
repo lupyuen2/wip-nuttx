@@ -182,14 +182,14 @@ void board_late_initialize(void)
   #define GPIO_PIN  29
   #define GPIO_ATTR (GPIO_OUTPUT | GPIO_FUNC_SWGPIO)
 
-  _info("Config GPIO: pin=%d, attr=0x%x\n", GPIO_PIN, GPIO_ATTR);
+  // _info("Config GPIO: pin=%d, attr=0x%x\n", GPIO_PIN, GPIO_ATTR);
   int ret2 = bl808_configgpio(GPIO_PIN, GPIO_ATTR);
   DEBUGASSERT(ret2 == OK);
 
-  _info("Set GPIO: pin=%d\n", GPIO_PIN);
+  // _info("Set GPIO: pin=%d\n", GPIO_PIN);
   bl808_gpiowrite(GPIO_PIN, true);
   up_mdelay(1000);
 
-  _info("Clear GPIO: pin=%d\n", GPIO_PIN);
+  // _info("Clear GPIO: pin=%d\n", GPIO_PIN);
   bl808_gpiowrite(GPIO_PIN, false);
 }

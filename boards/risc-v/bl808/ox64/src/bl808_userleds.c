@@ -144,7 +144,7 @@ uint32_t board_userled_initialize(void)
 
 void board_userled(int led, bool ledon)
 {
-  _info("led=%d, ledon=%d\n", led, ledon);////
+  // _info("led=%d, ledon=%d\n", led, ledon);////
   if ((unsigned)led < BOARD_LEDS)
     {
       ////TODO: gpio_write(g_led_map[led], ledon);
@@ -181,7 +181,7 @@ void board_userled(int led, bool ledon)
 
 void board_userled_all(uint32_t ledset)
 {
-  _info("ledset=0x%x\n", ledset);////
+  // _info("ledset=0x%x\n", ledset);////
   int i;
 
   // For LED 0 to 2...
@@ -189,7 +189,7 @@ void board_userled_all(uint32_t ledset)
     {
       // Get the desired state of the LED
       bool val = ((ledset & g_led_setmap[i]) != 0);
-      _info("led=%d, val=%d\n", i, val);////
+      // _info("led=%d, val=%d\n", i, val);////
 
       // If this is LED 0...
       if (i == 0)
