@@ -167,13 +167,24 @@ void board_late_initialize(void)
 
 #endif
 
+#ifdef CONFIG_USERLED
+  ////TODO: Move to bringup.c
+  /* Register the LED driver */
+
+  int ret = userled_lower_initialize("/dev/userleds");
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: userled_lower_initialize() failed: %d\n", ret);
+    }
+#endif
+
   ////TODO
   #define GPIO_PIN  29
   #define GPIO_ATTR (GPIO_OUTPUT | GPIO_FUNC_SWGPIO)
 
   _info("Config GPIO: pin=%d, attr=0x%x\n", GPIO_PIN, GPIO_ATTR);
-  int ret = bl808_configgpio(GPIO_PIN, GPIO_ATTR);
-  DEBUGASSERT(ret == OK);
+  int ret2 = bl808_configgpio(GPIO_PIN, GPIO_ATTR);
+  DEBUGASSERT(ret2 == OK);
 
   _info("Set GPIO: pin=%d\n", GPIO_PIN);
   bl808_gpiowrite(GPIO_PIN, true);
