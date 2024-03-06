@@ -138,16 +138,21 @@ int riscv_fillpage(int mcause, void *regs, void *args)
         mcause > RISCV_MAX_EXCEPTION ? "Unknown" : g_reasons_str[cause],
         cause, READ_CSR(CSR_EPC), READ_CSR(CSR_TVAL));
   vaddr = MM_PGALIGNDOWN(READ_CSR(CSR_TVAL));
-  _info("vaddr=%p\n", vaddr);////
-  // #define ARCH_TEXT_VEND  (CONFIG_ARCH_TEXT_VBASE + ARCH_TEXT_SIZE) ////
-  // CONFIG_ARCH_DATA_VBASE=0x80100000
+
+  // CONFIG_ARCH_TEXT_VBASE=0x80000000
   // CONFIG_ARCH_TEXT_NPAGES=128
   // CONFIG_MM_PGSIZE=4096
   // #define ARCH_TEXT_SIZE  (CONFIG_ARCH_TEXT_NPAGES * CONFIG_MM_PGSIZE)
   // #define ARCH_TEXT_VEND  (CONFIG_ARCH_TEXT_VBASE + ARCH_TEXT_SIZE) ////
   _info("ARCH_TEXT_SIZE=%p\n", ARCH_TEXT_SIZE);////
   _info("ARCH_TEXT_VEND=%p\n", ARCH_TEXT_VEND);////
+  _info("vaddr=%p\n", vaddr);////
+
+  #define FIX_CONFIG_ARCH_TEXT_VBASE 0x80000000ul
+  #define FIX_ARCH_TEXT_VEND  (FIX_CONFIG_ARCH_TEXT_VBASE + ARCH_TEXT_SIZE) ////
+  _info("FIX_ARCH_TEXT_VEND=%p\n", FIX_ARCH_TEXT_VEND);////
   up_mdelay(1000);////
+
   if (vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND)
     {
       _info("vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND\n");////
