@@ -73,7 +73,7 @@
 #endif
 
 #define ARCH_TEXT_SIZE  (CONFIG_ARCH_TEXT_NPAGES * CONFIG_MM_PGSIZE)
-#define ARCH_TEXT_VEND  (CONFIG_ARCH_TEXT_VBASE + ARCH_TEXT_SIZE)
+#define ARCH_TEXT_VEND  (0ul + CONFIG_ARCH_TEXT_VBASE + ARCH_TEXT_SIZE)
 
 /* .bss/.data region */
 
@@ -92,7 +92,7 @@
 #endif
 
 #define ARCH_DATA_SIZE  (CONFIG_ARCH_DATA_NPAGES * CONFIG_MM_PGSIZE)
-#define ARCH_DATA_VEND  (CONFIG_ARCH_DATA_VBASE + ARCH_DATA_SIZE)
+#define ARCH_DATA_VEND  (0ul + CONFIG_ARCH_DATA_VBASE + ARCH_DATA_SIZE)
 
 /* Reserved .bss/.data region.  In the kernel build (CONFIG_BUILD_KERNEL),
  * the region at the beginning of the .bss/.data region is reserved for use
@@ -129,7 +129,7 @@
 #endif
 
 #define ARCH_HEAP_SIZE  (CONFIG_ARCH_HEAP_NPAGES * CONFIG_MM_PGSIZE)
-#define ARCH_HEAP_VEND  (CONFIG_ARCH_HEAP_VBASE + ARCH_HEAP_SIZE)
+#define ARCH_HEAP_VEND  (0ul + CONFIG_ARCH_HEAP_VBASE + ARCH_HEAP_SIZE)
 
 #ifdef CONFIG_ARCH_STACK_DYNAMIC
   /* User stack region */
@@ -149,7 +149,7 @@
 #  endif
 
 #  define ARCH_STACK_SIZE (CONFIG_ARCH_STACK_NPAGES * CONFIG_MM_PGSIZE)
-#  define ARCH_STACK_VEND (CONFIG_ARCH_STACK_VBASE + ARCH_STACK_SIZE)
+#  define ARCH_STACK_VEND (0ul + CONFIG_ARCH_STACK_VBASE + ARCH_STACK_SIZE)
 
 #ifdef CONFIG_ARCH_KERNEL_STACK
 /* Kernel stack */
@@ -193,7 +193,7 @@
 #  define ARCH_SHM_MAXPAGES   (CONFIG_ARCH_SHM_NPAGES * CONFIG_ARCH_SHM_MAXREGIONS)
 #  define ARCH_SHM_REGIONSIZE (CONFIG_ARCH_SHM_NPAGES * CONFIG_MM_PGSIZE)
 #  define ARCH_SHM_SIZE       (CONFIG_ARCH_SHM_MAXREGIONS * ARCH_SHM_REGIONSIZE)
-#  define ARCH_SHM_VEND       (CONFIG_ARCH_SHM_VBASE + ARCH_SHM_SIZE - 1)
+#  define ARCH_SHM_VEND       (0ul + CONFIG_ARCH_SHM_VBASE + ARCH_SHM_SIZE - 1)
 
 #  define ARCH_SCRATCH_VBASE   ARCH_SHM_VEND
 #else
@@ -214,7 +214,7 @@
 #  endif
 
 #  define ARCH_KMAP_SIZE       (CONFIG_ARCH_KMAP_NPAGES * CONFIG_MM_PGSIZE)
-#  define ARCH_KMAP_VEND       (CONFIG_ARCH_KMAP_VBASE + ARCH_KMAP_SIZE - 1)
+#  define ARCH_KMAP_VEND       (0ul + CONFIG_ARCH_KMAP_VBASE + ARCH_KMAP_SIZE - 1)
 #endif
 
 /* There is no need to use the scratch memory region if the page pool memory
@@ -236,9 +236,9 @@
 #  endif
 
 #  define CONFIG_ARCH_PGPOOL_PEND \
-     (CONFIG_ARCH_PGPOOL_PBASE + CONFIG_ARCH_PGPOOL_SIZE)
+     (0ul + CONFIG_ARCH_PGPOOL_PBASE + CONFIG_ARCH_PGPOOL_SIZE)
 #  define CONFIG_ARCH_PGPOOL_VEND \
-     (CONFIG_ARCH_PGPOOL_VBASE + CONFIG_ARCH_PGPOOL_SIZE)
+     (0ul + CONFIG_ARCH_PGPOOL_VBASE + CONFIG_ARCH_PGPOOL_SIZE)
 
 #endif
 /****************************************************************************
