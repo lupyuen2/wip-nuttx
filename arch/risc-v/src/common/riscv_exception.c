@@ -203,11 +203,13 @@ int riscv_fillpage(int mcause, void *regs, void *args)
       /* Map the page table to the prior level */
 
       _info("mmu_ln_setentry1\n");////
+      up_mdelay(1000);////
       mmu_ln_setentry(ptlevel, ptprev, paddr, vaddr, MMU_UPGT_FLAGS);
 
       /* This is then used to map the final level */
 
       _info("riscv_pgwipe1\n");////
+      up_mdelay(1000);////
       riscv_pgwipe(paddr);
     }
 
@@ -231,6 +233,7 @@ int riscv_fillpage(int mcause, void *regs, void *args)
   _info("mmu_ln_setentry2\n");////
   mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags);
 
+  _info("return\n");////
   return 0;
 }
 #endif /* CONFIG_PAGING */
