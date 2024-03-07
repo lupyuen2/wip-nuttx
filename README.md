@@ -267,10 +267,10 @@ Then we see riscv_fillpage creating a...
 - Level 3 Page Table
 - Located at Physical Address 0x5060c000
 - Mapping to Virtual Address 0x80001000
-- Adding to the Level 2 Page Table at 0x50600000 (!!!)
+- Adding to the Level 1 Page Table at 0x50600000
 - mmuflags=0 means it's not a Leaf Page Table Entry
 
-TODO: Isn't 0x50600000 a Level 1 Page Table? Instead of Level 2?
+TODO: Is this allowed?
 
 TODO: How did riscv_fillpage get these addresses?
 
