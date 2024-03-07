@@ -233,6 +233,26 @@ raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
 pc =0000000050200b66 ra =00000000502
 ```
 
+This looks interesting...
+
+```text
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50603000, vaddr=0x80100000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50604000, vaddr=0x80000000, mmuflags=0x1a
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80101000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50606000, vaddr=0x80200000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50607000, vaddr=0x80200000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50608000, vaddr=0x80201000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50609000, vaddr=0x80202000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060a000, vaddr=0x80203000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060b000, vaddr=0x80204000, mmuflags=0x16
+...
+riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
+raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
+```
+
 # TODO
 
 TODO
