@@ -138,8 +138,12 @@ int riscv_fillpage(int mcause, void *regs, void *args)
         mcause > RISCV_MAX_EXCEPTION ? "Unknown" : g_reasons_str[cause],
         cause, READ_CSR(CSR_EPC), READ_CSR(CSR_TVAL));
   vaddr = MM_PGALIGNDOWN(READ_CSR(CSR_TVAL));
+  _info("ARCH_TEXT_SIZE=%p\n", ARCH_TEXT_SIZE);////
+  _info("ARCH_TEXT_VEND=%p\n", ARCH_TEXT_VEND);////
+  _info("vaddr=%p\n", vaddr);////
   if (vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND)
     {
+      _info("vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND\n");////
       mmuflags = MMU_UTEXT_FLAGS;
 
       /* Write access to .text region needs to be set according to
@@ -150,18 +154,22 @@ int riscv_fillpage(int mcause, void *regs, void *args)
     }
   else if (vaddr >= CONFIG_ARCH_DATA_VBASE && vaddr <= ARCH_DATA_VEND)
     {
+      _info("vaddr >= CONFIG_ARCH_DATA_VBASE && vaddr <= ARCH_DATA_VEND\n");////
       mmuflags = MMU_UDATA_FLAGS;
     }
   else if (vaddr >= CONFIG_ARCH_HEAP_VBASE && vaddr <= ARCH_HEAP_VEND)
     {
+      _info("vaddr >= CONFIG_ARCH_HEAP_VBASE && vaddr <= ARCH_HEAP_VEND\n");////
       mmuflags = MMU_UDATA_FLAGS;
     }
   else
     {
+      _info("else\n");////
       _alert("PANIC!!! virtual address not mappable: %" PRIxPTR "\n", vaddr);
       up_irq_save();
       CURRENT_REGS = regs;
       PANIC_WITH_REGS("panic", regs);
+      for(;;) {} ////
     }
 
   satp    = READ_CSR(CSR_SATP);
@@ -170,38 +178,50 @@ int riscv_fillpage(int mcause, void *regs, void *args)
   paddr = mmu_pte_to_paddr(mmu_ln_getentry(ptlevel, ptprev, vaddr));
   if (!paddr)
     {
+      _info("!paddr1\n");////
       /* Nothing yet, allocate one page for final level page table */
 
       paddr = mm_pgalloc(1);
       if (!paddr)
         {
+          _info("!paddr2\n");////
           return -ENOMEM;
         }
 
       /* Map the page table to the prior level */
 
+      _info("mmu_ln_setentry1: ptlevel=%p, ptprev=%p, paddr=%p, vaddr=%p, MMU_UPGT_FLAGS=%p\n", ptlevel, ptprev, paddr, vaddr, MMU_UPGT_FLAGS);////
+      up_mdelay(1000);////
       mmu_ln_setentry(ptlevel, ptprev, paddr, vaddr, MMU_UPGT_FLAGS);
 
       /* This is then used to map the final level */
 
+      _info("riscv_pgwipe1\n");////
+      up_mdelay(1000);////
       riscv_pgwipe(paddr);
     }
 
+  _info("riscv_pgvaddr\n");////
   ptlast = riscv_pgvaddr(paddr);
+  _info("mm_pgalloc\n");////
   paddr = mm_pgalloc(1);
   if (!paddr)
     {
+      _info("!paddr3\n");////
       return -ENOMEM;
     }
 
   /* Wipe the physical page memory */
 
+  _info("riscv_pgwipe2\n");////
   riscv_pgwipe(paddr);
 
   /* Then map the virtual address to the physical address */
 
+  _info("mmu_ln_setentry2\n");////
   mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags);
 
+  _info("return\n");////
   return 0;
 }
 #endif /* CONFIG_PAGING */
