@@ -72,6 +72,14 @@ riscv_fillpage is here: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-
 
 TODO: It loops forever at the same MCAUSE, EPC, MTVAL. Why?
 
+We'll come back to Ox64 Device later, we'll fix Ox64 Emulator first. Why?
+
+1.  Testing on Ox64 Emulator is a lot faster. No need to swap and swap and swap microSD Card!
+
+1.  Ox64 Emulator behaves differently from Ox64 Device for On-Demand Paging. It's important that we make Ox64 Emulator work the exact same way as Ox64 Device, to prevent testing problems in future.
+
+We jump to Ox64 Emulator for now...
+
 # Test on Ox64 Emulator
 
 Based on this NuttX Config: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/boards/risc-v/bl808/ox64/configs/nsh_paging/defconfig#L73
