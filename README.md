@@ -276,7 +276,65 @@ TODO: How did [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/b
 
 TODO: Is 0x5060c000 valid?
 
-TODO: Do the same logs for QEMU
+# MMU Log Log for QEMU
+
+_How does Ox64 MMU compare with QEMU?_
+
+We do the same logs for QEMU 32-bit RISC-V...
+- [Log On-Demand Paging](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/4cc8dde0c9143dd336c0a87bb2573d732f37661e)
+- [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/6422187397b6ca2a2df8507dca04c1d922555c4f)
+- [Log all updates to MMU SATP](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/e85babdad6506f927bbc5d2052c6f4f0029a764d)
+
+Here's the MMU Log for QEMU 32-bit RISC-V: https://gist.github.com/lupyuen/6075f31b575b54108e60b028083c16f7
+
+```text
+mmu_write_satp: reg=0x80080401
+nx_start: Entry
+uart_register: Registering /dev/console
+uart_register: Registering /dev/ttyS0
+work_start_lowpri: Starting low-priority kernel worker thread(s)
+nxtask_activate: lpwork pid=1,TCB=0x80407ab0
+nxtask_activate: AppBringUp pid=2,TCB=0x80407e70
+nx_start_application: Starting init task: /system/bin/init
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80802000, vaddr=0xc0100000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0000000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0101000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80805000, vaddr=0xc0800000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80806000, vaddr=0xc0800000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80807000, vaddr=0xc0801000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80808000, vaddr=0xc0802000, mmuflags=0x8000
+
+mmu_write_satp: reg=0x80080800
+
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001087e, MTVAL: c0001000
+riscv_fillpage: ARCH_TEXT_SIZE=0x80000
+riscv_fillpage: ARCH_TEXT_VEND=0xc0080000
+riscv_fillpage: vaddr=0xc0001000
+riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: riscv_pgvaddr
+riscv_fillpage: mm_pgalloc
+riscv_fillpage: riscv_pgwipe2
+riscv_fillpage: mmu_ln_setentry2
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc0001000, mmuflags=0x8000
+riscv_fillpage: return
+
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001087e, MTVAL: c0002000
+riscv_fillpage: ARCH_TEXT_SIZE=0x80000
+riscv_fillpage: ARCH_TEXT_VEND=0xc0080000
+riscv_fillpage: vaddr=0xc0002000
+riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: riscv_pgvaddr
+riscv_fillpage: mm_pgalloc
+riscv_fillpage: riscv_pgwipe2
+riscv_fillpage: mmu_ln_setentry2
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x8080a000, vaddr=0xc0002000, mmuflags=0x8000
+riscv_fillpage: return
+```
+
+TODO: Compare the Ox64 and QEMU logs
+
+TODO: Why are MMU Flags non-zero?
 
 # TODO
 
