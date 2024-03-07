@@ -276,6 +276,8 @@ TODO: How did riscv_fillpage get these addresses?
 
 TODO: Is 0x5060c000 valid?
 
+TODO: Do the same logs for QEMU
+
 # TODO
 
 TODO
