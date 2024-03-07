@@ -131,6 +131,108 @@ riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c0
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
 ```
 
+# MMU Page Table Entries and SATP Register
+
+_Why did mmu_ln_setentry cause UART I/O to fail?_
+
+To understand the context, let's log all MMU Page Table Entries and updates to the MMU SATP Register...
+- [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/105d96681a8b4242e428fe76608dc3a2cec87c1e)
+- [Log all updates to MMU SATP Register (Kernel Page Tables vs User Page Tables)](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/6df7f09f200769bde075bd0ef2a942a64f2101cd)
+
+We see this: https://gist.github.com/lupyuen/a9821b6867e98fb67c379f1fd842819a
+
+```text
+ABC
+// Map I/O Memory
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50406000, paddr=0, vaddr=0, mmuflags=0x9000000000000026
+// Map PLIC Memory
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50404000, paddr=0xe0000000, vaddr=0xe0000000, mmuflags=0x9000000000000026
+...
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50404000, paddr=0xefe00000, vaddr=0xefe00000, mmuflags=0x9000000000000026
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50406000, paddr=0x50404000, vaddr=0xe0000000, mmuflags=0x20
+
+// TODO
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50405000, paddr=0x50402000, vaddr=0x50200000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50402000, paddr=0x50200000, vaddr=0x50200000, mmuflags=0x2a
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50402000, paddr=0x50201000, vaddr=0x50201000, mmuflags=0x2a
+...
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50402000, paddr=0x503ff000, vaddr=0x503ff000, mmuflags=0x2a
+
+// TODO
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50405000, paddr=0x50403000, vaddr=0x50400000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50403000, paddr=0x50400000, vaddr=0x50400000, mmuflags=0x26
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50403000, paddr=0x50401000, vaddr=0x50401000, mmuflags=0x26
+...
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50405000, paddr=0x51800000, vaddr=0x51800000, mmuflags=0x26
+
+// Set SATP to Kernel Page Tables
+mmu_write_satp: reg=0x8000000000050406
+nx_start: Entry
+uart_register: Registering /dev/console
+work_start_lowpri: Starting low-priority kernel worker thread(s)
+nxtask_activate: lpwork pid=1,TCB=0x504092f0
+nxtask_activate: AppBringUp pid=2,TCB=0x50409900
+nx_start_application: Starting init task: /system/bin/init
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50603000, vaddr=0x80100000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50604000, vaddr=0x80000000, mmuflags=0x1a
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80101000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50606000, vaddr=0x80200000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50607000, vaddr=0x80200000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50608000, vaddr=0x80201000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50609000, vaddr=0x80202000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060a000, vaddr=0x80203000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060b000, vaddr=0x80204000, mmuflags=0x16
+
+// Set SATP to User Page Tables
+mmu_write_satp: reg=0x8000000000050600
+raise_exception2: cause=15, tval=0x80001000, pc=0x5020a124
+pc =000000005020a124 ra =0000000050211602 sp =000000005040c510 gp =0000000000000000
+tp =0000000000000000 t0 =000000000000002e t1 =0000000000000007 t2 =00000000000001ff
+s0 =000000000000aa00 s1 =0000000000000000 a0 =0000000080000020 a1 =0000000050ade000
+a2 =000000000000aa00 a3 =000000000000000d a4 =0000000080001000 a5 =0000000000000fe1
+a6 =00000000000006f0 a7 =0000000080000020 s2 =000000000000ab7c s3 =0000000000000055
+s4 =000000005040ab20 s5 =000000005040a900 s6 =0000000080000020 s7 =000000005040a918
+s8 =000000005040c6d8 s9 =0000000000000000 s10=00000000000006f0 s11=0000000000000000
+t3 =000000005040c50c t4 =000000005040c500 t5 =0000000000000009 t6 =000000000000002a
+priv=S mstatus=0000000a000400a2 cycles=110089692
+ mideleg=0000000000000222 mie=0000000000000220 mip=0000000000000080
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a124, MTVAL: 0000000080001000
+riscv_fillpage: ARCH_TEXT_SIZE=0x80000
+riscv_fillpage: ARCH_TEXT_VEND=0x80080000
+riscv_fillpage: vaddr=0x80001000
+riscv_fillpage: FIX_ARCH_TEXT_VEND=0x80080000
+riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: !paddr1
+riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
+raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
+pc =0000000050200b66 ra =0000000050200d22 sp =0000000050400830 gp =0000000000000000
+tp =0000000000000000 t0 =000000000000002e t1 =000000000000006a t2 =00000000000001ff
+s0 =0000000000000072 s1 =0000000200042120 a0 =0000000050400110 a1 =0000000000000072
+a2 =000000000000000e a3 =0000000000000053 a4 =0000000030002000 a5 =000000000000000a
+a6 =000000000000003f a7 =0000000000000000 s2 =0000000050400270 s3 =000000005021aed6
+s4 =000000005021aec8 s5 =0000000000000030 s6 =000000005021ac9a s7 =0000000000000a00
+s8 =0000000050400988 s9 =0000000000000000 s10=0000000000000000 s11=0000000000000023
+t3 =000000000000006c t4 =0000000000000068 t5 =0000000000000009 t6 =000000000000002a
+priv=S mstatus=0000000a000401a0 cycles=126009800
+ mideleg=0000000000000222 mie=0000000000000220 mip=00000000000000a0
+raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
+pc =0000000050200b66 ra =0000000050200d22 sp =0000000050400710 gp =0000000000000000
+tp =0000000000000000 t0 =000000000000002e t1 =000000000000006a t2 =00000000000001ff
+s0 =000000000000005f s1 =0000000200042100 a0 =0000000050400110 a1 =000000000000005f
+a2 =0000000000000007 a3 =0000000000000053 a4 =0000000030002000 a5 =000000000000000a
+a6 =000000000000003f a7 =00000000504009d5 s2 =0000000050400270 s3 =000000005022bc1f
+s4 =000000005022bc18 s5 =0000000000000030 s6 =000000005021b45a s7 =0000000000000a00
+s8 =0000000050400868 s9 =0000000000000000 s10=0000000000000000 s11=0000000000000023
+t3 =000000000000006c t4 =0000000000000068 t5 =0000000000000009 t6 =000000000000002a
+priv=S mstatus=0000000a00040180 cycles=126011579
+ mideleg=0000000000000222 mie=0000000000000220 mip=00000000000000a0
+raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
+pc =0000000050200b66 ra =00000000502
+```
+
 # TODO
 
 TODO
