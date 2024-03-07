@@ -122,6 +122,8 @@ riscv_fillpage is here: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-
 
 Our NuttX UART Driver (0x50200b48) tries to read the UART Register (0x30002084) but fails (Load Page Fault, cause=13).
 
+Why different from Ox64 Device? Is there a problem with our Ox64 TinyEMU Emulator?
+
 Let's track down why mmu_ln_setentry caused the UART I/O to fail...
 
 ```text
