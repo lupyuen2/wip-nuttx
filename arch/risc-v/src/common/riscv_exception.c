@@ -202,7 +202,7 @@ int riscv_fillpage(int mcause, void *regs, void *args)
 
       /* Map the page table to the prior level */
 
-      _info("mmu_ln_setentry1\n");////
+      _info("mmu_ln_setentry1: ptlevel=%p, ptprev=%p, paddr=%p, vaddr=%p, MMU_UPGT_FLAGS=%p\n", ptlevel, ptprev, paddr, vaddr, MMU_UPGT_FLAGS);////
       up_mdelay(1000);////
       mmu_ln_setentry(ptlevel, ptprev, paddr, vaddr, MMU_UPGT_FLAGS);
 

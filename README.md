@@ -1,5 +1,7 @@
 # On-Demand Paging with Apache NuttX RTOS on Ox64 BL808 SBC
 
+We're testing On-Demand Paging with Apache NuttX RTOS on Ox64 BL808 SBC: https://github.com/apache/nuttx/pull/11824
+
 Ox64 SBC shows...
 
 https://gist.github.com/lupyuen/224cac41efa1db0bebda1414de49eed1
@@ -83,7 +85,12 @@ priv=S mstatus=0000000a000401a0 cycles=113000467
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
 ```
 
-Let's track down why mmu_ln_setentry1 caused the UART I/O to fail.
+Let's track down why mmu_ln_setentry1 caused the UART I/O to fail...
+
+```text
+riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
+raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
+```
 
 riscv_fillpage is here: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239
 
