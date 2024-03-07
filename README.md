@@ -165,7 +165,7 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50403000, paddr=0x50401000, vaddr=0x5040
 ...
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50405000, paddr=0x51800000, vaddr=0x51800000, mmuflags=0x26
 
-// Set SATP to Kernel Page Tables
+// Set SATP to Kernel Page Tables at 0x50406000
 mmu_write_satp: reg=0x8000000000050406
 nx_start: Entry
 uart_register: Registering /dev/console
@@ -185,7 +185,7 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50609000, vaddr=0x8020
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060a000, vaddr=0x80203000, mmuflags=0x16
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060b000, vaddr=0x80204000, mmuflags=0x16
 
-// Set SATP to User Page Tables
+// Set SATP to User Page Tables at 0x50600000
 mmu_write_satp: reg=0x8000000000050600
 raise_exception2: cause=15, tval=0x80001000, pc=0x5020a124
 pc =000000005020a124 ra =0000000050211602 sp =000000005040c510 gp =0000000000000000
@@ -248,10 +248,33 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50609000, vaddr=0x8020
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060a000, vaddr=0x80203000, mmuflags=0x16
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060b000, vaddr=0x80204000, mmuflags=0x16
 ...
+// Set SATP to User Page Tables at 0x50600000
+mmu_write_satp: reg=0x8000000000050600
+...
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
 ```
+
+At the top we see mmu_ln_setentry creating a...
+- Level 2 Page Table
+- Located at Physical Address 0x50601000
+- Mapping to Virtual Address 0x80100000
+- Adding to the Level 1 Page Table at 0x50600000
+- mmuflags=0 means it's not a Leaf Page Table Entry
+
+Then we see riscv_fillpage creating a...
+- Level 3 Page Table
+- Located at Physical Address 0x5060c000
+- Mapping to Virtual Address 0x80001000
+- Adding to the Level 2 Page Table at 0x50600000 (!!!)
+- mmuflags=0 means it's not a Leaf Page Table Entry
+
+TODO: Isn't 0x50600000 a Level 1 Page Table? Instead of Level 2?
+
+TODO: How did riscv_fillpage get these addresses?
+
+TODO: Is 0x5060c000 valid?
 
 # TODO
 
