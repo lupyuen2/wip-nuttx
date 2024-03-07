@@ -2,9 +2,36 @@
 
 We're testing On-Demand Paging with Apache NuttX RTOS on Ox64 BL808 SBC: https://github.com/apache/nuttx/pull/11824
 
-Ox64 SBC shows...
+On QEMU 32-bit RISC-V: It runs like this: https://gist.github.com/lupyuen/6075f31b575b54108e60b028083c16f7
 
-https://gist.github.com/lupyuen/224cac41efa1db0bebda1414de49eed1
+```text
++ qemu-system-riscv32 -semihosting -M virt,aclint=on -cpu rv32 -smp 8 -bios none -kernel nuttx -nographic
+ABCnx_start: Entry
+uart_register: Registering /dev/console
+uart_register: Registering /dev/ttyS0
+work_start_lowpri: Starting low-priority kernel worker thread(s)
+nxtask_activate: lpwork pid=1,TCB=0x80407ab0
+nxtask_activate: AppBringUp pid=2,TCB=0x80407e70
+nx_start_application: Starting init task: /system/bin/init
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 80010698, MTVAL: c0001000
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 80010698, MTVAL: c0002000
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 80010698, MTVAL: c0003000
+...
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 80012fe4, MTVAL: c0900c04
+nxtask_activate: /system/bin/init pid=3,TCB=0x80408458
+nxtask_exit: AppBringUp pid=2,TCB=0x80407e70
+
+NuttShell (NSH) NuttX-12.4.0-RC0
+nsh> nx_start: CPU0: Beginning Idle Loop
+```
+
+We see different results on Ox64 Device and Ox64 Emulator. Let's investigate...
+
+# Test on Ox64 Device
+
+Based on this NuttX Config: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/boards/risc-v/bl808/ox64/configs/nsh_paging/defconfig#L73
+
+Ox64 SBC fails to start NSH: https://gist.github.com/lupyuen/224cac41efa1db0bebda1414de49eed1
 
 ```text
 ABCnx_start: Entry
@@ -41,9 +68,15 @@ riscv_fillpage: return
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0b0, MTVAL: 0000000080001000
 ```
 
-But Ox64 Emulator shows...
+riscv_fillpage is here: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239
 
-https://gist.github.com/lupyuen/a9821b6867e98fb67c379f1fd842819a
+TODO: It loops forever at the same MCAUSE, EPC, MTVAL. Why?
+
+# Test on Ox64 Emulator
+
+Based on this NuttX Config: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/boards/risc-v/bl808/ox64/configs/nsh_paging/defconfig#L73
+
+Ox64 Emulator also fails to start NSH: https://gist.github.com/lupyuen/a9821b6867e98fb67c379f1fd842819a
 
 ```text
 ABCnx_start: Entry
@@ -85,14 +118,18 @@ priv=S mstatus=0000000a000401a0 cycles=113000467
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
 ```
 
-Let's track down why mmu_ln_setentry1 caused the UART I/O to fail...
+riscv_fillpage is here: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239
+
+Our NuttX UART Driver (0x50200b48) tries to read the UART Register (0x30002084) but fails (Load Page Fault, cause=13).
+
+Let's track down why mmu_ln_setentry caused the UART I/O to fail...
 
 ```text
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
 ```
 
-riscv_fillpage is here: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239
+# TODO
 
 TODO
 
