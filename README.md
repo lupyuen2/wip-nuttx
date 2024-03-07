@@ -334,7 +334,9 @@ riscv_fillpage: return
 
 TODO: Compare the Ox64 and QEMU logs
 
-TODO: Why are MMU Flags non-zero?
+TODO: Why are MMU Flags non-zero? 
+
+TODO: Why mmu_ln_setentry2 instead of mmu_ln_setentry1?
 
 # TODO
 
