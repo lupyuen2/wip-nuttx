@@ -201,6 +201,7 @@ static inline uintptr_t mmu_satp_reg(uintptr_t pgbase, uint16_t asid)
 
 static inline void mmu_write_satp(uintptr_t reg)
 {
+  _info("reg=%p\n", reg); ////
   __asm__ __volatile__
     (
       "csrw satp, %0\n"
