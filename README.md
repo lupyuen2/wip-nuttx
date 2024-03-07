@@ -85,6 +85,8 @@ raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
 
 Let's track down why mmu_ln_setentry1 caused the UART I/O to fail.
 
+riscv_fillpage is here: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239
+
 TODO
 
 <p align="center">
