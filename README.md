@@ -118,7 +118,7 @@ priv=S mstatus=0000000a000401a0 cycles=113000467
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
 ```
 
-riscv_fillpage is here: https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239
+[riscv_fillpage is here](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239)
 
 Our NuttX UART Driver (0x50200b48) tries to read the UART Register (0x30002084) but fails (Load Page Fault, cause=13).
 
@@ -263,7 +263,7 @@ At the top we see mmu_ln_setentry creating a...
 - Adding to the Level 1 Page Table at 0x50600000
 - mmuflags=0 means it's not a Leaf Page Table Entry
 
-Then we see riscv_fillpage creating a...
+Then we see [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) creating a...
 - Level 3 Page Table
 - Located at Physical Address 0x5060c000
 - Mapping to Virtual Address 0x80001000
@@ -272,7 +272,7 @@ Then we see riscv_fillpage creating a...
 
 TODO: Is this allowed?
 
-TODO: How did riscv_fillpage get these addresses?
+TODO: How did [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) get these addresses?
 
 TODO: Is 0x5060c000 valid?
 
