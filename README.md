@@ -284,7 +284,30 @@ TODO: How did [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/b
 
 TODO: Is 0x5060c000 valid?
 
-# MMU Log Log for QEMU
+# MMU Log for Ox64 Without On-Demand Paging
+
+Compare with Ox64 Without On-Demand Paging: https://gist.github.com/lupyuen/ef933ba72e983d7d49ef101e0816a714
+
+```text
+mmu_write_satp: reg=0x8000000000050406
+nx_start: Entry
+uart_register: Registering /dev/console
+work_start_lowpri: Starting low-priority kernel worker thread(s)
+nxtask_activate: lpwork pid=1,TCB=0x50409300
+nxtask_activate: AppBringUp pid=2,TCB=0x50409910
+nx_start_application: Starting init task: /system/bin/init
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50603000, vaddr=0x80100000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50604000, vaddr=0x80000000, mmuflags=0x1a
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80001000, mmuflags=0x1a
+```
+
+0x80001000 is actually a Level 3 Leaf Page Table Entry. With mmuflags=0x1a.
+
+TODO: Why is this different from Ox64 with On-Demand Paging?
+
+# MMU Log for QEMU
 
 _How does Ox64 MMU compare with QEMU?_
 
