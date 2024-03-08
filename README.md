@@ -295,6 +295,8 @@ We do the same logs for QEMU 32-bit RISC-V...
 
 Here's the MMU Log for QEMU 32-bit RISC-V: https://gist.github.com/lupyuen/6075f31b575b54108e60b028083c16f7
 
+[riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) allocates the User Text...
+
 ```text
 mmu_write_satp: reg=0x80080401
 nx_start: Entry
@@ -338,7 +340,13 @@ riscv_fillpage: riscv_pgwipe2
 riscv_fillpage: mmu_ln_setentry2
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x8080a000, vaddr=0xc0002000, mmuflags=0x8000
 riscv_fillpage: return
-...
+```
+
+TODO: For Text: Why no mmu_ln_setentry1?
+
+Then it allocates the User Heap...
+
+```text
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001123e, MTVAL: c1000ffc
 riscv_fillpage: ARCH_TEXT_SIZE=0x80000
 riscv_fillpage: ARCH_TEXT_VEND=0xc0080000
@@ -347,6 +355,7 @@ riscv_fillpage: vaddr >= CONFIG_ARCH_HEAP_VBASE && vaddr <= ARCH_HEAP_VEND
 riscv_fillpage: !paddr1
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x1, ptprev=0x80800000, paddr=0x8081e000, vaddr=0xc1000000, MMU_UPGT_FLAGS=0
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x8081e000, vaddr=0xc1000000, mmuflags=0x8000
+
 riscv_fillpage: riscv_pgwipe1
 riscv_fillpage: riscv_pgvaddr
 riscv_fillpage: mm_pgalloc
@@ -356,11 +365,23 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x8081e000, paddr=0x8081f000, vaddr=0xc100
 riscv_fillpage: return
 ```
 
+To allocate the User Heap, [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) creates a...
+- Level 2 Page Table
+- Located at Physical Address 0x8081e000
+- Mapping to Virtual Address 0xc1000000
+- Adding to the Level 1 Page Table at 0x80800000
+- mmuflags=0x8000 means ???
+
+Then it creates a...
+- Level 3 Page Table
+- Located at Physical Address 0x8081f000
+- Mapping to Virtual Address 0xc1000000
+- Adding to the Level 2 Page Table at 0x8081e000
+- mmuflags=0x8000 means ???
+
+TODO: Why mmuflags=0x8000 instead of 0?
+
 TODO: Compare the Ox64 and QEMU logs
-
-TODO: For Text: Why mmu_ln_setentry2 instead of mmu_ln_setentry1?
-
-For Heap: It calls mmu_ln_setentry1 and mmu_ln_setentry2
 
 # TODO
 
