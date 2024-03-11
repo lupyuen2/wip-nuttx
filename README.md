@@ -350,7 +350,7 @@ We do the same logs for QEMU 32-bit RISC-V with On-Demand Paging...
 - [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/6422187397b6ca2a2df8507dca04c1d922555c4f)
 - [Log all updates to MMU SATP](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/e85babdad6506f927bbc5d2052c6f4f0029a764d)
 
-Here's the MMU Log for QEMU 32-bit RISC-V: https://gist.github.com/lupyuen/6075f31b575b54108e60b028083c16f7
+Here's the MMU Log for QEMU 32-bit RISC-V with On-Demand Paging: https://gist.github.com/lupyuen/6075f31b575b54108e60b028083c16f7
 
 [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) allocates the User Text...
 
@@ -459,6 +459,19 @@ Then it creates a...
 TODO: Why mmuflags=0x8000 instead of 0?
 
 TODO: Compare the Ox64 and QEMU logs
+
+# MMU Log for QEMU Without On-Demand Paging
+
+We do the same logs for QEMU 32-bit RISC-V without On-Demand Paging...
+- [NuttX Config Without On-Demand Paging](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/boards/risc-v/qemu-rv/rv-virt/configs/knsh32/defconfig)
+- [Enable Scheduler Logging](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/5001cccd9a426485181cfb2acf035132fbd6a0eb)
+- [Log the internals of On-Demand Paging](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/4cc8dde0c9143dd336c0a87bb2573d732f37661e)
+- [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/6422187397b6ca2a2df8507dca04c1d922555c4f)
+- [Log all updates to MMU SATP](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/e85babdad6506f927bbc5d2052c6f4f0029a764d)
+
+Here's the MMU Log for QEMU 32-bit RISC-V without On-Demand Paging: 
+
+TODO
 
 # TODO
 
