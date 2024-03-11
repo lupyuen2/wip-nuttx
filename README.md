@@ -469,9 +469,9 @@ We do the same logs for QEMU 32-bit RISC-V without On-Demand Paging...
 - [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/6422187397b6ca2a2df8507dca04c1d922555c4f)
 - [Log all updates to MMU SATP](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/e85babdad6506f927bbc5d2052c6f4f0029a764d)
 
-Here's the MMU Log for QEMU 32-bit RISC-V without On-Demand Paging: 
+Here's the MMU Log for QEMU 32-bit RISC-V without On-Demand Paging: https://gist.github.com/lupyuen/1a473fac0f5aebc2c420cd0354573e5c
 
-TODO
+TODO: Compare with QEMU With On-Demand Paging
 
 # TODO
 
