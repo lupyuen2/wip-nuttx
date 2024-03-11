@@ -151,29 +151,30 @@ We see this: https://gist.github.com/lupyuen/a9821b6867e98fb67c379f1fd842819a
 
 ```text
 ABC
-// Map I/O Memory
+// Set Level 1 Page Table Entry for I/O Memory (0x0)
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50406000, paddr=0, vaddr=0, mmuflags=0x9000000000000026
-// Map PLIC Memory
+
+// Allocate Level 2 Page Tables for PLIC Memory (0xe000_0000)
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50404000, paddr=0xe0000000, vaddr=0xe0000000, mmuflags=0x9000000000000026
 ...
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50404000, paddr=0xefe00000, vaddr=0xefe00000, mmuflags=0x9000000000000026
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50406000, paddr=0x50404000, vaddr=0xe0000000, mmuflags=0x20
 
-// TODO
+// Allocate Level 3 Page Tables for Kernel Text (0x5020_0000)
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50405000, paddr=0x50402000, vaddr=0x50200000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50402000, paddr=0x50200000, vaddr=0x50200000, mmuflags=0x2a
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50402000, paddr=0x50201000, vaddr=0x50201000, mmuflags=0x2a
 ...
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50402000, paddr=0x503ff000, vaddr=0x503ff000, mmuflags=0x2a
 
-// TODO
+// Allocate Level 3 Page Tables for Kernel RAM (0x5040_0000)
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50405000, paddr=0x50403000, vaddr=0x50400000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50403000, paddr=0x50400000, vaddr=0x50400000, mmuflags=0x26
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50403000, paddr=0x50401000, vaddr=0x50401000, mmuflags=0x26
 ...
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50405000, paddr=0x51800000, vaddr=0x51800000, mmuflags=0x26
 
-// Set SATP to Kernel Page Tables at 0x50406000
+// Set SATP Register to Kernel Page Tables at 0x5040_6000
 mmu_write_satp: reg=0x8000000000050406
 nx_start: Entry
 uart_register: Registering /dev/console
@@ -181,11 +182,15 @@ work_start_lowpri: Starting low-priority kernel worker thread(s)
 nxtask_activate: lpwork pid=1,TCB=0x504092f0
 nxtask_activate: AppBringUp pid=2,TCB=0x50409900
 nx_start_application: Starting init task: /system/bin/init
+
+// Allocate Level 3 Page Tables for User Data (0x8010_0000)
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50603000, vaddr=0x80100000, mmuflags=0x16
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50604000, vaddr=0x80000000, mmuflags=0x1a
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80101000, mmuflags=0x16
+
+// Allocate Level 3 Page Tables for User Heap (0x8020_0000)
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50606000, vaddr=0x80200000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50607000, vaddr=0x80200000, mmuflags=0x16
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50608000, vaddr=0x80201000, mmuflags=0x16
@@ -193,8 +198,10 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50609000, vaddr=0x8020
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060a000, vaddr=0x80203000, mmuflags=0x16
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060b000, vaddr=0x80204000, mmuflags=0x16
 
-// Set SATP to User Page Tables at 0x50600000
+// Swap SATP Register to User Page Tables at 0x50600000
 mmu_write_satp: reg=0x8000000000050600
+
+// Page Fault for On-Demand Paging at User Text (0x8000_1000)
 raise_exception2: cause=15, tval=0x80001000, pc=0x5020a124
 pc =000000005020a124 ra =0000000050211602 sp =000000005040c510 gp =0000000000000000
 tp =0000000000000000 t0 =000000000000002e t1 =0000000000000007 t2 =00000000000001ff
@@ -213,8 +220,12 @@ riscv_fillpage: vaddr=0x80001000
 riscv_fillpage: FIX_ARCH_TEXT_VEND=0x80080000
 riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
 riscv_fillpage: !paddr1
+
+// Set Level 2 Page Table Entry for User Text (0x8000_1000)
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
+
+// Page Fault for UART I/O Memory (0x3000_2084)
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
 pc =0000000050200b66 ra =0000000050200d22 sp =0000000050400830 gp =0000000000000000
 tp =0000000000000000 t0 =000000000000002e t1 =000000000000006a t2 =00000000000001ff
