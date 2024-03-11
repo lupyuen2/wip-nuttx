@@ -369,7 +369,7 @@ nx_start_application: Starting init task: /system/bin/init
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80802000, vaddr=0xc0100000, mmuflags=0x8000
 
-// Allocate Level 2 Page Table for User Text Region 0xc010_0000
+// Allocate Level 2 Page Table for User Data Region 0xc010_0000
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0100000, mmuflags=0x8000
 
 // Set the Level 2 Page Table Entry for User Data Region 0xc010_1000
@@ -419,7 +419,7 @@ TODO: For Text: Why no mmu_ln_setentry1?
 
 Then it allocates the User Heap...
 
-```text
+```yaml
 // Page Fault for On-Demand Paging at 0xc100_0ffc (User Heap Region)
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001123e, MTVAL: c1000ffc
 riscv_fillpage: ARCH_TEXT_SIZE=0x80000
@@ -471,7 +471,45 @@ We do the same logs for QEMU 32-bit RISC-V without On-Demand Paging...
 
 Here's the MMU Log for QEMU 32-bit RISC-V without On-Demand Paging: https://gist.github.com/lupyuen/1a473fac0f5aebc2c420cd0354573e5c
 
-TODO: Compare with QEMU With On-Demand Paging
+```yaml
+// Switch SATP Register to the User Page Tables at 0x8040_4000
+mmu_write_satp: reg=0x80080404
+nx_start: Entry
+uart_register: Registering /dev/console
+uart_register: Registering /dev/ttyS0
+work_start_lowpri: Starting low-priority kernel worker thread(s)
+nxtask_activate: lpwork pid=1,TCB=0x80407a90
+nx_start_application: Starting init task: /system/bin/init
+
+// Allocate Level 2 Page Table for User Data Region 0xc010_0000
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
+
+// Set the Level 2 Page Table Entry for User Data Region 0xc010_0000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80802000, vaddr=0xc0100000, mmuflags=0x2
+...
+// Set the Level 2 Page Table Entry for User Data Region 0xc010_1000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80812000, vaddr=0xc0101000, mmuflags=0x12
+```
+
+We compare the MMU Logs for QEMU With and Without On-Demand Paging...
+
+```yaml
+// QEMU With On-Demand Paging:
+// Allocate Level 2 Page Table for User Data Region 0xc010_0000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0100000, mmuflags=0x8000
+
+// Set the Level 2 Page Table Entry for User Data Region 0xc010_1000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0101000, mmuflags=0x8000
+
+// QEMU Without On-Demand Paging:
+// Allocate Level 2 Page Table for User Data Region 0xc010_0000
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
+
+// Set the Level 2 Page Table Entry for User Data Region 0xc010_1000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80812000, vaddr=0xc0101000, mmuflags=0x12
+```
+
+TODO
 
 # TODO
 
