@@ -509,7 +509,7 @@ mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc010
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80812000, vaddr=0xc0101000, mmuflags=0x12
 ```
 
-TODO
+TODO: Why mmuflags=0x8000?
 
 # TODO
 
