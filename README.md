@@ -254,7 +254,7 @@ pc =0000000050200b66 ra =00000000502
 
 This looks interesting...
 
-```text
+```yaml
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50603000, vaddr=0x80100000, mmuflags=0x16
@@ -267,11 +267,14 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50609000, vaddr=0x8020
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060a000, vaddr=0x80203000, mmuflags=0x16
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060b000, vaddr=0x80204000, mmuflags=0x16
 ...
-// Set SATP to User Page Tables at 0x50600000
+// Swap SATP Register to User Page Tables at 0x50600000
 mmu_write_satp: reg=0x8000000000050600
 ...
+// Set Level 2 Page Table Entry for User Text (0x8000_1000)
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
+
+// Page Fault for UART I/O Memory (0x3000_2084)
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
 ```
 
@@ -297,7 +300,7 @@ TODO: Is 0x5060c000 valid?
 
 # MMU Log for Ox64 Without On-Demand Paging
 
-Compare with Ox64 Without On-Demand Paging: https://gist.github.com/lupyuen/ef933ba72e983d7d49ef101e0816a714
+Let's compare the above with Ox64 Without On-Demand Paging: https://gist.github.com/lupyuen/ef933ba72e983d7d49ef101e0816a714
 
 ```yaml
 mmu_write_satp: reg=0x8000000000050406
