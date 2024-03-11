@@ -198,7 +198,7 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50609000, vaddr=0x8020
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060a000, vaddr=0x80203000, mmuflags=0x16
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060b000, vaddr=0x80204000, mmuflags=0x16
 
-// Swap SATP Register to User Page Tables at 0x50600000
+// Swap SATP Register to User Page Tables at 0x5060_0000
 mmu_write_satp: reg=0x8000000000050600
 
 // Page Fault for On-Demand Paging at User Text (0x8000_1000)
@@ -267,7 +267,7 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x50609000, vaddr=0x8020
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060a000, vaddr=0x80203000, mmuflags=0x16
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50606000, paddr=0x5060b000, vaddr=0x80204000, mmuflags=0x16
 ...
-// Swap SATP Register to User Page Tables at 0x50600000
+// Swap SATP Register to User Page Tables at 0x5060_0000
 mmu_write_satp: reg=0x8000000000050600
 ...
 // Set Level 2 Page Table Entry for User Text (0x8000_1000)
@@ -303,6 +303,7 @@ TODO: Is 0x5060c000 valid?
 Let's compare the above with Ox64 Without On-Demand Paging: https://gist.github.com/lupyuen/ef933ba72e983d7d49ef101e0816a714
 
 ```yaml
+// Swap SATP Register to User Page Tables at 0x5040_6000
 mmu_write_satp: reg=0x8000000000050406
 nx_start: Entry
 uart_register: Registering /dev/console
@@ -310,9 +311,13 @@ work_start_lowpri: Starting low-priority kernel worker thread(s)
 nxtask_activate: lpwork pid=1,TCB=0x50409300
 nxtask_activate: AppBringUp pid=2,TCB=0x50409910
 nx_start_application: Starting init task: /system/bin/init
+
+// Allocate Level 3 Page Table for User Data (0x8010_0000)
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50603000, vaddr=0x80100000, mmuflags=0x16
+
+// Set Level 3 Page Table Entry for User Text (0x8000_1000)
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50604000, vaddr=0x80000000, mmuflags=0x1a
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80001000, mmuflags=0x1a
 ```
