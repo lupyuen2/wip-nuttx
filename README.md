@@ -139,7 +139,7 @@ riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c0
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
 ```
 
-# MMU Page Table Entries and SATP Register
+# MMU Log for Ox64 With On-Demand Paging
 
 _Why did mmu_ln_setentry cause UART I/O to fail?_
 
@@ -149,7 +149,7 @@ To understand the context, let's log all MMU Page Table Entries and updates to t
 
 We see this: https://gist.github.com/lupyuen/a9821b6867e98fb67c379f1fd842819a
 
-```text
+```yaml
 ABC
 // Set Level 1 Page Table Entry for I/O Memory (0x0)
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50406000, paddr=0, vaddr=0, mmuflags=0x9000000000000026
@@ -299,7 +299,7 @@ TODO: Is 0x5060c000 valid?
 
 Compare with Ox64 Without On-Demand Paging: https://gist.github.com/lupyuen/ef933ba72e983d7d49ef101e0816a714
 
-```text
+```yaml
 mmu_write_satp: reg=0x8000000000050406
 nx_start: Entry
 uart_register: Registering /dev/console
@@ -332,7 +332,7 @@ Here's the MMU Log for QEMU 32-bit RISC-V: https://gist.github.com/lupyuen/6075f
 
 [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) allocates the User Text...
 
-```text
+```yaml
 // Init SATP Register to the Kernel Page Tables at 0x8040_1000
 mmu_write_satp: reg=0x80080401
 nx_start: Entry
