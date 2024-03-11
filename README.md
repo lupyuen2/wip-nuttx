@@ -324,7 +324,21 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x8000
 
 0x80001000 is actually a Level 3 Leaf Page Table Entry. With mmuflags=0x1a.
 
-TODO: Why is this different from Ox64 with On-Demand Paging?
+_Why is this different from Ox64 with On-Demand Paging?_
+
+```yaml
+// Ox64 With On-Demand Paging:
+// Set Level 2 Page Table Entry for User Text (0x8000_1000)
+riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
+
+// Ox64 Without On-Demand Paging:
+// Set Level 3 Page Table Entry for User Text (0x8000_1000)
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50604000, vaddr=0x80000000, mmuflags=0x1a
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80001000, mmuflags=0x1a
+```
+
+TODO: With On-Demand Paging uses Level 2, Without On-Demand Paging uses Level 3
 
 # MMU Log for QEMU With On-Demand Paging
 
