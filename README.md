@@ -326,6 +326,13 @@ So TinyMMU doesn't recognise [Global Page Table Entries](https://five-embeddev.c
 
 TODO: Support [Global Page Table Entries](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/supervisor.html#sec:sv32) in TinyEMU
 
+For Now: We do a workaround to allow UART I/O...
+- [Workaround to allow UART I/O](https://github.com/lupyuen/ox64-tinyemu/commit/18e8de57464217841ea20330544e2992dd3eb43b)
+
+And it works! https://gist.github.com/lupyuen/c64838e8d182e669ee53cc79d7a3aa74
+
+TODO
+
 # MMU Log for Ox64 Without On-Demand Paging
 
 Let's compare the above with Ox64 Without On-Demand Paging: https://gist.github.com/lupyuen/ef933ba72e983d7d49ef101e0816a714
