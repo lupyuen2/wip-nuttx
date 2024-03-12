@@ -144,7 +144,7 @@ raise_exception2: cause=13, tval=0x30002084, pc=0x50200b48
 _Why did mmu_ln_setentry cause UART I/O to fail?_
 
 To understand the context, let's log all MMU Page Table Entries and updates to the MMU SATP Register...
-- [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/105d96681a8b4242e428fe76608dc3a2cec87c1e)
+- [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/8b24ef79d8d267d12af24e7d7b2dd8e8d82d8c98)
 - [Log all updates to MMU SATP Register (Kernel Page Tables vs User Page Tables)](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/6df7f09f200769bde075bd0ef2a942a64f2101cd)
 
 We see this: https://gist.github.com/lupyuen/a9821b6867e98fb67c379f1fd842819a
@@ -347,7 +347,7 @@ _How does Ox64 MMU compare with QEMU?_
 We do the same logs for QEMU 32-bit RISC-V with On-Demand Paging...
 - [NuttX Config for On-Demand Paging](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/boards/risc-v/qemu-rv/rv-virt/configs/knsh32_paging/defconfig)
 - [Log the internals of On-Demand Paging](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/4cc8dde0c9143dd336c0a87bb2573d732f37661e)
-- [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/6422187397b6ca2a2df8507dca04c1d922555c4f)
+- [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/73b730c367580de6b6b819043df107d1b2984a89)
 - [Log all updates to MMU SATP](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/e85babdad6506f927bbc5d2052c6f4f0029a764d)
 
 Here's the MMU Log for QEMU 32-bit RISC-V with On-Demand Paging: https://gist.github.com/lupyuen/6075f31b575b54108e60b028083c16f7
@@ -366,20 +366,16 @@ nxtask_activate: AppBringUp pid=2,TCB=0x80407e70
 nx_start_application: Starting init task: /system/bin/init
 
 // Allocate Level 2 Page Tables for User Data Region 0xc010_0000
-mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80802000, vaddr=0xc0100000, mmuflags=0x8000
-
-// Allocate Level 2 Page Table for User Data Region 0xc010_0000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0100000, mmuflags=0x8000
-
-// Set the Level 2 Page Table Entry for User Data Region 0xc010_1000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0101000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80802000, vaddr=0xc0100000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0000000, mmuflags=0x1a
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0101000, mmuflags=0x16
 
 // Allocate Level 2 Page Tables for User Heap Region 0xc080_0000
-mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80805000, vaddr=0xc0800000, mmuflags=0x8000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80806000, vaddr=0xc0800000, mmuflags=0x8000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80807000, vaddr=0xc0801000, mmuflags=0x8000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80808000, vaddr=0xc0802000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80805000, vaddr=0xc0800000, mmuflags=0x0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80806000, vaddr=0xc0800000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80807000, vaddr=0xc0801000, mmuflags=0x16
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80805000, paddr=0x80808000, vaddr=0xc0802000, mmuflags=0x16
 
 // Switch SATP Register to the User Page Tables at 0x8080_0000
 mmu_write_satp: reg=0x80080800
@@ -393,10 +389,10 @@ riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
 riscv_fillpage: riscv_pgvaddr
 riscv_fillpage: mm_pgalloc
 riscv_fillpage: riscv_pgwipe2
-riscv_fillpage: mmu_ln_setentry2
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
 
 // Set the Level 2 Page Table Entry for 0xc000_1000 (User Text Region)
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc0001000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc0001000, mmuflags=0x1e
 riscv_fillpage: return
 
 // Page Fault for On-Demand Paging at 0xc000_2000 (User Text Region)
@@ -408,10 +404,10 @@ riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
 riscv_fillpage: riscv_pgvaddr
 riscv_fillpage: mm_pgalloc
 riscv_fillpage: riscv_pgwipe2
-riscv_fillpage: mmu_ln_setentry2
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
 
 // Set the Level 2 Page Table Entry for 0xc000_2000 (User Text Region)
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x8080a000, vaddr=0xc0002000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x8080a000, vaddr=0xc0002000, mmuflags=0x1e
 riscv_fillpage: return
 ```
 
@@ -430,7 +426,7 @@ riscv_fillpage: !paddr1
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x1, ptprev=0x80800000, paddr=0x8081e000, vaddr=0xc1000000, MMU_UPGT_FLAGS=0
 
 // Allocate the Level 2 Page Table for 0xc100_0000 (User Heap Region)
-mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x8081e000, vaddr=0xc1000000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x8081e000, vaddr=0xc1000000, mmuflags=0x0
 riscv_fillpage: riscv_pgwipe1
 riscv_fillpage: riscv_pgvaddr
 riscv_fillpage: mm_pgalloc
@@ -438,7 +434,7 @@ riscv_fillpage: riscv_pgwipe2
 riscv_fillpage: mmu_ln_setentry2
 
 // Set the Level 2 Page Table Entry for 0xc100_0000 (User Heap Region)
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x8081e000, paddr=0x8081f000, vaddr=0xc1000000, mmuflags=0x8000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x8081e000, paddr=0x8081f000, vaddr=0xc1000000, mmuflags=0x16
 riscv_fillpage: return
 ```
 
@@ -447,16 +443,12 @@ To allocate the User Heap, [riscv_fillpage](https://github.com/lupyuen2/wip-pine
 - Located at Physical Address 0x8081e000
 - Mapping to Virtual Address 0xc1000000
 - Adding to the Level 1 Page Table at 0x80800000
-- mmuflags=0x8000 means ???
 
 Then it creates a...
 - Level 3 Page Table
 - Located at Physical Address 0x8081f000
 - Mapping to Virtual Address 0xc1000000
 - Adding to the Level 2 Page Table at 0x8081e000
-- mmuflags=0x8000 means ???
-
-TODO: Why mmuflags=0x8000 instead of 0?
 
 TODO: Compare the Ox64 and QEMU logs
 
@@ -482,54 +474,27 @@ nxtask_activate: lpwork pid=1,TCB=0x80407a90
 nx_start_application: Starting init task: /system/bin/init
 
 // Allocate Level 2 Page Table for User Data Region 0xc010_0000
-mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x0
 
 // Set the Level 2 Page Table Entry for User Data Region 0xc010_0000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80802000, vaddr=0xc0100000, mmuflags=0x2
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80802000, vaddr=0xc0100000, mmuflags=0x16
 
 // Set the Level 2 Page Table Entry for User Text Region 0xc000_0000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0000000, mmuflags=0x3
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0000000, mmuflags=0x1a
 
 // Set the Level 2 Page Table Entry for User Text Region 0xc000_1000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x4
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x1a
 ```
-
-TODO: Why is mmuflags increasing?
-
-TODO: Is 0xc000_0000 correct?
 
 We compare the MMU Logs for QEMU With and Without On-Demand Paging...
 
 ```yaml
 // QEMU Without On-Demand Paging:
-// Allocate Level 2 Page Table for User Data Region 0xc010_0000
-mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
-
-// Set the Level 2 Page Table Entry for User Text Region 0xc000_1000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x4
+TODO
 
 // QEMU With On-Demand Paging:
-// Page Fault for On-Demand Paging at 0xc000_1000 (User Text Region)
-riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001087e, MTVAL: c0001000
-riscv_fillpage: ARCH_TEXT_SIZE=0x80000
-riscv_fillpage: ARCH_TEXT_VEND=0xc0080000
-riscv_fillpage: vaddr=0xc0001000
-riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
-riscv_fillpage: riscv_pgvaddr
-riscv_fillpage: mm_pgalloc
-riscv_fillpage: riscv_pgwipe2
-riscv_fillpage: mmu_ln_setentry2
-
-// Set the Level 2 Page Table Entry for 0xc000_1000 (User Text Region)
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc0001000, mmuflags=0x8000
-riscv_fillpage: return
+TODO
 ```
-
-_Why mmuflags=0x8000?_
-
-According to Sv32 MMU: https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/supervisor.html#sec:sv32
-
-Bit 15 (0x8000) 
 
 # TODO
 
