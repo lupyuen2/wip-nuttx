@@ -502,7 +502,11 @@ We compare the MMU Logs for QEMU With and Without On-Demand Paging...
 
 ```yaml
 // QEMU Without On-Demand Paging:
-TODO
+// Allocate Level 2 Page Table for User Data Region 0xc010_0000
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
+
+// Set the Level 2 Page Table Entry for User Text Region 0xc000_1000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x4
 
 // QEMU With On-Demand Paging:
 // Page Fault for On-Demand Paging at 0xc000_1000 (User Text Region)
