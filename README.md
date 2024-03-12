@@ -40,6 +40,7 @@ work_start_lowpri: Starting low-priority kernel worker thread(s)
 nxtask_activate: lpwork pid=1,TCB=0x504092f0
 nxtask_activate: AppBringUp pid=2,TCB=0x50409900
 nx_start_application: Starting init task: /system/bin/init
+
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0b0, MTVAL: 0000000080001000
 riscv_fillpage: ARCH_TEXT_SIZE=0x80000
 riscv_fillpage: ARCH_TEXT_VEND=0x80080000
@@ -54,6 +55,7 @@ riscv_fillpage: mm_pgalloc
 riscv_fillpage: riscv_pgwipe2
 riscv_fillpage: mmu_ln_setentry2
 riscv_fillpage: return
+
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0b0, MTVAL: 0000000080001000
 riscv_fillpage: ARCH_TEXT_SIZE=0x80000
 riscv_fillpage: ARCH_TEXT_VEND=0x80080000
@@ -339,12 +341,14 @@ riscv_fillpage: vaddr=0x80001000
 riscv_fillpage: FIX_ARCH_TEXT_VEND=0x80080000
 riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
 riscv_fillpage: !paddr1
+
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0x0
 riscv_fillpage: riscv_pgwipe1
 riscv_fillpage: riscv_pgvaddr
 riscv_fillpage: mm_pgalloc
 riscv_fillpage: riscv_pgwipe2
+
 riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x5060c000, paddr=0x5060d000, vaddr=0x80001000, mmuflags=0x1e
 riscv_fillpage: return
@@ -358,6 +362,7 @@ riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
 riscv_fillpage: riscv_pgvaddr
 riscv_fillpage: mm_pgalloc
 riscv_fillpage: riscv_pgwipe2
+
 riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x5060c000, paddr=0x5060e000, vaddr=0x80001000, mmuflags=0x1e
 riscv_fillpage: return
