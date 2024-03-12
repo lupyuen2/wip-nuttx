@@ -441,21 +441,32 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x8000
 
 0x80001000 is actually a Level 3 Leaf Page Table Entry. With mmuflags=0x1a.
 
+# Compare Ox64 With and Without On-Demand Paging
+
 _Why is this different from Ox64 with On-Demand Paging?_
 
 ```yaml
+// Ox64 Without On-Demand Paging:
+
+// Allocate the Level 3 Page Table for User Data (0x8010_0000)
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
+
+// Set Level 3 Page Table Entry for User Text (0x8000_1000)
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80001000, mmuflags=0x1a
+
 // Ox64 With On-Demand Paging:
+
+// Allocate the Level 2 Page Table for User Data (0x8010_0000)
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0x0
+
 // Set Level 2 Page Table Entry for User Text (0x8000_1000)
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
-
-// Ox64 Without On-Demand Paging:
-// Set Level 3 Page Table Entry for User Text (0x8000_1000)
-mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50604000, vaddr=0x80000000, mmuflags=0x1a
-mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80001000, mmuflags=0x1a
 ```
 
-TODO: With On-Demand Paging uses Level 2, Without On-Demand Paging uses Level 3
+On-Demand Paging uses Level 2, Without On-Demand Paging uses Level 3. Why?
+
+TODO: Change On-Demand Paging to use Level 3 Page Table
 
 # MMU Log for QEMU With On-Demand Paging
 
@@ -603,10 +614,13 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc000
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x1a
 ```
 
+# Compare QEMU With and Without On-Demand Paging
+
 We compare the MMU Logs for QEMU With and Without On-Demand Paging...
 
 ```yaml
 // QEMU Without On-Demand Paging:
+
 // Allocate Level 2 Page Table for User Data Region 0xc010_0000
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x0
 
@@ -614,6 +628,10 @@ mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc010
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x1a
 
 // QEMU With On-Demand Paging:
+
+// Allocate Level 2 Page Table for User Data Region 0xc010_0000
+mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x0
+
 // Page Fault for On-Demand Paging at 0xc000_1000 (User Text Region)
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001087e, MTVAL: c0001000
 
