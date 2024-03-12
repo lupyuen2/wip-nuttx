@@ -466,7 +466,11 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x8000
 
 On-Demand Paging uses Level 2, Without On-Demand Paging uses Level 3. Why?
 
-TODO: Change On-Demand Paging to use Level 3 Page Table
+Note that [64-bit RISC-V QEMU](https://gist.github.com/lupyuen/c7561fd8e5317868d8fd36313c3e7ce4) will use Level 3 Page Tables, unlike 32-bit RISC-V QEMU.
+
+So let's change Ox64 On-Demand Paging to use Level 3 Page Tables.
+
+TODO
 
 # MMU Log for QEMU With On-Demand Paging
 
@@ -613,6 +617,10 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc000
 // Set the Level 2 Page Table Entry for User Text Region 0xc000_1000
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x1a
 ```
+
+And here's the MMU Log for QEMU 64-bit RISC-V without On-Demand Paging: https://gist.github.com/lupyuen/c7561fd8e5317868d8fd36313c3e7ce4
+
+Note that 64-bit RISC-V will use Level 3 Page Tables, unlike 32-bit RISC-V.
 
 # Compare QEMU With and Without On-Demand Paging
 
