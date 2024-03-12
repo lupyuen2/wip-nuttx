@@ -525,7 +525,11 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc000
 riscv_fillpage: return
 ```
 
-TODO: Why mmuflags=0x8000?
+_Why mmuflags=0x8000?_
+
+According to Sv32 MMU: https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/supervisor.html#sec:sv32
+
+Bit 15 (0x8000) 
 
 # TODO
 
