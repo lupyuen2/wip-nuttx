@@ -368,7 +368,52 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x5060c000, paddr=0x5060e000, vaddr=0x8000
 riscv_fillpage: return
 ```
 
-TODO: Why is it looping forever at 0x80001000?
+# On-Demand Paging stuck at 0x80001000
+
+_Why is it looping forever at 0x80001000?_
+
+```yaml
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50606000, vaddr=0x80200000, mmuflags=0
+```
+
+From the above log, we see mmu_ln_setentry creating a...
+- Level 2 Page Table
+- Located at Physical Address 0x506_01000
+- Mapping to Virtual Address 0x8010_0000
+- Adding to the Level 1 Page Table at 0x5060_0000
+- mmuflags=0 means it's not a Leaf Page Table Entry
+
+```yaml
+// Create Level 3 Page Table for User Text (0x8000_1000)
+riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
+```
+
+Then we see [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) creating a...
+- Level 3 Page Table
+- Located at Physical Address 0x5060_c000
+- Mapping to Virtual Address 0x8000_1000
+- Adding to the Level 1 Page Table at 0x5060_0000
+- mmuflags=0 means it's not a Leaf Page Table Entry
+
+```yaml
+// Set Level 3 Page Table Entry for User Text (0x8000_1000)
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x5060c000, paddr=0x5060d000, vaddr=0x80001000, mmuflags=0x1e
+```
+
+Finally [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) sets the...
+- Level 3 Page Table Entry
+- In the Level 2 Page Table at 0x5060_c000
+- For Physical Address 0x5060_d000
+- Mapping to Virtual Address 0x8000_1000
+- mmuflags=0x1e means ???
+
+TODO: Is this allowed?
+
+TODO: How did [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/riscv_exception.c#L97-L239) get these addresses?
+
+TODO: Is 0x5060c000 valid?
 
 # MMU Log for Ox64 Without On-Demand Paging
 
