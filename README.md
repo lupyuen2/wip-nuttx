@@ -329,6 +329,40 @@ TODO: Support [Global Page Table Entries](https://five-embeddev.com/riscv-priv-i
 For Now: We do a workaround to allow UART I/O...
 - [Workaround to allow UART I/O](https://github.com/lupyuen/ox64-tinyemu/commit/18e8de57464217841ea20330544e2992dd3eb43b)
 
+Now Ox64 Emulator behaves like Ox64 Device yay! https://gist.github.com/lupyuen/58a994d511197163e117ea6243bfb346
+
+```text
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a126, MTVAL: 0000000080001000
+riscv_fillpage: ARCH_TEXT_SIZE=0x80000
+riscv_fillpage: ARCH_TEXT_VEND=0x80080000
+riscv_fillpage: vaddr=0x80001000
+riscv_fillpage: FIX_ARCH_TEXT_VEND=0x80080000
+riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: !paddr1
+riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0x0
+riscv_fillpage: riscv_pgwipe1
+riscv_fillpage: riscv_pgvaddr
+riscv_fillpage: mm_pgalloc
+riscv_fillpage: riscv_pgwipe2
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x5060c000, paddr=0x5060d000, vaddr=0x80001000, mmuflags=0x1e
+riscv_fillpage: return
+
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a126, MTVAL: 0000000080001000
+riscv_fillpage: ARCH_TEXT_SIZE=0x80000
+riscv_fillpage: ARCH_TEXT_VEND=0x80080000
+riscv_fillpage: vaddr=0x80001000
+riscv_fillpage: FIX_ARCH_TEXT_VEND=0x80080000
+riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: riscv_pgvaddr
+riscv_fillpage: mm_pgalloc
+riscv_fillpage: riscv_pgwipe2
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x5060c000, paddr=0x5060e000, vaddr=0x80001000, mmuflags=0x1e
+riscv_fillpage: return
+```
+
 TODO
 
 # MMU Log for Ox64 Without On-Demand Paging
