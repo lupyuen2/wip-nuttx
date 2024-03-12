@@ -298,6 +298,8 @@ TODO: How did [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/b
 
 TODO: Is 0x5060c000 valid?
 
+TODO: Why would UART I/O fail on TinyEMU but not Ox64? UART I/O is mapped as a Global Page Table Entry, it should be valid across all SATP Registers. Is there a bug in TinyEMU MMU?
+
 # MMU Log for Ox64 Without On-Demand Paging
 
 Let's compare the above with Ox64 Without On-Demand Paging: https://gist.github.com/lupyuen/ef933ba72e983d7d49ef101e0816a714
