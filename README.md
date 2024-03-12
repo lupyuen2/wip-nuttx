@@ -593,7 +593,7 @@ We do the same logs for QEMU 32-bit RISC-V without On-Demand Paging...
 - [Log the setting of all Page Table Entries in MMU](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/6422187397b6ca2a2df8507dca04c1d922555c4f)
 - [Log all updates to MMU SATP](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/e85babdad6506f927bbc5d2052c6f4f0029a764d)
 
-Here's the MMU Log for QEMU 32-bit RISC-V without On-Demand Paging: https://gist.github.com/lupyuen/1a473fac0f5aebc2c420cd0354573e5c
+Here's the MMU Log for [QEMU 32-bit RISC-V](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/boards/risc-v/qemu-rv/rv-virt/configs/knsh32/defconfig) without On-Demand Paging: https://gist.github.com/lupyuen/1a473fac0f5aebc2c420cd0354573e5c
 
 ```yaml
 // Switch SATP Register to the User Page Tables at 0x8040_4000
@@ -618,9 +618,27 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc000
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x1a
 ```
 
-And here's the MMU Log for QEMU 64-bit RISC-V without On-Demand Paging: https://gist.github.com/lupyuen/c7561fd8e5317868d8fd36313c3e7ce4
+And here's the MMU Log for [QEMU 64-bit RISC-V](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/boards/risc-v/qemu-rv/rv-virt/configs/knsh64/defconfig) without On-Demand Paging: https://gist.github.com/lupyuen/c7561fd8e5317868d8fd36313c3e7ce4
 
-Note that 64-bit RISC-V will use Level 3 Page Tables, unlike 32-bit RISC-V.
+```yaml
+// Allocate Level 3 Page Table for User Data Region 0xc010_0000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80401000, paddr=0x80402000, vaddr=0xc0100000, mmuflags=0x0
+
+// Set the Level 3 Page Table Entry for User Data Region 0xc010_0000
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x80402000, paddr=0x80403000, vaddr=0xc0100000, mmuflags=0x16
+
+// Set the Level 3 Page Table Entry for User Text Region 0xc000_0000
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x80402000, paddr=0x80404000, vaddr=0xc0000000, mmuflags=0x1a
+
+// Set the Level 3 Page Table Entry for User Text Region 0xc000_1000
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x80402000, paddr=0x80405000, vaddr=0xc0001000, mmuflags=0x1a
+```
+
+_How does QEMU 32-bit compare with QEMU 64-bit?_
+
+From the log above: 64-bit RISC-V will use Level 3 Page Tables. (32-bit RISC-V doesn't)
+
+So Ox64 should also use Level 3 Page Tables for On-Demand Paging.
 
 # Compare QEMU With and Without On-Demand Paging
 
