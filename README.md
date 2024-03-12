@@ -4,7 +4,7 @@ We're testing On-Demand Paging with Apache NuttX RTOS on Ox64 BL808 SBC: https:/
 
 On QEMU 32-bit RISC-V: It runs like this: https://gist.github.com/lupyuen/6075f31b575b54108e60b028083c16f7
 
-```text
+```yaml
 + qemu-system-riscv32 -semihosting -M virt,aclint=on -cpu rv32 -smp 8 -bios none -kernel nuttx -nographic
 ABCnx_start: Entry
 uart_register: Registering /dev/console
@@ -486,27 +486,39 @@ mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc010
 
 // Set the Level 2 Page Table Entry for User Data Region 0xc010_0000
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80802000, vaddr=0xc0100000, mmuflags=0x2
-...
-// Set the Level 2 Page Table Entry for User Data Region 0xc010_1000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80812000, vaddr=0xc0101000, mmuflags=0x12
+
+// Set the Level 2 Page Table Entry for User Text Region 0xc000_0000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0000000, mmuflags=0x3
+
+// Set the Level 2 Page Table Entry for User Text Region 0xc000_1000
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0001000, mmuflags=0x4
 ```
+
+TODO: Why is mmuflags increasing?
+
+TODO: Is 0xc000_0000 correct?
 
 We compare the MMU Logs for QEMU With and Without On-Demand Paging...
 
 ```yaml
-// QEMU With On-Demand Paging:
-// Allocate Level 2 Page Table for User Data Region 0xc010_0000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80803000, vaddr=0xc0100000, mmuflags=0x8000
-
-// Set the Level 2 Page Table Entry for User Data Region 0xc010_1000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80804000, vaddr=0xc0101000, mmuflags=0x8000
-
 // QEMU Without On-Demand Paging:
-// Allocate Level 2 Page Table for User Data Region 0xc010_0000
-mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc0100000, mmuflags=0x1
+TODO
 
-// Set the Level 2 Page Table Entry for User Data Region 0xc010_1000
-mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80812000, vaddr=0xc0101000, mmuflags=0x12
+// QEMU With On-Demand Paging:
+// Page Fault for On-Demand Paging at 0xc000_1000 (User Text Region)
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001087e, MTVAL: c0001000
+riscv_fillpage: ARCH_TEXT_SIZE=0x80000
+riscv_fillpage: ARCH_TEXT_VEND=0xc0080000
+riscv_fillpage: vaddr=0xc0001000
+riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: riscv_pgvaddr
+riscv_fillpage: mm_pgalloc
+riscv_fillpage: riscv_pgwipe2
+riscv_fillpage: mmu_ln_setentry2
+
+// Set the Level 2 Page Table Entry for 0xc000_1000 (User Text Region)
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc0001000, mmuflags=0x8000
+riscv_fillpage: return
 ```
 
 TODO: Why mmuflags=0x8000?
