@@ -189,6 +189,9 @@ int riscv_fillpage(int mcause, void *regs, void *args)
   ptlevel = ARCH_SPGTS;
   const uintptr_t pte = mmu_ln_getentry(ptlevel, ptprev, vaddr);////
   _info("ptlevel=%p, ptprev=%p, vaddr=%p, mmu_ln_getentry=%p\n", ptlevel, ptprev, vaddr, pte);////
+  const uint32_t ptlevel2 = 3; ////TODO
+  const uintptr_t pte2 = mmu_ln_getentry(ptlevel2, ptprev, vaddr);////
+  _info("ptlevel2=%p, ptprev=%p, vaddr=%p, mmu_ln_getentry2=%p\n", ptlevel2, ptprev, vaddr, pte2);////
   paddr = mmu_pte_to_paddr(mmu_ln_getentry(ptlevel, ptprev, vaddr));
   if (!paddr)
     {
