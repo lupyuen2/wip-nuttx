@@ -453,6 +453,7 @@ _Why is this different from Ox64 with On-Demand Paging?_
 
 ```yaml
 // Ox64 Without On-Demand Paging:
+// Level 3 Page Table at 0x5060_2000 is shared by 0x8000_0000 to 0x8010_1000
 
 // Allocate the Level 3 Page Table for User Data (0x8010_0000)
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
@@ -461,6 +462,7 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x8010
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80001000, mmuflags=0x1a
 
 // Ox64 With On-Demand Paging:
+// Level 3 Page Table at 0x5060_2000 is shared by 0x8000_0000 to 0x8010_1000
 
 // Allocate the Level 2 Page Table for User Data (0x8010_0000)
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0x0
