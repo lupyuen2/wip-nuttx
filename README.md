@@ -484,6 +484,18 @@ Note that [64-bit RISC-V QEMU](https://gist.github.com/lupyuen/c7561fd8e5317868d
 
 TODO: Why is the Level 3 Page Table different for With and Without On-Demand Paging?
 
+Problem is that the Page Table Entry exists at Level 3. But we checked at Level 2 and failed...
+
+```yaml
+// Missing from Level 2
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x90000000000000e7
+
+// But found at Level 3
+riscv_fillpage: ptlevel2=0x3, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry2=0x14101421
+```
+
+TODO: Check for Page Table Entries at Levels 2 and 3
+
 # MMU Log for QEMU With On-Demand Paging
 
 _How does Ox64 MMU compare with QEMU?_
