@@ -368,9 +368,9 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x5060c000, paddr=0x5060e000, vaddr=0x8000
 riscv_fillpage: return
 ```
 
-# On-Demand Paging stuck at 0x80001000
+# On-Demand Paging stuck at 0x8000_1000
 
-_Why is it looping forever at 0x80001000?_
+_Why is it looping forever at 0x8000\_1000?_
 
 ```yaml
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50606000, vaddr=0x80200000, mmuflags=0
