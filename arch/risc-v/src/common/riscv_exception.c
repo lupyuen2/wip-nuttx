@@ -218,7 +218,7 @@ int riscv_fillpage(int mcause, void *regs, void *args)
 
   /* Then map the virtual address to the physical address */
 
-  _info("mmu_ln_setentry2\n");////
+  _info("mmu_ln_setentry2: mmuflags=0x%x\n", mmuflags);////
   mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags);
 
   _info("return\n");////
