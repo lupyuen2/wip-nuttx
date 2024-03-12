@@ -276,6 +276,7 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x8000
 
 // Page Fault for UART I/O Memory (0x3000_2084)
 raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
+  priv=S
 ```
 
 At the top we see mmu_ln_setentry creating a...
@@ -298,7 +299,32 @@ TODO: How did [riscv_fillpage](https://github.com/lupyuen2/wip-pinephone-nuttx/b
 
 TODO: Is 0x5060c000 valid?
 
-TODO: Why would UART I/O fail on TinyEMU but not Ox64? UART I/O is mapped as a Global Page Table Entry, it should be valid across all SATP Registers. Is there a bug in TinyEMU MMU?
+# UART I/O Fails on TinyEMU
+
+_Why would UART I/O fail on TinyEMU but not Ox64? UART I/O is mapped as a Global Page Table Entry, it should be valid across all SATP Address Spaces (Supervisor Mode). Is there a bug in TinyEMU MMU?_
+
+```yaml
+// Page Fault for UART I/O Memory (0x3000_2084)
+raise_exception2: cause=13, tval=0x30002084, pc=0x50200b66
+  priv=S
+```
+
+Here's the MMU Address Translation from Virtual Address to Physical Address: [get_phys_addr](https://github.com/lupyuen/ox64-tinyemu/blob/mmu/riscv_cpu.c#L186-L304)
+
+The MMU Bits defined are...
+
+```c
+#define PTE_V_MASK (1 << 0)  // Valid
+#define PTE_U_MASK (1 << 4)  // User Mode
+#define PTE_A_MASK (1 << 6)  // Accessed
+#define PTE_D_MASK (1 << 7)  // Dirty
+```
+
+Compare the above with [Sv39 MMU](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/supervisor.html#sec:sv39). The Global Bit is missing! (Bit 5)
+
+So TinyMMU doesn't recognise [Global Page Table Entries](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/supervisor.html#sec:sv32). Which is why UART I/O failed!
+
+TODO: Support [Global Page Table Entries](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/supervisor.html#sec:sv32) in TinyEMU
 
 # MMU Log for Ox64 Without On-Demand Paging
 
