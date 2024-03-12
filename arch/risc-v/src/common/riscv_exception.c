@@ -187,6 +187,8 @@ int riscv_fillpage(int mcause, void *regs, void *args)
   satp    = READ_CSR(CSR_SATP);
   ptprev  = riscv_pgvaddr(mmu_satp_to_paddr(satp));
   ptlevel = ARCH_SPGTS;
+  const uintptr_t pte = mmu_ln_getentry(ptlevel, ptprev, vaddr);////
+  _info("ptlevel=%p, ptprev=%p, vaddr=%p, mmu_ln_getentry=%p\n", ptlevel, ptprev, vaddr, pte);////
   paddr = mmu_pte_to_paddr(mmu_ln_getentry(ptlevel, ptprev, vaddr));
   if (!paddr)
     {
