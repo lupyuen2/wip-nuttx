@@ -333,13 +333,14 @@ For Now: We do a workaround to allow UART I/O...
 
 Now Ox64 Emulator behaves like Ox64 Device yay! https://gist.github.com/lupyuen/58a994d511197163e117ea6243bfb346
 
-```text
+```yaml
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a126, MTVAL: 0000000080001000
 riscv_fillpage: ARCH_TEXT_SIZE=0x80000
 riscv_fillpage: ARCH_TEXT_VEND=0x80080000
 riscv_fillpage: vaddr=0x80001000
 riscv_fillpage: FIX_ARCH_TEXT_VEND=0x80080000
 riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x90000000000000e7
 riscv_fillpage: !paddr1
 
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
@@ -359,6 +360,7 @@ riscv_fillpage: ARCH_TEXT_VEND=0x80080000
 riscv_fillpage: vaddr=0x80001000
 riscv_fillpage: FIX_ARCH_TEXT_VEND=0x80080000
 riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x14183001
 riscv_fillpage: riscv_pgvaddr
 riscv_fillpage: mm_pgalloc
 riscv_fillpage: riscv_pgwipe2
@@ -384,7 +386,11 @@ From the above log, we see mmu_ln_setentry creating a...
 - mmuflags=0 means it's not a Leaf Page Table Entry
 
 ```yaml
-// Create Level 3 Page Table for User Text (0x8000_1000)
+// Level 2 Page Table Entry not found for User Text (0x8000_1000)
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x90000000000000e7
+riscv_fillpage: !paddr1
+
+// Allocate the Level 3 Page Table for User Text (0x8000_1000)
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
 ```
@@ -451,7 +457,7 @@ _Why is this different from Ox64 with On-Demand Paging?_
 // Allocate the Level 3 Page Table for User Data (0x8010_0000)
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50601000, paddr=0x50602000, vaddr=0x80100000, mmuflags=0
 
-// Set Level 3 Page Table Entry for User Text (0x8000_1000)
+// Set the Level 3 Page Table Entry for User Text (0x8000_1000)
 mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x80001000, mmuflags=0x1a
 
 // Ox64 With On-Demand Paging:
@@ -459,18 +465,22 @@ mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x50602000, paddr=0x50605000, vaddr=0x8000
 // Allocate the Level 2 Page Table for User Data (0x8010_0000)
 mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x50600000, paddr=0x50601000, vaddr=0x80100000, mmuflags=0x0
 
-// Set Level 2 Page Table Entry for User Text (0x8000_1000)
+// Level 3 Page Table Entry not found for User Text (0x8000_1000)
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x90000000000000e7
+riscv_fillpage: !paddr1
+
+// Allocate the Level 3 Page Table for User Text (0x8000_1000)
 riscv_fillpage: mmu_ln_setentry1: ptlevel=0x2, ptprev=0x50600000, paddr=0x5060c000, vaddr=0x80001000, MMU_UPGT_FLAGS=0
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50600000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0
-```
 
-On-Demand Paging uses Level 2, Without On-Demand Paging uses Level 3. Why?
+// Set the Level 3 Page Table Entry for User Text (0x8000_1000)
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x5060c000, paddr=0x5060d000, vaddr=0x80001000, mmuflags=0x1e
+```
 
 Note that [64-bit RISC-V QEMU](https://gist.github.com/lupyuen/c7561fd8e5317868d8fd36313c3e7ce4) will use Level 3 Page Tables, unlike 32-bit RISC-V QEMU.
 
-So let's change Ox64 On-Demand Paging to use Level 3 Page Tables.
-
-TODO
+TODO: Why is the Level 3 Page Table different for With and Without On-Demand Paging?
 
 # MMU Log for QEMU With On-Demand Paging
 
