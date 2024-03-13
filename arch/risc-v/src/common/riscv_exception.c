@@ -195,7 +195,7 @@ int riscv_fillpage(int mcause, void *regs, void *args)
 #ifdef CONFIG_ARCH_MMU_TYPE_SV39 //// TODO
   // For SV39 (Ox64 64-bit): Lookup the Level 3 Page Table
   paddr = mmu_pte_to_paddr(mmu_ln_getentry(3, ptprev, vaddr));
-  DEBUGASSERT(paddr != NULL);  // Assume all Level 3 Page Tables are allocated
+  DEBUGASSERT(paddr != 0);  // Assume all Level 3 Page Tables are allocated
 #else
   // For SV32 (QEMU 32-bit): Lookup the Level 2 Page Table
   paddr = mmu_pte_to_paddr(mmu_ln_getentry(ptlevel, ptprev, vaddr));
@@ -225,8 +225,9 @@ int riscv_fillpage(int mcause, void *regs, void *args)
       riscv_pgwipe(paddr);
     }
 
-  _info("riscv_pgvaddr\n");////
+  _info("riscv_pgvaddr: paddr=%p, riscv_pgvaddr=%p\n", paddr, riscv_pgvaddr(paddr));////
   ptlast = riscv_pgvaddr(paddr);
+  DEBUGASSERT(ptlast != 0);////
   _info("mm_pgalloc\n");////
   paddr = mm_pgalloc(1);
   if (!paddr)
