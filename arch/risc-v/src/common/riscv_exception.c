@@ -192,7 +192,14 @@ int riscv_fillpage(int mcause, void *regs, void *args)
   const uint32_t ptlevel2 = 3; ////TODO
   const uintptr_t pte2 = mmu_ln_getentry(ptlevel2, ptprev, vaddr);////
   _info("ptlevel2=%p, ptprev=%p, vaddr=%p, mmu_ln_getentry2=%p\n", ptlevel2, ptprev, vaddr, pte2);////
+#ifdef CONFIG_ARCH_MMU_TYPE_SV39 //// TODO
+  // For SV39 (Ox64 64-bit): Lookup the Level 3 Page Table
+  paddr = mmu_pte_to_paddr(mmu_ln_getentry(3, ptprev, vaddr));
+  DEBUGASSERT(paddr != NULL);  // Assume all Level 3 Page Tables are allocated
+#else
+  // For SV32 (QEMU 32-bit): Lookup the Level 2 Page Table
   paddr = mmu_pte_to_paddr(mmu_ln_getentry(ptlevel, ptprev, vaddr));
+#endif //// CONFIG_ARCH_MMU_TYPE_SV39
   if (!paddr)
     {
       _info("!paddr1\n");////
