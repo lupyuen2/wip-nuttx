@@ -540,7 +540,45 @@ _assert: Current Version: NuttX  12.4.0-RC0 69adb98-dirty Mar 13 2024 08:46:51 r
 _assert: Assertion failed ptlast != 0: at file: common/riscv_exception.c:230 task: Idle_Task process: Kernel 0x50201c6c
 ```
 
-TODO: Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/pgalloc.h#L48-L85)
+# Map Physical Address to Virtual Address
+
+Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/pgalloc.h#L48-L85)
+
+```c
+/****************************************************************************
+ * Name: riscv_pgvaddr
+ *
+ * Description:
+ *   Get virtual address for pgpool physical address. Note: this function
+ *   is minimalistic and is only usable for kernel mappings and only tests
+ *   if the paddr is in the pgpool. For user mapped addresses this does not
+ *   work.
+ *
+ * Note:
+ *   To get it to work with user addresses, a manual table walk needs to be
+ *   implemented. Not too complex, but not needed for anything -> not
+ *   implemented.
+ *
+ * Input Parameters:
+ *   paddr - Physical pgpool address
+ *
+ * Return:
+ *   vaddr - Virtual address for physical address
+ *
+ ****************************************************************************/
+
+static inline uintptr_t riscv_pgvaddr(uintptr_t paddr) {
+  // CONFIG_ARCH_PGPOOL_PBASE=0x50600000
+  // CONFIG_ARCH_PGPOOL_PEND=0x50a00000
+  if (paddr >= CONFIG_ARCH_PGPOOL_PBASE && paddr < CONFIG_ARCH_PGPOOL_PEND) {
+    return paddr - CONFIG_ARCH_PGPOOL_PBASE + CONFIG_ARCH_PGPOOL_VBASE;
+  // CONFIG_RAM_START=0x50200000
+  } else if (paddr >= CONFIG_RAM_START && paddr < CONFIG_RAM_END) {
+    return paddr - CONFIG_RAM_START + CONFIG_RAM_VSTART;
+  }
+  return 0;
+}
+```
 
 # MMU Log for QEMU With On-Demand Paging
 
