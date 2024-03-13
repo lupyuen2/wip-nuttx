@@ -674,11 +674,11 @@ mmu_write_satp: reg=0x80080800
 
 // Page Fault for On-Demand Paging at 0xc000_1000 (User Text Region)
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001087e, MTVAL: c0001000
-riscv_fillpage: ARCH_TEXT_SIZE=0x80000
-riscv_fillpage: ARCH_TEXT_VEND=0xc0080000
 riscv_fillpage: vaddr=0xc0001000
 riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
-riscv_fillpage: riscv_pgvaddr
+
+riscv_fillpage: ptlevel=0x1, ptprev=0x80800000, vaddr=0xc0001000, mmu_ln_getentry=0x20200401
+riscv_fillpage: riscv_pgvaddr: paddr=0x80801000, riscv_pgvaddr=0x80801000, CONFIG_ARCH_PGPOOL_PEND=0x80c00000, CONFIG_RAM_END=0x80800000
 riscv_fillpage: mm_pgalloc
 riscv_fillpage: riscv_pgwipe2
 riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
@@ -689,11 +689,11 @@ riscv_fillpage: return
 
 // Page Fault for On-Demand Paging at 0xc000_2000 (User Text Region)
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001087e, MTVAL: c0002000
-riscv_fillpage: ARCH_TEXT_SIZE=0x80000
-riscv_fillpage: ARCH_TEXT_VEND=0xc0080000
 riscv_fillpage: vaddr=0xc0002000
 riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
-riscv_fillpage: riscv_pgvaddr
+
+riscv_fillpage: ptlevel=0x1, ptprev=0x80800000, vaddr=0xc0002000, mmu_ln_getentry=0x20200401
+riscv_fillpage: riscv_pgvaddr: paddr=0x80801000, riscv_pgvaddr=0x80801000, CONFIG_ARCH_PGPOOL_PEND=0x80c00000, CONFIG_RAM_END=0x80800000
 riscv_fillpage: mm_pgalloc
 riscv_fillpage: riscv_pgwipe2
 riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
@@ -820,6 +820,8 @@ mmu_ln_setentry: ptlevel=0x1, lnvaddr=0x80800000, paddr=0x80801000, vaddr=0xc010
 
 // Page Fault for On-Demand Paging at 0xc000_1000 (User Text Region)
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 0000000f, EPC: 8001087e, MTVAL: c0001000
+riscv_fillpage: ptlevel=0x1, ptprev=0x80800000, vaddr=0xc0001000, mmu_ln_getentry=0x20200401
+riscv_fillpage: riscv_pgvaddr: paddr=0x80801000, riscv_pgvaddr=0x80801000, CONFIG_ARCH_PGPOOL_PEND=0x80c00000, CONFIG_RAM_END=0x80800000
 
 // Set the Level 2 Page Table Entry for 0xc000_1000 (User Text Region)
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc0001000, mmuflags=0x1e
