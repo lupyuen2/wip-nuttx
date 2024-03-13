@@ -225,15 +225,15 @@ int riscv_fillpage(int mcause, void *regs, void *args)
       riscv_pgwipe(paddr);
     }
 
-  _info("riscv_pgvaddr: paddr=%p, riscv_pgvaddr=%p, CONFIG_ARCH_PGPOOL_PEND=%p\n", paddr, riscv_pgvaddr(paddr), CONFIG_ARCH_PGPOOL_PEND);////
-#ifdef CONFIG_ARCH_MMU_TYPE_SV39 //// TODO
-  // For SV39 (Ox64 64-bit): Physical Address is the Page Table Address
-  ptlast = paddr;
-#else
+  _info("riscv_pgvaddr: paddr=%p, riscv_pgvaddr=%p, CONFIG_ARCH_PGPOOL_PEND=%p, CONFIG_RAM_END=%p\n", paddr, riscv_pgvaddr(paddr), CONFIG_ARCH_PGPOOL_PEND, CONFIG_RAM_END);////
+// #ifdef CONFIG_ARCH_MMU_TYPE_SV39 //// TODO
+//   // For SV39 (Ox64 64-bit): Physical Address is the Page Table Address
+//   ptlast = paddr;
+// #else
   // For SV32 (QEMU 32-bit): Lookup the Virtual Address for the Physical Address
   ptlast = riscv_pgvaddr(paddr);
   DEBUGASSERT(ptlast != 0);////
-#endif //// CONFIG_ARCH_MMU_TYPE_SV39
+// #endif //// CONFIG_ARCH_MMU_TYPE_SV39
   _info("mm_pgalloc\n");////
   paddr = mm_pgalloc(1);
   if (!paddr)
@@ -250,13 +250,13 @@ int riscv_fillpage(int mcause, void *regs, void *args)
   /* Then map the virtual address to the physical address */
 
   _info("mmu_ln_setentry2: mmuflags=0x%x\n", mmuflags);////
-#ifdef CONFIG_ARCH_MMU_TYPE_SV39 //// TODO
-  // For SV39 (Ox64 64-bit): Set Page Table Entry at Level 2
-  mmu_ln_setentry(ptlevel, ptlast, paddr, vaddr, mmuflags);
-#else
+// #ifdef CONFIG_ARCH_MMU_TYPE_SV39 //// TODO
+//   // For SV39 (Ox64 64-bit): Set Page Table Entry at Level 2
+//   mmu_ln_setentry(ptlevel, ptlast, paddr, vaddr, mmuflags);
+// #else
   // For SV32 (QEMU 32-bit): Set Page Table Entry at Level 2
   mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags);
-#endif //// CONFIG_ARCH_MMU_TYPE_SV39
+// #endif //// CONFIG_ARCH_MMU_TYPE_SV39
 
   _info("return\n");////
   return 0;
