@@ -518,7 +518,29 @@ riscv_fillpage: return
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0f4, MTVAL: 0000000080001000
 ```
 
-TODO: Is this correct? ptlevel=0x3, lnvaddr=0, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0x1e
+_Why is lnvaddr=0?_
+
+```c
+  ptlast = riscv_pgvaddr(paddr);
+  DEBUGASSERT(ptlast != 0);////
+  ...
+  /* Then map the virtual address to the physical address */
+  mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags);
+```
+
+We add an [Assertion Check for non-zero lnvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/8ca1d044594e6891577daad0259232ab14520d65). And it fails...
+
+```yaml
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a10a, MTVAL: 0000000080001000
+riscv_fillpage: vaddr=0x80001000
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x90000000000000e7
+riscv_fillpage: ptlevel2=0x3, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry2=0x14101421
+riscv_fillpage: riscv_pgvaddr: paddr=0x50405000, riscv_pgvaddr=0
+_assert: Current Version: NuttX  12.4.0-RC0 69adb98-dirty Mar 13 2024 08:46:51 risc-v
+_assert: Assertion failed ptlast != 0: at file: common/riscv_exception.c:230 task: Idle_Task process: Kernel 0x50201c6c
+```
+
+TODO: Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/pgalloc.h#L48-L85)
 
 # MMU Log for QEMU With On-Demand Paging
 
