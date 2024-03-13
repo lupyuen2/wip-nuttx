@@ -496,6 +496,30 @@ riscv_fillpage: ptlevel2=0x3, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getent
 
 TODO: Check for Page Table Entries at Levels 2 and 3
 
+# Assume Level 3 Page Tables already allocated
+
+Let's assume [Level 3 Page Tables are already allocated](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/a97300be63765dfdc155cd13b06de55b3d615241).
+
+Now we see this, still stuck at 0x8000_1000...
+
+```yaml
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0f4, MTVAL: 0000000080001000
+riscv_fillpage: vaddr=0x80001000
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x90000000000000e7
+riscv_fillpage: ptlevel2=0x3, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry2=0x14101421
+riscv_fillpage: riscv_pgvaddr
+riscv_fillpage: mm_pgalloc
+riscv_fillpage: riscv_pgwipe2
+
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0x1e
+riscv_fillpage: return
+
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0f4, MTVAL: 0000000080001000
+```
+
+TODO: Is this correct? ptlevel=0x3, lnvaddr=0, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0x1e
+
 # MMU Log for QEMU With On-Demand Paging
 
 _How does Ox64 MMU compare with QEMU?_
