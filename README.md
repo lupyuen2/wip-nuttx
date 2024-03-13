@@ -580,6 +580,30 @@ static inline uintptr_t riscv_pgvaddr(uintptr_t paddr) {
 }
 ```
 
+Which won't work because paddr is 0x5040_5000.
+
+So we bypass riscv_pgvaddr like this: [Physical Address is the Page Table Address. Set Page Table Entry at Level 2](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/268600849ca594bbc942786ae66709e8370b0d84)
+
+But still the same...
+
+```yaml
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0fe, MTVAL: 0000000080001000
+riscv_fillpage: vaddr=0x80001000
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x90000000000000e7
+riscv_fillpage: ptlevel2=0x3, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry2=0x14101421
+riscv_fillpage: riscv_pgvaddr: paddr=0x50405000, riscv_pgvaddr=0, CONFIG_ARCH_PGPOOL_PEND=0x50a00000
+riscv_fillpage: mm_pgalloc
+riscv_fillpage: riscv_pgwipe2
+
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
+mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x50405000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0x1e
+riscv_fillpage: return
+
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0fe, MTVAL: 0000000080001000
+```
+
+TODO
+
 # MMU Log for QEMU With On-Demand Paging
 
 _How does Ox64 MMU compare with QEMU?_
