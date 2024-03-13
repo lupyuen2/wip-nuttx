@@ -573,12 +573,15 @@ static inline uintptr_t riscv_pgvaddr(uintptr_t paddr) {
   if (paddr >= CONFIG_ARCH_PGPOOL_PBASE && paddr < CONFIG_ARCH_PGPOOL_PEND) {
     return paddr - CONFIG_ARCH_PGPOOL_PBASE + CONFIG_ARCH_PGPOOL_VBASE;
   // CONFIG_RAM_START=0x50200000
+  // CONFIG_RAM_END=0x50300000
   } else if (paddr >= CONFIG_RAM_START && paddr < CONFIG_RAM_END) {
     return paddr - CONFIG_RAM_START + CONFIG_RAM_VSTART;
   }
   return 0;
 }
 ```
+
+TODO: Fix this: CONFIG_RAM_SIZE=1048576. Should be 64 MB - 0x200000 = 65011712
 
 Which won't work because paddr is 0x5040_5000.
 
@@ -602,7 +605,32 @@ riscv_fillpage: return
 riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a0fe, MTVAL: 0000000080001000
 ```
 
-TODO
+But according to earlier log, lnvaddr should be 0x50602000
+
+SATP -> Level 1: 0x50600000 -> Level 2: 0x50601000 -> Level 3: 0x50602000
+
+[Undo Page Table Address, Page Table Entry](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/555952752a43abad09c32a3871cd11931b48b891)
+
+```yaml
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a112, MTVAL: 0000000080001000
+riscv_fillpage: ARCH_TEXT_SIZE=0x80000
+riscv_fillpage: ARCH_TEXT_VEND=0x80080000
+riscv_fillpage: vaddr=0x80001000
+riscv_fillpage: FIX_ARCH_TEXT_VEND=0x80080000
+riscv_fillpage: vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND
+riscv_fillpage: ptlevel=0x2, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry=0x90000000000000e7
+riscv_fillpage: ptlevel2=0x3, ptprev=0x50600000, vaddr=0x80001000, mmu_ln_getentry2=0x14101421
+riscv_fillpage: riscv_pgvaddr: paddr=0x50405000, riscv_pgvaddr=0x205000, CONFIG_ARCH_PGPOOL_PEND=0x50a00000, CONFIG_RAM_END=0x54000000
+riscv_fillpage: mm_pgalloc
+riscv_fillpage: riscv_pgwipe2
+riscv_fillpage: mmu_ln_setentry2: mmuflags=0x1e
+mmu_ln_setentry: ptlevel=0x3, lnvaddr=0x205000, paddr=0x5060c000, vaddr=0x80001000, mmuflags=0x1e
+riscv_fillpage: return
+
+riscv_fillpage: EXCEPTION: Store/AMO page fault. MCAUSE: 000000000000000f, EPC: 000000005020a112, MTVAL: 0000000080001000
+```
+
+TODO: lnvaddr=0x205000 is incorrect
 
 # MMU Log for QEMU With On-Demand Paging
 
