@@ -540,7 +540,7 @@ _assert: Current Version: NuttX  12.4.0-RC0 69adb98-dirty Mar 13 2024 08:46:51 r
 _assert: Assertion failed ptlast != 0: at file: common/riscv_exception.c:230 task: Idle_Task process: Kernel 0x50201c6c
 ```
 
-# Map Physical Address to Virtual Address
+# Map Ox64 Physical Address to Virtual Address
 
 Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/pgalloc.h#L48-L85)
 
@@ -581,11 +581,13 @@ static inline uintptr_t riscv_pgvaddr(uintptr_t paddr) {
 }
 ```
 
-TODO: Fix this: CONFIG_RAM_SIZE=1048576. Should be 64 MB - 0x200000 = 65011712
-
 Which won't work because paddr is 0x5040_5000.
 
-So we bypass riscv_pgvaddr like this: [Physical Address is the Page Table Address. Set Page Table Entry at Level 2](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/268600849ca594bbc942786ae66709e8370b0d84)
+TODO: Fix this: CONFIG_RAM_SIZE=1048576. Should be 64 MB - 0x200000 = 65011712
+
+[Increase RAM Size to 65011712](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/1a2272303ba5afba324a7d2a5a7cfb0a4a63f93e)
+
+We tried bypassing riscv_pgvaddr like this: [Physical Address is the Page Table Address. Set Page Table Entry at Level 2](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/268600849ca594bbc942786ae66709e8370b0d84)
 
 But still the same...
 
@@ -826,6 +828,64 @@ riscv_fillpage: riscv_pgvaddr: paddr=0x80801000, riscv_pgvaddr=0x80801000, CONFI
 // Set the Level 2 Page Table Entry for 0xc000_1000 (User Text Region)
 mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc0001000, mmuflags=0x1e
 ```
+
+# Map QEMU Physical Address to Virtual Address
+
+_How did we get Page Table Address lnvaddr=0x80801000?_
+
+```c
+  // ptlast becomes lnvaddr
+  ptlast = riscv_pgvaddr(paddr);
+  DEBUGASSERT(ptlast != 0);////
+  ...
+  /* Then map the virtual address to the physical address */
+  mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags);
+```
+
+Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging4/arch/risc-v/src/common/pgalloc.h#L48-L85)
+
+```c
+/****************************************************************************
+ * Name: riscv_pgvaddr
+ *
+ * Description:
+ *   Get virtual address for pgpool physical address. Note: this function
+ *   is minimalistic and is only usable for kernel mappings and only tests
+ *   if the paddr is in the pgpool. For user mapped addresses this does not
+ *   work.
+ *
+ * Note:
+ *   To get it to work with user addresses, a manual table walk needs to be
+ *   implemented. Not too complex, but not needed for anything -> not
+ *   implemented.
+ *
+ * Input Parameters:
+ *   paddr - Physical pgpool address
+ *
+ * Return:
+ *   vaddr - Virtual address for physical address
+ *
+ ****************************************************************************/
+
+static inline uintptr_t riscv_pgvaddr(uintptr_t paddr) {
+  // CONFIG_ARCH_PGPOOL_PBASE=0x80800000
+  // CONFIG_ARCH_PGPOOL_PEND=0x80c00000
+  if (paddr >= CONFIG_ARCH_PGPOOL_PBASE && paddr < CONFIG_ARCH_PGPOOL_PEND) {
+    return paddr - CONFIG_ARCH_PGPOOL_PBASE + CONFIG_ARCH_PGPOOL_VBASE;
+  // CONFIG_RAM_START=0x80400000
+  // CONFIG_RAM_END=0x80800000
+  } else if (paddr >= CONFIG_RAM_START && paddr < CONFIG_RAM_END) {
+    return paddr - CONFIG_RAM_START + CONFIG_RAM_VSTART;
+  }
+  return 0;
+}
+```
+
+Given paddr=0x8080_1000: This means that the Physical Address is in the Paged Pool (PGPOOL).
+
+Thus riscv_pgvaddr = paddr = 0x8080_1000.
+
+TODO: Why does this translation fail for Ox64?
 
 # TODO
 
