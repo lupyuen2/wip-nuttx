@@ -542,7 +542,7 @@ _assert: Assertion failed ptlast != 0: at file: common/riscv_exception.c:230 tas
 
 # Map Ox64 Physical Address to Virtual Address
 
-Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/pgalloc.h#L48-L85)
+Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging3/arch/risc-v/src/common/pgalloc.h#L48-L85) for Ox64...
 
 ```c
 /****************************************************************************
@@ -831,10 +831,10 @@ mmu_ln_setentry: ptlevel=0x2, lnvaddr=0x80801000, paddr=0x80809000, vaddr=0xc000
 
 # Map QEMU Physical Address to Virtual Address
 
-_How did we get Page Table Address lnvaddr=0x80801000?_
+_How did we get Page Table Address lnvaddr=0x8080\_1000?_
 
 ```c
-  // ptlast becomes lnvaddr
+  // ptlast becomes lnvaddr: 0x8080_1000
   ptlast = riscv_pgvaddr(paddr);
   DEBUGASSERT(ptlast != 0);////
   ...
@@ -842,7 +842,7 @@ _How did we get Page Table Address lnvaddr=0x80801000?_
   mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags);
 ```
 
-Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging4/arch/risc-v/src/common/pgalloc.h#L48-L85)
+Let's check [riscv_pgvaddr](https://github.com/lupyuen2/wip-pinephone-nuttx/blob/on-demand-paging4/arch/risc-v/src/common/pgalloc.h#L48-L85) for QEMU...
 
 ```c
 /****************************************************************************
