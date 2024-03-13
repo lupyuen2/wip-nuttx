@@ -138,8 +138,6 @@ int riscv_fillpage(int mcause, void *regs, void *args)
         mcause > RISCV_MAX_EXCEPTION ? "Unknown" : g_reasons_str[cause],
         cause, READ_CSR(CSR_EPC), READ_CSR(CSR_TVAL));
   vaddr = MM_PGALIGNDOWN(READ_CSR(CSR_TVAL));
-  _info("ARCH_TEXT_SIZE=%p\n", ARCH_TEXT_SIZE);////
-  _info("ARCH_TEXT_VEND=%p\n", ARCH_TEXT_VEND);////
   _info("vaddr=%p\n", vaddr);////
   if (vaddr >= CONFIG_ARCH_TEXT_VBASE && vaddr <= ARCH_TEXT_VEND)
     {
@@ -175,6 +173,8 @@ int riscv_fillpage(int mcause, void *regs, void *args)
   satp    = READ_CSR(CSR_SATP);
   ptprev  = riscv_pgvaddr(mmu_satp_to_paddr(satp));
   ptlevel = ARCH_SPGTS;
+  const uintptr_t pte = mmu_ln_getentry(ptlevel, ptprev, vaddr);////
+  _info("ptlevel=%p, ptprev=%p, vaddr=%p, mmu_ln_getentry=%p\n", ptlevel, ptprev, vaddr, pte);////
   paddr = mmu_pte_to_paddr(mmu_ln_getentry(ptlevel, ptprev, vaddr));
   if (!paddr)
     {
@@ -201,7 +201,7 @@ int riscv_fillpage(int mcause, void *regs, void *args)
       riscv_pgwipe(paddr);
     }
 
-  _info("riscv_pgvaddr\n");////
+  _info("riscv_pgvaddr: paddr=%p, riscv_pgvaddr=%p, CONFIG_ARCH_PGPOOL_PEND=%p, CONFIG_RAM_END=%p\n", paddr, riscv_pgvaddr(paddr), CONFIG_ARCH_PGPOOL_PEND, CONFIG_RAM_END);////
   ptlast = riscv_pgvaddr(paddr);
   _info("mm_pgalloc\n");////
   paddr = mm_pgalloc(1);
