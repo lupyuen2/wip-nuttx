@@ -585,6 +585,8 @@ Which won't work because paddr is 0x5040_5000.
 
 TODO: Fix this: CONFIG_RAM_SIZE=1048576. Should be 64 MB - 0x200000 = 65011712
 
+TODO: Compare RAM Size with QEMU
+
 [Increase RAM Size to 65011712](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/1a2272303ba5afba324a7d2a5a7cfb0a4a63f93e)
 
 We tried bypassing riscv_pgvaddr like this: [Physical Address is the Page Table Address. Set Page Table Entry at Level 2](https://github.com/lupyuen2/wip-pinephone-nuttx/commit/268600849ca594bbc942786ae66709e8370b0d84)
@@ -886,6 +888,25 @@ Given paddr=0x8080_1000: This means that the Physical Address is in the Paged Po
 Thus riscv_pgvaddr = paddr = 0x8080_1000.
 
 TODO: Why does this translation fail for Ox64?
+
+_How did QEMU get paddr=0x8080\_1000?_
+
+```c
+  // ptprev becomes 0x8080_0000
+  satp    = READ_CSR(CSR_SATP);
+  ptprev  = riscv_pgvaddr(mmu_satp_to_paddr(satp));
+
+  // ptlevel is 0x1
+  ptlevel = ARCH_SPGTS;
+
+  // For SV32 (QEMU 32-bit): Lookup the Level 2 Page Table
+  // vaddr is 0xc000_1000
+  // mmu_ln_getentry returns 0x2020_0401
+  // paddr becomes 0x8080_1000
+  paddr = mmu_pte_to_paddr(mmu_ln_getentry(ptlevel, ptprev, vaddr));
+```
+
+TODO: Check ptprev for Ox64
 
 # TODO
 
