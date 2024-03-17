@@ -65,3 +65,5 @@ tools/gdb/__pycache__
 /build
 .ccls-cache
 compile_commands.json
+hello_rust_1.S
+boards/risc-v/qemu-rv/rv-virt/scripts/ld.script.tmp
