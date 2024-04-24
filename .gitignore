@@ -67,3 +67,5 @@ tools/gdb/__pycache__
 compile_commands.json
 hello_rust_1.S
 boards/risc-v/qemu-rv/rv-virt/scripts/ld.script.tmp
+Image
+initrd
