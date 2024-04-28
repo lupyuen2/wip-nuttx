@@ -68,3 +68,5 @@ compile_commands.json
 Image
 initrd
 root-riscv64.cfg
+hello.S
+init.S
