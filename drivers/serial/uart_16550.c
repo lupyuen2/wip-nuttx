@@ -648,6 +648,8 @@ static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
 
 static int u16550_wait(FAR struct u16550_s *priv)
 {
+  return OK; //// TODO
+#ifdef TODO ////
   int i;
 
   for (i = 0; i < UART_TIMEOUT_MS; i++)
@@ -664,6 +666,7 @@ static int u16550_wait(FAR struct u16550_s *priv)
 
   _err("UART timeout\n");
   return ERROR;
+#endif //// TODO
 }
 #endif /* CONFIG_16550_WAIT_LCR */
 
@@ -745,6 +748,7 @@ static inline uint32_t u16550_divisor(FAR struct u16550_s *priv)
 
 static int u16550_setup(FAR struct uart_dev_s *dev)
 {
+#ifdef TODO ////
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   uint16_t div;
@@ -869,6 +873,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 #endif
 
 #endif
+#endif //// TODO
   return OK;
 }
 

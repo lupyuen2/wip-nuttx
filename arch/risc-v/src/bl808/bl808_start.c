@@ -314,7 +314,7 @@ void bl808_start(int mhartid)
 
 void riscv_earlyserialinit(void)
 {
-  bl808_earlyserialinit();
+  u16550_earlyserialinit();
 }
 
 /****************************************************************************
@@ -328,5 +328,5 @@ void riscv_earlyserialinit(void)
 
 void riscv_serialinit(void)
 {
-  bl808_serialinit();
+  u16550_serialinit();
 }
