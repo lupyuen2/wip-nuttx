@@ -46,7 +46,6 @@
 
 void up_irqinitialize(void)
 {
-#ifdef TODO ////
   uintptr_t claim;
 
   /* Disable S-Mode interrupts */
@@ -101,7 +100,6 @@ void up_irqinitialize(void)
 
   up_irq_enable();
 #endif
-#endif //// TODO
 }
 
 /****************************************************************************
@@ -114,7 +112,6 @@ void up_irqinitialize(void)
 
 void up_disable_irq(int irq)
 {
-#ifdef TODO ////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
@@ -145,7 +142,6 @@ void up_disable_irq(int irq)
           PANIC();
         }
     }
-#endif //// TODO
 }
 
 /****************************************************************************
@@ -158,7 +154,6 @@ void up_disable_irq(int irq)
 
 void up_enable_irq(int irq)
 {
-#ifdef TODO ////
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
@@ -189,7 +184,6 @@ void up_enable_irq(int irq)
           PANIC();
         }
     }
-#endif //// TODO
 }
 
 irqstate_t up_irq_enable(void)

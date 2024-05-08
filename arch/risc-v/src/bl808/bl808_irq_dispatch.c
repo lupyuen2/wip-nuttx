@@ -51,7 +51,6 @@
 
 void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 {
-#ifdef TODO ////
   int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
 
   /* Firstly, check if the irq is machine external interrupt */
@@ -81,6 +80,5 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
       putreg32(irq - RISCV_IRQ_EXT, BL808_PLIC_CLAIM);
     }
 
-#endif //// TODO
   return regs;
 }

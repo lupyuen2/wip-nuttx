@@ -52,23 +52,23 @@
 #define MMU_IO_BASE      (0x00000000ul)
 #define MMU_IO_SIZE      (0x40000000ul)
 
-//// TODO: #define MMU_INT_BASE     (0xe0000000ul)
-//// TODO: #define MMU_INT_SIZE     (0x10000000ul)
+#define MMU_INT_BASE     (0x70000000ul)
+#define MMU_INT_SIZE     (0x10000000ul)
 
 /* Physical and virtual addresses to page tables (vaddr = paddr mapping) */
 
 #define PGT_L1_PBASE     (uintptr_t)&m_l1_pgtable
 #define PGT_L2_PBASE     (uintptr_t)&m_l2_pgtable
-//// TODO: #define PGT_L2_INT_PBASE (uintptr_t)&m_l2_int_pgtable
+#define PGT_L2_INT_PBASE (uintptr_t)&m_l2_int_pgtable
 #define PGT_L3_PBASE     (uintptr_t)&m_l3_pgtable
 #define PGT_L1_VBASE     PGT_L1_PBASE
 #define PGT_L2_VBASE     PGT_L2_PBASE
-//// TODO: #define PGT_L2_INT_VBASE PGT_L2_INT_PBASE
+#define PGT_L2_INT_VBASE PGT_L2_INT_PBASE
 #define PGT_L3_VBASE     PGT_L3_PBASE
 
 #define PGT_L1_SIZE      (512)  /* Enough to map 512 GiB */
 #define PGT_L2_SIZE      (512)  /* Enough to map 1 GiB */
-//// TODO: #define PGT_L2_INT_SIZE  (512)  /* Enough to map 1 GiB */
+#define PGT_L2_INT_SIZE  (512)  /* Enough to map 1 GiB */
 #define PGT_L3_SIZE      (1024) /* Enough to map 4 MiB (2MiB x 2) */
 
 #define SLAB_COUNT       (sizeof(m_l3_pgtable) / RV_MMU_PAGE_SIZE)
@@ -98,7 +98,7 @@ typedef struct pgalloc_slab_s pgalloc_slab_t;
 
 static size_t m_l1_pgtable[PGT_L1_SIZE] locate_data(".pgtables");
 static size_t m_l2_pgtable[PGT_L2_SIZE] locate_data(".pgtables");
-//// TODO: static size_t m_l2_int_pgtable[PGT_L2_INT_SIZE] locate_data(".pgtables");
+static size_t m_l2_int_pgtable[PGT_L2_INT_SIZE] locate_data(".pgtables");
 static size_t m_l3_pgtable[PGT_L3_SIZE] locate_data(".pgtables");
 
 /* Kernel mappings (L1 base) */
@@ -244,7 +244,6 @@ void bl808_kernel_mappings(void)
   mmu_ln_map_region(1, PGT_L1_VBASE, MMU_IO_BASE, MMU_IO_BASE,
                     MMU_IO_SIZE, MMU_THEAD_IO_FLAGS);
 
-#ifdef TODO ////
   /* Map the PLIC with L2 page table */
 
   binfo("map PLIC with L2 page table\n");
@@ -255,7 +254,6 @@ void bl808_kernel_mappings(void)
 
   binfo("connect the L1 and PLIC L2 page tables\n");
   mmu_ln_setentry(1, PGT_L1_VBASE, PGT_L2_INT_PBASE, MMU_INT_BASE, PTE_G);
-#endif //// TODO
 
   /* Map the kernel text and data for L2/L3 */
 

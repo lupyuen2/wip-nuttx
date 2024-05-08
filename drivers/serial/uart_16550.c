@@ -648,8 +648,6 @@ static inline void u16550_serialout(FAR struct u16550_s *priv, int offset,
 
 static int u16550_wait(FAR struct u16550_s *priv)
 {
-  return OK; //// TODO
-#ifdef TODO ////
   int i;
 
   for (i = 0; i < UART_TIMEOUT_MS; i++)
@@ -666,7 +664,6 @@ static int u16550_wait(FAR struct u16550_s *priv)
 
   _err("UART timeout\n");
   return ERROR;
-#endif //// TODO
 }
 #endif /* CONFIG_16550_WAIT_LCR */
 
@@ -748,7 +745,6 @@ static inline uint32_t u16550_divisor(FAR struct u16550_s *priv)
 
 static int u16550_setup(FAR struct uart_dev_s *dev)
 {
-#ifdef TODO ////
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
   uint16_t div;
@@ -822,11 +818,13 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
+#ifdef TODO ////
   /* Set the BAUD divisor */
 
   div = u16550_divisor(priv);
   u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
   u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
+#endif //// TODO
 
 #ifdef CONFIG_16550_WAIT_LCR
   /* Wait till UART is not busy before setting LCR */
@@ -873,7 +871,6 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 #endif
 
 #endif
-#endif //// TODO
   return OK;
 }
 
