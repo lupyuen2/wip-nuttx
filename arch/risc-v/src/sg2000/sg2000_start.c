@@ -36,7 +36,6 @@
 #include "chip.h"
 #include "sg2000_mm_init.h"
 #include "sg2000_memorymap.h"
-#include "sg2000_serial.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -303,7 +302,7 @@ void sg2000_start(int mhartid)
 
 void riscv_earlyserialinit(void)
 {
-  sg2000_earlyserialinit();
+  u16550_earlyserialinit();
 }
 
 /****************************************************************************
@@ -317,5 +316,5 @@ void riscv_earlyserialinit(void)
 
 void riscv_serialinit(void)
 {
-  sg2000_serialinit();
+  u16550_serialinit();
 }

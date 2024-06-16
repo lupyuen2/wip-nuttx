@@ -27,4 +27,4 @@ HEAD_ASRC = sg2000_head.S
 # Specify our C code within this directory to be included
 CHIP_CSRCS  = sg2000_start.c sg2000_irq_dispatch.c sg2000_irq.c
 CHIP_CSRCS += sg2000_timerisr.c sg2000_allocateheap.c
-CHIP_CSRCS += sg2000_mm_init.c sg2000_pgalloc.c sg2000_serial.c
+CHIP_CSRCS += sg2000_mm_init.c sg2000_pgalloc.c

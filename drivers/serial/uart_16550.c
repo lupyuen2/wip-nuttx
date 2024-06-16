@@ -818,11 +818,13 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 
   u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
 
+#ifdef TODO ////
   /* Set the BAUD divisor */
 
   div = u16550_divisor(priv);
   u16550_serialout(priv, UART_DLM_OFFSET, div >> 8);
   u16550_serialout(priv, UART_DLL_OFFSET, div & 0xff);
+#endif //// TODO
 
 #ifdef CONFIG_16550_WAIT_LCR
   /* Wait till UART is not busy before setting LCR */

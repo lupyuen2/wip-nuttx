@@ -52,7 +52,7 @@
 #define MMU_IO_BASE      (0x00000000ul)
 #define MMU_IO_SIZE      (0x40000000ul)
 
-#define MMU_INT_BASE     (0xe0000000ul)
+#define MMU_INT_BASE     (0x70000000ul)
 #define MMU_INT_SIZE     (0x10000000ul)
 
 /* Physical and virtual addresses to page tables (vaddr = paddr mapping) */

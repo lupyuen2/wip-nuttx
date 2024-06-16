@@ -27,7 +27,6 @@
 
 /* Register Base Address ****************************************************/
 
-#define SG2000_UART3_BASE   0x30002000ul
-#define SG2000_PLIC_BASE    0xe0000000ul
+#define SG2000_PLIC_BASE    0x70000000ul
 
 #endif /* __ARCH_RISCV_SRC_SG2000_HARDWARE_SG2000_MEMORYMAP_H */
