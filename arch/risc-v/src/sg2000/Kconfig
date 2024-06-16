@@ -1,0 +1,16 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+comment "SG2000 Configuration Options"
+
+menu "SG2000 Peripheral Support"
+
+config SG2000_UART3
+	bool "UART 3"
+	default n
+	select UART3_SERIALDRIVER
+	select ARCH_HAVE_SERIAL_TERMIOS
+
+endmenu
