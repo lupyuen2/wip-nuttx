@@ -19,7 +19,7 @@ Features
 - **Memory:** SIP DRAM 512 MB
 - **TPU:** 0.5 TOPS INT8
 - **Storage:** 1 x microSD Connector, 1 x eMMC Pad
-- **USB:** 1 x Type-C for Power and Data or 1x USB 2.0 A Port Host
+- **USB:** 1 x Type-C for Power and Data or 1 x USB 2.0 A Port Host
 - **MIPI CSI:** 1 x 16P FPC Connector (MIPI CSI 2-Lane), 1 x 15P FPC Connector (MIPI CSI 2-Lane)	
 - **Sensor Support:** 5M @ 30 FPS
 - **MIPI DSI:** Via GPIO Header (MIPI DSI 4-Lane)	
@@ -33,9 +33,9 @@ Serial Console
 ==============
 
 A **USB Serial Adapter** is required to run NuttX on Milk-V Duo S,
-**CP2102** is recommended. CH340 might not work correctly with Milk-V Duo S.
+**CP2102** is recommended. CH340 might not work correctly with Duo S.
 
-Connect the USB Serial Adapter to Milk-V Duo S Serial Console at:
+Connect the USB Serial Adapter to Duo S Serial Console at:
 
 ========== ================
 USB Serial Milk-V Duo S Pin
@@ -47,11 +47,11 @@ TX         Pin 10 (XGPIOA 17 / UART0 RX)
 
 On the USB Serial Adapter, set the **Voltage Level** to 3V3.
 
-Connect Milk-V Duo S to our computer with the USB Serial Adapter.
+Connect Duo S to our computer with the USB Serial Adapter.
 On our computer, start a Serial Terminal and connect to the USB Serial Port
 at **115.2 kbps**.
 
-NuttX will appear in the Serial Console when it boots on Milk-V Duo S.
+NuttX will appear in the Serial Console when it boots on Duo S.
 
 RISC-V Toolchain
 ================
@@ -112,10 +112,9 @@ NuttX requires a microSD Card with U-Boot Bootloader. Prepare a
 `Linux microSD Card <https://lupyuen.github.io/articles/sg2000#download-the-linux-microsd>`_
 for Duo S.
 
-To boot NuttX on Milk-V Duo S, flip the `Main Processor Switch <https://milkv.io/docs/duo/getting-started/duos#risc-v-and-arm-switching>`_
+To boot NuttX on Milk-V Duo S, flip the `Main Processor Switch <https://lupyuen.github.io/articles/sg2000#boot-without-microsd>`_
 to **RV** (RISC-V).
-`Install a TFTP Server <https://lupyuen.github.io/articles/sg2000#boot-nuttx-over-tftp>`_
-on our computer.
+On our computer, `install the TFTP Server <https://lupyuen.github.io/articles/sg2000#boot-nuttx-over-tftp>`_.
 
 Copy the file ``Image-sg2000`` from the previous section to the TFTP Server,
 together with the Device Tree:
@@ -148,7 +147,6 @@ Run these commands to `boot NuttX over TFTP <https://lupyuen.github.io/articles/
 Or configure U-Boot to `boot NuttX automatically <https://lupyuen.github.io/articles/sg2000#boot-nuttx-over-tftp>`_.
 
 NuttX boots on Duo S and NuttShell (nsh) appears in the Serial Console.
-
 To see the available commands in NuttShell:
 
 .. code:: console
