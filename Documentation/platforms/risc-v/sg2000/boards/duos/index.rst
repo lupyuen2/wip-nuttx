@@ -49,7 +49,11 @@ On the USB Serial Adapter, set the **Voltage Level** to 3V3.
 
 Connect Duo S to our computer with the USB Serial Adapter.
 On our computer, start a Serial Terminal and connect to the USB Serial Port
-at **115.2 kbps**.
+at **115.2 kbps**:
+
+.. code:: console
+
+   $ screen /dev/ttyUSB0 115200
 
 NuttX will appear in the Serial Console when it boots on Duo S.
 
@@ -127,7 +131,11 @@ together with the Device Tree:
    $ scp cv181x_milkv_duos_sd.dtb \
       tftpserver:/tftpfolder/cv181x_milkv_duos_sd.dtb
 
-Check that Duo S is connected to our computer via a USB Serial Adapter at 115.2 kbps.
+Check that Duo S is connected to our computer via a USB Serial Adapter at 115.2 kbps:
+
+.. code:: console
+
+   $ screen /dev/ttyUSB0 115200
 
 Insert the microSD Card into Duo S, connect the Ethernet Port and power up via the USB-C Port.
 
