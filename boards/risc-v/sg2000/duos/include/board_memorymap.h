@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/sg2000/duos/include/board_memorymap.h
+ * boards/risc-v/sg2000/milkv_duos/include/board_memorymap.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +18,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_RISCV_SG2000_DUOS_INCLUDE_BOARD_MEMORYMAP_H
-#define __BOARDS_RISCV_SG2000_DUOS_INCLUDE_BOARD_MEMORYMAP_H
+#ifndef __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_MEMORYMAP_H
+#define __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_MEMORYMAP_H
 
 /****************************************************************************
  * Included Files
@@ -85,4 +85,4 @@ extern uint8_t          __pgheap_size[];
 extern uint8_t          __ramdisk_start[];
 extern uint8_t          __ramdisk_size[];
 
-#endif /* __BOARDS_RISCV_SG2000_DUOS_INCLUDE_BOARD_MEMORYMAP_H */
+#endif /* __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_MEMORYMAP_H */

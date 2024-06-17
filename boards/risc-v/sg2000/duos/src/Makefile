@@ -1,5 +1,5 @@
 ############################################################################
-# boards/risc-v/sg2000/duos/src/Makefile
+# boards/risc-v/sg2000/milkv_duos/src/Makefile
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with

@@ -4,7 +4,7 @@ Milk-V Duo S
 
 `Milk-V Duo S <https://milkv.io/duo-s>`_ is a RISC-V Single-Board Computer
 based on the SOPHGO SG2000 RISC-V SoC with T-Head C906 64-bit Main Processor,
-512 MB of SIP DRAM memory and 10M / 100M MAC PHY Ethernet.
+512 MB of SIP DRAM memory and 100 Mbps Ethernet.
 
 Features
 ========
@@ -83,9 +83,8 @@ Configure the NuttX project and build the project:
 .. code:: console
 
    $ cd nuttx
-   $ tools/configure.sh duos:nsh
+   $ tools/configure.sh milkv_duos:nsh
    $ make
-   $ riscv-none-elf-objcopy -O binary nuttx nuttx.bin
 
 This produces the NuttX Kernel ``nuttx.bin``.  Next, build the NuttX Apps Filesystem:
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/sg2000/duos/src/sg2000_appinit.c
+ * boards/risc-v/sg2000/milkv_duos/src/sg2000_appinit.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
