@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/bl808/ox64/scripts/ld.script
+ * boards/risc-v/qemu-rv/rv-virt/scripts/gnu-elf.ld
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,39 +18,9 @@
  *
  ****************************************************************************/
 
-MEMORY
-{
-    kflash (rx) : ORIGIN = 0x50200000, LENGTH = 2048K   /* w/ cache */
-    ksram (rwx) : ORIGIN = 0x50400000, LENGTH = 2048K   /* w/ cache */
-    pgram (rwx) : ORIGIN = 0x50600000, LENGTH = 4096K   /* w/ cache */
-    ramdisk (rwx) : ORIGIN = 0x50A00000, LENGTH = 40M   /* w/ cache */
-}
-
-OUTPUT_ARCH("riscv")
-
-/* Provide the kernel boundaries */
-
-__kflash_start = ORIGIN(kflash);
-__kflash_size = LENGTH(kflash);
-__ksram_start = ORIGIN(ksram);
-__ksram_size = LENGTH(ksram);
-__ksram_end = ORIGIN(ksram) + LENGTH(ksram);
-
-/* Page heap */
-
-__pgheap_start = ORIGIN(pgram);
-__pgheap_size = LENGTH(pgram) + LENGTH(ramdisk);
-
-/* Application ramdisk */
-
-__ramdisk_start = ORIGIN(ramdisk);
-__ramdisk_size = LENGTH(ramdisk);
-__ramdisk_end  = ORIGIN(ramdisk) + LENGTH(ramdisk);
-
 SECTIONS
 {
-  . = 0x50200000;
-
+  . = 0x80000000;
   .text :
     {
       _stext = . ;
@@ -82,20 +52,7 @@ SECTIONS
       _erodata = . ;
     }
 
-  .tdata : {
-      _stdata = ABSOLUTE(.);
-      *(.tdata .tdata.* .gnu.linkonce.td.*);
-      _etdata = ABSOLUTE(.);
-  }
-
-  .tbss : {
-      _stbss = ABSOLUTE(.);
-      *(.tbss .tbss.* .gnu.linkonce.tb.* .tcommon);
-      _etbss = ABSOLUTE(.);
-  }
-
-  _eronly = ABSOLUTE(.);
-
+  . = 0x80101000;
   .data :
     {
       _sdata = . ;
@@ -105,6 +62,31 @@ SECTIONS
       *(.gnu.linkonce.d*)
       . = ALIGN(4);
       _edata = . ;
+    }
+
+  /* C++ support. For each global and static local C++ object,
+   * GCC creates a small subroutine to construct the object. Pointers
+   * to these routines (not the routines themselves) are stored as
+   * simple, linear arrays in the .ctors section of the object file.
+   * Similarly, pointers to global/static destructor routines are
+   * stored in .dtors.
+   */
+
+  .ctors :
+    {
+      _sctors = . ;
+      KEEP(*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
+      KEEP(*(.init_array .ctors))
+      _ectors = . ;
+    }
+
+  .dtors :
+    {
+      _sdtors = . ;
+      KEEP (*(.dtors))       /* Old ABI:  Unallocated */
+      KEEP (*(.fini_array))  /* New ABI:  Allocated */
+      KEEP (*(SORT(.fini_array.*)))
+      _edtors = . ;
     }
 
   .bss :
@@ -117,21 +99,20 @@ SECTIONS
       *(.gnu.linkonce.b*)
       *(COMMON)
       _ebss = . ;
-    } > ksram
+    }
 
-    /* Page tables here, align to 4K boundary */
+  /* Thread local storage support */
+  .tdata : {
+      _stdata = ABSOLUTE(.);
+      KEEP (*(.tdata .tdata.* .gnu.linkonce.td.*));
+      _etdata = ABSOLUTE(.);
+  }
 
-    .pgtables (NOLOAD) : ALIGN(0x1000) {
-        *(.pgtables)
-        . = ALIGN(4);
-    } > ksram
-
-    /* Stack top */
-
-    .stack_top : {
-        . = ALIGN(32);
-        _ebss = ABSOLUTE(.);
-    } > ksram
+  .tbss : {
+      _stbss = ABSOLUTE(.);
+      KEEP (*(.tbss .tbss.* .gnu.linkonce.tb.* .tcommon));
+      _etbss = ABSOLUTE(.);
+  }
 
     /* Stabs debugging sections.    */
 
