@@ -66,18 +66,17 @@
 void nxtask_start(void)
 {
   FAR struct tcb_s *tcb = this_task();
-  uint8_t ttype = tcb->flags & TCB_FLAG_TTYPE_MASK;
 #ifdef CONFIG_SCHED_STARTHOOK
   FAR struct task_tcb_s *ttcb = (FAR struct task_tcb_s *)tcb;
 #endif
   int exitcode = EXIT_FAILURE;
-  FAR char **argv;
   int argc;
 
-  DEBUGASSERT(ttype != TCB_FLAG_TTYPE_PTHREAD);
+  DEBUGASSERT((tcb->flags & TCB_FLAG_TTYPE_MASK) != \
+              TCB_FLAG_TTYPE_PTHREAD);
 
 #ifdef CONFIG_SIG_DEFAULT
-  if (ttype != TCB_FLAG_TTYPE_KERNEL)
+  if ((tcb->flags & TCB_FLAG_TTYPE_MASK) != TCB_FLAG_TTYPE_KERNEL)
     {
       /* Set up default signal actions for NON-kernel thread */
 
@@ -88,32 +87,33 @@ void nxtask_start(void)
   /* Execute the start hook if one has been registered */
 
 #ifdef CONFIG_SCHED_STARTHOOK
-  if (ttype != TCB_FLAG_TTYPE_KERNEL && ttcb->starthook != NULL)
+  if (ttcb->starthook != NULL)
     {
       ttcb->starthook(ttcb->starthookarg);
     }
 #endif
 
-  /* Take args from stack, as group is shared for kthreads */
+  /* Add program name */
 
-  argv = nxsched_get_stackargs(tcb);
-  for (argc = 0; argv && argv[argc]; argc++);
+  argc = tcb->group->tg_info->ta_argc + 1;
 
   /* Call the 'main' entry point passing argc and argv.  In the kernel build
    * this has to be handled differently if we are starting a user-space task;
    * we have to switch to user-mode before calling the task.
    */
 
-  if (ttype == TCB_FLAG_TTYPE_KERNEL)
+  if ((tcb->flags & TCB_FLAG_TTYPE_MASK) == TCB_FLAG_TTYPE_KERNEL)
     {
-      exitcode = tcb->entry.main(argc, argv);
+      exitcode = tcb->entry.main(argc, tcb->group->tg_info->ta_argv);
     }
   else
     {
 #ifdef CONFIG_BUILD_FLAT
-      nxtask_startup(tcb->entry.main, argc, argv);
+      nxtask_startup(tcb->entry.main, argc,
+                     tcb->group->tg_info->ta_argv);
 #else
-      up_task_start(tcb->entry.main, argc, argv);
+      up_task_start(tcb->entry.main, argc,
+                    tcb->group->tg_info->ta_argv);
 #endif
     }
 
