@@ -63,11 +63,12 @@ size_t group_argvstr(FAR struct tcb_s *tcb, FAR char *args, size_t size)
   FAR struct addrenv_s *oldenv;
 #endif
 
-  /* Sanity checks and idle tasks */
+  /* Perform sanity checks */
 
-  if (!tcb || !tcb->group || !tcb->group->tg_info || size < 1 ||
-      is_idle_task(tcb))
+  if (!tcb || !tcb->group || !tcb->group->tg_info)
     {
+      /* Something is very wrong -> get out */
+
       *args = '\0';
       return 0;
     }
@@ -89,7 +90,7 @@ size_t group_argvstr(FAR struct tcb_s *tcb, FAR char *args, size_t size)
   else
 #endif
     {
-      FAR char **argv = nxsched_get_stackargs(tcb) + 1;
+      FAR char **argv = tcb->group->tg_info->ta_argv + 1;
 
       while (*argv != NULL && n < size)
         {

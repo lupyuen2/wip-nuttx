@@ -528,6 +528,7 @@ static int nxtask_setup_stackargs(FAR struct task_tcb_s *tcb,
                                   FAR const char *name,
                                   FAR char * const argv[])
 {
+  uint8_t ttype = tcb->cmn.flags & TCB_FLAG_TTYPE_MASK;
   FAR char **stackargv;
   FAR char *str;
   size_t strtablen;
@@ -630,6 +631,12 @@ static int nxtask_setup_stackargs(FAR struct task_tcb_s *tcb,
    */
 
   stackargv[argc + 1] = NULL;
+
+  if (ttype != TCB_FLAG_TTYPE_KERNEL)
+    {
+      tcb->cmn.group->tg_info->ta_argc = argc;
+      tcb->cmn.group->tg_info->ta_argv = stackargv;
+    }
 
   return OK;
 }
