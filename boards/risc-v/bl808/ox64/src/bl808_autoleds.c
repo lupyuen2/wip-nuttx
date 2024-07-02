@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/a64/pinephone/src/pinephone_autoleds.c
+ * boards/risc-v/bl808/ox64/src/bl808_autoleds.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
