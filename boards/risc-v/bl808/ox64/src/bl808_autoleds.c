@@ -34,8 +34,7 @@
 #include <arch/board/board.h>
 
 #include "chip.h"
-////#include "arm64_internal.h"
-////#include "pinephone.h"
+#include "bl808_gpio.h"
 
 #ifdef CONFIG_ARCH_LEDS
 
@@ -45,12 +44,12 @@
 
 /* LED index */
 
-// static const uint32_t g_led_map[BOARD_LEDS] =
-// {
-//   LED1,
-//   LED2,
-//   LED3
-// };
+static const uint32_t g_led_map[BOARD_LEDS] =
+{
+  -1, /* LED1: To be configured */
+  -1, /* LED2: To be configured */
+  -1  /* LED3: To be configured */
+};
 
 static bool g_initialized;
 
@@ -62,14 +61,30 @@ static bool g_initialized;
 
 static void bl808_led_on(led_typedef_enum led_num)
 {
-  ////TODO: gpio_write(g_led_map[led_num], true);
+  if ((unsigned)led_num < BOARD_LEDS)
+    {
+      uint32_t gpio = g_led_map[led_num];
+
+      if (gpio != (uint32_t)-1)
+        {
+          bl808_gpiowrite(gpio, true);
+        }
+    }
 }
 
 /* Turn off selected led */
 
 static void bl808_led_off(led_typedef_enum led_num)
 {
-  ////TODO: gpio_write(g_led_map[led_num], false);
+  if ((unsigned)led_num < BOARD_LEDS)
+    {
+      uint32_t gpio = g_led_map[led_num];
+
+      if (gpio != (uint32_t)-1)
+        {
+          bl808_gpiowrite(gpio, false);
+        }
+    }
 }
 
 /****************************************************************************
@@ -113,8 +128,13 @@ void board_autoled_initialize(void)
 
   for (i = 0; i < BOARD_LEDS; i++)
     {
-      ////TODO: int ret = gpio_config(g_led_map[i]);
-      ////TODO: DEBUGASSERT(ret == OK);
+      uint32_t gpio = g_led_map[i];
+
+      if (gpio != (uint32_t)-1)
+        {
+          int ret = bl808_configgpio(gpio, GPIO_OUTPUT | GPIO_FUNC_SWGPIO);
+          DEBUGASSERT(ret == OK);
+        }
     }
 }
 
