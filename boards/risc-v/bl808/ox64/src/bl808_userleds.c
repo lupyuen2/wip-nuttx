@@ -36,10 +36,6 @@
 #include "chip.h"
 #include "bl808_gpio.h"
 
-////TODO
-#define GPIO_PIN  29
-#define GPIO_ATTR (GPIO_OUTPUT | GPIO_FUNC_SWGPIO)
-
 #ifdef CONFIG_USERLED
 
 /****************************************************************************
@@ -48,12 +44,12 @@
 
 /* LED index */
 
-// static const uint32_t g_led_map[BOARD_LEDS] =
-// {
-//   LED1,
-//   LED2,
-//   LED3
-// };
+static const uint32_t g_led_map[BOARD_LEDS] =
+{
+  29, /* LED1: GPIO 29 */
+  -1, /* LED2: To be configured */
+  -1  /* LED3: To be configured */
+};
 
 static const uint32_t g_led_setmap[BOARD_LEDS] =
 {
@@ -98,16 +94,17 @@ uint32_t board_userled_initialize(void)
 {
   int i;
 
-  //// TODO
-  int ret = bl808_configgpio(GPIO_PIN, GPIO_ATTR);
-  DEBUGASSERT(ret == OK);
-
   /* Configure the LED GPIO for output. */
 
   for (i = 0; i < BOARD_LEDS; i++)
     {
-      ////TODO: int ret = gpio_config(g_led_map[i]);
-      ////TODO: DEBUGASSERT(ret == OK);
+      uint32_t gpio = g_led_map[i];
+
+      if (gpio != (uint32_t)-1)
+        {
+          int ret = bl808_configgpio(gpio, GPIO_OUTPUT | GPIO_FUNC_SWGPIO);
+          DEBUGASSERT(ret == OK);
+        }
     }
 
   return BOARD_LEDS;
@@ -144,10 +141,14 @@ uint32_t board_userled_initialize(void)
 
 void board_userled(int led, bool ledon)
 {
-  // _info("led=%d, ledon=%d\n", led, ledon);////
   if ((unsigned)led < BOARD_LEDS)
     {
-      ////TODO: gpio_write(g_led_map[led], ledon);
+      uint32_t gpio = g_led_map[led];
+
+      if (gpio != (uint32_t)-1)
+        {
+          bl808_gpiowrite(gpio, ledon);
+        }
     }
 }
 
@@ -181,22 +182,13 @@ void board_userled(int led, bool ledon)
 
 void board_userled_all(uint32_t ledset)
 {
-  // _info("ledset=0x%x\n", ledset);////
   int i;
 
-  // For LED 0 to 2...
   for (i = 0; i < BOARD_LEDS; i++)
     {
-      // Get the desired state of the LED
       bool val = ((ledset & g_led_setmap[i]) != 0);
-      // _info("led=%d, val=%d\n", i, val);////
 
-      // If this is LED 0...
-      if (i == 0)
-        {
-          bl808_gpiowrite(GPIO_PIN, val);
-        }
-      ////TODO: gpio_write(g_led_map[i], (ledset & g_led_setmap[i]) != 0);
+      board_userled(i, val);
     }
 }
 
