@@ -306,7 +306,36 @@ void bl808_mm_init(void)
   /* Enable MMU */
 
   binfo("mmu_enable: satp=%" PRIuPTR "\n", g_kernel_pgt_pbase);
+
+  /* Begin Debug */
+
+  up_putc('\n');
+  _info("Before MMU: mmu_enable(g_kernel_pgt_pbase, 0);");
+  up_putc('0');
+  for (uint32_t i = 0; i < 40000000; i++)
+    {
+      asm("nop");
+    }
+
+  up_putc('1');
+
+  /* End Debug */
+
   mmu_enable(g_kernel_pgt_pbase, 0);
+
+  /* Begin Debug */
+
+  up_putc('\n');
+  _info("After MMU: mmu_enable(g_kernel_pgt_pbase, 0);");
+  up_putc('0');
+  for (uint32_t i = 0; i < 40000000; i++)
+    {
+      asm("nop");
+    }
+
+  up_putc('1');
+
+  /* End Debug */
 }
 
 /****************************************************************************
