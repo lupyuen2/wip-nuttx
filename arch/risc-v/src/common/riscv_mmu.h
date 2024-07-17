@@ -25,6 +25,11 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+#define MMU_THEAD_SHAREABLE    (1ul << 60) //// New
+#define MMU_THEAD_BUFFERABLE   (1ul << 61) //// New
+#define MMU_THEAD_CACHEABLE    (1ul << 62) //// New
+#define MMU_THEAD_PMA_FLAGS    (MMU_THEAD_SHAREABLE | MMU_THEAD_BUFFERABLE | MMU_THEAD_CACHEABLE) //// New
+
 /* RV32/64 page size */
 
 #define RV_MMU_PAGE_SHIFT       (12)
