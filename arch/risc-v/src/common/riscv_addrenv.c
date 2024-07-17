@@ -302,7 +302,7 @@ static int create_region(arch_addrenv_t *addrenv, uintptr_t vaddr,
 
           /* Then map the virtual address to the physical address */
 
-          mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags);
+          mmu_ln_setentry(ptlevel + 1, ptlast, paddr, vaddr, mmuflags | MMU_THEAD_PMA_FLAGS); //// Added MMU_THEAD_PMA_FLAGS
           nmapped += MM_PGSIZE;
           vaddr   += MM_PGSIZE;
         }
