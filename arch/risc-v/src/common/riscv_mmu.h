@@ -25,6 +25,11 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+#define MMU_THEAD_SHAREABLE    (1ul << 60) //// New
+#define MMU_THEAD_BUFFERABLE   (1ul << 61) //// New
+#define MMU_THEAD_CACHEABLE    (1ul << 62) //// New
+#define MMU_THEAD_PMA_FLAGS    (MMU_THEAD_SHAREABLE | MMU_THEAD_BUFFERABLE | MMU_THEAD_CACHEABLE) //// New
+
 /* RV32/64 page size */
 
 #define RV_MMU_PAGE_SHIFT       (12)
@@ -56,13 +61,8 @@
 
 /* Flags for user FLASH (RX) and user RAM (RW) */
 
-#define MMU_THEAD_SHAREABLE    (1ul << 60) //// New
-#define MMU_THEAD_BUFFERABLE   (1ul << 61) //// New
-#define MMU_THEAD_CACHEABLE    (1ul << 62) //// New
-#define MMU_THEAD_PMA_FLAGS    (MMU_THEAD_SHAREABLE | MMU_THEAD_BUFFERABLE | MMU_THEAD_CACHEABLE) //// New
-
-#define MMU_UTEXT_FLAGS         (PTE_R | PTE_X | PTE_U | MMU_THEAD_PMA_FLAGS) //// Added MMU_THEAD_PMA_FLAGS
-#define MMU_UDATA_FLAGS         (PTE_R | PTE_W | PTE_U | MMU_THEAD_PMA_FLAGS) //// Added MMU_THEAD_PMA_FLAGS
+#define MMU_UTEXT_FLAGS         (PTE_R | PTE_X | PTE_U)
+#define MMU_UDATA_FLAGS         (PTE_R | PTE_W | PTE_U)
 
 /* I/O region flags */
 
