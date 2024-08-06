@@ -571,7 +571,7 @@ function dotest {
 
 # Perform the build test for each entry in the test list file
 
-echo "testlist=$testlist" ####
+echo "testbuild: testlist=$testlist" ####
 for line in $testlist; do
   firstch=${line:0:1}
   if [ "X$firstch" == "X/" ]; then
