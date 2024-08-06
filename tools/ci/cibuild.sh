@@ -20,7 +20,7 @@
 ############################################################################
 set -e
 set -o xtrace
-
+set -x  ####  Echo commands
 
 CID=$(cd "$(dirname "$0")" && pwd)
 CIWORKSPACE=$(cd "${CID}"/../../../ && pwd -P)
@@ -139,6 +139,7 @@ function run_builds {
 
   options+="-j ${ncpus}"
 
+  echo "run_builds: builds=${builds[@]}" ####
   for build in "${builds[@]}"; do
     "${nuttx}"/tools/testbuild.sh ${options} -e "-Wno-cpp -Werror" "${build}"
   done
