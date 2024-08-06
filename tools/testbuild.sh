@@ -17,6 +17,8 @@
 # under the License.
 #
 
+set -x  ####  Echo commands
+
 WD=$(cd $(dirname $0) && cd .. && pwd)
 nuttx=$WD/../nuttx
 
@@ -569,6 +571,7 @@ function dotest {
 
 # Perform the build test for each entry in the test list file
 
+echo "testlist=$testlist" ####
 for line in $testlist; do
   firstch=${line:0:1}
   if [ "X$firstch" == "X/" ]; then
