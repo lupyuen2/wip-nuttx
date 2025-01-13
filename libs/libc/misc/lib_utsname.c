@@ -108,6 +108,7 @@ int uname(FAR struct utsname *name)
 
   _info("From _info: g_version=%s\n", g_version); //// TODO
   printf("From printf: g_version=%s\n", g_version); //// TODO
+  printf("Address of g_version=%p\n", g_version); //// TODO
   strlcpy(name->version,  g_version, sizeof(name->version));
 
   strlcpy(name->machine,  CONFIG_ARCH, sizeof(name->machine));
