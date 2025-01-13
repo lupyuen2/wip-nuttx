@@ -37,6 +37,7 @@
 #include <nuttx/virtio/virtio-mmio.h>
 
 #include <sys/mount.h>
+#include <sys/utsname.h> //// TODO: Added this
 
 #include "hardware/qemu_rv_memorymap.h"
 #include "qemu_rv_memorymap.h"
@@ -117,6 +118,11 @@ static void qemu_virtio_register_mmio_devices(void)
 
 int board_app_initialize(uintptr_t arg)
 {
+  //// TODO
+  struct utsname info;
+  int ret2 = uname(&info);
+  if (ret2 == 0) { _info("version=%s\n", info.version); }
+  ////
 #ifdef CONFIG_BOARD_LATE_INITIALIZE
   /* Board initialization already performed by board_late_initialize() */
 

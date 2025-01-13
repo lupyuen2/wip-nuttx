@@ -46,6 +46,7 @@
 
 #include <nuttx/version.h>
 #include <unistd.h>
+#include <debug.h> //// TODO
 
 /****************************************************************************
  * Private Data
@@ -105,6 +106,7 @@ int uname(FAR struct utsname *name)
 
   strlcpy(name->release,  CONFIG_VERSION_STRING, sizeof(name->release));
 
+  _info("g_version=%s\n", g_version); //// TODO
   strlcpy(name->version,  g_version, sizeof(name->version));
 
   strlcpy(name->machine,  CONFIG_ARCH, sizeof(name->machine));
