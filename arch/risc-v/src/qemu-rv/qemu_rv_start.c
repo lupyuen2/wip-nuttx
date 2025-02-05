@@ -189,17 +189,17 @@ void qemu_rv_start(int mhartid, const char *dtb)
   fdt_register(dtb);
 #endif
 
-  showprogress('A');
+  showprogress('1');
 
 #ifdef USE_EARLYSERIALINIT
   riscv_earlyserialinit();
 #endif
 
-  showprogress('B');
+  showprogress('2');
 
   /* Do board initialization */
 
-  showprogress('C');
+  showprogress('3');
 
   /* For the case of the separate user-/kernel-space build, perform whatever
    * platform specific initialization of the user memory is required.
