@@ -215,17 +215,17 @@ void sg2000_start_s(int mhartid)
       goto cpux;
     }
 
-  showprogress('A');
+  showprogress('1');
 
 #ifdef USE_EARLYSERIALINIT
   riscv_earlyserialinit();
 #endif
 
-  showprogress('B');
+  showprogress('2');
 
   /* Do board initialization */
 
-  showprogress('C');
+  showprogress('3');
 
   /* Setup page tables for kernel and enable MMU */
 
