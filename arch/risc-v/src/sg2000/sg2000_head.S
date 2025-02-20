@@ -90,6 +90,12 @@ real_start:
   /* Store byte from Register t1 to UART Base Address, Offset 0 */
   sb  t1, 0(t0)
 
+  /* We assume that OpenSBI has passed Hart ID (0 to 3) in Register a0.
+   * But NuttX expects First Hart ID to be 0, so we set it to 0.
+   */
+
+  li a0, 0
+
   /* Load the number of CPUs that the kernel supports */
 
 #ifdef CONFIG_SMP
@@ -101,10 +107,8 @@ real_start:
   /* If a0 (hartid) >= t1 (the number of CPUs), stop here */
 
   blt  a0, t1, 3f
-  /* TODO
   csrw CSR_SIE, zero
   wfi
-  */
 
 3:
   /* Set stack pointer to the idle thread stack */
