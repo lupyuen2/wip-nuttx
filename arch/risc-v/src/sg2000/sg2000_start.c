@@ -210,10 +210,11 @@ void sg2000_start_s(int mhartid)
 
   riscv_fpuconfig();
 
-  if (mhartid > 0)
-    {
-      goto cpux;
-    }
+  // TODO:
+  // if (mhartid > 0)
+  //   {
+  //     goto cpux;
+  //   }
 
   showprogress('A');
 
@@ -238,7 +239,8 @@ void sg2000_start_s(int mhartid)
 cpux:
 
 #ifdef CONFIG_SMP
-  riscv_cpu_boot(mhartid);
+  // TODO:
+  // riscv_cpu_boot(mhartid);
 #endif
 
   while (true)
@@ -275,10 +277,8 @@ void sg2000_start(int mhartid)
   *(volatile uint8_t *) 0x50900000ul = '\r';
   *(volatile uint8_t *) 0x50900000ul = '\n';
   *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
-  DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
-  *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
 
-  if (0 == mhartid)
+  // TODO: if (0 == mhartid)
     {
       /* Clear the BSS */
 
