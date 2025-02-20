@@ -260,7 +260,23 @@ cpux:
 
 void sg2000_start(int mhartid)
 {
+  *(volatile uint8_t *) 0x50900000ul = 'H';
+  *(volatile uint8_t *) 0x50900000ul = 'e';
+  *(volatile uint8_t *) 0x50900000ul = 'l';
+  *(volatile uint8_t *) 0x50900000ul = 'l';
+  *(volatile uint8_t *) 0x50900000ul = 'o';
+  *(volatile uint8_t *) 0x50900000ul = ' ';
+  *(volatile uint8_t *) 0x50900000ul = 'N';
+  *(volatile uint8_t *) 0x50900000ul = 'u';
+  *(volatile uint8_t *) 0x50900000ul = 't';
+  *(volatile uint8_t *) 0x50900000ul = 't';
+  *(volatile uint8_t *) 0x50900000ul = 'X';
+  *(volatile uint8_t *) 0x50900000ul = '!';
+  *(volatile uint8_t *) 0x50900000ul = '\r';
+  *(volatile uint8_t *) 0x50900000ul = '\n';
+  *(volatile uint8_t *) 0x50900000ul = '1';
   DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
+  *(volatile uint8_t *) 0x50900000ul = '2';
 
   if (0 == mhartid)
     {
