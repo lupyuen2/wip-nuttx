@@ -101,8 +101,10 @@ real_start:
   /* If a0 (hartid) >= t1 (the number of CPUs), stop here */
 
   blt  a0, t1, 3f
+  /* TODO
   csrw CSR_SIE, zero
   wfi
+  */
 
 3:
   /* Set stack pointer to the idle thread stack */
