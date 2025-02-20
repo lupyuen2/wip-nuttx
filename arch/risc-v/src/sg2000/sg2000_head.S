@@ -60,7 +60,7 @@ __start:
   j       real_start           /* Jump to Kernel Start (2 bytes) */
   .long   0                    /* Executable Code padded to 8 bytes */
   .quad   0x0200000            /* Image load offset from start of RAM */
-  .quad   0x4000000            /* Effective kernel size (fdt_addr_r) */
+  .quad   0x4000000            /* Kernel size (fdt_addr_r-kernel_addr_r) */
   .quad   0                    /* Kernel flags, little-endian */
   .long   2                    /* Version of this header */
   .long   0                    /* Reserved */
