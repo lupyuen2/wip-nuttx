@@ -276,7 +276,7 @@ void sg2000_start(int mhartid)
   *(volatile uint8_t *) 0x50900000ul = '\n';
   *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
   DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
-  *(volatile uint8_t *) 0x50900000ul = '2';
+  *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
 
   if (0 == mhartid)
     {
