@@ -33,6 +33,6 @@
 
 /* Map RISC-V exception code to NuttX IRQ */
 
-#define NR_IRQS (RISCV_IRQ_SEXT + 57)
+#define NR_IRQS (RISCV_IRQ_SEXT + 458)
 
 #endif /* __ARCH_RISCV_INCLUDE_SG2000_IRQ_H */
