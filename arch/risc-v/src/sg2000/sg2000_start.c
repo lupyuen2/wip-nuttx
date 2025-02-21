@@ -56,8 +56,10 @@
 extern void __trap_vec(void);
 
 /****************************************************************************
- * Public Data
+ * Private Data
  ****************************************************************************/
+
+static int boot_hartid = -1;
 
 /****************************************************************************
  * Private Functions
@@ -278,6 +280,11 @@ void sg2000_start(int mhartid)
   *(volatile uint8_t *) 0x50900000ul = '\n';
   *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
 
+  if (boot_hartid < 0)
+  {
+    boot_hartid = mhartid;
+  }
+
   // TODO: if (0 == mhartid)
     {
       /* Clear the BSS */
@@ -335,4 +342,34 @@ void riscv_earlyserialinit(void)
 void riscv_serialinit(void)
 {
   u16550_serialinit();
+}
+
+/****************************************************************************
+ * Name: riscv_hartid_to_cpuid
+ *
+ * Description:
+ *   Convert physical core number to logical core number.
+ *
+ ****************************************************************************/
+
+int weak_function riscv_hartid_to_cpuid(int hart)
+{
+  // Assume only 1 CPU
+  UNUSED(hart);
+  return 0;
+}
+
+/****************************************************************************
+ * Name: riscv_cpuid_to_hartid
+ *
+ * Description:
+ *   Convert logical core number to physical core number.
+ *
+ ****************************************************************************/
+
+int weak_function riscv_cpuid_to_hartid(int cpu)
+{
+  // Assume only 1 CPU
+  UNUSED(cpu);
+  return boot_hartid;
 }

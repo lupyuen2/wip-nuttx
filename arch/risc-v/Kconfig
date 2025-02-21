@@ -331,6 +331,7 @@ config ARCH_CHIP_K230
 config ARCH_CHIP_SG2000
 	bool "SOPHGO SG2000"
 	select ARCH_RV64
+	select ARCH_RV_CPUID_MAP
 	select ARCH_RV_ISA_M
 	select ARCH_RV_ISA_A
 	select ARCH_RV_ISA_C
