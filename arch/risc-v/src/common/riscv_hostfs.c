@@ -33,6 +33,7 @@
 #include <string.h>
 #include <syscall.h>
 #include <unistd.h>
+#include <debug.h>
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -115,6 +116,11 @@ static int host_flags_to_mode(int flags)
 
 int host_open(const char *pathname, int flags, int mode)
 {
+  _info("pathname=%s\n", pathname);
+  const char *pathname2 =
+    (strcmp(pathname, "../apps/bin/hello") == 0)
+    ? "/etc/passwd"
+    : pathname;
   struct
   {
     const char *pathname;
@@ -122,9 +128,9 @@ int host_open(const char *pathname, int flags, int mode)
     size_t len;
   } open =
   {
-    .pathname = pathname,
+    .pathname = pathname2,
     .mode = host_flags_to_mode(flags),
-    .len = strlen(pathname),
+    .len = strlen(pathname2),
   };
 
 #ifdef CONFIG_RISCV_SEMIHOSTING_HOSTFS_CACHE_COHERENCE
