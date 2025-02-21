@@ -38,6 +38,8 @@
 #include "riscv_ipi.h"
 #include "chip.h"
 
+extern int boot_hartid; // TODO: From sg2000_start.c
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -48,7 +50,8 @@
 
 void up_irqinitialize(void)
 {
-  uintptr_t claim;
+  uintptr_t claim, addr;
+  int hart, offset;
 
   /* Disable S-Mode interrupts */
 
@@ -60,13 +63,23 @@ void up_irqinitialize(void)
 
   /* Disable all global interrupts */
 
-  putreg32(0x0, SG2000_PLIC_ENABLE1);
-  putreg32(0x0, SG2000_PLIC_ENABLE2);
-
+  for (hart = 0; hart < CONFIG_SMP_NCPUS; hart++)
+    {
+      addr = SG2000_PLIC_ENABLE0 + (hart * SG2000_PLIC_ENABLE_HART);
+      for (offset = 0; offset < (NR_IRQS - RISCV_IRQ_EXT) >> 3; offset += 4)
+        {
+          putreg32(0x0, addr + offset);          
+        }
+    }
+    
   /* Clear pendings in PLIC */
 
-  claim = getreg32(SG2000_PLIC_CLAIM);
-  putreg32(claim, SG2000_PLIC_CLAIM);
+  for (hart = 0; hart < CONFIG_SMP_NCPUS; hart++)
+    {
+      addr = SG2000_PLIC_CLAIM0 + (hart * SG2000_PLIC_CLAIM_HART);
+      claim = getreg32(addr);
+      putreg32(claim, addr);
+    }
 
   /* Colorize the interrupt stack for debug purposes */
 
@@ -86,7 +99,12 @@ void up_irqinitialize(void)
 
   /* Set irq threshold to 0 (permits all global interrupts) */
 
-  putreg32(0, SG2000_PLIC_THRESHOLD);
+  for (hart = 0; hart < CONFIG_SMP_NCPUS; hart++)
+    {
+      addr = SG2000_PLIC_THRESHOLD0 +
+             (hart * SG2000_PLIC_THRESHOLD_HART);
+      putreg32(0, addr);
+    }
 
 #ifdef CONFIG_SMP
   /* Clear IPI for CPU0 */
@@ -114,6 +132,7 @@ void up_irqinitialize(void)
 
 void up_disable_irq(int irq)
 {
+  uintptr_t addr;
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
@@ -136,7 +155,9 @@ void up_disable_irq(int irq)
 
       if (0 <= extirq && extirq <= NR_IRQS - RISCV_IRQ_EXT)
         {
-          modifyreg32(SG2000_PLIC_ENABLE1 + (4 * (extirq / 32)),
+          addr = SG2000_PLIC_ENABLE0 + 
+                 (boot_hartid * SG2000_PLIC_ENABLE_HART);
+          modifyreg32(addr + (4 * (extirq / 32)),
                       1 << (extirq % 32), 0);
         }
       else
@@ -156,6 +177,7 @@ void up_disable_irq(int irq)
 
 void up_enable_irq(int irq)
 {
+  uintptr_t addr;
   int extirq;
 
   if (irq == RISCV_IRQ_SOFT)
@@ -178,7 +200,9 @@ void up_enable_irq(int irq)
 
       if (0 <= extirq && extirq <= NR_IRQS - RISCV_IRQ_EXT)
         {
-          modifyreg32(SG2000_PLIC_ENABLE1 + (4 * (extirq / 32)),
+          addr = SG2000_PLIC_ENABLE0 + 
+                 (boot_hartid * SG2000_PLIC_ENABLE_HART);
+          modifyreg32(addr + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
         }
       else
