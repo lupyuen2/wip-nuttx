@@ -59,6 +59,8 @@ extern void __trap_vec(void);
  * Public Data
  ****************************************************************************/
 
+int boot_hartid = -1;
+
 /****************************************************************************
  * Private Functions
  ****************************************************************************/
@@ -210,10 +212,11 @@ void sg2000_start_s(int mhartid)
 
   riscv_fpuconfig();
 
-  if (mhartid > 0)
-    {
-      goto cpux;
-    }
+  // TODO:
+  // if (mhartid > 0)
+  //   {
+  //     goto cpux;
+  //   }
 
   showprogress('A');
 
@@ -238,7 +241,8 @@ void sg2000_start_s(int mhartid)
 cpux:
 
 #ifdef CONFIG_SMP
-  riscv_cpu_boot(mhartid);
+  // TODO:
+  // riscv_cpu_boot(mhartid);
 #endif
 
   while (true)
@@ -275,10 +279,13 @@ void sg2000_start(int mhartid)
   *(volatile uint8_t *) 0x50900000ul = '\r';
   *(volatile uint8_t *) 0x50900000ul = '\n';
   *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
-  DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
-  *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
 
-  if (0 == mhartid)
+  if (boot_hartid < 0)
+  {
+    boot_hartid = mhartid;
+  }
+
+  // TODO: if (0 == mhartid)
     {
       /* Clear the BSS */
 
@@ -335,4 +342,34 @@ void riscv_earlyserialinit(void)
 void riscv_serialinit(void)
 {
   u16550_serialinit();
+}
+
+/****************************************************************************
+ * Name: riscv_hartid_to_cpuid
+ *
+ * Description:
+ *   Convert physical core number to logical core number.
+ *
+ ****************************************************************************/
+
+int weak_function riscv_hartid_to_cpuid(int hart)
+{
+  // Assume only 1 CPU
+  UNUSED(hart);
+  return 0;
+}
+
+/****************************************************************************
+ * Name: riscv_cpuid_to_hartid
+ *
+ * Description:
+ *   Convert logical core number to physical core number.
+ *
+ ****************************************************************************/
+
+int weak_function riscv_cpuid_to_hartid(int cpu)
+{
+  // Assume only 1 CPU
+  UNUSED(cpu);
+  return boot_hartid;
 }
