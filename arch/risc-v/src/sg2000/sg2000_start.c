@@ -356,9 +356,20 @@ void riscv_serialinit(void)
 
 int weak_function riscv_hartid_to_cpuid(int hart)
 {
-  // Assume only 1 CPU
-  UNUSED(hart);
-  return 0;
+  /* Boot Hart is CPU 0. Renumber the Other Harts. */
+
+  if (hart == boot_hartid)
+    {
+      return 0;
+    }
+  else if (hart < boot_hartid)
+    {
+      return hart + 1;
+    }
+  else
+    {
+      return hart;
+    }
 }
 
 /****************************************************************************
@@ -371,7 +382,18 @@ int weak_function riscv_hartid_to_cpuid(int hart)
 
 int weak_function riscv_cpuid_to_hartid(int cpu)
 {
-  // Assume only 1 CPU
-  UNUSED(cpu);
-  return boot_hartid;
+  /* Boot Hart is CPU 0. Renumber the Other Harts. */
+
+  if (cpu == 0)
+    {
+      return boot_hartid;
+    }
+  else if (cpu < boot_hartid + 1)
+    {
+      return cpu - 1;
+    }
+  else
+    {
+      return cpu;
+    }
 }
