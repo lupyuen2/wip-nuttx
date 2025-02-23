@@ -269,7 +269,9 @@ cpux:
   *(volatile uint8_t *) 0x50900000ul = '\r';
   *(volatile uint8_t *) 0x50900000ul = '\n';
 
+#ifdef CONFIG_SMP
   riscv_cpu_boot(mhartid);
+#endif
 
   while (true)
     {
@@ -312,6 +314,27 @@ void sg2000_start(int mhartid)
   *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
   *(volatile uint8_t *) 0x50900000ul = '\r';
   *(volatile uint8_t *) 0x50900000ul = '\n';
+
+  /* If Boot Hart is not 0, restart with Hart 0 */
+
+  if (mhartid != 0)
+    {
+      /* Clear the BSS */
+
+      sg2000_clear_bss();
+
+      /* Restart with Hart 0 */
+
+      riscv_sbi_boot_secondary(0, (uintptr_t)&__start);
+
+      /* Let this Hart idle forever */
+
+      while (true)
+        {
+          asm("WFI");
+        }  
+      PANIC(); /* Should not come here */
+    }
 
   /* Init the globals once only. Remember the Boot Hart. */
 

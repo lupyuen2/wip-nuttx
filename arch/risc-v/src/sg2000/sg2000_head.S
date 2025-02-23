@@ -100,13 +100,20 @@ real_start:
 
   /* If a0 (hartid) >= t1 (the number of CPUs), stop here */
 
+  /* TODO: Enable this for SMP
   blt  a0, t1, 3f
   csrw CSR_SIE, zero
   wfi
+  */
 
 3:
   /* Set stack pointer to the idle thread stack */
+  li a2, 0
+  riscv_set_inital_sp SG2000_IDLESTACK_BASE, SMP_STACK_SIZE, a2
+
+  /* TODO: Enable this for SMP
   riscv_set_inital_sp SG2000_IDLESTACK_BASE, SMP_STACK_SIZE, a0
+  */
 
   /* Disable all interrupts (i.e. timer, external) in sie */
 
