@@ -280,13 +280,12 @@ void sg2000_start(int mhartid)
   *(volatile uint8_t *) 0x50900000ul = '\n';
   *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
 
-  if (boot_hartid < 0)
-  {
-    boot_hartid = mhartid;
-  }
+  /* Init the globals once only. Remember the Boot Hart. */
 
-  // TODO: if (0 == mhartid)
+  if (boot_hartid < 0)
     {
+      boot_hartid = mhartid;
+
       /* Clear the BSS */
 
       sg2000_clear_bss();
