@@ -212,11 +212,12 @@ void sg2000_start_s(int mhartid)
 
   riscv_fpuconfig();
 
-  // TODO:
-  // if (mhartid > 0)
-  //   {
-  //     goto cpux;
-  //   }
+  if (mhartid != boot_hartid)
+    {
+      goto cpux;
+    }
+
+  /* Boot Hart starts here */
 
   showprogress('A');
 
@@ -239,6 +240,8 @@ void sg2000_start_s(int mhartid)
   nx_start();
 
 cpux:
+
+  /* Non-Boot Hart starts here */
 
 #ifdef CONFIG_SMP
   // TODO:
