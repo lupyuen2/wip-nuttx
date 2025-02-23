@@ -314,6 +314,7 @@ void sg2000_start(int mhartid)
   *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
   *(volatile uint8_t *) 0x50900000ul = '\r';
   *(volatile uint8_t *) 0x50900000ul = '\n';
+  up_mdelay(1000);  // Wait a while for UART Queue to flush
 
   /* If Boot Hart is not 0, restart with Hart 0 */
 
