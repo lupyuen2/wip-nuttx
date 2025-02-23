@@ -244,8 +244,15 @@ cpux:
   /* Non-Boot Hart starts here */
 
 #ifdef CONFIG_SMP
-  // TODO:
-  // riscv_cpu_boot(mhartid);
+  *(volatile uint8_t *) 0x50900000ul = 'H';
+  *(volatile uint8_t *) 0x50900000ul = 'a';
+  *(volatile uint8_t *) 0x50900000ul = 'r';
+  *(volatile uint8_t *) 0x50900000ul = 't';
+  *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
+  *(volatile uint8_t *) 0x50900000ul = '\r';
+  *(volatile uint8_t *) 0x50900000ul = '\n';
+
+  riscv_cpu_boot(mhartid);
 #endif
 
   while (true)
@@ -281,7 +288,14 @@ void sg2000_start(int mhartid)
   *(volatile uint8_t *) 0x50900000ul = '!';
   *(volatile uint8_t *) 0x50900000ul = '\r';
   *(volatile uint8_t *) 0x50900000ul = '\n';
+
+  *(volatile uint8_t *) 0x50900000ul = 'H';
+  *(volatile uint8_t *) 0x50900000ul = 'a';
+  *(volatile uint8_t *) 0x50900000ul = 'r';
+  *(volatile uint8_t *) 0x50900000ul = 't';
   *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
+  *(volatile uint8_t *) 0x50900000ul = '\r';
+  *(volatile uint8_t *) 0x50900000ul = '\n';
 
   /* Init the globals once only. Remember the Boot Hart. */
 
