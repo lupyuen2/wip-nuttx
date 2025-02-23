@@ -253,10 +253,6 @@ void sg2000_start_s(int mhartid)
 
   sg2000_mm_init();
 
-  /* Boot the other cores */
-
-  sg2000_boot_secondary();
-
   /* Call nx_start() */
 
   nx_start();
@@ -326,6 +322,10 @@ void sg2000_start(int mhartid)
       /* Clear the BSS */
 
       sg2000_clear_bss();
+
+      /* Boot the other cores */
+
+      // TODO: sg2000_boot_secondary();
 
       /* Copy the RAM Disk */
 
@@ -444,7 +444,6 @@ static void sg2000_boot_secondary(void)
         }
 
       riscv_sbi_boot_secondary(i, (uintptr_t)&__start);
-      break; ////
     }
 }
 
