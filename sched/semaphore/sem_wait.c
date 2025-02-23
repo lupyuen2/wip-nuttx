@@ -79,7 +79,9 @@ static int nxsem_wait_slow(FAR sem_t *sem)
    * handler.
    */
 
-  flags = enter_critical_section();
+   *(volatile uint8_t *) 0x50900000ul = '5'; ////
+   flags = enter_critical_section();
+   *(volatile uint8_t *) 0x50900000ul = '6'; ////
 
   /* Make sure we were supplied with a valid semaphore. */
 
