@@ -167,7 +167,9 @@ static int nxsem_wait_slow(FAR sem_t *sem)
 
       /* Now, perform the context switch */
 
+      *(volatile uint8_t *) 0x50900000ul = '3'; ////
       up_switch_context(this_task(), rtcb);
+      *(volatile uint8_t *) 0x50900000ul = '4'; ////
 
       /* When we resume at this point, either (1) the semaphore has been
        * assigned to this thread of execution, or (2) the semaphore wait
@@ -260,11 +262,14 @@ int nxsem_wait(FAR sem_t *sem)
   if (sem->flags & SEM_TYPE_MUTEX)
     {
       int32_t old = 1;
+      *(volatile uint8_t *) 0x50900000ul = '0'; ////
       if (atomic_try_cmpxchg_acquire(NXSEM_COUNT(sem), &old, 0))
         {
+          *(volatile uint8_t *) 0x50900000ul = '1'; ////
           return OK;
         }
-    }
+        *(volatile uint8_t *) 0x50900000ul = '2'; ////
+      }
 #endif
 
   return nxsem_wait_slow(sem);
