@@ -37,6 +37,8 @@
 #include "hardware/sg2000_memorymap.h"
 #include "hardware/sg2000_plic.h"
 
+extern int boot_hartid; // TODO: From sg2000_start.c
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -54,12 +56,14 @@
 void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 {
   int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
+  uintptr_t claim = SG2000_PLIC_CLAIM0 + 
+                    (boot_hartid * SG2000_PLIC_CLAIM_HART);
 
   /* Firstly, check if the irq is machine external interrupt */
 
   if (RISCV_IRQ_EXT == irq)
     {
-      uintptr_t val = getreg32(SG2000_PLIC_CLAIM);
+      uintptr_t val = getreg32(claim);
 
       /* Add the value to nuttx irq which is offset to the mext */
 
@@ -79,7 +83,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
     {
       /* Then write PLIC_CLAIM to clear pending in PLIC */
 
-      putreg32(irq - RISCV_IRQ_EXT, SG2000_PLIC_CLAIM);
+      putreg32(irq - RISCV_IRQ_EXT, claim);
     }
 
   return regs;

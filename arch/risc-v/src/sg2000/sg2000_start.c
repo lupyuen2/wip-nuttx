@@ -39,6 +39,20 @@
 #include "sg2000_mm_init.h"
 #include "sg2000_memorymap.h"
 
+//// TODO
+struct sbiret_s
+{
+  intreg_t    error;
+  uintreg_t   value;
+};
+typedef struct sbiret_s sbiret_t;
+static void sg2000_boot_secondary(void);
+static int riscv_sbi_boot_secondary(uintreg_t hartid, uintreg_t addr);
+static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
+                          uintreg_t parm0, uintreg_t parm1,
+                          uintreg_t parm2, uintreg_t parm3,
+                          uintreg_t parm4, uintreg_t parm5);
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -49,15 +63,21 @@
 #define showprogress(c)
 #endif
 
+#define SBI_EXT_HSM (0x0048534D)
+#define SBI_EXT_HSM_HART_START (0x0)
+
 /****************************************************************************
  * Extern Function Declarations
  ****************************************************************************/
 
-extern void __trap_vec(void);
+ extern void __start(void);
+ extern void __trap_vec(void);
 
 /****************************************************************************
  * Public Data
  ****************************************************************************/
+
+int boot_hartid = -1;
 
 /****************************************************************************
  * Private Functions
@@ -210,10 +230,12 @@ void sg2000_start_s(int mhartid)
 
   riscv_fpuconfig();
 
-  if (mhartid > 0)
+  if (mhartid != boot_hartid)
     {
       goto cpux;
     }
+
+  /* Boot Hart starts here */
 
   showprogress('A');
 
@@ -236,6 +258,16 @@ void sg2000_start_s(int mhartid)
   nx_start();
 
 cpux:
+
+  /* Non-Boot Hart starts here */
+
+  *(volatile uint8_t *) 0x50900000ul = 'H';
+  *(volatile uint8_t *) 0x50900000ul = 'a';
+  *(volatile uint8_t *) 0x50900000ul = 'r';
+  *(volatile uint8_t *) 0x50900000ul = 't';
+  *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
+  *(volatile uint8_t *) 0x50900000ul = '\r';
+  *(volatile uint8_t *) 0x50900000ul = '\n';
 
 #ifdef CONFIG_SMP
   riscv_cpu_boot(mhartid);
@@ -260,13 +292,64 @@ cpux:
 
 void sg2000_start(int mhartid)
 {
-  DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
+  *(volatile uint8_t *) 0x50900000ul = 'H';
+  *(volatile uint8_t *) 0x50900000ul = 'e';
+  *(volatile uint8_t *) 0x50900000ul = 'l';
+  *(volatile uint8_t *) 0x50900000ul = 'l';
+  *(volatile uint8_t *) 0x50900000ul = 'o';
+  *(volatile uint8_t *) 0x50900000ul = ' ';
+  *(volatile uint8_t *) 0x50900000ul = 'N';
+  *(volatile uint8_t *) 0x50900000ul = 'u';
+  *(volatile uint8_t *) 0x50900000ul = 't';
+  *(volatile uint8_t *) 0x50900000ul = 't';
+  *(volatile uint8_t *) 0x50900000ul = 'X';
+  *(volatile uint8_t *) 0x50900000ul = '!';
+  *(volatile uint8_t *) 0x50900000ul = '\r';
+  *(volatile uint8_t *) 0x50900000ul = '\n';
 
-  if (0 == mhartid)
+  *(volatile uint8_t *) 0x50900000ul = 'H';
+  *(volatile uint8_t *) 0x50900000ul = 'a';
+  *(volatile uint8_t *) 0x50900000ul = 'r';
+  *(volatile uint8_t *) 0x50900000ul = 't';
+  *(volatile uint8_t *) 0x50900000ul = '0' + mhartid;
+  *(volatile uint8_t *) 0x50900000ul = '\r';
+  *(volatile uint8_t *) 0x50900000ul = '\n';
+  up_mdelay(1000);  // Wait a while for UART Queue to flush
+
+  /* If Boot Hart is not 0, restart with Hart 0 */
+
+  if (mhartid != 0)
     {
       /* Clear the BSS */
 
       sg2000_clear_bss();
+
+      /* Restart with Hart 0 */
+
+      riscv_sbi_boot_secondary(0, (uintptr_t)&__start);
+
+      /* Let this Hart idle forever */
+
+      while (true)
+        {
+          asm("WFI");
+        }  
+      PANIC(); /* Should not come here */
+    }
+
+  /* Init the globals once only. Remember the Boot Hart. */
+
+  if (boot_hartid < 0)
+    {
+      boot_hartid = mhartid;
+
+      /* Clear the BSS */
+
+      sg2000_clear_bss();
+
+      /* Boot the other cores */
+
+      // TODO: sg2000_boot_secondary();
 
       /* Copy the RAM Disk */
 
@@ -319,4 +402,114 @@ void riscv_earlyserialinit(void)
 void riscv_serialinit(void)
 {
   u16550_serialinit();
+}
+
+/****************************************************************************
+ * Name: riscv_hartid_to_cpuid
+ *
+ * Description:
+ *   Convert physical core number to logical core number.
+ *
+ ****************************************************************************/
+
+int weak_function riscv_hartid_to_cpuid(int hart)
+{
+  /* Boot Hart is CPU 0. Renumber the Other Harts. */
+
+  if (hart == boot_hartid)
+    {
+      return 0;
+    }
+  else if (hart < boot_hartid)
+    {
+      return hart + 1;
+    }
+  else
+    {
+      return hart;
+    }
+}
+
+/****************************************************************************
+ * Name: riscv_cpuid_to_hartid
+ *
+ * Description:
+ *   Convert logical core number to physical core number.
+ *
+ ****************************************************************************/
+
+int weak_function riscv_cpuid_to_hartid(int cpu)
+{
+  /* Boot Hart is CPU 0. Renumber the Other Harts. */
+
+  if (cpu == 0)
+    {
+      return boot_hartid;
+    }
+  else if (cpu < boot_hartid + 1)
+    {
+      return cpu - 1;
+    }
+  else
+    {
+      return cpu;
+    }
+}
+
+static void sg2000_boot_secondary(void)
+{
+  int i;
+
+  for (i = 0; i < CONFIG_SMP_NCPUS; i++)
+    {
+      if (i == boot_hartid)
+        {
+          continue;
+        }
+
+      riscv_sbi_boot_secondary(i, (uintptr_t)&__start);
+    }
+}
+
+static int riscv_sbi_boot_secondary(uintreg_t hartid, uintreg_t addr)
+{
+  sbiret_t ret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_START,
+                           hartid, addr, 0, 0, 0, 0);
+
+  if (ret.error < 0)
+    {
+      _err("Boot Hart %d failed\n", hartid);
+      PANIC();
+    }
+
+  return 0;
+}
+
+static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
+                          uintreg_t parm0, uintreg_t parm1,
+                          uintreg_t parm2, uintreg_t parm3,
+                          uintreg_t parm4, uintreg_t parm5)
+{
+  register long r0 asm("a0") = (long)(parm0);
+  register long r1 asm("a1") = (long)(parm1);
+  register long r2 asm("a2") = (long)(parm2);
+  register long r3 asm("a3") = (long)(parm3);
+  register long r4 asm("a4") = (long)(parm4);
+  register long r5 asm("a5") = (long)(parm5);
+  register long r6 asm("a6") = (long)(fid);
+  register long r7 asm("a7") = (long)(extid);
+  sbiret_t ret;
+
+  asm volatile
+    (
+     "ecall"
+     : "+r"(r0), "+r"(r1)
+     : "r"(r2), "r"(r3), "r"(r4), "r"(r5), "r"(r6), "r"(r7)
+     : "memory"
+     );
+
+  ret.error = r0;
+  ret.value = (uintreg_t)r1;
+
+  return ret;
 }

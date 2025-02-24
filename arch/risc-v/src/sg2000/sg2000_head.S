@@ -59,8 +59,8 @@ __start:
   c.li    s4, -13              /* Magic Signature "MZ" (2 bytes) */
   j       real_start           /* Jump to Kernel Start (2 bytes) */
   .long   0                    /* Executable Code padded to 8 bytes */
-  .quad   0x200000             /* Image load offset from start of RAM */
-  .quad   _ebss - __start      /* Effective size of kernel image */
+  .quad   0x0200000            /* Image load offset from start of RAM */
+  .quad   0x4000000            /* Kernel size (fdt_addr_r-kernel_addr_r) */
   .quad   0                    /* Kernel flags, little-endian */
   .long   2                    /* Version of this header */
   .long   0                    /* Reserved */
@@ -70,6 +70,25 @@ __start:
   .long   0                    /* Reserved for PE COFF offset */
 
 real_start:
+
+  /* Print `123` to UART */
+  /* Load UART Base Address to Register t0 */
+  li  t0, 0x50900000
+
+  /* Load `1` to Register t1 */
+  li  t1, 0x31
+  /* Store byte from Register t1 to UART Base Address, Offset 0 */
+  sb  t1, 0(t0)
+
+  /* Load `2` to Register t1 */
+  li  t1, 0x32
+  /* Store byte from Register t1 to UART Base Address, Offset 0 */
+  sb  t1, 0(t0)
+
+  /* Load `3` to Register t1 */
+  li  t1, 0x33
+  /* Store byte from Register t1 to UART Base Address, Offset 0 */
+  sb  t1, 0(t0)
 
   /* Load the number of CPUs that the kernel supports */
 
@@ -81,13 +100,20 @@ real_start:
 
   /* If a0 (hartid) >= t1 (the number of CPUs), stop here */
 
+  /* TODO: Enable this for SMP
   blt  a0, t1, 3f
   csrw CSR_SIE, zero
   wfi
+  */
 
 3:
   /* Set stack pointer to the idle thread stack */
+  li a2, 0
+  riscv_set_inital_sp SG2000_IDLESTACK_BASE, SMP_STACK_SIZE, a2
+
+  /* TODO: Enable this for SMP
   riscv_set_inital_sp SG2000_IDLESTACK_BASE, SMP_STACK_SIZE, a0
+  */
 
   /* Disable all interrupts (i.e. timer, external) in sie */
 
