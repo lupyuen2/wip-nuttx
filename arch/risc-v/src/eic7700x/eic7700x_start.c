@@ -35,22 +35,10 @@
 #include <arch/board/board_memorymap.h>
 
 #include "riscv_internal.h"
+#include "riscv_sbi.h"
 #include "chip.h"
 #include "eic7700x_mm_init.h"
 #include "eic7700x_memorymap.h"
-
-//// TODO
-struct sbiret_s
-{
-  intreg_t    error;
-  uintreg_t   value;
-};
-typedef struct sbiret_s sbiret_t;
-static int riscv_sbi_boot_secondary(uintreg_t hartid, uintreg_t addr);
-static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
-                          uintreg_t parm0, uintreg_t parm1,
-                          uintreg_t parm2, uintreg_t parm3,
-                          uintreg_t parm4, uintreg_t parm5);
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -62,8 +50,10 @@ static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
 #define showprogress(c)
 #endif
 
-#define SBI_EXT_HSM (0x0048534D)
-#define SBI_EXT_HSM_HART_START (0x0)
+/* SBI Extension ID and Function ID for Hart Start */
+
+#define SBI_EXT_HSM 0x0048534D
+#define SBI_EXT_HSM_HART_START 0x0
 
 /****************************************************************************
  * Extern Function Declarations
@@ -192,6 +182,80 @@ static void eic7700x_copy_ramdisk(void)
 }
 
 /****************************************************************************
+ * Name: sbi_ecall
+ *
+ * Description:
+ *   Make a RISC-V ECALL to OpenSBI.
+ *
+ * Input Parameters:
+ *   extid          - Extension ID
+ *   fid            - Function ID
+ *   parm0 to parm5 - Parameters to be passed
+ *
+ * Returned Value:
+ *   Error and Value returned by OpenSBI.
+ *
+ ****************************************************************************/
+
+static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
+                          uintreg_t parm0, uintreg_t parm1,
+                          uintreg_t parm2, uintreg_t parm3,
+                          uintreg_t parm4, uintreg_t parm5)
+{
+  register long r0 asm("a0") = (long)(parm0);
+  register long r1 asm("a1") = (long)(parm1);
+  register long r2 asm("a2") = (long)(parm2);
+  register long r3 asm("a3") = (long)(parm3);
+  register long r4 asm("a4") = (long)(parm4);
+  register long r5 asm("a5") = (long)(parm5);
+  register long r6 asm("a6") = (long)(fid);
+  register long r7 asm("a7") = (long)(extid);
+  sbiret_t ret;
+
+  asm volatile
+    (
+     "ecall"
+     : "+r"(r0), "+r"(r1)
+     : "r"(r2), "r"(r3), "r"(r4), "r"(r5), "r"(r6), "r"(r7)
+     : "memory"
+     );
+
+  ret.error = r0;
+  ret.value = (uintreg_t)r1;
+
+  return ret;
+}
+
+/****************************************************************************
+ * Name: boot_secondary
+ *
+ * Description:
+ *   Call OpenSBI to boot the Hart, starting at the specified address.
+ *
+ * Input Parameters:
+ *   hartid - Hart ID
+ *   addr   - Start Address
+ *
+ * Returned Value:
+ *   OK is always returned.
+ *
+ ****************************************************************************/
+
+ static int boot_secondary(uintreg_t hartid, uintreg_t addr)
+ {
+   sbiret_t ret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_START,
+                            hartid, addr, 0, 0, 0, 0);
+ 
+   if (ret.error < 0)
+     {
+       _err("Boot Hart %d failed\n", hartid);
+       PANIC();
+     }
+ 
+   return 0;
+ }
+
+/****************************************************************************
  * Public Functions
  ****************************************************************************/
 
@@ -293,7 +357,7 @@ void eic7700x_start(int mhartid)
 
       /* Restart with Hart 0 */
 
-      riscv_sbi_boot_secondary(0, (uintptr_t)&__start);
+      boot_secondary(0, (uintptr_t)&__start);
 
       /* Let this Hart idle forever */
 
@@ -365,47 +429,4 @@ void riscv_earlyserialinit(void)
 void riscv_serialinit(void)
 {
   u16550_serialinit();
-}
-
-static int riscv_sbi_boot_secondary(uintreg_t hartid, uintreg_t addr)
-{
-  sbiret_t ret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_START,
-                           hartid, addr, 0, 0, 0, 0);
-
-  if (ret.error < 0)
-    {
-      _err("Boot Hart %d failed\n", hartid);
-      PANIC();
-    }
-
-  return 0;
-}
-
-static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
-                          uintreg_t parm0, uintreg_t parm1,
-                          uintreg_t parm2, uintreg_t parm3,
-                          uintreg_t parm4, uintreg_t parm5)
-{
-  register long r0 asm("a0") = (long)(parm0);
-  register long r1 asm("a1") = (long)(parm1);
-  register long r2 asm("a2") = (long)(parm2);
-  register long r3 asm("a3") = (long)(parm3);
-  register long r4 asm("a4") = (long)(parm4);
-  register long r5 asm("a5") = (long)(parm5);
-  register long r6 asm("a6") = (long)(fid);
-  register long r7 asm("a7") = (long)(extid);
-  sbiret_t ret;
-
-  asm volatile
-    (
-     "ecall"
-     : "+r"(r0), "+r"(r1)
-     : "r"(r2), "r"(r3), "r"(r4), "r"(r5), "r"(r6), "r"(r7)
-     : "memory"
-     );
-
-  ret.error = r0;
-  ret.value = (uintreg_t)r1;
-
-  return ret;
 }
