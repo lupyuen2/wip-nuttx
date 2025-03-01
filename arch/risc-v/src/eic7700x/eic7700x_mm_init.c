@@ -42,46 +42,22 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* T-Head C906 MMU Extensions */
-
-#define MMU_THEAD_SHAREABLE    (1ul << 60)
-#define MMU_THEAD_BUFFERABLE   (1ul << 61)
-#define MMU_THEAD_CACHEABLE    (1ul << 62)
-#define MMU_THEAD_STRONG_ORDER (1ul << 63)
-
-/* T-Head C906 MMU requires Strong Order and Shareable for I/O Memory */
-
-#define MMU_THEAD_IO_FLAGS     (MMU_IO_FLAGS | MMU_THEAD_SHAREABLE | \
-                                MMU_THEAD_STRONG_ORDER)
-
-/* T-Head C906 MMU requires Kernel Memory to be explicitly cached */
-
-#define MMU_THEAD_PMA_FLAGS    (MMU_THEAD_SHAREABLE | \
-                                MMU_THEAD_BUFFERABLE | \
-                                MMU_THEAD_CACHEABLE)
-
 /* Map the I/O and PLIC Memory with vaddr = paddr mappings */
 
 #define MMU_IO_BASE      (0x00000000ul)
-#define MMU_IO_SIZE      (0x40000000ul)
-
-#define MMU_INT_BASE     (0x70000000ul)
-#define MMU_INT_SIZE     (0x10000000ul)
+#define MMU_IO_SIZE      (0x80000000ul)
 
 /* Physical and virtual addresses to page tables (vaddr = paddr mapping) */
 
 #define PGT_L1_PBASE     (uintptr_t)&m_l1_pgtable
 #define PGT_L2_PBASE     (uintptr_t)&m_l2_pgtable
-#define PGT_L2_INT_PBASE (uintptr_t)&m_l2_int_pgtable
 #define PGT_L3_PBASE     (uintptr_t)&m_l3_pgtable
 #define PGT_L1_VBASE     PGT_L1_PBASE
 #define PGT_L2_VBASE     PGT_L2_PBASE
-#define PGT_L2_INT_VBASE PGT_L2_INT_PBASE
 #define PGT_L3_VBASE     PGT_L3_PBASE
 
 #define PGT_L1_SIZE      (512)  /* Enough to map 512 GiB */
 #define PGT_L2_SIZE      (512)  /* Enough to map 1 GiB */
-#define PGT_L2_INT_SIZE  (512)  /* Enough to map 1 GiB */
 #define PGT_L3_SIZE      (1024) /* Enough to map 4 MiB (2MiB x 2) */
 
 #define SLAB_COUNT       (sizeof(m_l3_pgtable) / RV_MMU_PAGE_SIZE)
@@ -111,7 +87,6 @@ typedef struct pgalloc_slab_s pgalloc_slab_t;
 
 static size_t m_l1_pgtable[PGT_L1_SIZE] locate_data(".pgtables");
 static size_t m_l2_pgtable[PGT_L2_SIZE] locate_data(".pgtables");
-static size_t m_l2_int_pgtable[PGT_L2_INT_SIZE] locate_data(".pgtables");
 static size_t m_l3_pgtable[PGT_L3_SIZE] locate_data(".pgtables");
 
 /* Kernel mappings (L1 base) */
@@ -255,28 +230,15 @@ void eic7700x_kernel_mappings(void)
 
   binfo("map I/O regions\n");
   mmu_ln_map_region(1, PGT_L1_VBASE, MMU_IO_BASE, MMU_IO_BASE,
-                    MMU_IO_SIZE, MMU_THEAD_IO_FLAGS);
-
-  /* Map the PLIC with L2 page table */
-
-  binfo("map PLIC with L2 page table\n");
-  mmu_ln_map_region(2, PGT_L2_INT_PBASE, MMU_INT_BASE, MMU_INT_BASE,
-                    MMU_INT_SIZE, MMU_THEAD_IO_FLAGS);
-
-  /* Connect the L1 and PLIC L2 page tables */
-
-  binfo("connect the L1 and PLIC L2 page tables\n");
-  mmu_ln_setentry(1, PGT_L1_VBASE, PGT_L2_INT_PBASE, MMU_INT_BASE, PTE_G);
+                    MMU_IO_SIZE, MMU_IO_FLAGS);
 
   /* Map the kernel text and data for L2/L3 */
 
   binfo("map kernel text\n");
-  map_region(KFLASH_START, KFLASH_START, KFLASH_SIZE,
-             MMU_KTEXT_FLAGS | MMU_THEAD_PMA_FLAGS);
+  map_region(KFLASH_START, KFLASH_START, KFLASH_SIZE, MMU_KTEXT_FLAGS);
 
   binfo("map kernel data\n");
-  map_region(KSRAM_START, KSRAM_START, KSRAM_SIZE,
-             MMU_KDATA_FLAGS | MMU_THEAD_PMA_FLAGS);
+  map_region(KSRAM_START, KSRAM_START, KSRAM_SIZE, MMU_KDATA_FLAGS);
 
   /* Connect the L1 and L2 page tables for the kernel text and data */
 
@@ -286,8 +248,8 @@ void eic7700x_kernel_mappings(void)
   /* Map the page pool */
 
   binfo("map the page pool\n");
-  mmu_ln_map_region(2, PGT_L2_VBASE, PGPOOL_START, PGPOOL_START, PGPOOL_SIZE,
-                    MMU_KDATA_FLAGS | MMU_THEAD_PMA_FLAGS);
+  mmu_ln_map_region(2, PGT_L2_VBASE, PGPOOL_START, PGPOOL_START,
+                    PGPOOL_SIZE, MMU_KDATA_FLAGS);
 }
 
 /****************************************************************************
@@ -309,31 +271,4 @@ void eic7700x_mm_init(void)
 
   binfo("mmu_enable: satp=%" PRIuPTR "\n", g_kernel_pgt_pbase);
   mmu_enable(g_kernel_pgt_pbase, 0);
-}
-
-/****************************************************************************
- * Name: mmu_flush_cache
- *
- * Description:
- *   Flush the MMU Cache for T-Head C906.  Called by mmu_write_satp() after
- *   updating the MMU SATP Register, when swapping MMU Page Tables.
- *   This operation executes RISC-V Instructions that are specific to
- *   T-Head C906.
- *
- ****************************************************************************/
-
-void weak_function mmu_flush_cache(uintptr_t reg)
-{
-  UNUSED(reg);
-  __asm__ __volatile__
-    (
-
-      /* DCACHE.IALL: Invalidate all Page Table Entries in the D-Cache */
-
-      ".long 0x0020000b\n"
-
-      /* SYNC.S: Ensure that all Cache Operations are completed */
-
-      ".long 0x0190000b\n"
-    );
 }

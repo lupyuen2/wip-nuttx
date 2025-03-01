@@ -59,8 +59,8 @@ __start:
   c.li    s4, -13              /* Magic Signature "MZ" (2 bytes) */
   j       real_start           /* Jump to Kernel Start (2 bytes) */
   .long   0                    /* Executable Code padded to 8 bytes */
-  .quad   0x200000             /* Image load offset from start of RAM */
-  .quad   _ebss - __start      /* Effective size of kernel image */
+  .quad   0x0200000            /* Image load offset from start of RAM */
+  .quad   0x4000000            /* Kernel size (fdt_addr_r-kernel_addr_r) */
   .quad   0                    /* Kernel flags, little-endian */
   .long   2                    /* Version of this header */
   .long   0                    /* Reserved */
@@ -79,15 +79,10 @@ real_start:
   li   t1, 1
 #endif
 
-  /* If a0 (hartid) >= t1 (the number of CPUs), stop here */
+  /* Set stack pointer to the idle thread stack. Assume Hart 0. */
 
-  blt  a0, t1, 3f
-  csrw CSR_SIE, zero
-  wfi
-
-3:
-  /* Set stack pointer to the idle thread stack */
-  riscv_set_inital_sp EIC7700X_IDLESTACK_BASE, SMP_STACK_SIZE, a0
+  li   a2, 0
+  riscv_set_inital_sp EIC7700X_IDLESTACK_BASE, SMP_STACK_SIZE, a2
 
   /* Disable all interrupts (i.e. timer, external) in sie */
 

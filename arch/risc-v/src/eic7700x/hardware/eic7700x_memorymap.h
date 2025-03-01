@@ -29,6 +29,6 @@
 
 /* Register Base Address ****************************************************/
 
-#define EIC7700X_PLIC_BASE    0x70000000ul
+#define EIC7700X_PLIC_BASE 0x0C000000ul
 
 #endif /* __ARCH_RISCV_SRC_EIC7700X_HARDWARE_EIC7700X_MEMORYMAP_H */

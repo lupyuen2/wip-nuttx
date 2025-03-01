@@ -39,6 +39,19 @@
 #include "eic7700x_mm_init.h"
 #include "eic7700x_memorymap.h"
 
+//// TODO
+struct sbiret_s
+{
+  intreg_t    error;
+  uintreg_t   value;
+};
+typedef struct sbiret_s sbiret_t;
+static int riscv_sbi_boot_secondary(uintreg_t hartid, uintreg_t addr);
+static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
+                          uintreg_t parm0, uintreg_t parm1,
+                          uintreg_t parm2, uintreg_t parm3,
+                          uintreg_t parm4, uintreg_t parm5);
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -49,15 +62,21 @@
 #define showprogress(c)
 #endif
 
+#define SBI_EXT_HSM (0x0048534D)
+#define SBI_EXT_HSM_HART_START (0x0)
+
 /****************************************************************************
  * Extern Function Declarations
  ****************************************************************************/
 
+extern void __start(void);
 extern void __trap_vec(void);
 
 /****************************************************************************
  * Public Data
  ****************************************************************************/
+
+int boot_hartid = -1;
 
 /****************************************************************************
  * Private Functions
@@ -210,10 +229,12 @@ void eic7700x_start_s(int mhartid)
 
   riscv_fpuconfig();
 
-  if (mhartid > 0)
+  if (mhartid != boot_hartid)
     {
       goto cpux;
     }
+
+  /* Boot Hart starts here */
 
   showprogress('A');
 
@@ -260,10 +281,33 @@ cpux:
 
 void eic7700x_start(int mhartid)
 {
-  DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
+  /* If Boot Hart is not 0, restart with Hart 0 */
 
-  if (0 == mhartid)
+  if (mhartid != 0)
     {
+      /* Clear the BSS */
+
+      eic7700x_clear_bss();
+
+      /* Restart with Hart 0 */
+
+      riscv_sbi_boot_secondary(0, (uintptr_t)&__start);
+
+      /* Let this Hart idle forever */
+
+      while (true)
+        {
+          asm("WFI");
+        }  
+      PANIC(); /* Should not come here */
+    }
+
+  /* Init the globals once only. Remember the Boot Hart. */
+
+  if (boot_hartid < 0)
+    {
+      boot_hartid = mhartid;
+
       /* Clear the BSS */
 
       eic7700x_clear_bss();
@@ -319,4 +363,47 @@ void riscv_earlyserialinit(void)
 void riscv_serialinit(void)
 {
   u16550_serialinit();
+}
+
+static int riscv_sbi_boot_secondary(uintreg_t hartid, uintreg_t addr)
+{
+  sbiret_t ret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_START,
+                           hartid, addr, 0, 0, 0, 0);
+
+  if (ret.error < 0)
+    {
+      _err("Boot Hart %d failed\n", hartid);
+      PANIC();
+    }
+
+  return 0;
+}
+
+static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
+                          uintreg_t parm0, uintreg_t parm1,
+                          uintreg_t parm2, uintreg_t parm3,
+                          uintreg_t parm4, uintreg_t parm5)
+{
+  register long r0 asm("a0") = (long)(parm0);
+  register long r1 asm("a1") = (long)(parm1);
+  register long r2 asm("a2") = (long)(parm2);
+  register long r3 asm("a3") = (long)(parm3);
+  register long r4 asm("a4") = (long)(parm4);
+  register long r5 asm("a5") = (long)(parm5);
+  register long r6 asm("a6") = (long)(fid);
+  register long r7 asm("a7") = (long)(extid);
+  sbiret_t ret;
+
+  asm volatile
+    (
+     "ecall"
+     : "+r"(r0), "+r"(r1)
+     : "r"(r2), "r"(r3), "r"(r4), "r"(r5), "r"(r6), "r"(r7)
+     : "memory"
+     );
+
+  ret.error = r0;
+  ret.value = (uintreg_t)r1;
+
+  return ret;
 }

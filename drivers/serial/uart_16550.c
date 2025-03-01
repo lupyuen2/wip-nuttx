@@ -860,6 +860,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
     }
 #endif /* CONFIG_16550_WAIT_LCR */
 
+#ifdef TODO  //  Compute CONFIG_16550_UART0_CLOCK
   /* Enter DLAB=1 */
 
   u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
@@ -886,6 +887,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
   /* Clear DLAB */
 
   u16550_serialout(priv, UART_LCR_OFFSET, lcr);
+#endif  // TODO
 
   /* Configure the FIFOs */
 
