@@ -241,19 +241,19 @@ static sbiret_t sbi_ecall(unsigned int extid, unsigned int fid,
  *
  ****************************************************************************/
 
- static int boot_secondary(uintreg_t hartid, uintreg_t addr)
- {
-   sbiret_t ret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_START,
-                            hartid, addr, 0, 0, 0, 0);
- 
-   if (ret.error < 0)
-     {
-       _err("Boot Hart %d failed\n", hartid);
-       PANIC();
-     }
- 
-   return 0;
- }
+static int boot_secondary(uintreg_t hartid, uintreg_t addr)
+{
+  sbiret_t ret = sbi_ecall(SBI_EXT_HSM, SBI_EXT_HSM_HART_START,
+                          hartid, addr, 0, 0, 0, 0);
+
+  if (ret.error < 0)
+    {
+      _err("Boot Hart %d failed\n", hartid);
+      PANIC();
+    }
+
+  return 0;
+}
 
 /****************************************************************************
  * Public Functions
@@ -364,7 +364,8 @@ void eic7700x_start(int mhartid)
       while (true)
         {
           asm("WFI");
-        }  
+        }
+
       PANIC(); /* Should not come here */
     }
 

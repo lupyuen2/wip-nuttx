@@ -48,8 +48,10 @@
 
 void up_irqinitialize(void)
 {
-  uintptr_t claim, addr;
-  int hart, offset;
+  uintptr_t addr;
+  uintptr_t claim;
+  int hart;
+  int offset;
 
   /* Disable S-Mode interrupts */
 
@@ -66,7 +68,7 @@ void up_irqinitialize(void)
       addr = EIC7700X_PLIC_ENABLE0 + (hart * EIC7700X_PLIC_ENABLE_HART);
       for (offset = 0; offset < (NR_IRQS - RISCV_IRQ_EXT) >> 3; offset += 4)
         {
-          putreg32(0x0, addr + offset);          
+          putreg32(0x0, addr + offset);
         }
     }
 
@@ -153,7 +155,7 @@ void up_disable_irq(int irq)
 
       if (0 <= extirq && extirq <= NR_IRQS - RISCV_IRQ_EXT)
         {
-          addr = EIC7700X_PLIC_ENABLE0 + 
+          addr = EIC7700X_PLIC_ENABLE0 +
                  (g_boot_hart * EIC7700X_PLIC_ENABLE_HART);
           modifyreg32(addr + (4 * (extirq / 32)),
                       1 << (extirq % 32), 0);
@@ -198,7 +200,7 @@ void up_enable_irq(int irq)
 
       if (0 <= extirq && extirq <= NR_IRQS - RISCV_IRQ_EXT)
         {
-          addr = EIC7700X_PLIC_ENABLE0 + 
+          addr = EIC7700X_PLIC_ENABLE0 +
                  (g_boot_hart * EIC7700X_PLIC_ENABLE_HART);
           modifyreg32(addr + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
