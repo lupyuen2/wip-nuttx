@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/include/sg2000/irq.h
+ * arch/risc-v/include/eic7700x/irq.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_INCLUDE_SG2000_IRQ_H
-#define __ARCH_RISCV_INCLUDE_SG2000_IRQ_H
+#ifndef __ARCH_RISCV_INCLUDE_EIC7700X_IRQ_H
+#define __ARCH_RISCV_INCLUDE_EIC7700X_IRQ_H
 
 /****************************************************************************
  * Included Files
@@ -35,4 +35,4 @@
 
 #define NR_IRQS (RISCV_IRQ_SEXT + 57)
 
-#endif /* __ARCH_RISCV_INCLUDE_SG2000_IRQ_H */
+#endif /* __ARCH_RISCV_INCLUDE_EIC7700X_IRQ_H */

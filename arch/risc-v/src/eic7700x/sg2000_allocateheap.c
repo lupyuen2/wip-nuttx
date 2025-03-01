@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/sg2000_allocateheap.c
+ * arch/risc-v/src/eic7700x/eic7700x_allocateheap.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/hardware/sg2000_plic.h
+ * arch/risc-v/src/eic7700x/hardware/eic7700x_plic.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_SG2000_HARDWARE_SG2000_PLIC_H
-#define __ARCH_RISCV_SRC_SG2000_HARDWARE_SG2000_PLIC_H
+#ifndef __ARCH_RISCV_SRC_EIC7700X_HARDWARE_EIC7700X_PLIC_H
+#define __ARCH_RISCV_SRC_EIC7700X_HARDWARE_EIC7700X_PLIC_H
 
 /****************************************************************************
  * Included Files
@@ -35,19 +35,19 @@
 
 /* Interrupt Priority */
 
-#define SG2000_PLIC_PRIORITY  (SG2000_PLIC_BASE + 0x000000)
+#define EIC7700X_PLIC_PRIORITY  (EIC7700X_PLIC_BASE + 0x000000)
 
 /* Hart 0 S-Mode Interrupt Enable */
 
-#define SG2000_PLIC_ENABLE1   (SG2000_PLIC_BASE + 0x002080)
-#define SG2000_PLIC_ENABLE2   (SG2000_PLIC_BASE + 0x002084)
+#define EIC7700X_PLIC_ENABLE1   (EIC7700X_PLIC_BASE + 0x002080)
+#define EIC7700X_PLIC_ENABLE2   (EIC7700X_PLIC_BASE + 0x002084)
 
 /* Hart 0 S-Mode Priority Threshold */
 
-#define SG2000_PLIC_THRESHOLD (SG2000_PLIC_BASE + 0x201000)
+#define EIC7700X_PLIC_THRESHOLD (EIC7700X_PLIC_BASE + 0x201000)
 
 /* Hart 0 S-Mode Claim / Complete */
 
-#define SG2000_PLIC_CLAIM     (SG2000_PLIC_BASE + 0x201004)
+#define EIC7700X_PLIC_CLAIM     (EIC7700X_PLIC_BASE + 0x201004)
 
-#endif /* __ARCH_RISCV_SRC_SG2000_HARDWARE_SG2000_PLIC_H */
+#endif /* __ARCH_RISCV_SRC_EIC7700X_HARDWARE_EIC7700X_PLIC_H */

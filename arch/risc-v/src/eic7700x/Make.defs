@@ -1,5 +1,5 @@
 ############################################################################
-# arch/risc-v/src/sg2000/Make.defs
+# arch/risc-v/src/eic7700x/Make.defs
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -24,9 +24,9 @@ include common/Make.defs
 
 # Specify our HEAD assembly file.  This will be linked as
 # the first object file, so it will appear at address 0
-HEAD_ASRC = sg2000_head.S
+HEAD_ASRC = eic7700x_head.S
 
 # Specify our C code within this directory to be included
-CHIP_CSRCS  = sg2000_start.c sg2000_irq_dispatch.c sg2000_irq.c
-CHIP_CSRCS += sg2000_timerisr.c sg2000_allocateheap.c
-CHIP_CSRCS += sg2000_mm_init.c sg2000_pgalloc.c
+CHIP_CSRCS  = eic7700x_start.c eic7700x_irq_dispatch.c eic7700x_irq.c
+CHIP_CSRCS += eic7700x_timerisr.c eic7700x_allocateheap.c
+CHIP_CSRCS += eic7700x_mm_init.c eic7700x_pgalloc.c

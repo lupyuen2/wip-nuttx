@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/sg2000_memorymap.h
+ * arch/risc-v/src/eic7700x/eic7700x_memorymap.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_SG2000_SG2000_MEMORYMAP_H
-#define __ARCH_RISCV_SRC_SG2000_SG2000_MEMORYMAP_H
+#ifndef __ARCH_RISCV_SRC_EIC7700X_EIC7700X_MEMORYMAP_H
+#define __ARCH_RISCV_SRC_EIC7700X_EIC7700X_MEMORYMAP_H
 
 /****************************************************************************
  * Included Files
@@ -36,9 +36,9 @@
 /* Idle thread stack starts from _ebss */
 
 #ifndef __ASSEMBLY__
-#define SG2000_IDLESTACK_BASE  (uintptr_t)_ebss
+#define EIC7700X_IDLESTACK_BASE  (uintptr_t)_ebss
 #else
-#define SG2000_IDLESTACK_BASE  _ebss
+#define EIC7700X_IDLESTACK_BASE  _ebss
 #endif
 
-#endif /* __ARCH_RISCV_SRC_SG2000_SG2000_MEMORYMAP_H */
+#endif /* __ARCH_RISCV_SRC_EIC7700X_EIC7700X_MEMORYMAP_H */

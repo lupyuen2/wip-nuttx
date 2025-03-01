@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/sg2000_start.c
+ * arch/risc-v/src/eic7700x/eic7700x_start.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -36,8 +36,8 @@
 
 #include "riscv_internal.h"
 #include "chip.h"
-#include "sg2000_mm_init.h"
-#include "sg2000_memorymap.h"
+#include "eic7700x_mm_init.h"
+#include "eic7700x_memorymap.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -64,7 +64,7 @@ extern void __trap_vec(void);
  ****************************************************************************/
 
 /****************************************************************************
- * Name: sg2000_copy_overlap
+ * Name: eic7700x_copy_overlap
  *
  * Description:
  *   Copy an overlapping memory region.  dest overlaps with src + count.
@@ -76,7 +76,7 @@ extern void __trap_vec(void);
  *
  ****************************************************************************/
 
-static void sg2000_copy_overlap(uint8_t *dest, const uint8_t *src,
+static void eic7700x_copy_overlap(uint8_t *dest, const uint8_t *src,
                                size_t count)
 {
   uint8_t *d = dest + count - 1;
@@ -98,14 +98,14 @@ static void sg2000_copy_overlap(uint8_t *dest, const uint8_t *src,
 }
 
 /****************************************************************************
- * Name: sg2000_copy_ramdisk
+ * Name: eic7700x_copy_ramdisk
  *
  * Description:
  *   Copy the RAM Disk from NuttX Image to RAM Disk Region.
  *
  ****************************************************************************/
 
-static void sg2000_copy_ramdisk(void)
+static void eic7700x_copy_ramdisk(void)
 {
   const char *header = "-rom1fs-";
   const uint8_t *limit = (uint8_t *)g_idle_topstack + (256 * 1024);
@@ -167,7 +167,7 @@ static void sg2000_copy_ramdisk(void)
    * __ramdisk_start overlaps with ramdisk_addr + size.
    */
 
-  sg2000_copy_overlap(__ramdisk_start, ramdisk_addr, size);
+  eic7700x_copy_overlap(__ramdisk_start, ramdisk_addr, size);
 }
 
 /****************************************************************************
@@ -175,7 +175,7 @@ static void sg2000_copy_ramdisk(void)
  ****************************************************************************/
 
 /****************************************************************************
- * Name: sg2000_clear_bss
+ * Name: eic7700x_clear_bss
  *
  * Description:
  *   Clear .bss.  We'll do this inline (vs. calling memset) just to be
@@ -183,7 +183,7 @@ static void sg2000_copy_ramdisk(void)
  *
  ****************************************************************************/
 
-void sg2000_clear_bss(void)
+void eic7700x_clear_bss(void)
 {
   uint32_t *dest;
 
@@ -194,7 +194,7 @@ void sg2000_clear_bss(void)
 }
 
 /****************************************************************************
- * Name: sg2000_start_s
+ * Name: eic7700x_start_s
  *
  * Description:
  *   Start the NuttX Kernel.  Assume that we are in RISC-V Supervisor Mode.
@@ -204,7 +204,7 @@ void sg2000_clear_bss(void)
  *
  ****************************************************************************/
 
-void sg2000_start_s(int mhartid)
+void eic7700x_start_s(int mhartid)
 {
   /* Configure FPU */
 
@@ -229,7 +229,7 @@ void sg2000_start_s(int mhartid)
 
   /* Setup page tables for kernel and enable MMU */
 
-  sg2000_mm_init();
+  eic7700x_mm_init();
 
   /* Call nx_start() */
 
@@ -248,7 +248,7 @@ cpux:
 }
 
 /****************************************************************************
- * Name: sg2000_start
+ * Name: eic7700x_start
  *
  * Description:
  *   Start the NuttX Kernel.  Called by Boot Code.
@@ -258,7 +258,7 @@ cpux:
  *
  ****************************************************************************/
 
-void sg2000_start(int mhartid)
+void eic7700x_start(int mhartid)
 {
   DEBUGASSERT(mhartid == 0); /* Only Hart 0 supported for now */
 
@@ -266,11 +266,11 @@ void sg2000_start(int mhartid)
     {
       /* Clear the BSS */
 
-      sg2000_clear_bss();
+      eic7700x_clear_bss();
 
       /* Copy the RAM Disk */
 
-      sg2000_copy_ramdisk();
+      eic7700x_copy_ramdisk();
 
       /* Initialize the per CPU areas */
 
@@ -287,7 +287,7 @@ void sg2000_start(int mhartid)
 
   /* Start S-mode */
 
-  sg2000_start_s(mhartid);
+  eic7700x_start_s(mhartid);
 }
 
 /****************************************************************************

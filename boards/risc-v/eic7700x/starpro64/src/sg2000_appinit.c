@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/sg2000/milkv_duos/src/sg2000_appinit.c
+ * boards/risc-v/eic7700x/starpro64/src/eic7700x_appinit.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *

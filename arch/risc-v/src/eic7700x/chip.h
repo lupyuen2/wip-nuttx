@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/chip.h
+ * arch/risc-v/src/eic7700x/chip.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_SG2000_CHIP_H
-#define __ARCH_RISCV_SRC_SG2000_CHIP_H
+#ifndef __ARCH_RISCV_SRC_EIC7700X_CHIP_H
+#define __ARCH_RISCV_SRC_EIC7700X_CHIP_H
 
 /****************************************************************************
  * Included Files
@@ -29,12 +29,12 @@
 
 /* Include the chip capabilities file */
 
-#include <arch/sg2000/chip.h>
+#include <arch/eic7700x/chip.h>
 
-#include "sg2000_memorymap.h"
+#include "eic7700x_memorymap.h"
 
-#include "hardware/sg2000_memorymap.h"
-#include "hardware/sg2000_plic.h"
+#include "hardware/eic7700x_memorymap.h"
+#include "hardware/eic7700x_plic.h"
 
 #include "riscv_internal.h"
 #include "riscv_percpu.h"
@@ -74,4 +74,4 @@
 #endif /* CONFIG_ARCH_INTERRUPTSTACK > 15 */
 
 #endif /* __ASSEMBLY__  */
-#endif /* __ARCH_RISCV_SRC_SG2000_CHIP_H */
+#endif /* __ARCH_RISCV_SRC_EIC7700X_CHIP_H */

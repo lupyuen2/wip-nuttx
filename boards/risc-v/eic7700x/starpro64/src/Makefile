@@ -1,5 +1,5 @@
 ############################################################################
-# boards/risc-v/sg2000/milkv_duos/src/Makefile
+# boards/risc-v/eic7700x/starpro64/src/Makefile
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -24,6 +24,6 @@ include $(TOPDIR)/Make.defs
 
 RCSRCS = etc/init.d/rc.sysinit etc/init.d/rcS
 
-CSRCS = sg2000_appinit.c
+CSRCS = eic7700x_appinit.c
 
 include $(TOPDIR)/boards/Board.mk

@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/sg2000_mm_init.h
+ * arch/risc-v/src/eic7700x/eic7700x_mm_init.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISC_V_SRC_SG2000_SG2000_MM_INIT_H
-#define __ARCH_RISC_V_SRC_SG2000_SG2000_MM_INIT_H
+#ifndef __ARCH_RISC_V_SRC_EIC7700X_EIC7700X_MM_INIT_H
+#define __ARCH_RISC_V_SRC_EIC7700X_EIC7700X_MM_INIT_H
 
 /****************************************************************************
  * Included Files
@@ -36,7 +36,7 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Name: sg2000_kernel_mappings
+ * Name: eic7700x_kernel_mappings
  *
  * Description:
  *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up the kernel
@@ -44,10 +44,10 @@
  *
  ****************************************************************************/
 
-void sg2000_kernel_mappings(void);
+void eic7700x_kernel_mappings(void);
 
 /****************************************************************************
- * Name: sg2000_mm_init
+ * Name: eic7700x_mm_init
  *
  * Description:
  *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up kernel MMU
@@ -55,6 +55,6 @@ void sg2000_kernel_mappings(void);
  *
  ****************************************************************************/
 
-void sg2000_mm_init(void);
+void eic7700x_mm_init(void);
 
-#endif /* __ARCH_RISC_V_SRC_SG2000_SG2000_MM_INIT_H */
+#endif /* __ARCH_RISC_V_SRC_EIC7700X_EIC7700X_MM_INIT_H */

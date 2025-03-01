@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/sg2000_timerisr.c
+ * arch/risc-v/src/eic7700x/eic7700x_timerisr.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/include/sg2000/chip.h
+ * arch/risc-v/include/eic7700x/chip.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,7 +20,7 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_INCLUDE_SG2000_CHIP_H
-#define __ARCH_RISCV_INCLUDE_SG2000_CHIP_H
+#ifndef __ARCH_RISCV_INCLUDE_EIC7700X_CHIP_H
+#define __ARCH_RISCV_INCLUDE_EIC7700X_CHIP_H
 
-#endif /* __ARCH_RISCV_INCLUDE_SG2000_CHIP_H */
+#endif /* __ARCH_RISCV_INCLUDE_EIC7700X_CHIP_H */

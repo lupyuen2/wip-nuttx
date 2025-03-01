@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/sg2000_head.S
+ * arch/risc-v/src/eic7700x/eic7700x_head.S
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -87,7 +87,7 @@ real_start:
 
 3:
   /* Set stack pointer to the idle thread stack */
-  riscv_set_inital_sp SG2000_IDLESTACK_BASE, SMP_STACK_SIZE, a0
+  riscv_set_inital_sp EIC7700X_IDLESTACK_BASE, SMP_STACK_SIZE, a0
 
   /* Disable all interrupts (i.e. timer, external) in sie */
 
@@ -96,9 +96,9 @@ real_start:
   la   t0, __trap_vec
   csrw CSR_STVEC, t0
 
-  /* Jump to sg2000_start */
+  /* Jump to eic7700x_start */
 
-  jal  x1, sg2000_start
+  jal  x1, eic7700x_start
 
   /* We shouldn't return from _start */
 

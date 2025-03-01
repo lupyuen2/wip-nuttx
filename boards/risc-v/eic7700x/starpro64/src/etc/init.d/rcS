@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/sg2000/milkv_duos/src/etc/init.d/rcS
+ * boards/risc-v/eic7700x/starpro64/src/etc/init.d/rcS
  *
  * SPDX-License-Identifier: Apache-2.0
  *

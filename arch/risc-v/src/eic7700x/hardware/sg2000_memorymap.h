@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/hardware/sg2000_memorymap.h
+ * arch/risc-v/src/eic7700x/hardware/eic7700x_memorymap.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_RISCV_SRC_SG2000_HARDWARE_SG2000_MEMORYMAP_H
-#define __ARCH_RISCV_SRC_SG2000_HARDWARE_SG2000_MEMORYMAP_H
+#ifndef __ARCH_RISCV_SRC_EIC7700X_HARDWARE_EIC7700X_MEMORYMAP_H
+#define __ARCH_RISCV_SRC_EIC7700X_HARDWARE_EIC7700X_MEMORYMAP_H
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -29,6 +29,6 @@
 
 /* Register Base Address ****************************************************/
 
-#define SG2000_PLIC_BASE    0x70000000ul
+#define EIC7700X_PLIC_BASE    0x70000000ul
 
-#endif /* __ARCH_RISCV_SRC_SG2000_HARDWARE_SG2000_MEMORYMAP_H */
+#endif /* __ARCH_RISCV_SRC_EIC7700X_HARDWARE_EIC7700X_MEMORYMAP_H */

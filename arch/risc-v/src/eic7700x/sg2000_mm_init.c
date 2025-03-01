@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/sg2000_mm_init.c
+ * arch/risc-v/src/eic7700x/eic7700x_mm_init.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -33,7 +33,7 @@
 
 #include <arch/board/board_memorymap.h>
 
-#include "sg2000_memorymap.h"
+#include "eic7700x_memorymap.h"
 
 #include "riscv_internal.h"
 #include "riscv_mmu.h"
@@ -232,7 +232,7 @@ static void map_region(uintptr_t paddr, uintptr_t vaddr, size_t size,
  ****************************************************************************/
 
 /****************************************************************************
- * Name: sg2000_kernel_mappings
+ * Name: eic7700x_kernel_mappings
  *
  * Description:
  *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up the kernel
@@ -240,7 +240,7 @@ static void map_region(uintptr_t paddr, uintptr_t vaddr, size_t size,
  *
  ****************************************************************************/
 
-void sg2000_kernel_mappings(void)
+void eic7700x_kernel_mappings(void)
 {
   /* Initialize slab allocator for the L2/L3 page tables */
 
@@ -291,7 +291,7 @@ void sg2000_kernel_mappings(void)
 }
 
 /****************************************************************************
- * Name: sg2000_mm_init
+ * Name: eic7700x_mm_init
  *
  * Description:
  *  Setup kernel mappings when using CONFIG_BUILD_KERNEL. Sets up kernel MMU
@@ -299,11 +299,11 @@ void sg2000_kernel_mappings(void)
  *
  ****************************************************************************/
 
-void sg2000_mm_init(void)
+void eic7700x_mm_init(void)
 {
   /* Setup the kernel mappings */
 
-  sg2000_kernel_mappings();
+  eic7700x_kernel_mappings();
 
   /* Enable MMU */
 

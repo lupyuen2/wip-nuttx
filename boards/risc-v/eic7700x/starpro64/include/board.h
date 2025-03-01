@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/sg2000/milkv_duos/include/board.h
+ * boards/risc-v/eic7700x/starpro64/include/board.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_H
-#define __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_H
+#ifndef __BOARDS_RISCV_EIC7700X_STARPRO64_INCLUDE_BOARD_H
+#define __BOARDS_RISCV_EIC7700X_STARPRO64_INCLUDE_BOARD_H
 
 /****************************************************************************
  * Included Files
@@ -67,14 +67,14 @@ extern "C"
  ****************************************************************************/
 
 /****************************************************************************
- * Name: sg2000_boardinitialize
+ * Name: eic7700x_boardinitialize
  ****************************************************************************/
 
-void sg2000_boardinitialize(void);
+void eic7700x_boardinitialize(void);
 
 #undef EXTERN
 #if defined(__cplusplus)
 }
 #endif
 #endif /* __ASSEMBLY__ */
-#endif /* __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_H */
+#endif /* __BOARDS_RISCV_EIC7700X_STARPRO64_INCLUDE_BOARD_H */

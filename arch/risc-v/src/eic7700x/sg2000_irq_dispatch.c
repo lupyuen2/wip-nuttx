@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/risc-v/src/sg2000/sg2000_irq_dispatch.c
+ * arch/risc-v/src/eic7700x/eic7700x_irq_dispatch.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -34,8 +34,8 @@
 #include <sys/types.h>
 
 #include "riscv_internal.h"
-#include "hardware/sg2000_memorymap.h"
-#include "hardware/sg2000_plic.h"
+#include "hardware/eic7700x_memorymap.h"
+#include "hardware/eic7700x_plic.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -59,7 +59,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 
   if (RISCV_IRQ_EXT == irq)
     {
-      uintptr_t val = getreg32(SG2000_PLIC_CLAIM);
+      uintptr_t val = getreg32(EIC7700X_PLIC_CLAIM);
 
       /* Add the value to nuttx irq which is offset to the mext */
 
@@ -79,7 +79,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
     {
       /* Then write PLIC_CLAIM to clear pending in PLIC */
 
-      putreg32(irq - RISCV_IRQ_EXT, SG2000_PLIC_CLAIM);
+      putreg32(irq - RISCV_IRQ_EXT, EIC7700X_PLIC_CLAIM);
     }
 
   return regs;

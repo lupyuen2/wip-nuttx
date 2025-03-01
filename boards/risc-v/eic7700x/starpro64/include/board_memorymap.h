@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/sg2000/milkv_duos/include/board_memorymap.h
+ * boards/risc-v/eic7700x/starpro64/include/board_memorymap.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_MEMORYMAP_H
-#define __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_MEMORYMAP_H
+#ifndef __BOARDS_RISCV_EIC7700X_STARPRO64_INCLUDE_BOARD_MEMORYMAP_H
+#define __BOARDS_RISCV_EIC7700X_STARPRO64_INCLUDE_BOARD_MEMORYMAP_H
 
 /****************************************************************************
  * Included Files
@@ -35,8 +35,8 @@
 
 /* DDR start address */
 
-#define SG2000_DDR_BASE   (0x50200000)
-#define SG2000_DDR_SIZE   (0x03e00000)
+#define EIC7700X_DDR_BASE   (0x50200000)
+#define EIC7700X_DDR_SIZE   (0x03e00000)
 
 /* Kernel code memory (RX) */
 
@@ -87,4 +87,4 @@ extern uint8_t          __pgheap_size[];
 extern uint8_t          __ramdisk_start[];
 extern uint8_t          __ramdisk_size[];
 
-#endif /* __BOARDS_RISCV_SG2000_MILKV_DUOS_INCLUDE_BOARD_MEMORYMAP_H */
+#endif /* __BOARDS_RISCV_EIC7700X_STARPRO64_INCLUDE_BOARD_MEMORYMAP_H */
