@@ -2,37 +2,23 @@
 PINE64 StarPro64
 ================
 
-`PINE64 StarPro64 <https://lupyuen.github.io/articles/starpro64>`_ is a RISC-V Single-Board Computer
-
-TODO
-
-based on the SOPHGO SG2000 RISC-V SoC with T-Head C906 64-bit Main Processor,
-512 MB of SIP DRAM memory and 100 Mbps Ethernet.
+`PINE64 StarPro64 <https://lupyuen.github.io/articles/starpro64>`_
+is a RISC-V Single-Board Computer based on the ESWIN EIC7700X RISC-V SoC
+with Quad-Core 64-bit RISC-V CPU, 32 GB LPDDR5 RAM and 100 Mbps Ethernet.
 
 Features
 ========
 
-TODO
-
-- **System on Chip:** SOPHGO SG2000
-    - **CPU:** 
-        - 64-bit T-Head C906 1.0 GHz (Main Processor)
-        - 64-bit T-Head C906 700 MHz (Co-Processor)
-        - 64-bit Arm Cortex-A53 1.0 GHz (Alternate Main Processor)
-
-- **MCU:** 8051 with 6 KB SRAM
-- **Memory:** SIP DRAM 512 MB
-- **TPU:** 0.5 TOPS INT8
+- **System on Chip:** ESWIN EIC7700X
+- **Processors:** 4 x RV64GC 1.4 GHz 64-bit RISC-V Cores
+- **NPU:** 19.95 TOPS INT8
+- **Memory:** 32 GB 64-bit LPDDR5
 - **Storage:** 1 x microSD Connector, 1 x eMMC Pad
-- **USB:** 1 x Type-C for Power and Data or 1 x USB 2.0 A Port Host
-- **MIPI CSI:** 1 x 16P FPC Connector (MIPI CSI 2-Lane), 1 x 15P FPC Connector (MIPI CSI 2-Lane)	
-- **Sensor Support:** 5M @ 30 FPS
-- **MIPI DSI:** Via GPIO Header (MIPI DSI 4-Lane)	
-- **Ethernet:** 100 Mbps Ethernet Port (RJ45)
-- **Wireless:** Optional Wi-Fi 6 / Bluetooth 5
-- **Audio:** Via GPIO Pin	
-- **GPIO:** Up to 39 x GPIO Pin (via 2 x 26-Pin GPIO Header)
-- **Others:** 1 x Boot Switch, 1 x Recovery Key, 1 x Reset Key
+- **Network:** 2 x GMAC, RGMII supported
+- **PCI Express:** 4-lane PCIe 3.0 (RC + EP)
+- **Wireless:** WiFi, Bluetooth
+- **USB:** USB 2.0 and 3.0
+- **GPIO:** Full GPIO Header
 
 Serial Console
 ==============
