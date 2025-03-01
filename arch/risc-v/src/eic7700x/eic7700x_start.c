@@ -76,7 +76,9 @@ extern void __trap_vec(void);
  * Public Data
  ****************************************************************************/
 
-int boot_hartid = -1;
+/* Hart ID that booted NuttX (0 to 3) */
+
+int g_boot_hart = -1;
 
 /****************************************************************************
  * Private Functions
@@ -229,7 +231,7 @@ void eic7700x_start_s(int mhartid)
 
   riscv_fpuconfig();
 
-  if (mhartid != boot_hartid)
+  if (mhartid != g_boot_hart)
     {
       goto cpux;
     }
@@ -304,9 +306,9 @@ void eic7700x_start(int mhartid)
 
   /* Init the globals once only. Remember the Boot Hart. */
 
-  if (boot_hartid < 0)
+  if (g_boot_hart < 0)
     {
-      boot_hartid = mhartid;
+      g_boot_hart = mhartid;
 
       /* Clear the BSS */
 

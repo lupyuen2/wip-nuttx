@@ -36,9 +36,7 @@
 #include "riscv_internal.h"
 #include "hardware/eic7700x_memorymap.h"
 #include "hardware/eic7700x_plic.h"
-
-//// TODO
-extern int boot_hartid; // TODO: From eic7700x_start.c
+#include "chip.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -58,7 +56,7 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 {
   int irq = (vector >> RV_IRQ_MASK) | (vector & 0xf);
   uintptr_t claim = EIC7700X_PLIC_CLAIM0 + 
-                    (boot_hartid * EIC7700X_PLIC_CLAIM_HART);
+                    (g_boot_hart * EIC7700X_PLIC_CLAIM_HART);
 
   /* Firstly, check if the irq is machine external interrupt */
 

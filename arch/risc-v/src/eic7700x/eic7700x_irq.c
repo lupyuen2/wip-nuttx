@@ -38,9 +38,6 @@
 #include "riscv_ipi.h"
 #include "chip.h"
 
-////TODO
-extern int boot_hartid; // TODO: From eic7700x_start.c
-
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -157,7 +154,7 @@ void up_disable_irq(int irq)
       if (0 <= extirq && extirq <= NR_IRQS - RISCV_IRQ_EXT)
         {
           addr = EIC7700X_PLIC_ENABLE0 + 
-                 (boot_hartid * EIC7700X_PLIC_ENABLE_HART);
+                 (g_boot_hart * EIC7700X_PLIC_ENABLE_HART);
           modifyreg32(addr + (4 * (extirq / 32)),
                       1 << (extirq % 32), 0);
         }
@@ -202,7 +199,7 @@ void up_enable_irq(int irq)
       if (0 <= extirq && extirq <= NR_IRQS - RISCV_IRQ_EXT)
         {
           addr = EIC7700X_PLIC_ENABLE0 + 
-                 (boot_hartid * EIC7700X_PLIC_ENABLE_HART);
+                 (g_boot_hart * EIC7700X_PLIC_ENABLE_HART);
           modifyreg32(addr + (4 * (extirq / 32)),
                       0, 1 << (extirq % 32));
         }
