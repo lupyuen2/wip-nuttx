@@ -46,7 +46,7 @@
 /* Hart ID that booted NuttX (0 to 3) */
 
 #ifndef __ASSEMBLY__
-extern int g_boot_hart;
+extern int g_eic7700x_boot_hart;
 #endif
 
 /****************************************************************************
