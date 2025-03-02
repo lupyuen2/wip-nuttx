@@ -59,8 +59,8 @@ extern int g_eic7700x_boot_hart;
  * Name: setintstack
  *
  * Description:
- *   Set the current stack pointer to the  "top" the correct interrupt stack
- *   for the current CPU.
+ *   Set the current stack pointer to the "top" of the correct interrupt
+ *   stack for the current CPU.
  *
  ****************************************************************************/
 

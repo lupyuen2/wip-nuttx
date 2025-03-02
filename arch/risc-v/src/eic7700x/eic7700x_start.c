@@ -300,7 +300,7 @@ void eic7700x_start_s(int mhartid)
       goto cpux;
     }
 
-  /* Boot Hart starts here */
+  /* Boot Hart starts here. Init the UART Driver. */
 
   showprogress('A');
 
@@ -308,21 +308,19 @@ void eic7700x_start_s(int mhartid)
   riscv_earlyserialinit();
 #endif
 
-  showprogress('B');
-
-  /* Do board initialization */
-
-  showprogress('C');
-
   /* Setup page tables for kernel and enable MMU */
 
+  showprogress('B');
   eic7700x_mm_init();
 
-  /* Call nx_start() */
+  /* Start NuttX */
 
+  showprogress('C');
   nx_start();
 
 cpux:
+
+  /* Non-Boot Hart starts here. Init the CPU for the Hart. */
 
 #ifdef CONFIG_SMP
   riscv_cpu_boot(mhartid);
