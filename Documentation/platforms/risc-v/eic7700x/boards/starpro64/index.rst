@@ -110,11 +110,11 @@ together with the Device Tree:
 
 .. code:: console
 
-   $ wget https://github.com/lupyuen2/wip-nuttx/releases/download/sg2000-1/TODO.dtb
+   $ wget https://github.com/lupyuen/nuttx-starpro64/raw/refs/heads/main/eic7700-evb.dtb
    $ scp Image-starpro64 \
       tftpserver:/tftpfolder/Image-starpro64
-   $ scp TODO.dtb \
-      tftpserver:/tftpfolder/TODO.dtb
+   $ scp eic7700-evb.dtb \
+      tftpserver:/tftpfolder/eic7700-evb.dtb
 
 Check that StarPro64 is connected to our computer via a USB Serial Adapter at 115.2 kbps:
 
@@ -131,7 +131,7 @@ Run these commands to `boot NuttX over TFTP <https://lupyuen.github.io/articles/
    $ setenv tftp_server 192.168.x.x
    $ saveenv
    $ dhcp ${kernel_addr_r} ${tftp_server}:Image-starpro64
-   $ tftpboot ${fdt_addr_r} ${tftp_server}:TODO.dtb
+   $ tftpboot ${fdt_addr_r} ${tftp_server}:eic7700-evb.dtb
    $ fdt addr ${fdt_addr_r}
    $ booti ${kernel_addr_r} - ${fdt_addr_r}
 
