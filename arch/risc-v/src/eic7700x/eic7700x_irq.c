@@ -66,7 +66,7 @@ void up_irqinitialize(void)
   for (hart = 0; hart < CONFIG_SMP_NCPUS; hart++)
     {
       addr = EIC7700X_PLIC_ENABLE0 + (hart * EIC7700X_PLIC_ENABLE_HART);
-      for (offset = 0; offset < (NR_IRQS - RISCV_IRQ_EXT) >> 3; offset += 4)
+      for (offset = 0; offset < (EIC7700X_PLIC_IRQS) >> 3; offset += 4)
         {
           putreg32(0x0, addr + offset);
         }
@@ -153,7 +153,7 @@ void up_disable_irq(int irq)
 
       /* Clear enable bit for the irq */
 
-      if (0 <= extirq && extirq <= NR_IRQS - RISCV_IRQ_EXT)
+      if (0 <= extirq && extirq <= EIC7700X_PLIC_IRQS)
         {
           addr = EIC7700X_PLIC_ENABLE0 +
                  (g_boot_hart * EIC7700X_PLIC_ENABLE_HART);
@@ -198,7 +198,7 @@ void up_enable_irq(int irq)
 
       /* Set enable bit for the irq */
 
-      if (0 <= extirq && extirq <= NR_IRQS - RISCV_IRQ_EXT)
+      if (0 <= extirq && extirq <= EIC7700X_PLIC_IRQS)
         {
           addr = EIC7700X_PLIC_ENABLE0 +
                  (g_boot_hart * EIC7700X_PLIC_ENABLE_HART);

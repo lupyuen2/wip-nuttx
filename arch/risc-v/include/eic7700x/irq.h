@@ -31,8 +31,12 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+/* Number of PLIC External Interrupts supported */
+
+#define EIC7700X_PLIC_IRQS 458
+
 /* Map RISC-V exception code to NuttX IRQ */
 
-#define NR_IRQS (RISCV_IRQ_SEXT + 458)
+#define NR_IRQS (RISCV_IRQ_SEXT + EIC7700X_PLIC_IRQS)
 
 #endif /* __ARCH_RISCV_INCLUDE_EIC7700X_IRQ_H */
