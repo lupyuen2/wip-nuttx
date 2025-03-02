@@ -33,11 +33,6 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* DDR start address */
-
-#define EIC7700X_DDR_BASE   (0x50200000)
-#define EIC7700X_DDR_SIZE   (0x03e00000)
-
 /* Kernel code memory (RX) */
 
 #define KFLASH_START    (uintptr_t)__kflash_start

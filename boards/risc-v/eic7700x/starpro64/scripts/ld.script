@@ -30,7 +30,7 @@ MEMORY
 
 OUTPUT_ARCH("riscv")
 
-/* Provide the kernel boundaries */
+/* Define the kernel boundaries */
 
 __kflash_start = ORIGIN(kflash);
 __kflash_size = LENGTH(kflash);
@@ -53,7 +53,7 @@ SECTIONS
 {
   . = 0x80200000;
 
-  /* where the global variable out-of-bounds detection information located */
+  /* Global variable out-of-bounds detection */
 
 #ifdef CONFIG_MM_KASAN_GLOBAL
   .kasan.unused : {
@@ -79,7 +79,7 @@ SECTIONS
       *(.glue_7t)
       *(.jcr)
 
-      /* C++ support:  The .init and .fini sections contain specific logic
+      /* C++ support: The .init and .fini sections contain specific logic
        * to manage static constructors and destructors.
        */
 
@@ -139,7 +139,7 @@ SECTIONS
       _ebss = . ;
     } > ksram
 
-  /* Page tables here, align to 4K boundary */
+  /* Page tables, aligned to 4K boundary */
 
   .pgtables (NOLOAD) : ALIGN(0x1000)
     {
@@ -155,7 +155,7 @@ SECTIONS
       _ebss = ABSOLUTE(.);
     } > ksram
 
-  /* Stabs debugging sections.    */
+  /* Stabs debugging */
 
   .stab 0 : { *(.stab) }
   .stabstr 0 : { *(.stabstr) }
