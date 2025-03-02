@@ -41,7 +41,7 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* Ramdisk Definition */
+/* RAM Disk Definition */
 
 #define SECTORSIZE   512
 #define NSECTORS(b)  (((b) + SECTORSIZE - 1) / SECTORSIZE)
@@ -55,8 +55,8 @@
  * Name: mount_ramdisk
  *
  * Description:
- *  Mount a ramdisk defined in the ld.script to /dev/ramX.  The ramdisk is
- *  intended to contain a romfs with applications which can be spawned at
+ *  Mount a RAM Disk defined in ld.script to /dev/ramX.  The RAM Disk
+ *  contains a ROMFS filesystem with applications that can be spawned at
  *  runtime.
  *
  * Returned Value:
@@ -104,7 +104,7 @@ static int mount_ramdisk(void)
  *         meaning to NuttX; the meaning of the argument is a contract
  *         between the board-specific initialization logic and the
  *         matching application logic.  The value could be such things as a
- *         mode enumeration value, a set of DIP switch switch settings, a
+ *         mode enumeration value, a set of DIP switch settings, a
  *         pointer to configuration data read from a file or serial FLASH,
  *         or whatever you would like to do with it.  Every implementation
  *         should accept zero/NULL as a default configuration.
