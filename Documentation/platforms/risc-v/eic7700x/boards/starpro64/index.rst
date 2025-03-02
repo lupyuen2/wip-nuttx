@@ -122,8 +122,9 @@ Check that StarPro64 is connected to our computer via a USB Serial Adapter at 11
 
    $ screen /dev/ttyUSB0 115200
 
-When StarPro64 boots, press Ctrl-C to see the U-Boot Prompt.
-Run these commands to `boot NuttX over TFTP <https://lupyuen.github.io/articles/starpro64#boot-nuttx-over-tftp>`_:
+When StarPro64 boots, press Ctrl-C until U-Boot stops.
+At the U-Boot Prompt, run these commands to
+`boot NuttX over TFTP <https://lupyuen.github.io/articles/starpro64#boot-nuttx-over-tftp>`_:
 
 .. code:: console
 
