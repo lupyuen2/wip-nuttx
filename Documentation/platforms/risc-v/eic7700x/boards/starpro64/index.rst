@@ -102,7 +102,7 @@ The NuttX Image ``Image-starpro64`` will be copied to the TFTP Server in the nex
 Booting
 =======
 
-To boot NuttX on StarPro64, `install TFTP Server <https://lupyuen.github.io/articles/starpro64#boot-nuttx-over-tftp>`_
+To boot NuttX on StarPro64, `install a TFTP Server <https://lupyuen.github.io/articles/starpro64#boot-nuttx-over-tftp>`_
 on our computer.
 
 Copy the file ``Image-starpro64`` from the previous section to the TFTP Server,
