@@ -105,7 +105,7 @@ __start:
 
     add     x13, x18, #0x16      /* the magic "MZ" signature */
     b       real_start           /* branch to kernel start */
-    .quad   0x480000              /* Image load offset from start of RAM */
+    .quad   0x800000             /* Image load offset from start of RAM */
     .quad   _e_initstack - __start         /* Effective size of kernel image, little-endian */
     .quad   __HEAD_FLAGS         /* Informative flags, little-endian */
     .quad   0                    /* reserved */
@@ -115,6 +115,16 @@ __start:
     .long   0                    /* reserved */
 
 real_start:
+
+    /* TODO */
+    mov	    x15, #0x02500000
+    mov     w16, #0x31
+    strb	w16, [x15]
+    mov     w16, #0x32
+    strb	w16, [x15]
+    mov     w16, #0x33
+    strb	w16, [x15]
+
     /* Disable all exceptions and interrupts */
 
     msr    DAIFSet, 0xf
