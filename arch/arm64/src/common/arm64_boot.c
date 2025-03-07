@@ -216,6 +216,7 @@ void arm64_boot_el1_init(void)
 
 void arm64_boot_primary_c_routine(void)
 {
+  *(volatile uint8_t *) 0x02500000 = 'A'; ////
   arm64_chip_boot();
   nx_start();
 }

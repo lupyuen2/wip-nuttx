@@ -159,8 +159,10 @@ void arm64_chip_boot(void)
 {
   /* MAP IO and DRAM, enable MMU. */
 
+  *(volatile uint8_t *) 0x02500000 = 'B'; ////
   arm64_mmu_init(true);
 
+  *(volatile uint8_t *) 0x02500000 = 'C'; ////
   arm64_enable_mte();
 
 #ifdef CONFIG_DEVICE_TREE
@@ -177,21 +179,25 @@ void arm64_chip_boot(void)
    * configuration of board specific resources such as GPIOs, LEDs, etc.
    */
 
-  qemu_board_initialize();
+   *(volatile uint8_t *) 0x02500000 = 'D'; ////
+   qemu_board_initialize();
 
 #ifdef USE_EARLYSERIALINIT
   /* Perform early serial initialization if we are going to use the serial
    * driver.
    */
 
-  arm64_earlyserialinit();
+   *(volatile uint8_t *) 0x02500000 = 'E'; ////
+   arm64_earlyserialinit();
 #endif
 
 #ifdef CONFIG_SYSLOG_RPMSG
+  *(volatile uint8_t *) 0x02500000 = 'F'; ////
   syslog_rpmsg_init_early(g_syslog_rpmsg_buf, sizeof(g_syslog_rpmsg_buf));
 #endif
 
 #ifdef CONFIG_ARCH_PERF_EVENTS
+  *(volatile uint8_t *) 0x02500000 = 'G'; ////
   up_perf_init((void *)CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC);
 #endif
 }
