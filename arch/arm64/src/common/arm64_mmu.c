@@ -43,11 +43,11 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-/* MMU debug option
- * #define CONFIG_MMU_ASSERT 1
- * #define CONFIG_MMU_DEBUG 1
- * #define CONFIG_MMU_DUMP_PTE 1
- */
+/* MMU debug option  */
+#define CONFIG_MMU_ASSERT 1
+#define CONFIG_MMU_DEBUG 1
+#define CONFIG_MMU_DUMP_PTE 1
+#define trace_printf _info
 
 #ifdef CONFIG_MMU_DEBUG
 
@@ -660,6 +660,7 @@ int arm64_mmu_set_memregion(const struct arm_mmu_region *region)
 
 int arm64_mmu_init(bool is_primary_core)
 {
+  _info(""); ////
   uint64_t val;
   uint64_t el;
   unsigned flags = 0;
