@@ -41,7 +41,7 @@
 
  /* 32-bit register definition for qemu pl011 uart */
 
- #define UART1_BASE_ADDRESS 0x9000000
+ #define UART1_BASE_ADDRESS 0x02500000
  #define EARLY_UART_PL011_BAUD_RATE  115200
 
 /****************************************************************************
@@ -67,12 +67,14 @@ SECTION_FUNC(text, arm64_earlyprintinit)
  * c: scratch register number
  */
 
+#ifdef TODO
 .macro early_uart_ready xb, wt
 1:
     ldrh  \wt, [\xb, #0x18]      /* <- UARTFR (Flag register) */
     tst   \wt, #0x8              /* Check BUSY bit */
     b.ne  1b                     /* Wait for the UART to be ready */
 .endm
+#endif
 
 /* PL011 UART transmit character
  * xb: register which contains the UART base address
@@ -90,6 +92,8 @@ SECTION_FUNC(text, arm64_earlyprintinit)
 GTEXT(arm64_lowputc)
 SECTION_FUNC(text, arm64_lowputc)
     ldr   x15, =UART1_BASE_ADDRESS
+#ifdef TODO
     early_uart_ready x15, w2
+#endif
     early_uart_transmit x15, w0
     ret
