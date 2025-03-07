@@ -27,8 +27,8 @@ EXTERN(__start)
 
 MEMORY
 {
-  dram (rwx)  : ORIGIN = 0x40280000, LENGTH = 2M
-  pgram (rwx) : ORIGIN = 0x40800000, LENGTH = 4M   /* w/ cache */
+  dram (rwx)  : ORIGIN = 0x40800000, LENGTH = 2M
+  pgram (rwx) : ORIGIN = 0x40a00000, LENGTH = 4M   /* w/ cache */
 }
 
 PHDRS
