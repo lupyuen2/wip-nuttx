@@ -62,19 +62,17 @@ SECTION_FUNC(text, arm64_earlyprintinit)
      */
     ret
 
-/* PL011 UART wait UART to be ready to transmit
- * xb: register which contains the UART base address
- * c: scratch register number
+/* Wait for 16550 UART to be ready to transmit
+ * xb: Register that contains the UART Base Address
+ * wt: Scratch register number
  */
 
-#ifdef TODO
 .macro early_uart_ready xb, wt
 1:
-    ldrh  \wt, [\xb, #0x18]      /* <- UARTFR (Flag register) */
-    tst   \wt, #0x8              /* Check BUSY bit */
-    b.ne  1b                     /* Wait for the UART to be ready */
+    ldrh  \wt, [\xb, #0x14]      /* UART_LSR (Line Status Register) */
+    tst   \wt, #0x20             /* Check THRE (TX Holding Register Empty) */
+    b.eq  1b                     /* Wait for the UART to be ready (THRE=1) */
 .endm
-#endif
 
 /* PL011 UART transmit character
  * xb: register which contains the UART base address
@@ -92,8 +90,6 @@ SECTION_FUNC(text, arm64_earlyprintinit)
 GTEXT(arm64_lowputc)
 SECTION_FUNC(text, arm64_lowputc)
     ldr   x15, =UART1_BASE_ADDRESS
-#ifdef TODO
     early_uart_ready x15, w2
-#endif
     early_uart_transmit x15, w0
     ret
