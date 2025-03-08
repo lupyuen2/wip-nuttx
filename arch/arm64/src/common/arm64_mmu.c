@@ -44,10 +44,10 @@
  ****************************************************************************/
 
 /* MMU debug option  */
-#define CONFIG_MMU_ASSERT 1
-#define CONFIG_MMU_DEBUG 1
+// #define CONFIG_MMU_ASSERT 1
+// #define CONFIG_MMU_DEBUG 1
 // #define CONFIG_MMU_DUMP_PTE 1
-#define trace_printf _info
+// #define trace_printf _info
 
 #ifdef CONFIG_MMU_DEBUG
 
