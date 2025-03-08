@@ -29,6 +29,7 @@
 #include <sys/types.h>
 
 #include <nuttx/board.h>
+#include <debug.h>
 
 #include "qemu-armv8a.h"
 
@@ -65,6 +66,7 @@
 
 int board_app_initialize(uintptr_t arg)
 {
+  _info("\n"); ////
   UNUSED(arg);
 #ifndef CONFIG_BOARD_LATE_INITIALIZE
   /* Perform board initialization */
