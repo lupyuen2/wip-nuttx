@@ -141,7 +141,7 @@ static void qemu_copy_overlap(uint8_t *dest, const uint8_t *src,
 
 static void qemu_copy_ramdisk(void)
 {
-  const char *header = "-rom1fs-";
+  char header[8] __attribute__((aligned(8))) = "-rom1fs-";
   const uint8_t *limit = (uint8_t *)g_idle_topstack + (256 * 1024);
   uint8_t *ramdisk_addr = NULL;
   uint8_t *addr;
@@ -154,9 +154,10 @@ static void qemu_copy_ramdisk(void)
   binfo("_edata=%p, _sbss=%p, _ebss=%p, idlestack_top=%p\n",
         (void *)_edata, (void *)_sbss, (void *)_ebss,
         (void *)g_idle_topstack);
-  for (addr = _edata; addr < limit; addr++)
+  for (addr = g_idle_topstack; addr < limit; addr += 8)
     {
-      if (memcmp(addr, header, strlen(header)) == 0)
+      if (addr == _edata) { _info("addr=%p, header=%p, sizeof(header)=%d\n", addr, header, sizeof(header)); } ////
+      if (memcmp(addr, header, sizeof(header)) == 0)
         {
           ramdisk_addr = addr;
           break;
@@ -174,13 +175,13 @@ static void qemu_copy_ramdisk(void)
 
   /* RAM Disk must be after Idle Stack, to prevent overwriting */
 
-  if (ramdisk_addr <= (uint8_t *)g_idle_topstack)
-    {
-      const size_t pad = (size_t)g_idle_topstack - (size_t)ramdisk_addr;
-      _err("RAM Disk must be after Idle Stack. Increase initrd padding "
-            "by %ul bytes.", pad);
-      PANIC();
-    }
+  // if (ramdisk_addr <= (uint8_t *)g_idle_topstack)
+  //   {
+  //     const size_t pad = (size_t)g_idle_topstack - (size_t)ramdisk_addr;
+  //     _err("RAM Disk must be after Idle Stack. Increase initrd padding "
+  //           "by %d bytes.", pad);
+  //     PANIC();
+  //   }
 
   /* Read the Filesystem Size from the next 4 bytes (Big Endian) */
 
