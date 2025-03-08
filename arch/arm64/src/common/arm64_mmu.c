@@ -466,6 +466,7 @@ static void init_xlat_tables(const struct arm_mmu_region *region)
   uint64_t level_size;
 
 #ifdef CONFIG_MMU_DEBUG
+  _info("name=%s\n", region->name); ////
   sinfo("mmap: virt %p phys %p size %p\n", virt, phys, size);
 #endif
 
