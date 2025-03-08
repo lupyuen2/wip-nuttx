@@ -358,6 +358,7 @@ static inline void nx_start_application(void)
   ret = nx_mount(CONFIG_INIT_MOUNT_SOURCE, CONFIG_INIT_MOUNT_TARGET,
                  CONFIG_INIT_MOUNT_FSTYPE, CONFIG_INIT_MOUNT_FLAGS,
                  CONFIG_INIT_MOUNT_DATA);
+  _info("ret=%d\n", ret); ////
   DEBUGASSERT(ret >= 0);
 #  endif
 
