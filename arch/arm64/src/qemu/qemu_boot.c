@@ -52,6 +52,10 @@
 #  include <nuttx/fdt.h>
 #endif
 
+//// TODO
+extern uint8_t __ramdisk_start[];
+extern uint8_t __ramdisk_size[];
+
 /****************************************************************************
  * Private Data
  ****************************************************************************/
@@ -90,14 +94,121 @@ static char g_syslog_rpmsg_buf[4096];
 #endif
 
 /****************************************************************************
- * Public Functions
+ * Private Functions
  ****************************************************************************/
 
-#ifdef CONFIG_SMP
+/****************************************************************************
+ * Name: qemu_copy_overlap
+ *
+ * Description:
+ *   Copy an overlapping memory region.  dest overlaps with src + count.
+ *
+ * Input Parameters:
+ *   dest  - Destination address
+ *   src   - Source address
+ *   count - Number of bytes to copy
+ *
+ ****************************************************************************/
+
+static void qemu_copy_overlap(uint8_t *dest, const uint8_t *src,
+                              size_t count)
+{
+  uint8_t *d = dest + count - 1;
+  const uint8_t *s = src + count - 1;
+
+  if (dest <= src)
+    {
+      _err("dest and src should overlap");
+      PANIC();
+    }
+
+  while (count--)
+    {
+      volatile uint8_t c = *s;  /* Prevent compiler optimization */
+      *d = c;
+      d--;
+      s--;
+    }
+} 
+
+/****************************************************************************
+ * Name: qemu_copy_ramdisk
+ *
+ * Description:
+ *   Copy the RAM Disk from NuttX Image to RAM Disk Region.
+ *
+ ****************************************************************************/
+
+static void qemu_copy_ramdisk(void)
+{
+  const char *header = "-rom1fs-";
+  const uint8_t *limit = (uint8_t *)g_idle_topstack + (256 * 1024);
+  uint8_t *ramdisk_addr = NULL;
+  uint8_t *addr;
+  uint32_t size;
+
+  /* After _edata, search for "-rom1fs-". This is the RAM Disk Address.
+   * Limit search to 256 KB after Idle Stack Top.
+   */
+
+  binfo("_edata=%p, _sbss=%p, _ebss=%p, idlestack_top=%p\n",
+        (void *)_edata, (void *)_sbss, (void *)_ebss,
+        (void *)g_idle_topstack);
+  for (addr = _edata; addr < limit; addr++)
+    {
+      if (memcmp(addr, header, strlen(header)) == 0)
+        {
+          ramdisk_addr = addr;
+          break;
+        }
+    }
+
+  /* Stop if RAM Disk is missing */
+
+  binfo("ramdisk_addr=%p\n", ramdisk_addr);
+  if (ramdisk_addr == NULL)
+    {
+      _err("Missing RAM Disk. Check the initrd padding.");
+      PANIC();
+    }
+
+  /* RAM Disk must be after Idle Stack, to prevent overwriting */
+
+  if (ramdisk_addr <= (uint8_t *)g_idle_topstack)
+    {
+      const size_t pad = (size_t)g_idle_topstack - (size_t)ramdisk_addr;
+      _err("RAM Disk must be after Idle Stack. Increase initrd padding "
+            "by %ul bytes.", pad);
+      PANIC();
+    }
+
+  /* Read the Filesystem Size from the next 4 bytes (Big Endian) */
+
+  size = (ramdisk_addr[8] << 24) + (ramdisk_addr[9] << 16) +
+         (ramdisk_addr[10] << 8) + ramdisk_addr[11] + 0x1f0;
+  binfo("size=%d\n", size);
+
+  /* Filesystem Size must be less than RAM Disk Memory Region */
+
+  if (size > (size_t)__ramdisk_size)
+    {
+      _err("RAM Disk Region too small. Increase by %ul bytes.\n",
+            size - (size_t)__ramdisk_size);
+      PANIC();
+    }
+
+  /* Copy the RAM Disk from NuttX Image to RAM Disk Region.
+   * __ramdisk_start overlaps with ramdisk_addr + size.
+   */
+
+  qemu_copy_overlap(__ramdisk_start, ramdisk_addr, size);
+}
 
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
+
+#ifdef CONFIG_SMP
 
 /****************************************************************************
  * Name: arm64_get_mpid
@@ -157,6 +268,10 @@ void arm64_el_init(void)
 
 void arm64_chip_boot(void)
 {
+  /* Copy the RAM Disk */
+
+  qemu_copy_ramdisk();
+
   /* MAP IO and DRAM, enable MMU. */
 
   *(volatile uint8_t *) 0x02500000 = 'B'; ////
