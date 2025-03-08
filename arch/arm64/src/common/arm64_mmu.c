@@ -466,7 +466,7 @@ static void init_xlat_tables(const struct arm_mmu_region *region)
   uint64_t level_size;
 
 #ifdef CONFIG_MMU_DEBUG
-  sinfo("mmap: virt %lux phys %lux size %lux\n", virt, phys, size);
+  sinfo("mmap: virt %p phys %p size %p\n", virt, phys, size);
 #endif
 
   /* check minimum alignment requirement for given mmap region */
@@ -524,6 +524,7 @@ static void init_xlat_tables(const struct arm_mmu_region *region)
 
 static void setup_page_tables(void)
 {
+  _info(""); ////
   uint64_t max_va = 0, max_pa = 0;
   const struct arm_mmu_region *region;
   unsigned int index;
@@ -598,6 +599,7 @@ static void enable_mmu_el3(unsigned int flags)
 #else
 static void enable_mmu_el1(unsigned int flags)
 {
+  _info(""); ////
   uint64_t value;
   UNUSED(flags);
 
@@ -609,10 +611,12 @@ static void enable_mmu_el1(unsigned int flags)
 
   /* Ensure these changes are seen before MMU is enabled */
 
+  _info("UP_MB"); ////
   UP_MB();
 
   /* Enable the MMU and data cache */
 
+  _info("Enable the MMU and data cache"); ////
   value = read_sysreg(sctlr_el1);
   write_sysreg((value | SCTLR_M_BIT
 #ifndef CONFIG_ARM64_DCACHE_DISABLE
@@ -622,6 +626,7 @@ static void enable_mmu_el1(unsigned int flags)
 
   /* Ensure the MMU enable takes effect immediately */
 
+  _info("UP_ISB"); ////
   UP_ISB();
 #ifdef CONFIG_MMU_DEBUG
   sinfo("MMU enabled with dcache\n");
