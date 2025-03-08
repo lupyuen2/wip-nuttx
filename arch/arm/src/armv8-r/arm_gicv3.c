@@ -242,6 +242,7 @@ int arm_gic_irq_trigger(unsigned int intid, uint32_t flags)
 
 void arm_gic_irq_enable(unsigned int intid)
 {
+  _info("intid=%d\n", intid); ////
   uint32_t mask = BIT(intid & (GIC_NUM_INTR_PER_REG - 1));
   uint32_t idx  = intid / GIC_NUM_INTR_PER_REG;
 
@@ -260,6 +261,7 @@ void arm_gic_irq_enable(unsigned int intid)
 
 void arm_gic_irq_disable(unsigned int intid)
 {
+  _info("intid=%d\n", intid); ////
   uint32_t mask = BIT(intid & (GIC_NUM_INTR_PER_REG - 1));
   uint32_t idx  = intid / GIC_NUM_INTR_PER_REG;
 
