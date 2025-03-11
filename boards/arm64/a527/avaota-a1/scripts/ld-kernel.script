@@ -27,9 +27,16 @@ EXTERN(__start)
 
 MEMORY
 {
-  dram (rwx)  : ORIGIN = 0x40280000, LENGTH = 2M
-  pgram (rwx) : ORIGIN = 0x40800000, LENGTH = 4M   /* w/ cache */
+  dram (rwx)    : ORIGIN = 0x40800000, LENGTH = 2M
+  pgram (rwx)   : ORIGIN = 0x40A00000, LENGTH = 4M    /* w/ cache */
+  ramdisk (rwx) : ORIGIN = 0x40E00000, LENGTH = 16M   /* w/ cache */
 }
+
+/* Application RAM Disk */
+
+__ramdisk_start = ORIGIN(ramdisk);
+__ramdisk_size  = LENGTH(ramdisk);
+__ramdisk_end   = ORIGIN(ramdisk) + LENGTH(ramdisk);
 
 PHDRS
 {

@@ -27,18 +27,26 @@
 #include <nuttx/config.h>
 
 #include <sys/types.h>
+#include <sys/mount.h>
+#include <sys/boardctl.h>
 #include <syslog.h>
+#include <debug.h>
 
 #include <nuttx/fs/fs.h>
 #include <nuttx/virtio/virtio-mmio.h>
 #include <nuttx/fdt.h>
 #include <nuttx/pci/pci_ecam.h>
+#include <nuttx/drivers/ramdisk.h>
 
 #ifdef CONFIG_LIBC_FDT
 #  include <libfdt.h>
 #endif
 
 #include "avaota-a1.h"
+
+//// TODO
+extern uint8_t __ramdisk_start[];
+extern uint8_t __ramdisk_size[];
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -53,6 +61,12 @@
 #define FDT_PCI_TYPE_MEM64           0x03000000
 #define FDT_PCI_TYPE_MASK            0x03000000
 #define FDT_PCI_PREFETCH             0x40000000
+
+/* RAM Disk Definition */
+
+#define SECTORSIZE   512
+#define NSECTORS(b)  (((b) + SECTORSIZE - 1) / SECTORSIZE)
+#define RAMDISK_DEVICE_MINOR 0
 
 /****************************************************************************
  * Private Functions
@@ -179,11 +193,48 @@ static void register_devices_from_fdt(void)
 #endif
 
 /****************************************************************************
+ * Name: mount_ramdisk
+ *
+ * Description:
+ *  Mount a RAM Disk defined in ld.script to /dev/ramX.  The RAM Disk
+ *  contains a ROMFS filesystem with applications that can be spawned at
+ *  runtime.
+ *
+ * Returned Value:
+ *   OK is returned on success.
+ *   -ERRORNO is returned on failure.
+ *
+ ****************************************************************************/
+
+static int mount_ramdisk(void)
+{
+  int ret;
+  struct boardioc_romdisk_s desc;
+
+  desc.minor    = RAMDISK_DEVICE_MINOR;
+  desc.nsectors = NSECTORS((ssize_t)__ramdisk_size);
+  desc.sectsize = SECTORSIZE;
+  desc.image    = __ramdisk_start;
+
+  ret = boardctl(BOARDIOC_ROMDISK, (uintptr_t)&desc);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "Ramdisk register failed: %s\n", strerror(errno));
+      syslog(LOG_ERR, "Ramdisk mountpoint /dev/ram%d\n",
+             RAMDISK_DEVICE_MINOR);
+      syslog(LOG_ERR, "Ramdisk length %lu, origin %lx\n",
+             (ssize_t)__ramdisk_size, (uintptr_t)__ramdisk_start);
+    }
+
+  return ret;
+}
+
+/****************************************************************************
  * Public Functions
  ****************************************************************************/
 
 /****************************************************************************
- * Name: imx_bringup
+ * Name: a527_bringup
  *
  * Description:
  *   Bring up board features
@@ -217,6 +268,10 @@ int a527_bringup(void)
 #if defined(CONFIG_LIBC_FDT) && defined(CONFIG_DEVICE_TREE)
   register_devices_from_fdt();
 #endif
+
+  /* Mount the RAM Disk */
+
+  mount_ramdisk();
 
   UNUSED(ret);
   return OK;

@@ -790,7 +790,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
 {
 #ifndef CONFIG_16550_SUPRESS_CONFIG
   FAR struct u16550_s *priv = (FAR struct u16550_s *)dev->priv;
-  uint32_t div;
+  //// TODO: uint32_t div;
   uint32_t lcr;
 #if defined(CONFIG_SERIAL_IFLOWCONTROL) || defined(CONFIG_SERIAL_OFLOWCONTROL) || \
     defined(CONFIG_16550_SET_MCR_OUT2)
@@ -860,6 +860,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
     }
 #endif /* CONFIG_16550_WAIT_LCR */
 
+#ifdef TODO ////
   /* Enter DLAB=1 */
 
   u16550_serialout(priv, UART_LCR_OFFSET, (lcr | UART_LCR_DLAB));
@@ -886,6 +887,7 @@ static int u16550_setup(FAR struct uart_dev_s *dev)
   /* Clear DLAB */
 
   u16550_serialout(priv, UART_LCR_OFFSET, lcr);
+#endif //// TODO
 
   /* Configure the FIFOs */
 

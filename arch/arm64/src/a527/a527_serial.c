@@ -34,7 +34,7 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/serial/uart_pl011.h>
+#include <nuttx/serial/uart_16550.h>
 #include "arm64_internal.h"
 
 #ifdef USE_SERIALDRIVER
@@ -56,7 +56,7 @@ void arm64_earlyserialinit(void)
    * when they are first opened.
    */
 
-  pl011_earlyserialinit();
+   u16550_earlyserialinit();
 }
 
 /***************************************************************************
@@ -69,7 +69,7 @@ void arm64_earlyserialinit(void)
 
 void arm64_serialinit(void)
 {
-  pl011_serialinit();
+  u16550_serialinit();
 }
 
 #endif /* USE_SERIALDRIVER */

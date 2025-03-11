@@ -52,6 +52,10 @@
 #  include <nuttx/fdt.h>
 #endif
 
+//// TODO
+extern uint8_t __ramdisk_start[];
+extern uint8_t __ramdisk_size[];
+
 /****************************************************************************
  * Private Data
  ****************************************************************************/
@@ -64,18 +68,6 @@ static const struct arm_mmu_region g_mmu_regions[] =
 
   MMU_REGION_FLAT_ENTRY("DRAM0_S0",
                         CONFIG_RAMBANK1_ADDR, CONFIG_RAMBANK1_SIZE,
-                        MT_NORMAL | MT_RW | MT_SECURE),
-
-  MMU_REGION_FLAT_ENTRY("PCI_CFG",
-                        CONFIG_PCI_CFG_BASEADDR, CONFIG_PCI_CFG_SIZE,
-                        MT_NORMAL | MT_RW | MT_SECURE),
-
-  MMU_REGION_FLAT_ENTRY("PCI_MEM",
-                        CONFIG_PCI_MEM_BASEADDR, CONFIG_PCI_MEM_SIZE,
-                        MT_NORMAL | MT_RW | MT_SECURE),
-
-  MMU_REGION_FLAT_ENTRY("PCI_IO",
-                        CONFIG_PCI_IO_BASEADDR, CONFIG_PCI_IO_SIZE,
                         MT_NORMAL | MT_RW | MT_SECURE),
 };
 
@@ -90,14 +82,112 @@ static char g_syslog_rpmsg_buf[4096];
 #endif
 
 /****************************************************************************
- * Public Functions
+ * Private Functions
  ****************************************************************************/
 
-#ifdef CONFIG_SMP
+/****************************************************************************
+ * Name: qemu_copy_overlap
+ *
+ * Description:
+ *   Copy an overlapping memory region.  dest overlaps with src + count.
+ *
+ * Input Parameters:
+ *   dest  - Destination address
+ *   src   - Source address
+ *   count - Number of bytes to copy
+ *
+ ****************************************************************************/
+
+static void qemu_copy_overlap(uint8_t *dest, const uint8_t *src,
+                              size_t count)
+{
+  uint8_t *d = dest + count - 1;
+  const uint8_t *s = src + count - 1;
+
+  if (dest <= src)
+    {
+      _err("dest and src should overlap");
+      PANIC();
+    }
+
+  while (count--)
+    {
+      volatile uint8_t c = *s;  /* Prevent compiler optimization */
+      *d = c;
+      d--;
+      s--;
+    }
+} 
+
+/****************************************************************************
+ * Name: qemu_copy_ramdisk
+ *
+ * Description:
+ *   Copy the RAM Disk from NuttX Image to RAM Disk Region.
+ *
+ ****************************************************************************/
+
+static void qemu_copy_ramdisk(void)
+{
+  char header[8] __attribute__((aligned(8))) = "-rom1fs-";
+  const uint8_t *limit = (uint8_t *)g_idle_topstack + (256 * 1024);
+  uint8_t *ramdisk_addr = NULL;
+  uint8_t *addr;
+  uint32_t size;
+
+  /* After _edata, search for "-rom1fs-". This is the RAM Disk Address.
+   * Limit search to 256 KB after Idle Stack Top.
+   */
+
+  binfo("_edata=%p, _sbss=%p, _ebss=%p, idlestack_top=%p\n",
+        (void *)_edata, (void *)_sbss, (void *)_ebss,
+        (void *)g_idle_topstack);
+  for (addr = g_idle_topstack; addr < limit; addr += 8)
+    {
+      if (addr == _edata) { _info("addr=%p, header=%p, sizeof(header)=%d\n", addr, header, sizeof(header)); } ////
+      if (memcmp(addr, header, sizeof(header)) == 0)
+        {
+          ramdisk_addr = addr;
+          break;
+        }
+    }
+
+  /* Stop if RAM Disk is missing */
+
+  binfo("ramdisk_addr=%p\n", ramdisk_addr);
+  if (ramdisk_addr == NULL)
+    {
+      _err("Missing RAM Disk. Check the initrd padding.");
+      PANIC();
+    }
+
+  /* Read the Filesystem Size from the next 4 bytes (Big Endian) */
+
+  size = (ramdisk_addr[8] << 24) + (ramdisk_addr[9] << 16) +
+         (ramdisk_addr[10] << 8) + ramdisk_addr[11] + 0x1f0;
+  binfo("size=%d\n", size);
+
+  /* Filesystem Size must be less than RAM Disk Memory Region */
+
+  if (size > (size_t)__ramdisk_size)
+    {
+      _err("RAM Disk Region too small. Increase by %ul bytes.\n",
+            size - (size_t)__ramdisk_size);
+      PANIC();
+    }
+
+  /* Copy the RAM Disk from NuttX Image to RAM Disk Region.
+   * __ramdisk_start overlaps with ramdisk_addr + size.
+   */
+
+  qemu_copy_overlap(__ramdisk_start, ramdisk_addr, size);
+}
 
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
+
+#ifdef CONFIG_SMP
 
 /****************************************************************************
  * Name: arm64_get_mpid
@@ -157,6 +247,10 @@ void arm64_el_init(void)
 
 void arm64_chip_boot(void)
 {
+  /* Copy the RAM Disk */
+
+  qemu_copy_ramdisk();
+
   /* MAP IO and DRAM, enable MMU. */
 
   arm64_mmu_init(true);

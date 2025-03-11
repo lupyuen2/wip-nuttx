@@ -39,10 +39,7 @@
  * Assembly Macros
  ****************************************************************************/
 
- /* 32-bit register definition for a527 pl011 uart */
-
- #define UART1_BASE_ADDRESS 0x9000000
- #define EARLY_UART_PL011_BAUD_RATE  115200
+#define UART0_BASE_ADDRESS 0x02500000
 
 /****************************************************************************
  * Private Functions
@@ -52,44 +49,40 @@
  * Public Functions
  ****************************************************************************/
 
-/* PL011 UART initialization
- */
+/* 16550 UART initialization */
 
 GTEXT(arm64_earlyprintinit)
 SECTION_FUNC(text, arm64_earlyprintinit)
-    /* it's seem we can do nothing at the a527 platform
-     * for a527 pl011, the A527 has already initialized UART
-     */
     ret
 
-/* PL011 UART wait UART to be ready to transmit
- * xb: register which contains the UART base address
- * c: scratch register number
+/* Wait for 16550 UART to be ready to transmit.
+ * xb: Register that contains the UART Base Address
+ * wt: Scratch register number
  */
 
 .macro early_uart_ready xb, wt
 1:
-    ldrh  \wt, [\xb, #0x18]      /* <- UARTFR (Flag register) */
-    tst   \wt, #0x8              /* Check BUSY bit */
-    b.ne  1b                     /* Wait for the UART to be ready */
+    ldrh  \wt, [\xb, #0x14]      /* UART_LSR (Line Status Register) */
+    tst   \wt, #0x20             /* Check THRE (TX Holding Register Empty) */
+    b.eq  1b                     /* Wait for the UART to be ready (THRE=1) */
 .endm
 
-/* PL011 UART transmit character
- * xb: register which contains the UART base address
- * wt: register which contains the character to transmit
+/* 16550 UART transmit character.
+ * xb: Register that contains the UART Base Address
+ * wt: Register that contains the character to transmit
  */
 
 .macro early_uart_transmit xb, wt
-    strb  \wt, [\xb]             /* -> UARTDR (Data Register) */
+    strb  \wt, [\xb]             /* -> UART_THR (TX Holding Register) */
 .endm
 
-/* Print a character on the UART - this function is called by C
- * x0: character to print
+/* Print a character on the UART. This function is called by C.
+ * x0: Character to print
  */
 
 GTEXT(arm64_lowputc)
 SECTION_FUNC(text, arm64_lowputc)
-    ldr   x15, =UART1_BASE_ADDRESS
-    early_uart_ready x15, w2
+    ldr   x15, =UART0_BASE_ADDRESS
+    early_uart_ready    x15, w2
     early_uart_transmit x15, w0
     ret
