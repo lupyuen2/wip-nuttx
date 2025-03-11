@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_ARM64_A527_A527_ARMV8A_SRC_A527_ARMV8A_H
-#define __BOARDS_ARM64_A527_A527_ARMV8A_SRC_A527_ARMV8A_H
+#ifndef __BOARDS_ARM64_A527_AVAOTA_A1_SRC_AVAOTA_A1_H
+#define __BOARDS_ARM64_A527_AVAOTA_A1_SRC_AVAOTA_A1_H
 
 /****************************************************************************
  * Included Files
@@ -58,4 +58,4 @@ int a527_bringup(void);
 #endif
 
 #endif /* __ASSEMBLY__ */
-#endif /* __BOARDS_ARM64_A527_A527_ARMV8A_SRC_A527_ARMV8A_H */
+#endif /* __BOARDS_ARM64_A527_AVAOTA_A1_SRC_AVAOTA_A1_H */

@@ -3,5 +3,5 @@
 # see the file kconfig-language.txt in the NuttX tools repository.
 #
 
-if ARCH_BOARD_A527_ARMV8A
+if ARCH_BOARD_AVAOTA_A1
 endif
