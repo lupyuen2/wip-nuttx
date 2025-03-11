@@ -84,7 +84,7 @@ static char g_syslog_rpmsg_buf[4096];
  ****************************************************************************/
 
 /****************************************************************************
- * Name: qemu_copy_overlap
+ * Name: a527_copy_overlap
  *
  * Description:
  *   Copy an overlapping memory region.  dest overlaps with src + count.
@@ -96,7 +96,7 @@ static char g_syslog_rpmsg_buf[4096];
  *
  ****************************************************************************/
 
-static void qemu_copy_overlap(uint8_t *dest, const uint8_t *src,
+static void a527_copy_overlap(uint8_t *dest, const uint8_t *src,
                               size_t count)
 {
   uint8_t *d = dest + count - 1;
@@ -118,14 +118,14 @@ static void qemu_copy_overlap(uint8_t *dest, const uint8_t *src,
 }
 
 /****************************************************************************
- * Name: qemu_copy_ramdisk
+ * Name: a527_copy_ramdisk
  *
  * Description:
  *   Copy the RAM Disk from NuttX Image to RAM Disk Region.
  *
  ****************************************************************************/
 
-static void qemu_copy_ramdisk(void)
+static void a527_copy_ramdisk(void)
 {
   const uint8_t aligned_data(8) header[8] = "-rom1fs-";
   const uint8_t *limit = (uint8_t *)g_idle_topstack + (256 * 1024);
@@ -177,7 +177,7 @@ static void qemu_copy_ramdisk(void)
    * __ramdisk_start overlaps with ramdisk_addr + size.
    */
 
-  qemu_copy_overlap(__ramdisk_start, ramdisk_addr, size);
+  a527_copy_overlap(__ramdisk_start, ramdisk_addr, size);
 }
 
 /****************************************************************************
@@ -246,7 +246,7 @@ void arm64_chip_boot(void)
 {
   /* Copy the RAM Disk */
 
-  qemu_copy_ramdisk();
+  a527_copy_ramdisk();
 
   /* MAP IO and DRAM, enable MMU. */
 
