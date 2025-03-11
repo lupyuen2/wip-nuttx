@@ -37,16 +37,13 @@
 #include <nuttx/fdt.h>
 #include <nuttx/pci/pci_ecam.h>
 #include <nuttx/drivers/ramdisk.h>
+#include <arch/board/board_memorymap.h>
 
 #ifdef CONFIG_LIBC_FDT
 #  include <libfdt.h>
 #endif
 
 #include "avaota-a1.h"
-
-//// TODO
-extern uint8_t __ramdisk_start[];
-extern uint8_t __ramdisk_size[];
 
 /****************************************************************************
  * Pre-processor Definitions

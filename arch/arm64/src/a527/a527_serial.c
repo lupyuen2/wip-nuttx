@@ -56,7 +56,7 @@ void arm64_earlyserialinit(void)
    * when they are first opened.
    */
 
-   u16550_earlyserialinit();
+  u16550_earlyserialinit();
 }
 
 /***************************************************************************

@@ -38,6 +38,7 @@
 #endif
 
 #include <arch/chip/chip.h>
+#include <arch/board/board_memorymap.h>
 
 #ifdef CONFIG_SMP
 #include "arm64_smp.h"
@@ -52,10 +53,6 @@
 #ifdef CONFIG_DEVICE_TREE
 #  include <nuttx/fdt.h>
 #endif
-
-//// TODO
-extern uint8_t __ramdisk_start[];
-extern uint8_t __ramdisk_size[];
 
 /****************************************************************************
  * Private Data
@@ -118,7 +115,7 @@ static void qemu_copy_overlap(uint8_t *dest, const uint8_t *src,
       d--;
       s--;
     }
-} 
+}
 
 /****************************************************************************
  * Name: qemu_copy_ramdisk
