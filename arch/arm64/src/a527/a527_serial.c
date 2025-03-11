@@ -1,5 +1,5 @@
 /***************************************************************************
- * arch/arm64/src/qemu/qemu_serial.c
+ * arch/arm64/src/a527/a527_serial.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *

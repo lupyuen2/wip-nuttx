@@ -1,5 +1,5 @@
 # ##############################################################################
-# boards/arm64/qemu/qemu-armv8a/src/CMakeLists.txt
+# boards/arm64/a527/avaota-a1/src/CMakeLists.txt
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -19,10 +19,10 @@
 # the License.
 #
 # ##############################################################################
-set(SRCS qemu_boardinit.c qemu_bringup.c)
+set(SRCS a527_boardinit.c a527_bringup.c)
 
 if(CONFIG_BOARDCTL)
-  list(APPEND SRCS qemu_appinit.c qemu_power.c)
+  list(APPEND SRCS a527_appinit.c a527_power.c)
 endif()
 
 if(CONFIG_LIBC_FDT)

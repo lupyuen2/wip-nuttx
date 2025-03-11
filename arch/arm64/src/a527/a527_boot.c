@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/arm64/src/qemu/qemu_boot.c
+ * arch/arm64/src/a527/a527_boot.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -45,8 +45,8 @@
 #include "arm64_arch.h"
 #include "arm64_internal.h"
 #include "arm64_mmu.h"
-#include "qemu_boot.h"
-#include "qemu_serial.h"
+#include "a527_boot.h"
+#include "a527_serial.h"
 
 #ifdef CONFIG_DEVICE_TREE
 #  include <nuttx/fdt.h>
@@ -167,7 +167,7 @@ void arm64_chip_boot(void)
   fdt_register((const char *)0x40000000);
 #endif
 
-#if defined(CONFIG_ARCH_CHIP_QEMU_WITH_HV) && defined(CONFIG_ARM64_PSCI)
+#if defined(CONFIG_ARCH_CHIP_A527_WITH_HV) && defined(CONFIG_ARM64_PSCI)
   arm64_psci_init("hvc");
 #elif defined(CONFIG_ARM64_PSCI)
   arm64_psci_init("smc");
@@ -177,7 +177,7 @@ void arm64_chip_boot(void)
    * configuration of board specific resources such as GPIOs, LEDs, etc.
    */
 
-  qemu_board_initialize();
+  a527_board_initialize();
 
 #ifdef USE_EARLYSERIALINIT
   /* Perform early serial initialization if we are going to use the serial

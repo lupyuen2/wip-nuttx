@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/arm64/src/qemu/qemu_lowputc.S
+ * arch/arm64/src/a527/a527_lowputc.S
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -33,13 +33,13 @@
  * Public Symbols
  ****************************************************************************/
 
-    .file    "qemu_lowputc.S"
+    .file    "a527_lowputc.S"
 
 /****************************************************************************
  * Assembly Macros
  ****************************************************************************/
 
- /* 32-bit register definition for qemu pl011 uart */
+ /* 32-bit register definition for a527 pl011 uart */
 
  #define UART1_BASE_ADDRESS 0x9000000
  #define EARLY_UART_PL011_BAUD_RATE  115200
@@ -57,8 +57,8 @@
 
 GTEXT(arm64_earlyprintinit)
 SECTION_FUNC(text, arm64_earlyprintinit)
-    /* it's seem we can do nothing at the qemu platform
-     * for qemu pl011, the QEMU has already initialized UART
+    /* it's seem we can do nothing at the a527 platform
+     * for a527 pl011, the A527 has already initialized UART
      */
     ret
 

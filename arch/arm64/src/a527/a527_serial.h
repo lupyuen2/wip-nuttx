@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/arm64/src/qemu/qemu_serial.h
+ * arch/arm64/src/a527/a527_serial.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_ARM64_SRC_QEMU_QEMU_SERIAL_H
-#define __ARCH_ARM64_SRC_QEMU_QEMU_SERIAL_H
+#ifndef __ARCH_ARM64_SRC_A527_A527_SERIAL_H
+#define __ARCH_ARM64_SRC_A527_A527_SERIAL_H
 
 /****************************************************************************
  * Included Files
@@ -47,9 +47,9 @@
  * Public Data
  ****************************************************************************/
 
-#ifdef CONFIG_ARCH_CHIP_QEMU
-#define CONFIG_QEMU_UART_BASE      0x9000000
-#define CONFIG_QEMU_UART_IRQ       (GIC_SPI_INT_BASE + 1)
+#ifdef CONFIG_ARCH_CHIP_A527
+#define CONFIG_A527_UART_BASE      0x9000000
+#define CONFIG_A527_UART_IRQ       (GIC_SPI_INT_BASE + 1)
 #endif
 
 /****************************************************************************
@@ -57,4 +57,4 @@
  ****************************************************************************/
 
 #endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM64_SRC_QEMU_QEMU_SERIAL_H */
+#endif /* __ARCH_ARM64_SRC_A527_A527_SERIAL_H */

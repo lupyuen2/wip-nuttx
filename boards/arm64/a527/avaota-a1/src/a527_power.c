@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/qemu/qemu-armv8a/src/qemu_power.c
+ * boards/arm64/a527/avaota-a1/src/a527_power.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *

@@ -1,5 +1,5 @@
 ############################################################################
-# boards/arm64/qemu/qemu-armv8a/src/Makefile
+# boards/arm64/a527/avaota-a1/src/Makefile
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -22,10 +22,10 @@
 
 include $(TOPDIR)/Make.defs
 
-CSRCS = qemu_boardinit.c qemu_bringup.c
+CSRCS = a527_boardinit.c a527_bringup.c
 
 ifeq ($(CONFIG_BOARDCTL),y)
-CSRCS += qemu_appinit.c qemu_power.c
+CSRCS += a527_appinit.c a527_power.c
 endif
 
 ifeq ($(CONFIG_LIBC_FDT),y)

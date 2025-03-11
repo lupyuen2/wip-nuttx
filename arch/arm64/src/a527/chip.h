@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/arm64/src/qemu/chip.h
+ * arch/arm64/src/a527/chip.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_ARM64_SRC_QEMU_CHIP_H
-#define __ARCH_ARM64_SRC_QEMU_CHIP_H
+#ifndef __ARCH_ARM64_SRC_A527_CHIP_H
+#define __ARCH_ARM64_SRC_A527_CHIP_H
 
 /****************************************************************************
  * Included Files
@@ -41,4 +41,4 @@
  * Macro Definitions
  ****************************************************************************/
 
-#endif /* __ARCH_ARM64_SRC_QEMU_CHIP_H */
+#endif /* __ARCH_ARM64_SRC_A527_CHIP_H */

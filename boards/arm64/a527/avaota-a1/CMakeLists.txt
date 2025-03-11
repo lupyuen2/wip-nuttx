@@ -1,5 +1,5 @@
 # ##############################################################################
-# boards/arm64/qemu/qemu-armv8a/CMakeLists.txt
+# boards/arm64/a527/avaota-a1/CMakeLists.txt
 #
 # SPDX-License-Identifier: Apache-2.0
 #

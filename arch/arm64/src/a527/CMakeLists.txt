@@ -1,5 +1,5 @@
 # ##############################################################################
-# arch/arm64/src/qemu/CMakeLists.txt
+# arch/arm64/src/a527/CMakeLists.txt
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -19,15 +19,15 @@
 # the License.
 #
 # ##############################################################################
-set(SRCS qemu_boot.c qemu_serial.c qemu_timer.c)
+set(SRCS a527_boot.c a527_serial.c a527_timer.c)
 
 if(CONFIG_ARCH_EARLY_PRINT)
-  list(APPEND SRCS qemu_lowputc.S)
+  list(APPEND SRCS a527_lowputc.S)
 endif()
 if(CONFIG_ARCH_USE_TEXT_HEAP)
-  list(APPEND SRCS qemu_textheap.c)
+  list(APPEND SRCS a527_textheap.c)
 endif()
 if(CONFIG_PM)
-  list(APPEND SRCS qemu_initialize.c)
+  list(APPEND SRCS a527_initialize.c)
 endif()
 target_sources(arch PRIVATE ${SRCS})

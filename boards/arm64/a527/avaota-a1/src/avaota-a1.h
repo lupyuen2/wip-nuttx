@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/qemu/qemu-armv8a/src/qemu-armv8a.h
+ * boards/arm64/a527/avaota-a1/src/avaota-a1.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_ARM64_QEMU_QEMU_ARMV8A_SRC_QEMU_ARMV8A_H
-#define __BOARDS_ARM64_QEMU_QEMU_ARMV8A_SRC_QEMU_ARMV8A_H
+#ifndef __BOARDS_ARM64_A527_A527_ARMV8A_SRC_A527_ARMV8A_H
+#define __BOARDS_ARM64_A527_A527_ARMV8A_SRC_A527_ARMV8A_H
 
 /****************************************************************************
  * Included Files
@@ -46,7 +46,7 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Name: qemu_bringup
+ * Name: a527_bringup
  *
  * Description:
  *   Bring up board features
@@ -54,8 +54,8 @@
  ****************************************************************************/
 
 #if defined(CONFIG_BOARDCTL) || defined(CONFIG_BOARD_LATE_INITIALIZE)
-int qemu_bringup(void);
+int a527_bringup(void);
 #endif
 
 #endif /* __ASSEMBLY__ */
-#endif /* __BOARDS_ARM64_QEMU_QEMU_ARMV8A_SRC_QEMU_ARMV8A_H */
+#endif /* __BOARDS_ARM64_A527_A527_ARMV8A_SRC_A527_ARMV8A_H */

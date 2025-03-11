@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/arm64/src/qemu/qemu_textheap.c
+ * arch/arm64/src/a527/a527_textheap.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *

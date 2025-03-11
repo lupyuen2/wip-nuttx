@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/qemu/qemu-armv8a/scripts/dramboot.ld
+ * boards/arm64/a527/avaota-a1/scripts/dramboot.ld
  *
  * SPDX-License-Identifier: Apache-2.0
  *

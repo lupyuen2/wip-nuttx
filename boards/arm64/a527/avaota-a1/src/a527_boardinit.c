@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/qemu/qemu-armv8a/src/qemu_boardinit.c
+ * boards/arm64/a527/avaota-a1/src/a527_boardinit.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -27,7 +27,7 @@
 #include <nuttx/config.h>
 #include <stdint.h>
 #include <nuttx/board.h>
-#include "qemu-armv8a.h"
+#include "avaota-a1.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -42,15 +42,15 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Name: qemu_memory_initialize
+ * Name: a527_memory_initialize
  *
  * Description:
- *   All qemu architectures must provide the following entry point.  This
+ *   All a527 architectures must provide the following entry point.  This
  *   entry point is called early in the initialization before memory has
  *   been configured.  This board-specific function is responsible for
  *   configuring any on-board memories.
  *
- *   Logic in qemu_memory_initialize must be careful to avoid using any
+ *   Logic in a527_memory_initialize must be careful to avoid using any
  *   global variables because those will be uninitialized at the time this
  *   function is called.
  *
@@ -62,18 +62,18 @@
  *
  ****************************************************************************/
 
-void qemu_memory_initialize(void)
+void a527_memory_initialize(void)
 {
   /* SDRAM was initialized by a bootloader in the supported configurations. */
 }
 
 /****************************************************************************
- * Name: qemu_board_initialize
+ * Name: a527_board_initialize
  *
  * Description:
- *   All qemu architectures must provide the following entry point.  This
+ *   All a527 architectures must provide the following entry point.  This
  *   entry point is called in the initialization phase -- after
- *   qemu_memory_initialize and after all memory has been configured and
+ *   a527_memory_initialize and after all memory has been configured and
  *   mapped but before any devices have been initialized.
  *
  * Input Parameters:
@@ -84,7 +84,7 @@ void qemu_memory_initialize(void)
  *
  ****************************************************************************/
 
-void qemu_board_initialize(void)
+void a527_board_initialize(void)
 {
 #ifdef CONFIG_ARCH_LEDS
   /* Configure on-board LEDs if LED support has been selected. */
@@ -110,6 +110,6 @@ void board_late_initialize(void)
 {
   /* Perform board initialization */
 
-  qemu_bringup();
+  a527_bringup();
 }
 #endif /* CONFIG_BOARD_LATE_INITIALIZE */

@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/arm64/include/qemu/irq.h
+ * arch/arm64/include/a527/irq.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -24,8 +24,8 @@
  * only indirectly through nuttx/irq.h
  */
 
-#ifndef __ARCH_ARM64_INCLUDE_QEMU_IRQ_H
-#define __ARCH_ARM64_INCLUDE_QEMU_IRQ_H
+#ifndef __ARCH_ARM64_INCLUDE_A527_IRQ_H
+#define __ARCH_ARM64_INCLUDE_A527_IRQ_H
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -34,4 +34,4 @@
 #define NR_IRQS            220  /* Total number of interrupts */
 #define MPID_TO_CORE(mpid) (((mpid) >> MPIDR_AFF0_SHIFT) & MPIDR_AFFLVL_MASK)
 
-#endif /* __ARCH_ARM64_INCLUDE_QEMU_IRQ_H */
+#endif /* __ARCH_ARM64_INCLUDE_A527_IRQ_H */

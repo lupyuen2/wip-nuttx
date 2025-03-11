@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/qemu/qemu-armv8a/scripts/gnu-elf.ld
+ * boards/arm64/a527/avaota-a1/scripts/gnu-elf.ld
  *
  * SPDX-License-Identifier: Apache-2.0
  *

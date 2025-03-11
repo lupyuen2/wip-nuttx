@@ -1,5 +1,5 @@
 /****************************************************************************
- * arch/arm64/src/qemu/qemu_boot.h
+ * arch/arm64/src/a527/a527_boot.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_ARM64_SRC_QEMU_QEMU_BOOT_H
-#define __ARCH_ARM64_SRC_QEMU_QEMU_BOOT_H
+#ifndef __ARCH_ARM64_SRC_A527_A527_BOOT_H
+#define __ARCH_ARM64_SRC_A527_A527_BOOT_H
 
 /****************************************************************************
  * Included Files
@@ -56,10 +56,10 @@ extern "C"
 #endif
 
 /****************************************************************************
- * Name: qemu_board_initialize
+ * Name: a527_board_initialize
  *
  * Description:
- *   All qemu architectures must provide the following entry point.  This
+ *   All a527 architectures must provide the following entry point.  This
  *   entry point is called in the initialization phase -- after
  *   imx_memory_initialize and after all memory has been configured and
  *   mapped but before any devices have been initialized.
@@ -72,7 +72,7 @@ extern "C"
  *
  ****************************************************************************/
 
-void qemu_board_initialize(void);
+void a527_board_initialize(void);
 
 #undef EXTERN
 #if defined(__cplusplus)
@@ -80,4 +80,4 @@ void qemu_board_initialize(void);
 #endif
 
 #endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM64_SRC_QEMU_QEMU_BOOT_H */
+#endif /* __ARCH_ARM64_SRC_A527_A527_BOOT_H */

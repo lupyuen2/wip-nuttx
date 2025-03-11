@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/qemu/qemu-armv8a/include/board.h
+ * boards/arm64/a527/avaota-a1/include/board.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,8 +20,8 @@
  *
  ****************************************************************************/
 
-#ifndef __BOARDS_ARM64_QEMU_QEMU_ARMV8A_INCLUDE_BOARD_H
-#define __BOARDS_ARM64_QEMU_QEMU_ARMV8A_INCLUDE_BOARD_H
+#ifndef __BOARDS_ARM64_A527_A527_ARMV8A_INCLUDE_BOARD_H
+#define __BOARDS_ARM64_A527_A527_ARMV8A_INCLUDE_BOARD_H
 
 /****************************************************************************
  * Included Files
@@ -58,4 +58,4 @@ extern "C"
 #endif
 
 #endif /* __ASSEMBLY__ */
-#endif /* __BOARDS_ARM64_QEMU_QEMU_ARMV8A_INCLUDE_BOARD_H */
+#endif /* __BOARDS_ARM64_A527_A527_ARMV8A_INCLUDE_BOARD_H */

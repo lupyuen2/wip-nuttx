@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/qemu/qemu-armv8a/src/qemu_bringup.c
+ * boards/arm64/a527/avaota-a1/src/a527_bringup.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -38,14 +38,14 @@
 #  include <libfdt.h>
 #endif
 
-#include "qemu-armv8a.h"
+#include "avaota-a1.h"
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-#ifndef QEMU_SPI_IRQ_BASE
-#define QEMU_SPI_IRQ_BASE     32
+#ifndef A527_SPI_IRQ_BASE
+#define A527_SPI_IRQ_BASE     32
 #endif
 
 #define FDT_PCI_TYPE_IO              0x01000000
@@ -161,7 +161,7 @@ static void register_devices_from_fdt(void)
 
 #ifdef CONFIG_DRIVERS_VIRTIO_MMIO
 
-  ret = fdt_virtio_mmio_devices_register(fdt, QEMU_SPI_IRQ_BASE);
+  ret = fdt_virtio_mmio_devices_register(fdt, A527_SPI_IRQ_BASE);
   if (ret < 0)
     {
       syslog(LOG_ERR, "fdt_virtio_mmio_devices_register failed, ret=%d\n",
@@ -190,7 +190,7 @@ static void register_devices_from_fdt(void)
  *
  ****************************************************************************/
 
-int qemu_bringup(void)
+int a527_bringup(void)
 {
   int ret;
 

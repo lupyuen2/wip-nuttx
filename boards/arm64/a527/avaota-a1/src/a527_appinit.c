@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm64/qemu/qemu-armv8a/src/qemu_appinit.c
+ * boards/arm64/a527/avaota-a1/src/a527_appinit.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -30,7 +30,7 @@
 
 #include <nuttx/board.h>
 
-#include "qemu-armv8a.h"
+#include "avaota-a1.h"
 
 #ifdef CONFIG_BOARDCTL
 
@@ -69,7 +69,7 @@ int board_app_initialize(uintptr_t arg)
 #ifndef CONFIG_BOARD_LATE_INITIALIZE
   /* Perform board initialization */
 
-  return qemu_bringup();
+  return a527_bringup();
 #else
   return OK;
 #endif
