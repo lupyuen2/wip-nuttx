@@ -30,6 +30,7 @@
 #include <assert.h>
 #include <debug.h>
 
+#include <nuttx/compiler.h>
 #include <nuttx/cache.h>
 #include <nuttx/syslog/syslog_rpmsg.h>
 #ifdef CONFIG_LEGACY_PAGING
@@ -129,14 +130,14 @@ static void qemu_copy_overlap(uint8_t *dest, const uint8_t *src,
 
 static void qemu_copy_ramdisk(void)
 {
-  char header[8] __attribute__((aligned(8))) = "-rom1fs-";
+  const uint8_t aligned_data(8) header[8] = "-rom1fs-";
   const uint8_t *limit = (uint8_t *)g_idle_topstack + (256 * 1024);
   uint8_t *ramdisk_addr = NULL;
   uint8_t *addr;
   uint32_t size;
 
-  /* After _edata, search for "-rom1fs-". This is the RAM Disk Address.
-   * Limit search to 256 KB after Idle Stack Top.
+  /* After Idle Stack Top, search for "-rom1fs-". This is the RAM Disk
+   * Address. Limit search to 256 KB after Idle Stack Top.
    */
 
   binfo("_edata=%p, _sbss=%p, _ebss=%p, idlestack_top=%p\n",
@@ -144,7 +145,6 @@ static void qemu_copy_ramdisk(void)
         (void *)g_idle_topstack);
   for (addr = g_idle_topstack; addr < limit; addr += 8)
     {
-      if (addr == _edata) { _info("addr=%p, header=%p, sizeof(header)=%d\n", addr, header, sizeof(header)); } ////
       if (memcmp(addr, header, sizeof(header)) == 0)
         {
           ramdisk_addr = addr;
