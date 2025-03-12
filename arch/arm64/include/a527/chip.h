@@ -39,24 +39,13 @@
 #define MB(x)           (KB(x) << 10)
 #define GB(x)           (MB(UINT64_C(x)) << 10)
 
-#if defined(CONFIG_ARCH_CHIP_A527)
-
-#if CONFIG_ARM64_GIC_VERSION == 2
-
-#define CONFIG_GICD_BASE           0x8000000
-#define CONFIG_GICR_BASE           0x8010000
-#define CONFIG_GICM_BASE           0x8020000
-
-#elif CONFIG_ARM64_GIC_VERSION == 3 || CONFIG_ARM64_GIC_VERSION == 4
+/* Generic Interrupt Controller v3: Distributor and Redistributor */
 
 #define CONFIG_GICD_BASE           0x3400000
 #define CONFIG_GICR_BASE           0x3460000
 #define CONFIG_GICR_OFFSET         0x20000
-#else
 
-#error CONFIG_ARM64_GIC_VERSION should be 2, 3 or 4
-
-#endif /* CONFIG_ARM64_GIC_VERSION */
+/* Memory Map: RAM and I/O Memory */
 
 #define CONFIG_RAMBANK1_ADDR       0x40000000
 #define CONFIG_RAMBANK1_SIZE       MB(128)
@@ -64,11 +53,13 @@
 #define CONFIG_DEVICEIO_BASEADDR   0x00000000
 #define CONFIG_DEVICEIO_SIZE       MB(1024)
 
+/* Bootloader loads NuttX at this address */
+
 #define CONFIG_LOAD_BASE           0x40800000
 
-#define MPID_TO_CLUSTER_ID(mpid)   ((mpid) & ~0xff)
+/* GIC Cluster Mapping */
 
-#endif
+#define MPID_TO_CLUSTER_ID(mpid)   ((mpid) & ~0xff)
 
 /****************************************************************************
  * Assembly Macros
