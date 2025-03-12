@@ -134,6 +134,7 @@ SECTIONS
     } > dram :data
 
   /* End of data must be page aligned */
+
   . = ALIGN(4096);
 
   g_idle_topstack = .;
@@ -141,6 +142,7 @@ SECTIONS
   _szdata = _e_initstack - _sdata;
 
   /* Sections to be discarded */
+
   /DISCARD/ :
     {
        *(.exit.text)
@@ -149,7 +151,8 @@ SECTIONS
        *(.eh_frame)
     }
 
-  /* Stabs debugging sections.  */
+  /* Stabs debugging sections  */
+
   .stab 0 : { *(.stab) }
   .stabstr 0 : { *(.stabstr) }
   .stab.excl 0 : { *(.stab.excl) }

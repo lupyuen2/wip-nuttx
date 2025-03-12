@@ -48,7 +48,7 @@
  * Name: a527_bringup
  *
  * Description:
- *   Bring up board features
+ *   Bring up the board features.
  *
  ****************************************************************************/
 

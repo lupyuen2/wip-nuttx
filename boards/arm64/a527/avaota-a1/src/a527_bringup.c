@@ -96,7 +96,7 @@ static int mount_ramdisk(void)
  * Name: a527_bringup
  *
  * Description:
- *   Bring up board features
+ *   Bring up the board features.
  *
  ****************************************************************************/
 
@@ -126,7 +126,11 @@ int a527_bringup(void)
 
   /* Mount the RAM Disk */
 
-  mount_ramdisk();
+  ret = mount_ramdisk();
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: Failed to mount RAM Disk: %d\n", ret);
+    }
 
   UNUSED(ret);
   return OK;

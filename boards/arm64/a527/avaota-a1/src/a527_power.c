@@ -51,7 +51,7 @@ int board_power_off(int status)
  *   logic if CONFIG_BOARDCTL_RESET is selected.
  *
  * Input Parameters:
- *   status - Status information provided with the reset event.  This
+ *   status - Status information provided with the reset event.  The
  *            meaning of this status information is board-specific.  If not
  *            used by a board, the value zero may be provided in calls to
  *            board_reset().

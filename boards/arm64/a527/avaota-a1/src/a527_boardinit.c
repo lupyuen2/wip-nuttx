@@ -45,7 +45,7 @@
  * Name: a527_memory_initialize
  *
  * Description:
- *   All a527 architectures must provide the following entry point.  This
+ *   All A527 architectures must provide the following entry point.  This
  *   entry point is called early in the initialization before memory has
  *   been configured.  This board-specific function is responsible for
  *   configuring any on-board memories.
@@ -64,7 +64,7 @@
 
 void a527_memory_initialize(void)
 {
-  /* SDRAM was initialized by a bootloader in the supported configurations. */
+  /* SDRAM is already initialized by the bootloader */
 }
 
 /****************************************************************************
@@ -87,7 +87,7 @@ void a527_memory_initialize(void)
 void a527_board_initialize(void)
 {
 #ifdef CONFIG_ARCH_LEDS
-  /* Configure on-board LEDs if LED support has been selected. */
+  /* Configure on-board LEDs if LED support has been selected */
 
 #endif
 }
