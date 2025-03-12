@@ -25,7 +25,6 @@
  ****************************************************************************/
 
 #include <nuttx/config.h>
-
 #include <stdint.h>
 #include <assert.h>
 #include <debug.h>
@@ -33,10 +32,6 @@
 #include <nuttx/compiler.h>
 #include <nuttx/cache.h>
 #include <nuttx/syslog/syslog_rpmsg.h>
-#ifdef CONFIG_LEGACY_PAGING
-#  include <nuttx/page.h>
-#endif
-
 #include <arch/chip/chip.h>
 #include <arch/board/board_memorymap.h>
 
@@ -49,13 +44,11 @@
 #include "arm64_mmu.h"
 #include "a527_boot.h"
 
-#ifdef CONFIG_DEVICE_TREE
-#  include <nuttx/fdt.h>
-#endif
-
 /****************************************************************************
  * Private Data
  ****************************************************************************/
+
+/* MMU Memory Regions for I/O Memory and RAM */
 
 static const struct arm_mmu_region g_mmu_regions[] =
 {
@@ -73,10 +66,6 @@ const struct arm_mmu_config g_mmu_config =
   .num_regions = nitems(g_mmu_regions),
   .mmu_regions = g_mmu_regions,
 };
-
-#ifdef CONFIG_SYSLOG_RPMSG
-static char g_syslog_rpmsg_buf[4096];
-#endif
 
 /****************************************************************************
  * Private Functions
@@ -189,10 +178,10 @@ static void a527_copy_ramdisk(void)
  * Name: arm64_get_mpid
  *
  * Description:
- *   The function from cpu index to get cpu mpid which is reading
- * from mpidr_el1 register. Different ARM64 Core will use different
- * Affn define, the mpidr_el1 value is not CPU number, So we need
- * to change CPU number to mpid and vice versa
+ *   This function maps the CPU Index to CPU MPID, by reading the mpidr_el1
+ *   register. Different ARM64 Cores will define affinity differently, so
+ *   the mpidr_el1 value might not be the CPU Index. We need to map the
+ *   CPU Index to MPID and vice versa.
  *
  ****************************************************************************/
 
@@ -205,7 +194,7 @@ uint64_t arm64_get_mpid(int cpu)
  * Name: arm64_get_cpuid
  *
  * Description:
- *   The function from mpid to get cpu id
+ *   This function maps the CPU MPID to CPU Index.
  *
  ****************************************************************************/
 
@@ -220,12 +209,10 @@ int arm64_get_cpuid(uint64_t mpid)
  * Name: arm64_el_init
  *
  * Description:
- *   The function called from arm64_head.S at very early stage for these
- * platform, it's use to:
- *   - Handling special hardware initialize routine which is need to
- *     run at high ELs
- *   - Initialize system software such as hypervisor or security firmware
- *     which is need to run at high ELs
+ *   The function is called by arm64_head.S at the early stage to:
+ *   - Initialize special hardware that should run at high ELs
+ *   - Initialize system software that should run at high ELs,
+ *     such as hypervisor or security firmware
  *
  ****************************************************************************/
 
@@ -237,7 +224,7 @@ void arm64_el_init(void)
  * Name: arm64_chip_boot
  *
  * Description:
- *   Complete boot operations started in arm64_head.S
+ *   Complete the boot operations started in arm64_head.S
  *
  ****************************************************************************/
 
@@ -247,19 +234,17 @@ void arm64_chip_boot(void)
 
   a527_copy_ramdisk();
 
-  /* MAP IO and DRAM, enable MMU. */
+  /* Map the RAM and I/O Memory, enable the MMU */
 
   arm64_mmu_init(true);
 
+  /* Optional: Enable the Memory Tagging Extension */
+
   arm64_enable_mte();
 
-#ifdef CONFIG_DEVICE_TREE
-  fdt_register((const char *)0x40000000);
-#endif
+#if defined(CONFIG_ARM64_PSCI)
+  /* Init the Power State Coordination Interface */
 
-#if defined(CONFIG_ARCH_CHIP_A527_WITH_HV) && defined(CONFIG_ARM64_PSCI)
-  arm64_psci_init("hvc");
-#elif defined(CONFIG_ARM64_PSCI)
   arm64_psci_init("smc");
 #endif
 
@@ -275,10 +260,6 @@ void arm64_chip_boot(void)
    */
 
   arm64_earlyserialinit();
-#endif
-
-#ifdef CONFIG_SYSLOG_RPMSG
-  syslog_rpmsg_init_early(g_syslog_rpmsg_buf, sizeof(g_syslog_rpmsg_buf));
 #endif
 
 #ifdef CONFIG_ARCH_PERF_EVENTS

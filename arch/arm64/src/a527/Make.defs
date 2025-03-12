@@ -22,7 +22,7 @@
 
 include common/Make.defs
 
-# a527-specific C source files
+# C Source Files specific to SoC
 CHIP_CSRCS  = a527_boot.c a527_serial.c
 
 CHIP_CSRCS += a527_timer.c
