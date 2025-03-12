@@ -48,7 +48,6 @@
 #include "arm64_internal.h"
 #include "arm64_mmu.h"
 #include "a527_boot.h"
-#include "a527_serial.h"
 
 #ifdef CONFIG_DEVICE_TREE
 #  include <nuttx/fdt.h>
