@@ -25,9 +25,4 @@ if(CONFIG_BOARDCTL)
   list(APPEND SRCS a527_appinit.c a527_power.c)
 endif()
 
-if(CONFIG_LIBC_FDT)
-  target_include_directories(board
-                             PRIVATE ${NUTTX_DIR}/libs/libc/fdt/dtc/libfdt)
-endif()
-
 target_sources(board PRIVATE ${SRCS})

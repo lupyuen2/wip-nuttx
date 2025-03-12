@@ -25,11 +25,8 @@
  ****************************************************************************/
 
 #include <nuttx/config.h>
-
 #include <sys/types.h>
-
 #include <nuttx/board.h>
-
 #include "avaota-a1.h"
 
 #ifdef CONFIG_BOARDCTL

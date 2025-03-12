@@ -28,8 +28,4 @@ ifeq ($(CONFIG_BOARDCTL),y)
 CSRCS += a527_appinit.c a527_power.c
 endif
 
-ifeq ($(CONFIG_LIBC_FDT),y)
-CFLAGS += ${INCDIR_PREFIX}$(TOPDIR)$(DELIM)libs$(DELIM)libc$(DELIM)fdt$(DELIM)dtc$(DELIM)libfdt
-endif
-
 include $(TOPDIR)/boards/Board.mk
