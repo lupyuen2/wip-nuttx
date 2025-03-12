@@ -39,10 +39,11 @@ void arm64_pminitialize(void)
 
 #ifdef CONFIG_SMP
 static bool pm_idle_handler(int cpu,
-                               enum pm_state_e cpu_state,
-                               enum pm_state_e system_state)
+                            enum pm_state_e cpu_state,
+                            enum pm_state_e system_state)
 {
   bool first = false;
+
   switch (cpu_state)
     {
       case PM_NORMAL:
@@ -50,7 +51,7 @@ static bool pm_idle_handler(int cpu,
       case PM_STANDBY:
       case PM_SLEEP:
 
-        /* do cpu domain pm enter operations */
+        /* CPU Domain: PM Entry */
 
         asm("NOP");
 
@@ -63,7 +64,7 @@ static bool pm_idle_handler(int cpu,
                 case PM_STANDBY:
                 case PM_SLEEP:
 
-                  /* do system domain pm enter operations */
+                  /* System Domain: PM Entry */
 
                   asm("NOP");
 
@@ -75,19 +76,19 @@ static bool pm_idle_handler(int cpu,
 
         pm_idle_unlock();
 
-        /* do no cross-core relative operations */
+        /* Operations here should not cross cores */
 
         asm("WFI");
 
         first = pm_idle_lock(cpu);
         if (first)
           {
-            /* do system domain pm leave operations */
+            /* System Domain: PM Exit */
 
             asm("NOP");
           }
 
-        /* do cpu domain pm leave operations */
+        /* CPU Domain: PM Exit */
 
         asm("NOP");
 

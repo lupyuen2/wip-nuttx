@@ -71,7 +71,7 @@ void a527_memory_initialize(void)
  * Name: a527_board_initialize
  *
  * Description:
- *   All a527 architectures must provide the following entry point.  This
+ *   All A527 architectures must provide the following entry point.  This
  *   entry point is called in the initialization phase -- after
  *   a527_memory_initialize and after all memory has been configured and
  *   mapped but before any devices have been initialized.
