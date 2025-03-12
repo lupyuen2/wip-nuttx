@@ -3,7 +3,7 @@ PINE64 Yuzuki Avaota-A1
 =======================
 
 `Avaota-A1 <https://pine64.com/product/yuzuki-avaota-a1-single-board-computer-2gb-16gb/>`_
-is an ARM64 Single-Board Computer based on the Allwinner T527 SoC.
+is an ARM64 Single-Board Computer based on the Allwinner A527 SoC.
 
 .. figure:: avaota-a1.jpg
    :align: center
