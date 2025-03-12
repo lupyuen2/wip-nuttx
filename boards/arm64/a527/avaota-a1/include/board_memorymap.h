@@ -48,10 +48,10 @@ extern "C"
 #define EXTERN extern
 #endif
 
-/* Ramdisk (RW) */
+/* Memory Region for RAM Disk */
 
-extern uint8_t          __ramdisk_start[];
-extern uint8_t          __ramdisk_size[];
+extern uint8_t __ramdisk_start[];
+extern uint8_t __ramdisk_size[];
 
 /****************************************************************************
  * Public Function Prototypes
