@@ -156,7 +156,7 @@ static void a527_copy_ramdisk(void)
 
   if (size > (size_t)__ramdisk_size)
     {
-      _err("RAM Disk Region too small. Increase by %ul bytes.\n",
+      _err("RAM Disk Region too small. Increase by %lu bytes.\n",
             size - (size_t)__ramdisk_size);
       PANIC();
     }
