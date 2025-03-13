@@ -46,7 +46,7 @@
  * Name: arm64_earlyserialinit
  *
  * Description:
- *   see arm64_internal.h
+ *   See arm64_internal.h
  *
  ***************************************************************************/
 
@@ -63,7 +63,7 @@ void arm64_earlyserialinit(void)
  * Name: arm64_serialinit
  *
  * Description:
- *   see arm64_internal.h
+ *   See arm64_internal.h
  *
  ***************************************************************************/
 

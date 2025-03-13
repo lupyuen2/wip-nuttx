@@ -44,7 +44,7 @@ extern uint8_t _szload[];
 
 static struct mm_heap_s *g_textheap;
 
-/* Mark load segment cacheable, write-read and executable */
+/* Mark the Load Segment cacheable, write-read and executable */
 
 static struct arm_mmu_region g_mmu_load =
   MMU_REGION_FLAT_ENTRY("nx_load",
@@ -60,7 +60,7 @@ static struct arm_mmu_region g_mmu_load =
  * Name: up_textheap_memalign
  *
  * Description:
- *   Allocate memory for text sections with the specified alignment.
+ *   Allocate memory for Text Sections with the specified alignment.
  *
  ****************************************************************************/
 
@@ -84,7 +84,7 @@ void *up_textheap_memalign(size_t align, size_t size)
  * Name: up_textheap_free
  *
  * Description:
- *   Free memory allocated for text sections.
+ *   Free the memory allocated for Text Sections.
  *
  ****************************************************************************/
 
@@ -100,7 +100,7 @@ void up_textheap_free(void *p)
  * Name: up_textheap_heapmember
  *
  * Description:
- *   Test if memory is from text heap.
+ *   Test if the memory is from Text Heap.
  *
  ****************************************************************************/
 

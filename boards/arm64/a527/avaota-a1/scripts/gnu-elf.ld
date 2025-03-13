@@ -102,6 +102,7 @@ SECTIONS
     }
 
   /* Thread local storage support */
+
   .tdata : 
     {
       _stdata = ABSOLUTE(.);
@@ -116,7 +117,7 @@ SECTIONS
       _etbss = ABSOLUTE(.);
     }
 
-    /* Stabs debugging sections.    */
+    /* Stabs debugging sections */
 
     .stab 0 : { *(.stab) }
     .stabstr 0 : { *(.stabstr) }

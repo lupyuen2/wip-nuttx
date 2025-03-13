@@ -31,7 +31,12 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define NR_IRQS            220  /* Total number of interrupts */
+/* Total number of interrupts */
+
+#define NR_IRQS            220
+
+/* Map CPU MPID to Core ID */
+
 #define MPID_TO_CORE(mpid) (((mpid) >> MPIDR_AFF0_SHIFT) & MPIDR_AFFLVL_MASK)
 
 #endif /* __ARCH_ARM64_INCLUDE_A527_IRQ_H */

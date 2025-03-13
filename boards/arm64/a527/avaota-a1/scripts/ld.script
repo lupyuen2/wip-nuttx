@@ -89,7 +89,7 @@ SECTIONS
 
   .rodata : ALIGN(4096)
     {
-      _srodata = ABSOLUTE(.);          /* Read-only data */
+      _srodata = ABSOLUTE(.);  /* Read-only data */
       *(.rodata .rodata.*)
       *(.data.rel.ro)
       *(.data.rel.ro.*)
@@ -99,9 +99,9 @@ SECTIONS
 
   . = ALIGN(4096);
 
-  _erodata = .;                /* End of read-only data */
+  _erodata = .;  /* End of read-only data */
   _szrodata = _erodata - _srodata;
-  _eronly = .;  /* End of read-only data */
+  _eronly = .;
 
   .data : ALIGN(4096)
     {
@@ -151,7 +151,7 @@ SECTIONS
        *(.eh_frame)
     }
 
-  /* Stabs debugging sections  */
+  /* Stabs debugging sections */
 
   .stab 0 : { *(.stab) }
   .stabstr 0 : { *(.stabstr) }

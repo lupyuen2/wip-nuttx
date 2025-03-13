@@ -132,6 +132,5 @@ int a527_bringup(void)
       syslog(LOG_ERR, "ERROR: Failed to mount RAM Disk: %d\n", ret);
     }
 
-  UNUSED(ret);
   return OK;
 }
