@@ -37,6 +37,22 @@ config ARCH_CHIP_A64
 	---help---
 		Allwinner A64 SoC
 
+config ARCH_CHIP_A527
+	bool "Allwinner A572"
+	select ARCH_CORTEX_A55
+	select ARCH_HAVE_MULTICPU
+	select ARMV8A_HAVE_GICv3
+	select ARCH_HAVE_ADDRENV
+	select ARCH_HAVE_ELF_EXECUTABLE
+	select ARCH_HAVE_IRQTRIGGER
+	select ARCH_NEED_ADDRENV_MAPPING
+	select ARCH_HAVE_POWEROFF
+	select ARCH_HAVE_RESET
+	select ARCH_HAVE_TEXT_HEAP
+	select ARM64_HAVE_PSCI
+	---help---
+		Allwinner A527 SoC
+
 config ARCH_CHIP_RK3399
 	bool "Rockchip RK3399"
 	select ARCH_CORTEX_A53
@@ -325,6 +341,7 @@ config ARCH_FAMILY
 config ARCH_CHIP
 	string
 	default "a64"       if ARCH_CHIP_A64
+	default "a527"      if ARCH_CHIP_A527
 	default "rk3399"    if ARCH_CHIP_RK3399
 	default "zynq-mpsoc" if ARCH_CHIP_ZYNQ_MPSOC
 	default "qemu"      if ARCH_CHIP_QEMU
@@ -465,6 +482,10 @@ config ARM64_PA_BITS
 
 if ARCH_CHIP_A64
 source "arch/arm64/src/a64/Kconfig"
+endif
+
+if ARCH_CHIP_A527
+source "arch/arm64/src/a527/Kconfig"
 endif
 
 if ARCH_CHIP_RK3399
