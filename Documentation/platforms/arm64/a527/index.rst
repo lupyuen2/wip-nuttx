@@ -7,6 +7,8 @@ Allwinner A527
 - **CPU:** Octa-Core ARM Cortex-A55
 - **GPU:** ARM G57 MC1
 - **Interrupt Controller:** ARM GIC-600 (Generic Interrupt Controller v3)
+- **RAM:** Up to 4GB LPDDR4 SDRAM
+- **I/O:** UART, SPI, I2C, USB 3.0 OTG, SDIO, Dual Gigabit Ethernet
 
 Supported Boards
 ================

@@ -17,6 +17,7 @@ Features
     - **Interrupt Controller:** ARM GIC-600 (Generic Interrupt Controller v3)
 - **RAM:** 2GB or 4GB LPDDR4 SDRAM
 - **Internal Storage:** 16GB or 32GB eMMC
+- **External Storage:** MicroSD
 - **Ethernet:** Dual Gigabit Ports
 - **Wireless:** WiFi 6, Bluetooth 5.4
 - **I/O:** UART, SPI, I2C, USB 3.0 OTG
