@@ -149,7 +149,7 @@ choice
 	default ARCH_CHIP_SUNXI_A527
 
 config ARCH_CHIP_SUNXI_A527
-	bool "Allwinner A572"
+	bool "Allwinner A527"
 	select ARCH_CORTEX_A55
 	select ARCH_HAVE_MULTICPU
 	select ARMV8A_HAVE_GICv3
