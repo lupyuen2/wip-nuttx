@@ -598,7 +598,7 @@ static void enable_mmu_el3(unsigned int flags)
 #else
 static void enable_mmu_el1(unsigned int flags)
 {
-  int stack = 123; stack++; _info("&stack=%p\n", &stack); ////
+  // int stack = 123; stack++; _info("&stack=%p\n", &stack); ////
   uint64_t value;
   UNUSED(flags);
 
