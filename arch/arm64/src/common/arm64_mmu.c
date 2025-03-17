@@ -176,36 +176,36 @@ aligned_data(XLAT_TABLE_ENTRIES * sizeof(uint64_t));
 
 static const struct arm_mmu_region g_mmu_nxrt_regions[] =
 {
-  /* Mark text segment cacheable,read only and executable */
+//   /* Mark text segment cacheable,read only and executable */
 
-  MMU_REGION_FLAT_ENTRY("nx_code",
-                        (uint64_t)_stext,
-                        (uint64_t)_sztext,
-                        MT_CODE | MT_SECURE),
+//   MMU_REGION_FLAT_ENTRY("nx_code",
+//                         (uint64_t)_stext,
+//                         (uint64_t)_sztext,
+//                         MT_CODE | MT_SECURE),
 
-  /* Mark rodata segment cacheable, read only and execute-never */
+//   /* Mark rodata segment cacheable, read only and execute-never */
 
-  MMU_REGION_FLAT_ENTRY("nx_rodata",
-                        (uint64_t)_srodata,
-                        (uint64_t)_szrodata,
-                        MT_RODATA | MT_SECURE),
+//   MMU_REGION_FLAT_ENTRY("nx_rodata",
+//                         (uint64_t)_srodata,
+//                         (uint64_t)_szrodata,
+//                         MT_RODATA | MT_SECURE),
 
-  /* Mark rest of the mirtos execution regions (data, bss, noinit, etc.)
-   * cacheable, read-write
-   * Note: read-write region is marked execute-ever internally
-   */
+//   /* Mark rest of the mirtos execution regions (data, bss, noinit, etc.)
+//    * cacheable, read-write
+//    * Note: read-write region is marked execute-ever internally
+//    */
 
-  MMU_REGION_FLAT_ENTRY("nx_data",
-                        (uint64_t)_sdata,
-                        (uint64_t)_szdata,
-                        MT_NORMAL | MT_RW | MT_SECURE),
+//   MMU_REGION_FLAT_ENTRY("nx_data",
+//                         (uint64_t)_sdata,
+//                         (uint64_t)_szdata,
+//                         MT_NORMAL | MT_RW | MT_SECURE),
 
-#ifdef CONFIG_BUILD_KERNEL
-  MMU_REGION_FLAT_ENTRY("nx_pgpool",
-                        (uint64_t)CONFIG_ARCH_PGPOOL_PBASE,
-                        (uint64_t)CONFIG_ARCH_PGPOOL_SIZE,
-                        MT_NORMAL | MT_RW | MT_SECURE),
-#endif
+// #ifdef CONFIG_BUILD_KERNEL
+//   MMU_REGION_FLAT_ENTRY("nx_pgpool",
+//                         (uint64_t)CONFIG_ARCH_PGPOOL_PBASE,
+//                         (uint64_t)CONFIG_ARCH_PGPOOL_SIZE,
+//                         MT_NORMAL | MT_RW | MT_SECURE),
+// #endif
 };
 
 static const struct arm_mmu_config g_mmu_nxrt_config =
@@ -622,6 +622,9 @@ static void enable_mmu_el1(unsigned int flags)
 
   /* Ensure the MMU enable takes effect immediately */
 
+  __asm__ volatile ("nop" : : : "memory"); ////
+  __asm__ volatile ("nop" : : : "memory"); ////
+  __asm__ volatile ("dsb SY" : : : "memory"); ////
   UP_ISB();
 #ifdef CONFIG_MMU_DEBUG
   sinfo("MMU enabled with dcache\n");
