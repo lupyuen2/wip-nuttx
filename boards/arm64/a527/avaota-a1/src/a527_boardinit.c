@@ -48,7 +48,7 @@
  *   All A527 architectures must provide the following entry point.  This
  *   entry point is called early in the initialization before memory has
  *   been configured.  This board-specific function is responsible for
- *   configuring any on-board memories.
+ *   configuring any on-board memory.
  *
  *   Logic in a527_memory_initialize must be careful to avoid using any
  *   global variables because those will be uninitialized at the time this
