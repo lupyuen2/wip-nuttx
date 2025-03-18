@@ -407,9 +407,9 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
   sinfo("mem_type=%s\n",
         (mem_type ==
          MT_NORMAL) ? "MEM" :((mem_type == MT_NORMAL_NC) ? "NC" : "DEV"));
-  sinfo("MT_RW=%s\n", (attrs & MT_RW) ? "RW" : "RO");
-  sinfo("MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
-  sinfo("MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
+  sinfo("Bit 3: MT_RW=%s\n", (attrs & MT_RW) ? "RW" : "RO");
+  sinfo("Bit 4: MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
+  sinfo("Bit 5: MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
   // sinfo("\n");
   sinfo("desc=%p\n\n", desc); ////
 #endif
