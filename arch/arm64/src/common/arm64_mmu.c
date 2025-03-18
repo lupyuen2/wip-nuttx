@@ -49,12 +49,12 @@
  * #define CONFIG_MMU_DUMP_PTE 1
  */
 
-#define CONFIG_MMU_ASSERT 1 ////
-#define CONFIG_MMU_DEBUG 1 ////
-#define CONFIG_MMU_DUMP_PTE 1 ////
-#define trace_printf _info ////
-#undef sinfo ////
-#define sinfo _info ////
+// #define CONFIG_MMU_ASSERT 1 ////
+// #define CONFIG_MMU_DEBUG 1 ////
+// #define CONFIG_MMU_DUMP_PTE 1 ////
+// #define trace_printf _info ////
+// #undef sinfo ////
+// #define sinfo _info ////
 
 #ifdef CONFIG_MMU_DEBUG
 
@@ -272,7 +272,9 @@ static uint64_t get_tcr(int el)
    */
 
   tcr |= TCR_TG0_4K | TCR_SHARED_INNER | TCR_ORGN_WBWA |
-         TCR_IRGN_WBWA | TCR_TBI_FLAGS;
+         TCR_IRGN_WBWA | TCR_TBI_FLAGS
+         | TCR_TG1_4K ////
+         ;
 
   return tcr;
 }
@@ -618,9 +620,9 @@ static void enable_mmu_el1(unsigned int flags)
 
   /* Set MAIR, TCR and TBBR registers */
 
-  sinfo("mair_el1=%p\n", MEMORY_ATTRIBUTES); ////
-  sinfo("tcr_el1=%p\n", get_tcr(1)); ////
-  sinfo("ttbr0_el1=%p\n", base_xlat_table); ////
+  // sinfo("mair_el1=%p\n", MEMORY_ATTRIBUTES); ////
+  // sinfo("tcr_el1=%p\n", get_tcr(1)); ////
+  // sinfo("ttbr0_el1=%p\n", base_xlat_table); ////
   write_sysreg(MEMORY_ATTRIBUTES, mair_el1);
   write_sysreg(get_tcr(1), tcr_el1);
   write_sysreg((uint64_t)base_xlat_table, ttbr0_el1);
