@@ -614,6 +614,9 @@ static void enable_mmu_el1(unsigned int flags)
 
   /* Set MAIR, TCR and TBBR registers */
 
+  sinfo("mair_el1=%p\n", MEMORY_ATTRIBUTES); ////
+  sinfo("tcr_el1=%p\n", get_tcr(1)); ////
+  sinfo("ttbr0_el1=%p\n", base_xlat_table); ////
   write_sysreg(MEMORY_ATTRIBUTES, mair_el1);
   write_sysreg(get_tcr(1), tcr_el1);
   write_sysreg((uint64_t)base_xlat_table, ttbr0_el1);
