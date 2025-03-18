@@ -338,6 +338,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
   uint64_t desc = addr_pa;
   unsigned int mem_type;
 
+  sinfo("Bit 0-1: %s\n", (level == 3) ? "PTE_PAGE_DESC" : "PTE_BLOCK_DESC"); ////
   desc |= (level == 3) ? PTE_PAGE_DESC : PTE_BLOCK_DESC;
 
   /* NS bit for security memory access from secure state */
@@ -350,6 +351,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
   /* the access flag */
 
+  sinfo("Bit 10: PTE_BLOCK_DESC_AF\n"); ////
   desc |= PTE_BLOCK_DESC_AF;
 
   /* memory attribute index field */
@@ -369,7 +371,8 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
          * it is not strictly needed to set shareability field
          */
 
-        desc |= PTE_BLOCK_DESC_OUTER_SHARE;
+         sinfo("Bit 8-9: PTE_BLOCK_DESC_OUTER_SHARE\n"); ////
+         desc |= PTE_BLOCK_DESC_OUTER_SHARE;
 
         /* Map device memory as execute-never */
 
@@ -390,10 +393,12 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
         if (mem_type == MT_NORMAL)
           {
+            sinfo("Bit 8-9: PTE_BLOCK_DESC_INNER_SHARE\n"); ////
             desc |= PTE_BLOCK_DESC_INNER_SHARE;
           }
         else
           {
+            sinfo("Bit 8-9: PTE_BLOCK_DESC_OUTER_SHARE\n"); ////
             desc |= PTE_BLOCK_DESC_OUTER_SHARE;
           }
       }
