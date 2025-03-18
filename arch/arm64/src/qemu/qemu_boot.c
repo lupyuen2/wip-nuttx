@@ -71,9 +71,8 @@ static const struct arm_mmu_region g_mmu_regions[] =
                         // MT_DEVICE_NGNRNE | MT_RW | MT_SECURE),
 
   MMU_REGION_FLAT_ENTRY("DRAM0_S0",
-                        0x40000000, 0x40000000,
+                        CONFIG_RAMBANK1_ADDR, CONFIG_RAMBANK1_SIZE,
                         MT_NORMAL | MT_RW | MT_EXECUTE),
-                        // CONFIG_RAMBANK1_ADDR, CONFIG_RAMBANK1_SIZE,
                         // MT_NORMAL | MT_RW | MT_SECURE),
 
   // MMU_REGION_FLAT_ENTRY("PCI_CFG",
