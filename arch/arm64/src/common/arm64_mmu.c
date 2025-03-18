@@ -49,6 +49,13 @@
  * #define CONFIG_MMU_DUMP_PTE 1
  */
 
+#define CONFIG_MMU_ASSERT 1 ////
+#define CONFIG_MMU_DEBUG 1 ////
+#define CONFIG_MMU_DUMP_PTE 1 ////
+#define trace_printf _info ////
+#undef sinfo ////
+#define sinfo _info ////
+
 #ifdef CONFIG_MMU_DEBUG
 
 #define L0_SPACE                        ""
@@ -466,7 +473,7 @@ static void init_xlat_tables(const struct arm_mmu_region *region)
   uint64_t level_size;
 
 #ifdef CONFIG_MMU_DEBUG
-  sinfo("mmap: virt %lux phys %lux size %lux\n", virt, phys, size);
+  sinfo("mmap: virt %p phys %p size %p\n", virt, phys, size);
 #endif
 
   /* check minimum alignment requirement for given mmap region */
