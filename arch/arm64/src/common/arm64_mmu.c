@@ -400,18 +400,18 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
     }
 
 #if defined(CONFIG_MMU_DEBUG) && defined(CONFIG_MMU_DUMP_PTE)
-  _info("addr_pa=%p\n", addr_pa); ////
-  _info("level=%d\n", level); ////
+  sinfo("addr_pa=%p\n", addr_pa); ////
+  sinfo("level=%d\n", level); ////
   // sinfo("%s ", XLAT_TABLE_LEVEL_SPACE(level));
   sinfo("pte=%p\n", pte);
   sinfo("mem_type=%s\n",
         (mem_type ==
          MT_NORMAL) ? "MEM" :((mem_type == MT_NORMAL_NC) ? "NC" : "DEV"));
-  sinfo("MT_RW=%s\n", (attrs & MT_RW) ? "-RW" : "-RO");
-  sinfo("MT_NS=%s\n", (attrs & MT_NS) ? "-NS" : "-S");
-  sinfo("MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "-XN" : "-EXEC");
+  sinfo("MT_RW=%s\n", (attrs & MT_RW) ? "RW" : "RO");
+  sinfo("MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
+  sinfo("MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
   // sinfo("\n");
-  _info("desc=%p\n\n", desc); ////
+  sinfo("desc=%p\n\n", desc); ////
 #endif
 
   *pte = desc;
@@ -608,7 +608,6 @@ static void enable_mmu_el3(unsigned int flags)
 #else
 static void enable_mmu_el1(unsigned int flags)
 {
-  // int stack = 123; stack++; _info("&stack=%p\n", &stack); ////
   uint64_t value;
   UNUSED(flags);
 
