@@ -289,7 +289,8 @@
  *  to these memory regions.
  */
 
-#define CONFIG_MAX_XLAT_TABLES      10
+#define CONFIG_MAX_XLAT_TABLES      2 ////
+//// Previously: #define CONFIG_MAX_XLAT_TABLES      10
 
 #define L1_CACHE_SHIFT              (6)
 #define L1_CACHE_BYTES              BIT(L1_CACHE_SHIFT)
