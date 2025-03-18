@@ -58,13 +58,23 @@
 
 static const struct arm_mmu_region g_mmu_regions[] =
 {
+  // MMU_REGION_FLAT_ENTRY(
+  //   "EVERYTHING",
+  //   0x0, 0x80000000,
+  //   MT_DEVICE_NGNRNE | MT_RW | MT_EXECUTE | MT_SECURE
+  // ),
+
   MMU_REGION_FLAT_ENTRY("DEVICE_REGION",
-                        CONFIG_DEVICEIO_BASEADDR, CONFIG_DEVICEIO_SIZE,
-                        MT_DEVICE_NGNRNE | MT_RW | MT_SECURE),
+                        0x0, 0x40000000,
+                        MT_DEVICE_NGNRNE | MT_RW),
+                        // CONFIG_DEVICEIO_BASEADDR, CONFIG_DEVICEIO_SIZE,
+                        // MT_DEVICE_NGNRNE | MT_RW | MT_SECURE),
 
   MMU_REGION_FLAT_ENTRY("DRAM0_S0",
-                        CONFIG_RAMBANK1_ADDR, 0x800000, //// CONFIG_RAMBANK1_SIZE,
-                        MT_NORMAL | MT_RW | MT_SECURE),
+                        0x40000000, 0x40000000,
+                        MT_NORMAL | MT_RW | MT_EXECUTE),
+                        // CONFIG_RAMBANK1_ADDR, CONFIG_RAMBANK1_SIZE,
+                        // MT_NORMAL | MT_RW | MT_SECURE),
 
   // MMU_REGION_FLAT_ENTRY("PCI_CFG",
   //                       CONFIG_PCI_CFG_BASEADDR, CONFIG_PCI_CFG_SIZE,
