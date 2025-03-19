@@ -177,9 +177,9 @@ void arm64_chip_boot(void)
 #endif
 
 #if defined(CONFIG_ARCH_CHIP_QEMU_WITH_HV) && defined(CONFIG_ARM64_PSCI)
-  arm64_psci_init("hvc");
+  //// arm64_psci_init("hvc");
 #elif defined(CONFIG_ARM64_PSCI)
-  arm64_psci_init("smc");
+  //// arm64_psci_init("smc");
 #endif
 
   /* Perform board-specific device initialization. This would include
