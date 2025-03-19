@@ -345,7 +345,8 @@ static void set_pte_table_desc(uint64_t *pte, uint64_t *table,
 
   /* Point pte to new table */
 
-  sinfo("PTE @ %p points to Xlat Table %p, Bits 00-01: PTE_TABLE_DESC=3\n\n", pte, table); ////
+  sinfo("PTE @ %p points to Xlat Table %p", pte, table); ////
+  sinfo("Bit 00-01: PTE_TABLE_DESC=3\n\n"); ////
   *pte = PTE_TABLE_DESC | (uint64_t)table;
 }
 
@@ -734,7 +735,7 @@ int arm64_mmu_init(bool is_primary_core)
         (uint64_t *)base_xlat_table, NUM_BASE_LEVEL_ENTRIES);
   for (int idx = 0; idx < CONFIG_MAX_XLAT_TABLES; idx++)
     {
-      sinfo("xlat table #%d: %p\n", idx, (uint64_t *)(xlat_tables + idx));
+      sinfo("xlat table #%d: %p\n\n", idx, (uint64_t *)(xlat_tables + idx));
     }
 #endif
 
