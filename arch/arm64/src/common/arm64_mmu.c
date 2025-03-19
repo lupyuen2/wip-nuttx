@@ -345,7 +345,7 @@ static void set_pte_table_desc(uint64_t *pte, uint64_t *table,
 
   /* Point pte to new table */
 
-  sinfo("PTE @ %p points to Xlat Table %p, Bits 0-3: PTE_TABLE_DESC=3\n\n", pte, table); ////
+  sinfo("PTE @ %p points to Xlat Table %p, Bits 00-01: PTE_TABLE_DESC=3\n\n", pte, table); ////
   *pte = PTE_TABLE_DESC | (uint64_t)table;
 }
 
