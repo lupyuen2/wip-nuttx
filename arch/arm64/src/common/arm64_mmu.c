@@ -52,12 +52,12 @@
 #undef sinfo ////
 #define sinfo(...) ////
 
-// #define CONFIG_MMU_ASSERT 1 ////
-// #define CONFIG_MMU_DEBUG 1 ////
-// #define CONFIG_MMU_DUMP_PTE 1 ////
-// #define trace_printf _info ////
-// #undef sinfo ////
-// #define sinfo _info ////
+#define CONFIG_MMU_ASSERT 1 ////
+#define CONFIG_MMU_DEBUG 1 ////
+#define CONFIG_MMU_DUMP_PTE 1 ////
+#define trace_printf _info ////
+#undef sinfo ////
+#define sinfo _info ////
 
 #ifdef CONFIG_MMU_DEBUG
 
@@ -728,12 +728,12 @@ int arm64_mmu_init(bool is_primary_core)
 #endif
 
 #ifdef CONFIG_MMU_DEBUG
-  sinfo("xlat tables:\n");
+  // sinfo("xlat tables:\n");
   sinfo("base table(L%d): %p, %d entries\n", XLAT_TABLE_BASE_LEVEL,
         (uint64_t *)base_xlat_table, NUM_BASE_LEVEL_ENTRIES);
   for (int idx = 0; idx < CONFIG_MAX_XLAT_TABLES; idx++)
     {
-      sinfo("%d: %p\n", idx, (uint64_t *)(xlat_tables + idx));
+      sinfo("xlat table #%d: %p\n", idx, (uint64_t *)(xlat_tables + idx));
     }
 #endif
 
