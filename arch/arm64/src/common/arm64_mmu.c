@@ -247,30 +247,41 @@ static uint64_t get_tcr(int el)
   uint64_t tcr;
   uint64_t va_bits = CONFIG_ARM64_VA_BITS;
   uint64_t tcr_ps_bits;
+  sinfo("va_bits: %p\n", va_bits); ////
 
   tcr_ps_bits = TCR_PS_BITS;
 
   if (el == 1)
     {
+      sinfo("Bit 32-33: TCR_EL1_IPS=%d\n", tcr_ps_bits); ////
       tcr = (tcr_ps_bits << TCR_EL1_IPS_SHIFT);
 
       /* TCR_EL1.EPD1: Disable translation table walk for addresses
        * that are translated using TTBR1_EL1.
        */
 
-      tcr |= TCR_EPD1_DISABLE;
+       sinfo("Bit 23: TCR_EPD1_DISABLE=1\n"); ////
+       tcr |= TCR_EPD1_DISABLE;
     }
   else
     {
+      sinfo("Bit 16-17: TCR_EL3_PS=%d\n", tcr_ps_bits); ////
       tcr = (tcr_ps_bits << TCR_EL3_PS_SHIFT);
     }
 
+  sinfo("Bit 00-05: TCR_T0SZ=%p\n", TCR_T0SZ(va_bits)); ////
   tcr |= TCR_T0SZ(va_bits);
 
   /* Translation table walk is cacheable, inner/outer WBWA and
    * inner shareable
    */
 
+  sinfo("Bit 08-09: TCR_IRGN_WBWA=1\n"); ////
+  sinfo("Bit 10-11: TCR_ORGN_WBWA=1\n"); ////
+  sinfo("Bit 12-13: TCR_SHARED_INNER=3\n"); ////
+  sinfo("Bit 14-15: TCR_TG0_4K=0\n"); ////
+  sinfo("Bit 30-31: TCR_TG1_4K=2\n"); ////
+  sinfo("Bit 37-38: TCR_TBI_FLAGS=%d\n\n", (TCR_TBI_FLAGS + 0ul) >> 37); ////
   tcr |= TCR_TG0_4K | TCR_SHARED_INNER | TCR_ORGN_WBWA |
          TCR_IRGN_WBWA | TCR_TBI_FLAGS
          | TCR_TG1_4K ////
@@ -340,7 +351,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
   uint64_t desc = addr_pa;
   unsigned int mem_type;
 
-  sinfo("Bit 0-1: %s\n", (level == 3) ? "PTE_PAGE_DESC" : "PTE_BLOCK_DESC"); ////
+  sinfo("Bit 00-01: %s\n", (level == 3) ? "PTE_PAGE_DESC=3" : "PTE_BLOCK_DESC=1"); ////
   desc |= (level == 3) ? PTE_PAGE_DESC : PTE_BLOCK_DESC;
 
   /* NS bit for security memory access from secure state */
@@ -353,7 +364,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
   /* the access flag */
 
-  sinfo("Bit 10: PTE_BLOCK_DESC_AF\n"); ////
+  sinfo("Bit 10: PTE_BLOCK_DESC_AF=1\n"); ////
   desc |= PTE_BLOCK_DESC_AF;
 
   /* memory attribute index field */
@@ -373,11 +384,13 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
          * it is not strictly needed to set shareability field
          */
 
-         sinfo("Bit 8-9: PTE_BLOCK_DESC_OUTER_SHARE\n"); ////
+         sinfo("Bit 08-09: PTE_BLOCK_DESC_OUTER_SHAR=2\n"); ////
          desc |= PTE_BLOCK_DESC_OUTER_SHARE;
 
         /* Map device memory as execute-never */
 
+        sinfo("Bit 53: PTE_BLOCK_DESC_PXN=1\n"); ////
+        sinfo("Bit 54: PTE_BLOCK_DESC_UXN=1\n"); ////
         desc |= PTE_BLOCK_DESC_PXN;
         desc |= PTE_BLOCK_DESC_UXN;
         break;
@@ -390,17 +403,18 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
         if (attrs & MT_EXECUTE_NEVER)
           {
+            sinfo("Bit 53: PTE_BLOCK_DESC_PXN=1\n"); ////
             desc |= PTE_BLOCK_DESC_PXN;
           }
 
         if (mem_type == MT_NORMAL)
           {
-            sinfo("Bit 8-9: PTE_BLOCK_DESC_INNER_SHARE\n"); ////
+            sinfo("Bit 08-09: PTE_BLOCK_DESC_INNER_SHARE=3\n"); ////
             desc |= PTE_BLOCK_DESC_INNER_SHARE;
           }
         else
           {
-            sinfo("Bit 8-9: PTE_BLOCK_DESC_OUTER_SHARE\n"); ////
+            sinfo("Bit 08-09: PTE_BLOCK_DESC_OUTER_SHARE=2\n"); ////
             desc |= PTE_BLOCK_DESC_OUTER_SHARE;
           }
       }
@@ -414,9 +428,9 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
   sinfo("mem_type=%s\n",
         (mem_type ==
          MT_NORMAL) ? "MEM" :((mem_type == MT_NORMAL_NC) ? "NC" : "DEV"));
-  sinfo("Bit 3: MT_RW=%s\n", (attrs & MT_RW) ? "RW" : "RO");
-  sinfo("Bit 4: MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
-  sinfo("Bit 5: MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
+  sinfo("Bit 03: MT_RW=%s\n", (attrs & MT_RW) ? "RW" : "RO");
+  sinfo("Bit 04: MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
+  sinfo("Bit 05: MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
   // sinfo("\n");
   sinfo("desc=%p\n\n", desc); ////
 #endif
@@ -620,12 +634,12 @@ static void enable_mmu_el1(unsigned int flags)
 
   /* Set MAIR, TCR and TBBR registers */
 
-  sinfo("mair_el1=%p\n", MEMORY_ATTRIBUTES); ////
-  sinfo("tcr_el1=%p\n", get_tcr(1)); ////
-  sinfo("ttbr0_el1=%p\n", base_xlat_table); ////
   write_sysreg(MEMORY_ATTRIBUTES, mair_el1);
   write_sysreg(get_tcr(1), tcr_el1);
   write_sysreg((uint64_t)base_xlat_table, ttbr0_el1);
+  sinfo("tcr_el1=%p\n", read_sysreg(tcr_el1)); ////
+  sinfo("mair_el1=%p\n", MEMORY_ATTRIBUTES); ////
+  sinfo("ttbr0_el1=%p\n\n", base_xlat_table); ////
 
   /* Ensure these changes are seen before MMU is enabled */
 
