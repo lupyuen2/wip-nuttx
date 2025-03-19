@@ -49,12 +49,15 @@
  * #define CONFIG_MMU_DUMP_PTE 1
  */
 
-#define CONFIG_MMU_ASSERT 1 ////
-#define CONFIG_MMU_DEBUG 1 ////
-#define CONFIG_MMU_DUMP_PTE 1 ////
-#define trace_printf _info ////
 #undef sinfo ////
-#define sinfo _info ////
+#define sinfo(...) ////
+
+// #define CONFIG_MMU_ASSERT 1 ////
+// #define CONFIG_MMU_DEBUG 1 ////
+// #define CONFIG_MMU_DUMP_PTE 1 ////
+// #define trace_printf _info ////
+// #undef sinfo ////
+// #define sinfo _info ////
 
 #ifdef CONFIG_MMU_DEBUG
 
@@ -260,7 +263,7 @@ static uint64_t get_tcr(int el)
        * that are translated using TTBR1_EL1.
        */
 
-       sinfo("Bit 23: TCR_EPD1_DISABLE=1\n"); ////
+       sinfo("Bit 23:    TCR_EPD1_DISABLE=1\n"); ////
        tcr |= TCR_EPD1_DISABLE;
     }
   else
@@ -364,7 +367,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
   /* the access flag */
 
-  sinfo("Bit 10: PTE_BLOCK_DESC_AF=1\n"); ////
+  sinfo("Bit 10:    PTE_BLOCK_DESC_AF=1\n"); ////
   desc |= PTE_BLOCK_DESC_AF;
 
   /* memory attribute index field */
@@ -389,8 +392,8 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
         /* Map device memory as execute-never */
 
-        sinfo("Bit 53: PTE_BLOCK_DESC_PXN=1\n"); ////
-        sinfo("Bit 54: PTE_BLOCK_DESC_UXN=1\n"); ////
+        sinfo("Bit 53:    PTE_BLOCK_DESC_PXN=1\n"); ////
+        sinfo("Bit 54:    PTE_BLOCK_DESC_UXN=1\n"); ////
         desc |= PTE_BLOCK_DESC_PXN;
         desc |= PTE_BLOCK_DESC_UXN;
         break;
@@ -403,7 +406,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
         if (attrs & MT_EXECUTE_NEVER)
           {
-            sinfo("Bit 53: PTE_BLOCK_DESC_PXN=1\n"); ////
+            sinfo("Bit 53:    PTE_BLOCK_DESC_PXN=1\n"); ////
             desc |= PTE_BLOCK_DESC_PXN;
           }
 
@@ -428,9 +431,9 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
   sinfo("mem_type=%s\n",
         (mem_type ==
          MT_NORMAL) ? "MEM" :((mem_type == MT_NORMAL_NC) ? "NC" : "DEV"));
-  sinfo("Bit 03: MT_RW=%s\n", (attrs & MT_RW) ? "RW" : "RO");
-  sinfo("Bit 04: MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
-  sinfo("Bit 05: MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
+  sinfo("Bit 03:    MT_RW=%s\n", (attrs & MT_RW) ? "RW" : "RO");
+  sinfo("Bit 04:    MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
+  sinfo("Bit 05:    MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
   // sinfo("\n");
   sinfo("desc=%p\n\n", desc); ////
 #endif
