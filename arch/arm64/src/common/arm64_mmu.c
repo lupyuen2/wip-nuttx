@@ -345,6 +345,7 @@ static void set_pte_table_desc(uint64_t *pte, uint64_t *table,
 
   /* Point pte to new table */
 
+  sinfo("PTE @ %p points to Xlat Table %p, Bits 0-3: PTE_TABLE_DESC=3\n\n", pte, table); ////
   *pte = PTE_TABLE_DESC | (uint64_t)table;
 }
 
@@ -435,7 +436,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
   sinfo("Bit 04:    MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
   sinfo("Bit 05:    MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
   // sinfo("\n");
-  sinfo("desc=%p\n\n", desc); ////
+  sinfo("PTE @ %p set to desc=%p\n\n", pte, desc); ////
 #endif
 
   *pte = desc;
