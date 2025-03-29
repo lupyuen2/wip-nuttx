@@ -245,7 +245,7 @@ void arm64_chip_boot(void)
 #if defined(CONFIG_ARM64_PSCI)
   /* Init the Power State Coordination Interface */
 
-  arm64_psci_init("smc");
+  //// arm64_psci_init("smc");
 #endif
 
   /* Perform board-specific device initialization. This would include
