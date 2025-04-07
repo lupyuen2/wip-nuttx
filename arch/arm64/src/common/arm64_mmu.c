@@ -265,7 +265,7 @@ static uint64_t get_tcr(int el)
    */
 
   tcr |= TCR_TG0_4K | TCR_SHARED_INNER | TCR_ORGN_WBWA |
-         TCR_IRGN_WBWA | TCR_TBI_FLAGS;
+         TCR_IRGN_WBWA | TCR_TBI_FLAGS | TCR_TG1_4K;
 
   return tcr;
 }
