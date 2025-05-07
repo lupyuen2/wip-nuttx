@@ -49,6 +49,16 @@
  * #define CONFIG_MMU_DUMP_PTE 1
  */
 
+#undef sinfo ////
+#define sinfo(...) ////
+
+// #define CONFIG_MMU_ASSERT 1 ////
+// #define CONFIG_MMU_DEBUG 1 ////
+// #define CONFIG_MMU_DUMP_PTE 1 ////
+// #define trace_printf _info ////
+// #undef sinfo ////
+// #define sinfo _info ////
+
 #ifdef CONFIG_MMU_DEBUG
 
 #define L0_SPACE                        ""
@@ -176,36 +186,36 @@ aligned_data(XLAT_TABLE_ENTRIES * sizeof(uint64_t));
 
 static const struct arm_mmu_region g_mmu_nxrt_regions[] =
 {
-  /* Mark text segment cacheable,read only and executable */
+//   /* Mark text segment cacheable,read only and executable */
 
-  MMU_REGION_FLAT_ENTRY("nx_code",
-                        (uint64_t)_stext,
-                        (uint64_t)_sztext,
-                        MT_CODE | MT_SECURE),
+//   MMU_REGION_FLAT_ENTRY("nx_code",
+//                         (uint64_t)_stext,
+//                         (uint64_t)_sztext,
+//                         MT_CODE | MT_SECURE),
 
-  /* Mark rodata segment cacheable, read only and execute-never */
+//   /* Mark rodata segment cacheable, read only and execute-never */
 
-  MMU_REGION_FLAT_ENTRY("nx_rodata",
-                        (uint64_t)_srodata,
-                        (uint64_t)_szrodata,
-                        MT_RODATA | MT_SECURE),
+//   MMU_REGION_FLAT_ENTRY("nx_rodata",
+//                         (uint64_t)_srodata,
+//                         (uint64_t)_szrodata,
+//                         MT_RODATA | MT_SECURE),
 
-  /* Mark rest of the mirtos execution regions (data, bss, noinit, etc.)
-   * cacheable, read-write
-   * Note: read-write region is marked execute-ever internally
-   */
+//   /* Mark rest of the mirtos execution regions (data, bss, noinit, etc.)
+//    * cacheable, read-write
+//    * Note: read-write region is marked execute-ever internally
+//    */
 
-  MMU_REGION_FLAT_ENTRY("nx_data",
-                        (uint64_t)_sdata,
-                        (uint64_t)_szdata,
-                        MT_NORMAL | MT_RW | MT_SECURE),
+//   MMU_REGION_FLAT_ENTRY("nx_data",
+//                         (uint64_t)_sdata,
+//                         (uint64_t)_szdata,
+//                         MT_NORMAL | MT_RW | MT_SECURE),
 
-#ifdef CONFIG_BUILD_KERNEL
-  MMU_REGION_FLAT_ENTRY("nx_pgpool",
-                        (uint64_t)CONFIG_ARCH_PGPOOL_PBASE,
-                        (uint64_t)CONFIG_ARCH_PGPOOL_SIZE,
-                        MT_NORMAL | MT_RW | MT_SECURE),
-#endif
+// #ifdef CONFIG_BUILD_KERNEL
+//   MMU_REGION_FLAT_ENTRY("nx_pgpool",
+//                         (uint64_t)CONFIG_ARCH_PGPOOL_PBASE,
+//                         (uint64_t)CONFIG_ARCH_PGPOOL_SIZE,
+//                         MT_NORMAL | MT_RW | MT_SECURE),
+// #endif
 };
 
 static const struct arm_mmu_config g_mmu_nxrt_config =
@@ -240,32 +250,45 @@ static uint64_t get_tcr(int el)
   uint64_t tcr;
   uint64_t va_bits = CONFIG_ARM64_VA_BITS;
   uint64_t tcr_ps_bits;
+  sinfo("va_bits: %p\n", va_bits); ////
 
   tcr_ps_bits = TCR_PS_BITS;
 
   if (el == 1)
     {
+      sinfo("Bit 32-33: TCR_EL1_IPS=%d\n", tcr_ps_bits); ////
       tcr = (tcr_ps_bits << TCR_EL1_IPS_SHIFT);
 
       /* TCR_EL1.EPD1: Disable translation table walk for addresses
        * that are translated using TTBR1_EL1.
        */
 
-      tcr |= TCR_EPD1_DISABLE;
+       sinfo("Bit 23:    TCR_EPD1_DISABLE=1\n"); ////
+       tcr |= TCR_EPD1_DISABLE;
     }
   else
     {
+      sinfo("Bit 16-17: TCR_EL3_PS=%d\n", tcr_ps_bits); ////
       tcr = (tcr_ps_bits << TCR_EL3_PS_SHIFT);
     }
 
+  sinfo("Bit 00-05: TCR_T0SZ=%p\n", TCR_T0SZ(va_bits)); ////
   tcr |= TCR_T0SZ(va_bits);
 
   /* Translation table walk is cacheable, inner/outer WBWA and
    * inner shareable
    */
 
+  sinfo("Bit 08-09: TCR_IRGN_WBWA=1\n"); ////
+  sinfo("Bit 10-11: TCR_ORGN_WBWA=1\n"); ////
+  sinfo("Bit 12-13: TCR_SHARED_INNER=3\n"); ////
+  sinfo("Bit 14-15: TCR_TG0_4K=0\n"); ////
+  sinfo("Bit 30-31: TCR_TG1_4K=2\n"); ////
+  sinfo("Bit 37-38: TCR_TBI_FLAGS=%d\n\n", (TCR_TBI_FLAGS + 0ul) >> 37); ////
   tcr |= TCR_TG0_4K | TCR_SHARED_INNER | TCR_ORGN_WBWA |
-         TCR_IRGN_WBWA | TCR_TBI_FLAGS;
+         TCR_IRGN_WBWA | TCR_TBI_FLAGS
+         | TCR_TG1_4K ////
+         ;
 
   return tcr;
 }
@@ -322,6 +345,8 @@ static void set_pte_table_desc(uint64_t *pte, uint64_t *table,
 
   /* Point pte to new table */
 
+  sinfo("PTE @ %p points to Xlat Table %p", pte, table); ////
+  sinfo("Bit 00-01: PTE_TABLE_DESC=3\n\n"); ////
   *pte = PTE_TABLE_DESC | (uint64_t)table;
 }
 
@@ -331,6 +356,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
   uint64_t desc = addr_pa;
   unsigned int mem_type;
 
+  sinfo("Bit 00-01: %s\n", (level == 3) ? "PTE_PAGE_DESC=3" : "PTE_BLOCK_DESC=1"); ////
   desc |= (level == 3) ? PTE_PAGE_DESC : PTE_BLOCK_DESC;
 
   /* NS bit for security memory access from secure state */
@@ -343,6 +369,7 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
   /* the access flag */
 
+  sinfo("Bit 10:    PTE_BLOCK_DESC_AF=1\n"); ////
   desc |= PTE_BLOCK_DESC_AF;
 
   /* memory attribute index field */
@@ -362,10 +389,13 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
          * it is not strictly needed to set shareability field
          */
 
-        desc |= PTE_BLOCK_DESC_OUTER_SHARE;
+         sinfo("Bit 08-09: PTE_BLOCK_DESC_OUTER_SHAR=2\n"); ////
+         desc |= PTE_BLOCK_DESC_OUTER_SHARE;
 
         /* Map device memory as execute-never */
 
+        sinfo("Bit 53:    PTE_BLOCK_DESC_PXN=1\n"); ////
+        sinfo("Bit 54:    PTE_BLOCK_DESC_UXN=1\n"); ////
         desc |= PTE_BLOCK_DESC_PXN;
         desc |= PTE_BLOCK_DESC_UXN;
         break;
@@ -378,30 +408,36 @@ static void set_pte_block_desc(uint64_t *pte, uint64_t addr_pa,
 
         if (attrs & MT_EXECUTE_NEVER)
           {
+            sinfo("Bit 53:    PTE_BLOCK_DESC_PXN=1\n"); ////
             desc |= PTE_BLOCK_DESC_PXN;
           }
 
         if (mem_type == MT_NORMAL)
           {
+            sinfo("Bit 08-09: PTE_BLOCK_DESC_INNER_SHARE=3\n"); ////
             desc |= PTE_BLOCK_DESC_INNER_SHARE;
           }
         else
           {
+            sinfo("Bit 08-09: PTE_BLOCK_DESC_OUTER_SHARE=2\n"); ////
             desc |= PTE_BLOCK_DESC_OUTER_SHARE;
           }
       }
     }
 
 #if defined(CONFIG_MMU_DEBUG) && defined(CONFIG_MMU_DUMP_PTE)
-  sinfo("%s ", XLAT_TABLE_LEVEL_SPACE(level));
-  sinfo("%p: ", pte);
-  sinfo("%s ",
+  sinfo("addr_pa=%p\n", addr_pa); ////
+  sinfo("level=%d\n", level); ////
+  // sinfo("%s ", XLAT_TABLE_LEVEL_SPACE(level));
+  sinfo("pte=%p\n", pte);
+  sinfo("mem_type=%s\n",
         (mem_type ==
          MT_NORMAL) ? "MEM" :((mem_type == MT_NORMAL_NC) ? "NC" : "DEV"));
-  sinfo("%s ", (attrs & MT_RW) ? "-RW" : "-RO");
-  sinfo("%s ", (attrs & MT_NS) ? "-NS" : "-S");
-  sinfo("%s ", (attrs & MT_EXECUTE_NEVER) ? "-XN" : "-EXEC");
-  sinfo("\n");
+  sinfo("Bit 03:    MT_RW=%s\n", (attrs & MT_RW) ? "RW" : "RO");
+  sinfo("Bit 04:    MT_NS=%s\n", (attrs & MT_NS) ? "NS" : "S");
+  sinfo("Bit 05:    MT_EXECUTE_NEVER=%s\n", (attrs & MT_EXECUTE_NEVER) ? "XN" : "EXEC");
+  // sinfo("\n");
+  sinfo("PTE @ %p set to desc=%p\n\n", pte, desc); ////
 #endif
 
   *pte = desc;
@@ -466,7 +502,7 @@ static void init_xlat_tables(const struct arm_mmu_region *region)
   uint64_t level_size;
 
 #ifdef CONFIG_MMU_DEBUG
-  sinfo("mmap: virt %lux phys %lux size %lux\n", virt, phys, size);
+  sinfo("mmap: virt %p phys %p size %p\n", virt, phys, size);
 #endif
 
   /* check minimum alignment requirement for given mmap region */
@@ -606,6 +642,9 @@ static void enable_mmu_el1(unsigned int flags)
   write_sysreg(MEMORY_ATTRIBUTES, mair_el1);
   write_sysreg(get_tcr(1), tcr_el1);
   write_sysreg((uint64_t)base_xlat_table, ttbr0_el1);
+  sinfo("tcr_el1=%p\n", read_sysreg(tcr_el1)); ////
+  sinfo("mair_el1=%p\n", MEMORY_ATTRIBUTES); ////
+  sinfo("ttbr0_el1=%p\n\n", base_xlat_table); ////
 
   /* Ensure these changes are seen before MMU is enabled */
 
@@ -614,14 +653,18 @@ static void enable_mmu_el1(unsigned int flags)
   /* Enable the MMU and data cache */
 
   value = read_sysreg(sctlr_el1);
-  write_sysreg((value | SCTLR_M_BIT
-#ifndef CONFIG_ARM64_DCACHE_DISABLE
-               | SCTLR_C_BIT
-#endif
-               ), sctlr_el1);
+//   write_sysreg((value | SCTLR_M_BIT
+// #ifndef CONFIG_ARM64_DCACHE_DISABLE
+//                | SCTLR_C_BIT
+// #endif
+//                ), sctlr_el1);
+  write_sysreg(value | (1 << 2) | (1 << 12) | 1, sctlr_el1); ////
 
   /* Ensure the MMU enable takes effect immediately */
 
+  __asm__ volatile ("nop" : : : "memory"); ////
+  __asm__ volatile ("nop" : : : "memory"); ////
+  __asm__ volatile ("dsb SY" : : : "memory"); ////
   UP_ISB();
 #ifdef CONFIG_MMU_DEBUG
   sinfo("MMU enabled with dcache\n");
@@ -687,12 +730,12 @@ int arm64_mmu_init(bool is_primary_core)
 #endif
 
 #ifdef CONFIG_MMU_DEBUG
-  sinfo("xlat tables:\n");
+  // sinfo("xlat tables:\n");
   sinfo("base table(L%d): %p, %d entries\n", XLAT_TABLE_BASE_LEVEL,
         (uint64_t *)base_xlat_table, NUM_BASE_LEVEL_ENTRIES);
   for (int idx = 0; idx < CONFIG_MAX_XLAT_TABLES; idx++)
     {
-      sinfo("%d: %p\n", idx, (uint64_t *)(xlat_tables + idx));
+      sinfo("xlat table #%d: %p\n\n", idx, (uint64_t *)(xlat_tables + idx));
     }
 #endif
 
