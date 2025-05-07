@@ -56,7 +56,6 @@ config ARCH_CHIP_QEMU
 	select ARCH_HAVE_POWEROFF
 	select ARCH_HAVE_RESET
 	select ARCH_HAVE_TEXT_HEAP
-	select ARM64_HAVE_PSCI
 	---help---
 		QEMU virt platform (ARMv8a)
 

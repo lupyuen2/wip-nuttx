@@ -156,6 +156,9 @@
 #define TCR_TG0_64K                 (1ULL << 14)
 #define TCR_TG0_16K                 (2ULL << 14)
 #define TCR_EPD1_DISABLE            (1ULL << 23)
+#define TCR_TG1_16K                 (1ULL << 30) ////
+#define TCR_TG1_4K                  (2ULL << 30) ////
+#define TCR_TG1_64K                 (3ULL << 30) ////
 
 #define TCR_AS_SHIFT                36U
 #define TCR_ASID_8                  (0ULL << TCR_AS_SHIFT)
